@@ -1,0 +1,226 @@
+/* Peal Design System */
+
+/* Grid System */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.25rem; /* 20px */
+}
+
+.container-sm {
+  max-width: 1200px;
+}
+
+.container-lg {
+  max-width: 1600px;
+}
+
+/* Grid Layout */
+.grid-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem; /* 20px */
+}
+
+@media (min-width: 1024px) {
+  .grid-main {
+    grid-template-columns: 320px 1fr;
+  }
+}
+
+/* Typography Hierarchy */
+.heading-1 {
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem; /* 36px */
+  font-weight: 600;
+  margin: 0;
+}
+
+.heading-2 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem; /* 32px */
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+.heading-3 {
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.75rem; /* 28px */
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+}
+
+.heading-4 {
+  font-size: 1rem; /* 16px */
+  line-height: 1.5rem; /* 24px */
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.section-header {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem 0;
+}
+
+.body-text {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+  margin: 0 0 1rem 0;
+}
+
+.body-text-sm {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1rem; /* 16px */
+  margin: 0 0 0.75rem 0;
+}
+
+.caption {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1rem; /* 16px */
+  margin: 0;
+}
+
+/* Spacing System */
+.space-y-section > * + * {
+  margin-top: 2rem; /* 32px - Between major sections */
+}
+
+.space-y-subsection > * + * {
+  margin-top: 1.5rem; /* 24px - Between subsections */
+}
+
+.space-y-component > * + * {
+  margin-top: 1rem; /* 16px - Between components */
+}
+
+.space-y-element > * + * {
+  margin-top: 0.75rem; /* 12px - Between elements */
+}
+
+.space-y-tight > * + * {
+  margin-top: 0.5rem; /* 8px - Tight spacing */
+}
+
+/* Surface System */
+.surface-primary {
+  @apply bg-surface dark:bg-gray-900 border border-border dark:border-gray-800;
+}
+
+.surface-secondary {
+  @apply bg-surface-elevated dark:bg-gray-800 border border-border dark:border-gray-700;
+}
+
+.surface-overlay {
+  @apply bg-surface-overlay dark:bg-gray-900 border border-border dark:border-gray-800;
+}
+
+/* Component Spacing */
+.card-padding {
+  padding: 1.5rem; /* 24px */
+}
+
+.card-padding-sm {
+  padding: 1rem; /* 16px */
+}
+
+.section-padding {
+  padding: 2rem 0; /* 32px vertical */
+}
+
+.section-padding-sm {
+  padding: 1.5rem 0; /* 24px vertical */
+}
+
+.pt-section {
+  padding-top: 2rem; /* 32px */
+}
+
+.pt-section-sm {
+  padding-top: 1.5rem; /* 24px */
+}
+
+/* Button System */
+.btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+/* Form Elements */
+.form-spacing > * + * {
+  margin-top: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+/* Card System */
+.card {
+  @apply surface-primary rounded-xl;
+  @apply card-padding;
+}
+
+.card-sm {
+  @apply surface-primary rounded-lg;
+  @apply card-padding-sm;
+}
+
+/* Layout Utilities */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.sidebar-width {
+  width: 320px;
+}
+
+/* Focus and Interaction States */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-background dark:focus:ring-offset-gray-950;
+}
+
+/* Responsive Utilities */
+@media (max-width: 1023px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .card-padding {
+    padding: 1rem;
+  }
+  
+  .section-padding {
+    padding: 1.5rem 0;
+  }
+}

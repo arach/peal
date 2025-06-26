@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scout Interactive Sound Designer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #4a9eff;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .sound-designer {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .controls-panel {
+            background: #242424;
+            border: 1px solid #3a3a3a;
+            border-radius: 12px;
+            padding: 24px;
+            height: fit-content;
+        }
+        
+        .preview-panel {
+            background: #242424;
+            border: 1px solid #3a3a3a;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        
+        .control-group {
+            margin-bottom: 24px;
+        }
+        
+        .control-group h3 {
+            color: #4a9eff;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .toggle-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .toggle-btn {
+            background: #333;
+            border: 2px solid #444;
+            color: #a0a0a0;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .toggle-btn:hover {
+            border-color: #555;
+            color: #e0e0e0;
+        }
+        
+        .toggle-btn.active {
+            background: #4a9eff;
+            border-color: #4a9eff;
+            color: white;
+        }
+        
+        .slider-control {
+            margin-bottom: 16px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #a0a0a0;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #333;
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4a9eff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #4a9eff;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .preset-btn {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            color: #e0e0e0;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .preset-btn:hover {
+            background: #333;
+            border-color: #4a9eff;
+        }
+        
+        .waveform-display {
+            width: 100%;
+            height: 150px;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .play-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .play-btn {
+            background: #4a9eff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            flex: 1;
+        }
+        
+        .play-btn:hover {
+            background: #5aa3ff;
+            transform: translateY(-1px);
+        }
+        
+        .play-btn:active {
+            transform: translateY(0);
+        }
+        
+        .export-btn {
+            background: #404040;
+            color: #e0e0e0;
+        }
+        
+        .export-btn:hover {
+            background: #505050;
+        }
+        
+        .output-log {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #888;
+            min-height: 60px;
+            white-space: pre-wrap;
+        }
+        
+        .switch-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .3s;
+            border-radius: 24px;
+        }
+        
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #666;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .switch-slider {
+            background-color: #4a9eff;
+        }
+        
+        input:checked + .switch-slider:before {
+            transform: translateX(24px);
+            background-color: white;
+        }
+        
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 100px;
+            gap: 2px;
+            margin-bottom: 20px;
+        }
+        
+        .visualizer-bar {
+            width: 4px;
+            background: #4a9eff;
+            transition: height 0.1s ease;
+            border-radius: 2px 2px 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Scout Interactive Sound Designer</h1>
+        <p class="subtitle">Create custom notification sounds with real-time preview</p>
+        
+        <div class="sound-designer">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h3>Sound Type</h3>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-type="tone" onclick="setSoundType('tone')">Tone</button>
+                        <button class="toggle-btn" data-type="chime" onclick="setSoundType('chime')">Chime</button>
+                        <button class="toggle-btn" data-type="click" onclick="setSoundType('click')">Click</button>
+                        <button class="toggle-btn" data-type="bubble" onclick="setSoundType('bubble')">Bubble</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Character</h3>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-char="glass" onclick="setCharacter('glass')">Glass</button>
+                        <button class="toggle-btn" data-char="metal" onclick="setCharacter('metal')">Metal</button>
+                        <button class="toggle-btn" data-char="wood" onclick="setCharacter('wood')">Wood</button>
+                        <button class="toggle-btn" data-char="digital" onclick="setCharacter('digital')">Digital</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Effects</h3>
+                    <div class="switch-control">
+                        <label>Reverb</label>
+                        <label class="switch">
+                            <input type="checkbox" id="reverb" onchange="updateSound()">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    <div class="switch-control">
+                        <label>Echo</label>
+                        <label class="switch">
+                            <input type="checkbox" id="echo" onchange="updateSound()">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    <div class="switch-control">
+                        <label>Distortion</label>
+                        <label class="switch">
+                            <input type="checkbox" id="distortion" onchange="updateSound()">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Parameters</h3>
+                    <div class="slider-control">
+                        <div class="slider-label">
+                            <span>Pitch</span>
+                            <span id="pitch-value">440Hz</span>
+                        </div>
+                        <input type="range" class="slider" id="pitch" min="200" max="1000" value="440" oninput="updatePitch(this.value)">
+                    </div>
+                    <div class="slider-control">
+                        <div class="slider-label">
+                            <span>Duration</span>
+                            <span id="duration-value">200ms</span>
+                        </div>
+                        <input type="range" class="slider" id="duration" min="50" max="1000" value="200" oninput="updateDuration(this.value)">
+                    </div>
+                    <div class="slider-control">
+                        <div class="slider-label">
+                            <span>Brightness</span>
+                            <span id="brightness-value">50%</span>
+                        </div>
+                        <input type="range" class="slider" id="brightness" min="0" max="100" value="50" oninput="updateBrightness(this.value)">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Quick Presets</h3>
+                    <div class="preset-grid">
+                        <button class="preset-btn" onclick="loadPreset('subtle')">Subtle Click</button>
+                        <button class="preset-btn" onclick="loadPreset('glass')">Glass Chime</button>
+                        <button class="preset-btn" onclick="loadPreset('notification')">Notification</button>
+                        <button class="preset-btn" onclick="loadPreset('success')">Success</button>
+                        <button class="preset-btn" onclick="loadPreset('error')">Error</button>
+                        <button class="preset-btn" onclick="loadPreset('message')">Message</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="preview-panel">
+                <h3 style="color: #4a9eff; margin-bottom: 20px;">Preview</h3>
+                
+                <canvas id="waveform" class="waveform-display"></canvas>
+                
+                <div class="visualizer" id="visualizer">
+                    <div class="visualizer-bar" style="height: 20%"></div>
+                    <div class="visualizer-bar" style="height: 40%"></div>
+                    <div class="visualizer-bar" style="height: 60%"></div>
+                    <div class="visualizer-bar" style="height: 80%"></div>
+                    <div class="visualizer-bar" style="height: 100%"></div>
+                    <div class="visualizer-bar" style="height: 80%"></div>
+                    <div class="visualizer-bar" style="height: 60%"></div>
+                    <div class="visualizer-bar" style="height: 40%"></div>
+                    <div class="visualizer-bar" style="height: 20%"></div>
+                </div>
+                
+                <div class="play-controls">
+                    <button class="play-btn" onclick="playSound()">▶ Play Sound</button>
+                    <button class="play-btn" onclick="playSequence()">▶ Play Start/Stop Sequence</button>
+                    <button class="play-btn export-btn" onclick="exportSound()">Export WAV</button>
+                </div>
+                
+                <div class="output-log" id="output">
+Ready to design sounds...
+Click any preset or adjust parameters to begin.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        let soundConfig = {
+            type: 'tone',
+            character: 'glass',
+            pitch: 440,
+            duration: 200,
+            brightness: 50,
+            reverb: false,
+            echo: false,
+            distortion: false
+        };
+        
+        function updateOutput(message) {
+            document.getElementById('output').textContent = message;
+        }
+        
+        function setSoundType(type) {
+            soundConfig.type = type;
+            document.querySelectorAll('[data-type]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === type);
+            });
+            updateSound();
+        }
+        
+        function setCharacter(char) {
+            soundConfig.character = char;
+            document.querySelectorAll('[data-char]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.char === char);
+            });
+            updateSound();
+        }
+        
+        function updatePitch(value) {
+            soundConfig.pitch = parseInt(value);
+            document.getElementById('pitch-value').textContent = value + 'Hz';
+            updateSound();
+        }
+        
+        function updateDuration(value) {
+            soundConfig.duration = parseInt(value);
+            document.getElementById('duration-value').textContent = value + 'ms';
+            updateSound();
+        }
+        
+        function updateBrightness(value) {
+            soundConfig.brightness = parseInt(value);
+            document.getElementById('brightness-value').textContent = value + '%';
+            updateSound();
+        }
+        
+        function updateSound() {
+            soundConfig.reverb = document.getElementById('reverb').checked;
+            soundConfig.echo = document.getElementById('echo').checked;
+            soundConfig.distortion = document.getElementById('distortion').checked;
+            
+            updateOutput(`Sound: ${soundConfig.type} | Character: ${soundConfig.character}
+Pitch: ${soundConfig.pitch}Hz | Duration: ${soundConfig.duration}ms
+Effects: ${[soundConfig.reverb && 'Reverb', soundConfig.echo && 'Echo', soundConfig.distortion && 'Distortion'].filter(Boolean).join(', ') || 'None'}`);
+            
+            drawWaveform();
+        }
+        
+        function drawWaveform() {
+            const canvas = document.getElementById('waveform');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#4a9eff';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            const points = 200;
+            for (let i = 0; i < points; i++) {
+                const x = (i / points) * canvas.width;
+                const t = i / points;
+                let y = canvas.height / 2;
+                
+                switch(soundConfig.type) {
+                    case 'tone':
+                        y -= Math.sin(t * Math.PI * 4) * 40 * Math.exp(-t * 3);
+                        break;
+                    case 'chime':
+                        y -= Math.sin(t * Math.PI * 8) * 30 * Math.exp(-t * 2);
+                        break;
+                    case 'click':
+                        if (t < 0.1) y -= 40;
+                        else y -= Math.random() * 10 * Math.exp(-t * 10);
+                        break;
+                    case 'bubble':
+                        y -= Math.sin(t * Math.PI * 3) * 30 * Math.sin(t * Math.PI * 10);
+                        break;
+                }
+                
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+        
+        function createOscillator(frequency, type = 'sine') {
+            const osc = audioContext.createOscillator();
+            osc.type = type;
+            osc.frequency.value = frequency;
+            return osc;
+        }
+        
+        function createEnvelope(param, attack, decay, sustain, release, duration, peakValue = 1) {
+            const now = audioContext.currentTime;
+            param.setValueAtTime(0, now);
+            param.linearRampToValueAtTime(peakValue, now + attack);
+            param.linearRampToValueAtTime(sustain * peakValue, now + attack + decay);
+            param.setValueAtTime(sustain * peakValue, now + duration - release);
+            param.exponentialRampToValueAtTime(0.001, now + duration);
+        }
+        
+        function animateVisualizer() {
+            const bars = document.querySelectorAll('.visualizer-bar');
+            bars.forEach((bar, i) => {
+                const height = Math.random() * 80 + 20;
+                bar.style.height = height + '%';
+            });
+            
+            if (isPlaying) {
+                requestAnimationFrame(animateVisualizer);
+            } else {
+                // Reset
+                bars.forEach((bar, i) => {
+                    bar.style.height = (20 + i * 10) + '%';
+                    if (i > 4) bar.style.height = (100 - (i - 4) * 10) + '%';
+                });
+            }
+        }
+        
+        let isPlaying = false;
+        
+        function playSound() {
+            const now = audioContext.currentTime;
+            const duration = soundConfig.duration / 1000;
+            
+            isPlaying = true;
+            animateVisualizer();
+            
+            let source;
+            
+            switch(soundConfig.type) {
+                case 'tone':
+                    source = createGlassTone(soundConfig.pitch, duration);
+                    break;
+                case 'chime':
+                    source = createChime(soundConfig.pitch, duration);
+                    break;
+                case 'click':
+                    source = createClick(soundConfig.pitch, duration);
+                    break;
+                case 'bubble':
+                    source = createBubble(soundConfig.pitch, duration);
+                    break;
+            }
+            
+            source.onended = () => { isPlaying = false; };
+        }
+        
+        function createGlassTone(frequency, duration) {
+            const now = audioContext.currentTime;
+            
+            // Main tone with harmonics
+            const fundamental = createOscillator(frequency);
+            const harmonic1 = createOscillator(frequency * 2);
+            const harmonic2 = createOscillator(frequency * 3);
+            
+            const fundamentalGain = audioContext.createGain();
+            const harmonic1Gain = audioContext.createGain();
+            const harmonic2Gain = audioContext.createGain();
+            
+            // Character adjustments
+            let attackTime = 0.005;
+            let decayTime = 0.05;
+            let sustainLevel = 0.3;
+            let releaseTime = duration * 0.8;
+            
+            if (soundConfig.character === 'glass') {
+                harmonic1Gain.gain.value = 0.3;
+                harmonic2Gain.gain.value = 0.1;
+            } else if (soundConfig.character === 'metal') {
+                harmonic1Gain.gain.value = 0.5;
+                harmonic2Gain.gain.value = 0.3;
+                attackTime = 0.001;
+            } else if (soundConfig.character === 'wood') {
+                harmonic1Gain.gain.value = 0.1;
+                harmonic2Gain.gain.value = 0.05;
+                attackTime = 0.01;
+            } else if (soundConfig.character === 'digital') {
+                fundamental.type = 'square';
+                harmonic1.type = 'square';
+                attackTime = 0;
+            }
+            
+            // Apply envelopes
+            createEnvelope(fundamentalGain.gain, attackTime, decayTime, sustainLevel, releaseTime, duration, 0.5);
+            createEnvelope(harmonic1Gain.gain, attackTime * 2, decayTime, sustainLevel, releaseTime, duration, 0.3);
+            createEnvelope(harmonic2Gain.gain, attackTime * 3, decayTime, sustainLevel, releaseTime, duration, 0.1);
+            
+            // Filter for brightness
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 500 + (soundConfig.brightness / 100) * 10000;
+            filter.Q.value = 1;
+            
+            // Connect
+            fundamental.connect(fundamentalGain);
+            harmonic1.connect(harmonic1Gain);
+            harmonic2.connect(harmonic2Gain);
+            
+            fundamentalGain.connect(filter);
+            harmonic1Gain.connect(filter);
+            harmonic2Gain.connect(filter);
+            
+            let lastNode = filter;
+            
+            // Effects
+            if (soundConfig.reverb) {
+                const convolver = audioContext.createConvolver();
+                const impulse = createImpulseResponse(2, 2, 0.2);
+                convolver.buffer = impulse;
+                
+                const wetGain = audioContext.createGain();
+                const dryGain = audioContext.createGain();
+                wetGain.gain.value = 0.3;
+                dryGain.gain.value = 0.7;
+                
+                lastNode.connect(dryGain);
+                lastNode.connect(convolver);
+                convolver.connect(wetGain);
+                
+                const merger = audioContext.createChannelMerger();
+                dryGain.connect(merger);
+                wetGain.connect(merger);
+                lastNode = merger;
+            }
+            
+            if (soundConfig.echo) {
+                const delay = audioContext.createDelay();
+                delay.delayTime.value = 0.1;
+                const feedback = audioContext.createGain();
+                feedback.gain.value = 0.3;
+                
+                lastNode.connect(delay);
+                delay.connect(feedback);
+                feedback.connect(delay);
+                
+                const echoMix = audioContext.createGain();
+                echoMix.gain.value = 0.3;
+                delay.connect(echoMix);
+                echoMix.connect(audioContext.destination);
+            }
+            
+            if (soundConfig.distortion) {
+                const shaper = audioContext.createWaveShaper();
+                shaper.curve = makeDistortionCurve(20);
+                shaper.oversample = '4x';
+                lastNode.connect(shaper);
+                lastNode = shaper;
+            }
+            
+            lastNode.connect(audioContext.destination);
+            
+            // Start
+            fundamental.start(now);
+            harmonic1.start(now);
+            harmonic2.start(now);
+            fundamental.stop(now + duration);
+            harmonic1.stop(now + duration);
+            harmonic2.stop(now + duration);
+            
+            return fundamental;
+        }
+        
+        function createChime(frequency, duration) {
+            const now = audioContext.currentTime;
+            const chimeNotes = [frequency, frequency * 1.25, frequency * 1.5];
+            
+            chimeNotes.forEach((freq, i) => {
+                const osc = createOscillator(freq);
+                const gain = audioContext.createGain();
+                
+                gain.gain.setValueAtTime(0, now + i * 0.05);
+                gain.gain.linearRampToValueAtTime(0.3 - i * 0.1, now + i * 0.05 + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.start(now + i * 0.05);
+                osc.stop(now + duration);
+            });
+            
+            return { onended: () => {} };
+        }
+        
+        function createClick(frequency, duration) {
+            const now = audioContext.currentTime;
+            
+            // Click is noise burst + tone
+            const bufferSize = audioContext.sampleRate * 0.01;
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / bufferSize * 10);
+            }
+            
+            const noise = audioContext.createBufferSource();
+            noise.buffer = buffer;
+            
+            const tone = createOscillator(frequency);
+            const toneGain = audioContext.createGain();
+            toneGain.gain.setValueAtTime(0.5, now);
+            toneGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+            
+            noise.connect(audioContext.destination);
+            tone.connect(toneGain);
+            toneGain.connect(audioContext.destination);
+            
+            noise.start(now);
+            tone.start(now);
+            tone.stop(now + 0.05);
+            
+            return noise;
+        }
+        
+        function createBubble(frequency, duration) {
+            const now = audioContext.currentTime;
+            
+            const osc = createOscillator(frequency);
+            const gain = audioContext.createGain();
+            
+            // Frequency modulation for bubble effect
+            const lfo = createOscillator(8);
+            const lfoGain = audioContext.createGain();
+            lfoGain.gain.value = frequency * 0.1;
+            
+            lfo.connect(lfoGain);
+            lfoGain.connect(osc.frequency);
+            
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.4, now + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            osc.start(now);
+            lfo.start(now);
+            osc.stop(now + duration);
+            lfo.stop(now + duration);
+            
+            return osc;
+        }
+        
+        function createImpulseResponse(duration, decay, reverse) {
+            const length = audioContext.sampleRate * duration;
+            const impulse = audioContext.createBuffer(2, length, audioContext.sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const channelData = impulse.getChannelData(channel);
+                for (let i = 0; i < length; i++) {
+                    channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+                }
+            }
+            
+            return impulse;
+        }
+        
+        function makeDistortionCurve(amount) {
+            const samples = 44100;
+            const curve = new Float32Array(samples);
+            const deg = Math.PI / 180;
+            
+            for (let i = 0; i < samples; i++) {
+                const x = (i * 2) / samples - 1;
+                curve[i] = ((3 + amount) * x * 20 * deg) / (Math.PI + amount * Math.abs(x));
+            }
+            
+            return curve;
+        }
+        
+        function playSequence() {
+            updateOutput('Playing start sound...');
+            playSound();
+            
+            setTimeout(() => {
+                updateOutput('Playing stop sound...');
+                // Slightly lower pitch for stop
+                const originalPitch = soundConfig.pitch;
+                soundConfig.pitch = originalPitch * 0.8;
+                playSound();
+                soundConfig.pitch = originalPitch;
+                
+                setTimeout(() => {
+                    updateOutput('Sequence complete!');
+                }, soundConfig.duration);
+            }, soundConfig.duration + 500);
+        }
+        
+        function loadPreset(preset) {
+            switch(preset) {
+                case 'subtle':
+                    soundConfig = { type: 'click', character: 'wood', pitch: 600, duration: 50, brightness: 30, reverb: false, echo: false, distortion: false };
+                    break;
+                case 'glass':
+                    soundConfig = { type: 'tone', character: 'glass', pitch: 800, duration: 300, brightness: 70, reverb: true, echo: false, distortion: false };
+                    break;
+                case 'notification':
+                    soundConfig = { type: 'chime', character: 'glass', pitch: 600, duration: 400, brightness: 60, reverb: false, echo: true, distortion: false };
+                    break;
+                case 'success':
+                    soundConfig = { type: 'chime', character: 'glass', pitch: 523, duration: 500, brightness: 80, reverb: true, echo: false, distortion: false };
+                    break;
+                case 'error':
+                    soundConfig = { type: 'tone', character: 'digital', pitch: 300, duration: 200, brightness: 40, reverb: false, echo: false, distortion: true };
+                    break;
+                case 'message':
+                    soundConfig = { type: 'bubble', character: 'glass', pitch: 440, duration: 250, brightness: 50, reverb: false, echo: false, distortion: false };
+                    break;
+            }
+            
+            // Update all controls
+            setSoundType(soundConfig.type);
+            setCharacter(soundConfig.character);
+            document.getElementById('pitch').value = soundConfig.pitch;
+            document.getElementById('duration').value = soundConfig.duration;
+            document.getElementById('brightness').value = soundConfig.brightness;
+            document.getElementById('reverb').checked = soundConfig.reverb;
+            document.getElementById('echo').checked = soundConfig.echo;
+            document.getElementById('distortion').checked = soundConfig.distortion;
+            
+            updatePitch(soundConfig.pitch);
+            updateDuration(soundConfig.duration);
+            updateBrightness(soundConfig.brightness);
+            updateSound();
+            
+            updateOutput(`Loaded preset: ${preset}`);
+        }
+        
+        function exportSound() {
+            const duration = soundConfig.duration / 1000;
+            const sampleRate = 48000;
+            const offlineContext = new OfflineAudioContext(2, sampleRate * duration, sampleRate);
+            
+            // Recreate the sound in offline context
+            // (This is a simplified version - you'd need to port all the sound generation)
+            
+            updateOutput('Export feature coming soon! For now, use the original sound generator to export.');
+        }
+        
+        // Initialize
+        updateSound();
+        drawWaveform();
+    </script>
+</body>
+</html>

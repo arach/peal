@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scout Sound Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        h1 {
+            color: #4a9eff;
+            margin-bottom: 30px;
+        }
+        
+        .sound-card {
+            background: #242424;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .sound-card h2 {
+            color: #4a9eff;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        
+        .description {
+            color: #a0a0a0;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        button {
+            background: #4a9eff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background: #5aa3ff;
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: #404040;
+        }
+        
+        button.secondary:hover {
+            background: #505050;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background: #2a2a2a;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            min-height: 40px;
+        }
+        
+        .wave-display {
+            width: 100%;
+            height: 100px;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Scout Sound Generator</h1>
+    <p style="color: #a0a0a0; margin-bottom: 30px;">
+        Generate tech-forward sounds for Scout. Click "Play" to preview, "Generate WAV" to download.
+    </p>
+
+    <div class="sound-card">
+        <h2>Start Recording - "Neural Activate"</h2>
+        <p class="description">Ascending synth sweep with subtle digital artifacts. Feels like activation and engagement.</p>
+        <canvas id="wave-start" class="wave-display"></canvas>
+        <div class="controls">
+            <button onclick="playStartSound()">Play</button>
+            <button class="secondary" onclick="generateWAV('start')">Generate WAV</button>
+        </div>
+    </div>
+
+    <div class="sound-card">
+        <h2>Stop Recording - "Data Seal"</h2>
+        <p class="description">Descending filtered pulse with resonant tail. Feels like completion and finality.</p>
+        <canvas id="wave-stop" class="wave-display"></canvas>
+        <div class="controls">
+            <button onclick="playStopSound()">Play</button>
+            <button class="secondary" onclick="generateWAV('stop')">Generate WAV</button>
+        </div>
+    </div>
+
+    <div class="sound-card">
+        <h2>Error - "Quantum Glitch"</h2>
+        <p class="description">Dissonant FM synthesis with stutter. Disruption without being alarming.</p>
+        <canvas id="wave-error" class="wave-display"></canvas>
+        <div class="controls">
+            <button onclick="playErrorSound()">Play</button>
+            <button class="secondary" onclick="generateWAV('error')">Generate WAV</button>
+        </div>
+    </div>
+
+    <div class="sound-card">
+        <h2>Success - "Crystal Form"</h2>
+        <p class="description">Harmonic chime with crystalline texture. Achievement and satisfaction.</p>
+        <canvas id="wave-success" class="wave-display"></canvas>
+        <div class="controls">
+            <button onclick="playSuccessSound()">Play</button>
+            <button class="secondary" onclick="generateWAV('success')">Generate WAV</button>
+        </div>
+    </div>
+
+    <div class="status" id="status">Ready to generate sounds...</div>
+
+    <script>
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Utility to create envelope
+        function createEnvelope(param, now, attack, decay, sustain, release, peakValue = 1) {
+            param.setValueAtTime(0, now);
+            param.linearRampToValueAtTime(peakValue, now + attack);
+            param.linearRampToValueAtTime(sustain * peakValue, now + attack + decay);
+            param.setValueAtTime(sustain * peakValue, now + attack + decay);
+            param.exponentialRampToValueAtTime(0.001, now + attack + decay + release);
+        }
+        
+        // Start Recording Sound
+        function playStartSound() {
+            const now = audioContext.currentTime;
+            
+            // Main sweep oscillator
+            const sweep = audioContext.createOscillator();
+            const sweepGain = audioContext.createGain();
+            sweep.type = 'sine';
+            sweep.frequency.setValueAtTime(440, now);
+            sweep.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+            
+            // Overtone
+            const overtone = audioContext.createOscillator();
+            const overtoneGain = audioContext.createGain();
+            overtone.type = 'sine';
+            overtone.frequency.value = 1760;
+            overtoneGain.gain.setValueAtTime(0, now);
+            overtoneGain.gain.linearRampToValueAtTime(0.2, now + 0.1);
+            overtoneGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+            
+            // Digital texture (subtle distortion)
+            const shaper = audioContext.createWaveShaper();
+            shaper.curve = makeDistortionCurve(50);
+            shaper.oversample = '4x';
+            
+            // Main envelope
+            createEnvelope(sweepGain.gain, now, 0.005, 0.05, 0.7, 0.15, 0.6);
+            
+            // Connect graph
+            sweep.connect(sweepGain);
+            sweepGain.connect(shaper);
+            shaper.connect(audioContext.destination);
+            
+            overtone.connect(overtoneGain);
+            overtoneGain.connect(audioContext.destination);
+            
+            // Schedule
+            sweep.start(now);
+            overtone.start(now);
+            sweep.stop(now + 0.2);
+            overtone.stop(now + 0.2);
+            
+            updateStatus('Playing Start Sound...');
+            drawWaveform('wave-start', 0.2, 'ascending');
+        }
+        
+        // Stop Recording Sound
+        function playStopSound() {
+            const now = audioContext.currentTime;
+            
+            // Main pulse
+            const pulse = audioContext.createOscillator();
+            const pulseGain = audioContext.createGain();
+            pulse.type = 'square';
+            pulse.frequency.setValueAtTime(880, now);
+            pulse.frequency.exponentialRampToValueAtTime(220, now + 0.2);
+            
+            // Filter
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.Q.value = 5;
+            filter.frequency.setValueAtTime(8000, now);
+            filter.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+            
+            // Sub bass pulse
+            const sub = audioContext.createOscillator();
+            const subGain = audioContext.createGain();
+            sub.type = 'sine';
+            sub.frequency.value = 55;
+            createEnvelope(subGain.gain, now, 0.001, 0.024, 0, 0.001, 0.8);
+            
+            // Main envelope
+            createEnvelope(pulseGain.gain, now, 0.01, 0.08, 0.5, 0.15, 0.5);
+            
+            // Connect
+            pulse.connect(filter);
+            filter.connect(pulseGain);
+            pulseGain.connect(audioContext.destination);
+            
+            sub.connect(subGain);
+            subGain.connect(audioContext.destination);
+            
+            // Schedule
+            pulse.start(now);
+            sub.start(now);
+            pulse.stop(now + 0.25);
+            sub.stop(now + 0.025);
+            
+            updateStatus('Playing Stop Sound...');
+            drawWaveform('wave-stop', 0.25, 'descending');
+        }
+        
+        // Error Sound
+        function playErrorSound() {
+            const now = audioContext.currentTime;
+            
+            // FM synthesis
+            const carrier = audioContext.createOscillator();
+            const modulator = audioContext.createOscillator();
+            const modulatorGain = audioContext.createGain();
+            const carrierGain = audioContext.createGain();
+            
+            carrier.frequency.value = 400;
+            modulator.frequency.value = 150;
+            modulatorGain.gain.value = 200; // FM index
+            
+            // Create stutters
+            const times = [0, 0.1, 0.2];
+            times.forEach((time, i) => {
+                carrierGain.gain.setValueAtTime(0, now + time);
+                carrierGain.gain.linearRampToValueAtTime(0.4, now + time + 0.01);
+                carrierGain.gain.exponentialRampToValueAtTime(0.01, now + time + 0.05);
+            });
+            
+            // Noise burst
+            const noise = createNoise();
+            const noiseGain = audioContext.createGain();
+            const noiseFilter = audioContext.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.value = 2000;
+            noiseFilter.Q.value = 2;
+            
+            createEnvelope(noiseGain.gain, now, 0.001, 0.05, 0.2, 0.2, 0.1);
+            
+            // Connect FM
+            modulator.connect(modulatorGain);
+            modulatorGain.connect(carrier.frequency);
+            carrier.connect(carrierGain);
+            carrierGain.connect(audioContext.destination);
+            
+            // Connect noise
+            noise.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(audioContext.destination);
+            
+            // Schedule
+            carrier.start(now);
+            modulator.start(now);
+            noise.start(now);
+            carrier.stop(now + 0.3);
+            modulator.stop(now + 0.3);
+            noise.stop(now + 0.3);
+            
+            updateStatus('Playing Error Sound...');
+            drawWaveform('wave-error', 0.3, 'glitch');
+        }
+        
+        // Success Sound
+        function playSuccessSound() {
+            const now = audioContext.currentTime;
+            
+            // Fundamental and harmonics
+            const fundamentalFreq = 523.25; // C5
+            const harmonics = [
+                { freq: fundamentalFreq, gain: 0.6 },
+                { freq: fundamentalFreq * 1.5, gain: 0.3 }, // Perfect 5th
+                { freq: fundamentalFreq * 2, gain: 0.2 },   // Octave
+                { freq: fundamentalFreq * 3, gain: 0.1 }    // 12th
+            ];
+            
+            const oscillators = [];
+            
+            harmonics.forEach((harmonic, i) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                const panner = audioContext.createStereoPanner();
+                
+                osc.frequency.value = harmonic.freq;
+                osc.type = 'sine';
+                
+                // Slight detuning for richness
+                if (i > 0) {
+                    osc.detune.value = Math.random() * 10 - 5;
+                }
+                
+                // Bell-like envelope
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(harmonic.gain, now + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                
+                // Stereo spread
+                panner.pan.value = (i % 2 === 0 ? -0.3 : 0.3) * (i / harmonics.length);
+                
+                // Connect
+                osc.connect(gain);
+                gain.connect(panner);
+                panner.connect(audioContext.destination);
+                
+                // Start
+                osc.start(now);
+                osc.stop(now + 0.4);
+                
+                oscillators.push(osc);
+            });
+            
+            updateStatus('Playing Success Sound...');
+            drawWaveform('wave-success', 0.4, 'harmonic');
+        }
+        
+        // Helper functions
+        function makeDistortionCurve(amount) {
+            const k = typeof amount === 'number' ? amount : 50;
+            const nSamples = 44100;
+            const curve = new Float32Array(nSamples);
+            const deg = Math.PI / 180;
+            
+            for (let i = 0; i < nSamples; i++) {
+                const x = (i * 2) / nSamples - 1;
+                curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+            }
+            
+            return curve;
+        }
+        
+        function createNoise() {
+            const bufferSize = audioContext.sampleRate * 0.3;
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            
+            const noise = audioContext.createBufferSource();
+            noise.buffer = buffer;
+            return noise;
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+        
+        // Simple waveform visualization
+        function drawWaveform(canvasId, duration, type) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#4a9eff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const points = 100;
+            for (let i = 0; i < points; i++) {
+                const x = (i / points) * canvas.width;
+                let y = canvas.height / 2;
+                
+                switch(type) {
+                    case 'ascending':
+                        y -= Math.sin(i / points * Math.PI) * 30 * (i / points);
+                        break;
+                    case 'descending':
+                        y -= Math.sin(i / points * Math.PI) * 30 * (1 - i / points);
+                        break;
+                    case 'glitch':
+                        y -= Math.random() * 40 - 20;
+                        break;
+                    case 'harmonic':
+                        y -= Math.sin(i / points * Math.PI * 4) * 20 * Math.exp(-i / points * 3);
+                        break;
+                }
+                
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            
+            ctx.stroke();
+        }
+        
+        // WAV file generation
+        function generateWAV(soundType) {
+            updateStatus(`Generating ${soundType} sound as WAV...`);
+            
+            // Create offline context for rendering
+            const sampleRate = 48000;
+            const duration = soundType === 'success' ? 0.4 : soundType === 'error' ? 0.3 : 0.25;
+            const offlineContext = new OfflineAudioContext(2, sampleRate * duration, sampleRate);
+            
+            // Re-create the sound in offline context
+            switch(soundType) {
+                case 'start':
+                    renderStartSound(offlineContext);
+                    break;
+                case 'stop':
+                    renderStopSound(offlineContext);
+                    break;
+                case 'error':
+                    renderErrorSound(offlineContext);
+                    break;
+                case 'success':
+                    renderSuccessSound(offlineContext);
+                    break;
+            }
+            
+            offlineContext.startRendering().then(renderedBuffer => {
+                const wav = audioBufferToWav(renderedBuffer);
+                const blob = new Blob([wav], { type: 'audio/wav' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `scout-${soundType}.wav`;
+                a.click();
+                
+                updateStatus(`Generated ${soundType}.wav successfully!`);
+            });
+        }
+        
+        // Offline rendering functions (similar to play functions but for offline context)
+        function renderStartSound(ctx) {
+            const now = 0;
+            
+            const sweep = ctx.createOscillator();
+            const sweepGain = ctx.createGain();
+            sweep.type = 'sine';
+            sweep.frequency.setValueAtTime(440, now);
+            sweep.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+            
+            const overtone = ctx.createOscillator();
+            const overtoneGain = ctx.createGain();
+            overtone.type = 'sine';
+            overtone.frequency.value = 1760;
+            overtoneGain.gain.setValueAtTime(0, now);
+            overtoneGain.gain.linearRampToValueAtTime(0.2, now + 0.1);
+            overtoneGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+            
+            const shaper = ctx.createWaveShaper();
+            shaper.curve = makeDistortionCurve(50);
+            shaper.oversample = '4x';
+            
+            createEnvelope(sweepGain.gain, now, 0.005, 0.05, 0.7, 0.15, 0.6);
+            
+            sweep.connect(sweepGain);
+            sweepGain.connect(shaper);
+            shaper.connect(ctx.destination);
+            overtone.connect(overtoneGain);
+            overtoneGain.connect(ctx.destination);
+            
+            sweep.start(now);
+            overtone.start(now);
+            sweep.stop(now + 0.2);
+            overtone.stop(now + 0.2);
+        }
+        
+        function renderStopSound(ctx) {
+            const now = 0;
+            
+            const pulse = ctx.createOscillator();
+            const pulseGain = ctx.createGain();
+            pulse.type = 'square';
+            pulse.frequency.setValueAtTime(880, now);
+            pulse.frequency.exponentialRampToValueAtTime(220, now + 0.2);
+            
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.Q.value = 5;
+            filter.frequency.setValueAtTime(8000, now);
+            filter.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+            
+            const sub = ctx.createOscillator();
+            const subGain = ctx.createGain();
+            sub.type = 'sine';
+            sub.frequency.value = 55;
+            createEnvelope(subGain.gain, now, 0.001, 0.024, 0, 0.001, 0.8);
+            
+            createEnvelope(pulseGain.gain, now, 0.01, 0.08, 0.5, 0.15, 0.5);
+            
+            pulse.connect(filter);
+            filter.connect(pulseGain);
+            pulseGain.connect(ctx.destination);
+            sub.connect(subGain);
+            subGain.connect(ctx.destination);
+            
+            pulse.start(now);
+            sub.start(now);
+            pulse.stop(now + 0.25);
+            sub.stop(now + 0.025);
+        }
+        
+        function renderErrorSound(ctx) {
+            const now = 0;
+            
+            const carrier = ctx.createOscillator();
+            const modulator = ctx.createOscillator();
+            const modulatorGain = ctx.createGain();
+            const carrierGain = ctx.createGain();
+            
+            carrier.frequency.value = 400;
+            modulator.frequency.value = 150;
+            modulatorGain.gain.value = 200;
+            
+            const times = [0, 0.1, 0.2];
+            times.forEach((time, i) => {
+                carrierGain.gain.setValueAtTime(0, now + time);
+                carrierGain.gain.linearRampToValueAtTime(0.4, now + time + 0.01);
+                carrierGain.gain.exponentialRampToValueAtTime(0.01, now + time + 0.05);
+            });
+            
+            const bufferSize = ctx.sampleRate * 0.3;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            const noiseGain = ctx.createGain();
+            const noiseFilter = ctx.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.value = 2000;
+            noiseFilter.Q.value = 2;
+            
+            createEnvelope(noiseGain.gain, now, 0.001, 0.05, 0.2, 0.2, 0.1);
+            
+            modulator.connect(modulatorGain);
+            modulatorGain.connect(carrier.frequency);
+            carrier.connect(carrierGain);
+            carrierGain.connect(ctx.destination);
+            noise.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            
+            carrier.start(now);
+            modulator.start(now);
+            noise.start(now);
+            carrier.stop(now + 0.3);
+            modulator.stop(now + 0.3);
+            noise.stop(now + 0.3);
+        }
+        
+        function renderSuccessSound(ctx) {
+            const now = 0;
+            const fundamentalFreq = 523.25;
+            const harmonics = [
+                { freq: fundamentalFreq, gain: 0.6 },
+                { freq: fundamentalFreq * 1.5, gain: 0.3 },
+                { freq: fundamentalFreq * 2, gain: 0.2 },
+                { freq: fundamentalFreq * 3, gain: 0.1 }
+            ];
+            
+            harmonics.forEach((harmonic, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const panner = ctx.createStereoPanner();
+                
+                osc.frequency.value = harmonic.freq;
+                osc.type = 'sine';
+                
+                if (i > 0) {
+                    osc.detune.value = Math.random() * 10 - 5;
+                }
+                
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(harmonic.gain, now + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                
+                panner.pan.value = (i % 2 === 0 ? -0.3 : 0.3) * (i / harmonics.length);
+                
+                osc.connect(gain);
+                gain.connect(panner);
+                panner.connect(ctx.destination);
+                
+                osc.start(now);
+                osc.stop(now + 0.4);
+            });
+        }
+        
+        // Convert AudioBuffer to WAV
+        function audioBufferToWav(buffer) {
+            const length = buffer.length * buffer.numberOfChannels * 2 + 44;
+            const arrayBuffer = new ArrayBuffer(length);
+            const view = new DataView(arrayBuffer);
+            const channels = [];
+            let offset = 0;
+            let pos = 0;
+            
+            // Write WAV header
+            setUint32(0x46464952); // "RIFF"
+            setUint32(length - 8); // file length - 8
+            setUint32(0x45564157); // "WAVE"
+            
+            setUint32(0x20746d66); // "fmt " chunk
+            setUint32(16); // length = 16
+            setUint16(1); // PCM
+            setUint16(buffer.numberOfChannels);
+            setUint32(buffer.sampleRate);
+            setUint32(buffer.sampleRate * 2 * buffer.numberOfChannels); // avg bytes/sec
+            setUint16(buffer.numberOfChannels * 2); // block align
+            setUint16(16); // 16-bit
+            
+            setUint32(0x61746164); // "data" chunk
+            setUint32(length - pos - 4); // chunk length
+            
+            // Interleave samples
+            const volume = 0.8;
+            for (let i = 0; i < buffer.numberOfChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+            
+            while (pos < length) {
+                for (let i = 0; i < buffer.numberOfChannels; i++) {
+                    let sample = channels[i][offset] * volume;
+                    sample = Math.max(-1, Math.min(1, sample));
+                    sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+                    view.setInt16(pos, sample, true);
+                    pos += 2;
+                }
+                offset++;
+            }
+            
+            return arrayBuffer;
+            
+            function setUint16(data) {
+                view.setUint16(pos, data, true);
+                pos += 2;
+            }
+            
+            function setUint32(data) {
+                view.setUint32(pos, data, true);
+                pos += 4;
+            }
+        }
+        
+        // Initialize
+        updateStatus('Ready to generate sounds. Click play to preview or generate to download.');
+    </script>
+</body>
+</html>

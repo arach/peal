@@ -1,0 +1,327 @@
+'use client'
+
+import { useState } from 'react'
+import { Sound, useSoundStore } from '@/store/soundStore'
+import { useSoundGeneration } from '@/hooks/useSoundGeneration'
+
+interface SoundEditorProps {
+  sound: Sound
+  onClose: () => void
+}
+
+export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
+  const { addSounds, updateSound } = useSoundStore()
+  const { playSound } = useSoundGeneration()
+  // Create a generator instance for this editor
+  const [generator] = useState(() => {
+    const { SoundGenerator } = require('@/hooks/useSoundGeneration')
+    return new SoundGenerator()
+  })
+  const [editedParams, setEditedParams] = useState(sound.parameters)
+  const [previewSound, setPreviewSound] = useState<Sound | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+
+  const updateParam = (key: string, value: any) => {
+    setEditedParams(prev => ({
+      ...prev,
+      [key]: value
+    }))
+  }
+
+  const updateEffect = (effect: string, enabled: boolean) => {
+    setEditedParams(prev => ({
+      ...prev,
+      effects: {
+        ...prev.effects,
+        [effect]: enabled
+      }
+    }))
+  }
+
+  const generatePreview = async () => {
+    if (isGenerating) return
+    
+    setIsGenerating(true)
+    try {
+      // Create a new sound with edited parameters
+      const newSound: Sound = {
+        ...sound,
+        id: `${sound.id}-preview-${Date.now()}`,
+        parameters: editedParams,
+        audioBuffer: null,
+        waveformData: null
+      }
+
+      // Generate the audio
+      await generator.renderSound(newSound)
+      setPreviewSound(newSound)
+    } catch (error) {
+      console.error('Error generating preview:', error)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const playPreview = async () => {
+    if (!previewSound) return
+    try {
+      await generator.playSound(previewSound)
+    } catch (error) {
+      console.error('Error playing preview:', error)
+    }
+  }
+
+  const saveAsNew = () => {
+    if (!previewSound) return
+    
+    const newSound: Sound = {
+      ...previewSound,
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      created: new Date(),
+      favorite: false,
+      tags: [...sound.tags, 'edited']
+    }
+
+    addSounds([newSound])
+    onClose()
+  }
+
+  const replaceOriginal = () => {
+    if (!previewSound) return
+    
+    // Update the original sound with new parameters and audio data
+    updateSound(sound.id, {
+      parameters: editedParams,
+      audioBuffer: previewSound.audioBuffer,
+      waveformData: previewSound.waveformData
+    })
+    
+    onClose()
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-blue-400">
+            Edit Sound: {sound.type} - {sound.duration}ms
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-100 text-2xl"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Original Sound */}
+          <div className="bg-gray-800 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-3 text-gray-100">Original</h3>
+            <button
+              onClick={() => generator.playSound(sound)}
+              className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-400"
+            >
+              ▶ Play Original
+            </button>
+            <div className="space-y-2 text-sm">
+              <div>Duration: {sound.duration}ms</div>
+              <div>Frequency: {sound.frequency}Hz</div>
+              <div>Type: {sound.type}</div>
+            </div>
+          </div>
+
+          {/* Preview */}
+          <div className="bg-gray-800 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-3 text-gray-100">Preview</h3>
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={generatePreview}
+                disabled={isGenerating}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400 disabled:opacity-50"
+              >
+                {isGenerating ? 'Generating...' : '🔄 Generate Preview'}
+              </button>
+              {previewSound && (
+                <button
+                  onClick={playPreview}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
+                >
+                  ▶ Play Preview
+                </button>
+              )}
+            </div>
+            {previewSound && (
+              <div className="space-y-2 text-sm text-green-300">
+                <div>✓ Preview generated</div>
+                <div>Duration: {editedParams.duration * 1000}ms</div>
+                <div>Frequency: {editedParams.frequency}Hz</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Parameter Controls */}
+        <div className="mt-6 space-y-6">
+          {/* Basic Parameters */}
+          <div className="bg-gray-800 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-4 text-blue-400">Basic Parameters</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">
+                  Frequency: {Math.round(editedParams.frequency)}Hz
+                </label>
+                <input
+                  type="range"
+                  min="100"
+                  max="2000"
+                  value={editedParams.frequency}
+                  onChange={(e) => updateParam('frequency', Number(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">
+                  Duration: {Math.round(editedParams.duration * 1000)}ms
+                </label>
+                <input
+                  type="range"
+                  min="0.1"
+                  max="2"
+                  step="0.01"
+                  value={editedParams.duration}
+                  onChange={(e) => updateParam('duration', Number(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+              {editedParams.waveform && (
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">Waveform</label>
+                  <select
+                    value={editedParams.waveform}
+                    onChange={(e) => updateParam('waveform', e.target.value)}
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-gray-100"
+                  >
+                    <option value="sine">Sine</option>
+                    <option value="square">Square</option>
+                    <option value="triangle">Triangle</option>
+                    <option value="sawtooth">Sawtooth</option>
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ADSR Envelope (for tone sounds) */}
+          {sound.type === 'tone' && (
+            <div className="bg-gray-800 rounded-lg p-4">
+              <h3 className="text-lg font-medium mb-4 text-blue-400">ADSR Envelope</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">
+                    Attack: {(editedParams.attack * 1000).toFixed(0)}ms
+                  </label>
+                  <input
+                    type="range"
+                    min="0.001"
+                    max="0.1"
+                    step="0.001"
+                    value={editedParams.attack || 0.01}
+                    onChange={(e) => updateParam('attack', Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">
+                    Decay: {(editedParams.decay * 1000).toFixed(0)}ms
+                  </label>
+                  <input
+                    type="range"
+                    min="0.001"
+                    max="0.2"
+                    step="0.001"
+                    value={editedParams.decay || 0.05}
+                    onChange={(e) => updateParam('decay', Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">
+                    Sustain: {(editedParams.sustain * 100).toFixed(0)}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={editedParams.sustain || 0.5}
+                    onChange={(e) => updateParam('sustain', Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">
+                    Release: {(editedParams.release * 1000).toFixed(0)}ms
+                  </label>
+                  <input
+                    type="range"
+                    min="0.001"
+                    max="0.5"
+                    step="0.001"
+                    value={editedParams.release || 0.1}
+                    onChange={(e) => updateParam('release', Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Effects */}
+          <div className="bg-gray-800 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-4 text-blue-400">Effects</h3>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {Object.entries(editedParams.effects).map(([effect, enabled]) => (
+                <label key={effect} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={enabled}
+                    onChange={(e) => updateEffect(effect, e.target.checked)}
+                    className="w-4 h-4 accent-blue-500"
+                  />
+                  <span className="capitalize">{effect}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-700 text-gray-100 rounded hover:bg-gray-600"
+          >
+            Cancel
+          </button>
+          {previewSound && (
+            <>
+              <button
+                onClick={saveAsNew}
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-400"
+              >
+                Save as New
+              </button>
+              <button
+                onClick={replaceOriginal}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400"
+              >
+                Replace Original
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
