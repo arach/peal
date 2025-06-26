@@ -3,7 +3,7 @@
 import { useSoundStore } from '@/store/soundStore'
 import { Zap, Trash2, X } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
-import PealLogo from './PealLogo'
+import DynamicPealLogo from './DynamicPealLogo'
 
 export default function Header() {
   const { selectedSounds, removeSelectedSounds, clearSelection } = useSoundStore()
@@ -12,7 +12,13 @@ export default function Header() {
     <header className="bg-surface/90 dark:bg-gray-900/90 border-b border-border dark:border-gray-800 backdrop-blur-md section-padding-sm">
       <div className="container flex justify-between items-center">
         <div className="flex items-center">
-          <PealLogo size={60} compact={true} />
+          <DynamicPealLogo 
+            width={120} 
+            height={40}
+            preset="layered"
+            animated={false}
+            className="text-text-primary dark:text-gray-100"
+          />
         </div>
         
         <div className="flex items-center gap-3">
