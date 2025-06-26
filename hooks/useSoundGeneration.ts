@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useSoundStore, Sound } from '@/store/soundStore'
 
 export class SoundGenerator {
@@ -46,7 +46,7 @@ export class SoundGenerator {
     return batch
   }
 
-  private async generateSound(type: Sound['type'], params: any): Promise<Sound> {
+  async generateSound(type: Sound['type'], params: any): Promise<Sound> {
     const duration = Math.random() * (params.durationMax - params.durationMin) + params.durationMin
     const baseFreq = Math.random() * (params.frequencyMax - params.frequencyMin) + params.frequencyMin
 
@@ -385,7 +385,7 @@ export function useSoundGeneration() {
     generationParams
   } = useSoundStore()
 
-  const generator = new SoundGenerator()
+  const generator = useMemo(() => new SoundGenerator(), [])
 
   const generateBatch = useCallback(async (count: number = 50) => {
     setGenerating(true)

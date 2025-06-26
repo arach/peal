@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Sound, useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 
@@ -20,6 +20,56 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
   const [editedParams, setEditedParams] = useState(sound.parameters)
   const [previewSound, setPreviewSound] = useState<Sound | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  
+  const originalCanvasRef = useRef<HTMLCanvasElement>(null)
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
+
+  // Draw waveform on canvas
+  const drawWaveform = (canvas: HTMLCanvasElement | null, waveformData: number[] | null) => {
+    if (!canvas || !waveformData) return
+    
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    
+    const width = canvas.width
+    const height = canvas.height
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height)
+    
+    // Draw waveform
+    ctx.strokeStyle = '#4a9eff'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    
+    const step = width / waveformData.length
+    const amplitude = height / 2
+    
+    for (let i = 0; i < waveformData.length; i++) {
+      const x = i * step
+      const y = amplitude - (waveformData[i] * amplitude * 0.8)
+      
+      if (i === 0) {
+        ctx.moveTo(x, y)
+      } else {
+        ctx.lineTo(x, y)
+      }
+    }
+    
+    ctx.stroke()
+  }
+  
+  // Draw original waveform on mount
+  useEffect(() => {
+    drawWaveform(originalCanvasRef.current, sound.waveformData)
+  }, [sound.waveformData])
+  
+  // Draw preview waveform when generated
+  useEffect(() => {
+    if (previewSound) {
+      drawWaveform(previewCanvasRef.current, previewSound.waveformData)
+    }
+  }, [previewSound])
 
   const updateParam = (key: string, value: any) => {
     setEditedParams(prev => ({
@@ -53,7 +103,7 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
       }
 
       // Generate the audio
-      await generator.renderSound(newSound)
+      await (generator as any).renderSound(newSound)
       setPreviewSound(newSound)
     } catch (error) {
       console.error('Error generating preview:', error)
@@ -118,6 +168,17 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
           {/* Original Sound */}
           <div className="bg-gray-800 rounded-lg p-4">
             <h3 className="text-lg font-medium mb-3 text-gray-100">Original</h3>
+            
+            {/* Original Waveform */}
+            <div className="w-full h-20 bg-gray-950 rounded mb-4 relative overflow-hidden">
+              <canvas
+                ref={originalCanvasRef}
+                width={300}
+                height={80}
+                className="w-full h-full"
+              />
+            </div>
+            
             <button
               onClick={() => generator.playSound(sound)}
               className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-400"
@@ -134,6 +195,23 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
           {/* Preview */}
           <div className="bg-gray-800 rounded-lg p-4">
             <h3 className="text-lg font-medium mb-3 text-gray-100">Preview</h3>
+            
+            {/* Preview Waveform */}
+            <div className="w-full h-20 bg-gray-950 rounded mb-4 relative overflow-hidden">
+              {previewSound ? (
+                <canvas
+                  ref={previewCanvasRef}
+                  width={300}
+                  height={80}
+                  className="w-full h-full"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-600 text-sm">
+                  Generate preview to see waveform
+                </div>
+              )}
+            </div>
+            
             <div className="flex gap-2 mb-4">
               <button
                 onClick={generatePreview}

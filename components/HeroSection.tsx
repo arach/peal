@@ -2,8 +2,7 @@
 
 import { useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
-import { Zap, Settings, Sliders, Waveform, Music } from 'lucide-react'
-import PealLogo from './PealLogo'
+import { Zap, Settings, Sliders, Activity, Music } from 'lucide-react'
 
 export default function HeroSection() {
   const { sounds, showGenerationParams, toggleGenerationParams } = useSoundStore()
@@ -27,22 +26,19 @@ export default function HeroSection() {
       <div className="relative text-center py-20 px-8 space-y-8">
         {/* Header */}
         <div className="space-y-6">
-          <PealLogo size={300} />
+          <h1 className="text-5xl font-bold text-text-primary dark:text-gray-100">
+            Create high-end bespoke sounds for your app
+          </h1>
           
           <p className="text-xl text-text-secondary dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-            Take the driver's seat in creating unique notification sounds. We'll generate dozens of variations with customizable duration, frequency, effects, and sound types—from gentle chimes to rhythmic pulses. 
-            <span className="inline-flex items-center gap-1 ml-1">
-              <Settings size={16} className="text-primary-500" />
-              <span className="text-primary-500 font-medium">Advanced settings</span>
-            </span> 
-            let you fine-tune every detail when you're ready.
+            No more buying random audio libraries. Design custom notification sounds that perfectly match your app's personality. Generate dozens of variations with full control over every parameter.
           </p>
         </div>
 
         {/* Features preview */}
         <div className="flex items-center justify-center gap-8 text-sm text-text-tertiary dark:text-gray-500">
           <div className="flex items-center gap-2">
-            <Waveform size={16} className="text-primary-400" />
+            <Activity size={16} className="text-primary-400" />
             <span>Visual feedback</span>
           </div>
           <div className="flex items-center gap-2">
