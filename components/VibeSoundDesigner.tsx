@@ -60,20 +60,24 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
             decay: params.decay || 0.1,
             sustain: params.sustain || 0.5,
             release: params.release || 0.1,
-            effects: {
-              reverb: params.reverb || false,
-              delay: params.delay || false,
-              filter: params.filter || false,
-              distortion: params.distortion || false,
-              compression: params.compression || false
-            }
+            effects: params.effects || {
+              reverb: false,
+              delay: false,
+              filter: false,
+              distortion: false,
+              compression: false
+            },
+            clickDuration: params.clickDuration,
+            direction: params.direction,
+            volume: params.volume
           },
           created: new Date(),
           favorite: false,
-          tags: ['vibe-generated', ...prompt.split(' ').filter(w => w.length > 3)],
+          tags: ['vibe-generated'],
           audioBuffer: null,
-          waveformData: null
-        }
+          waveformData: null,
+          delay: params.delay // Store the delay for playback
+        } as Sound & { delay?: number }
 
         // Generate audio
         await (generator as any).renderSound(sound)
@@ -100,6 +104,18 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
       await generator.playSound(sound)
     } catch (error) {
       console.error('Error playing sound:', error)
+    }
+  }
+
+  const playAllSounds = async () => {
+    // Play all sounds with their delays
+    for (const sound of generatedSounds) {
+      const delay = (sound as any).delay || 0
+      if (delay > 0) {
+        setTimeout(() => playSound(sound), delay * 1000)
+      } else {
+        playSound(sound)
+      }
     }
   }
 
@@ -177,9 +193,19 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
         {/* Generated Sounds */}
         {generatedSounds.length > 0 && !isGenerating && (
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Generated {generatedSounds.length} sound{generatedSounds.length > 1 ? 's' : ''}:
-            </h3>
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Generated {generatedSounds.length} sound{generatedSounds.length > 1 ? 's' : ''}:
+              </h3>
+              {generatedSounds.length > 1 && (
+                <button
+                  onClick={playAllSounds}
+                  className="px-3 py-1 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition-colors"
+                >
+                  Play All
+                </button>
+              )}
+            </div>
             <div className="space-y-2">
               {generatedSounds.map((sound, index) => (
                 <div
@@ -192,6 +218,7 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
                     </span>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
                       {sound.type} • {sound.duration}ms • {sound.frequency}Hz
+                      {(sound as any).delay ? ` • ${((sound as any).delay * 1000).toFixed(0)}ms delay` : ''}
                     </span>
                   </div>
                   <button
