@@ -14,7 +14,7 @@ import ShortcutsPanel from './ShortcutsPanel'
 import StatsBar from './StatsBar'
 import HeroSection from './HeroSection'
 import GenerationParamsPanel from './GenerationParamsPanel'
-import SimpleGenerateButton from './SimpleGenerateButton'
+import GenerationHub from './GenerationHub'
 
 export default function SoundDesigner() {
   const [isHydrated, setIsHydrated] = useState(false)
@@ -139,6 +139,9 @@ export default function SoundDesigner() {
       <div className="container space-y-section pt-section">
         <HeroSection />
         
+        <GenerationHub />
+        <GenerationParamsPanel />
+        
         <StatsBar />
         
         <div className="grid-main">
@@ -147,9 +150,6 @@ export default function SoundDesigner() {
             <SoundGrid />
           </main>
         </div>
-        
-        <SimpleGenerateButton />
-        <GenerationParamsPanel />
       </div>
 
       {isGenerating && <LoadingOverlay />}
