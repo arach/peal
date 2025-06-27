@@ -37,8 +37,9 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
     // Clear canvas
     ctx.clearRect(0, 0, width, height)
     
-    // Draw waveform
-    ctx.strokeStyle = '#4a9eff'
+    // Draw waveform - use different color for light/dark mode
+    const isDark = document.documentElement.classList.contains('dark')
+    ctx.strokeStyle = isDark ? '#4a9eff' : '#2563eb'
     ctx.lineWidth = 2
     ctx.beginPath()
     
@@ -150,15 +151,15 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-blue-400">
+          <h2 className="text-xl font-semibold text-blue-600 dark:text-blue-400">
             Edit Sound: {sound.type} - {sound.duration}ms
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-100 text-2xl"
+            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-100 text-2xl"
           >
             ✕
           </button>
@@ -166,11 +167,11 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Original Sound */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-3 text-gray-100">Original</h3>
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">Original</h3>
             
             {/* Original Waveform */}
-            <div className="w-full h-20 bg-gray-950 rounded mb-4 relative overflow-hidden">
+            <div className="w-full h-20 bg-gray-200 dark:bg-gray-950 rounded mb-4 relative overflow-hidden">
               <canvas
                 ref={originalCanvasRef}
                 width={300}
@@ -181,7 +182,7 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
             
             <button
               onClick={() => generator.playSound(sound)}
-              className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-400"
+              className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600 dark:hover:bg-blue-400"
             >
               ▶ Play Original
             </button>
@@ -193,11 +194,11 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
           </div>
 
           {/* Preview */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-3 text-gray-100">Preview</h3>
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">Preview</h3>
             
             {/* Preview Waveform */}
-            <div className="w-full h-20 bg-gray-950 rounded mb-4 relative overflow-hidden">
+            <div className="w-full h-20 bg-gray-200 dark:bg-gray-950 rounded mb-4 relative overflow-hidden">
               {previewSound ? (
                 <canvas
                   ref={previewCanvasRef}
@@ -206,7 +207,7 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
                   className="w-full h-full"
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-600 text-sm">
+                <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-600 text-sm">
                   Generate preview to see waveform
                 </div>
               )}
@@ -242,11 +243,11 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
         {/* Parameter Controls */}
         <div className="mt-6 space-y-6">
           {/* Basic Parameters */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-4 text-blue-400">Basic Parameters</h3>
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-4 text-blue-600 dark:text-blue-400">Basic Parameters</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
                   Frequency: {Math.round(editedParams.frequency)}Hz
                 </label>
                 <input
@@ -259,7 +260,7 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
                   Duration: {Math.round(editedParams.duration * 1000)}ms
                 </label>
                 <input
@@ -274,11 +275,11 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
               </div>
               {editedParams.waveform && (
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">Waveform</label>
+                  <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">Waveform</label>
                   <select
                     value={editedParams.waveform}
                     onChange={(e) => updateParam('waveform', e.target.value)}
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-gray-100"
+                    className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-gray-900 dark:text-gray-100"
                   >
                     <option value="sine">Sine</option>
                     <option value="square">Square</option>
@@ -292,11 +293,11 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
 
           {/* ADSR Envelope (for tone sounds) */}
           {sound.type === 'tone' && (
-            <div className="bg-gray-800 rounded-lg p-4">
-              <h3 className="text-lg font-medium mb-4 text-blue-400">ADSR Envelope</h3>
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+              <h3 className="text-lg font-medium mb-4 text-blue-600 dark:text-blue-400">ADSR Envelope</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
                     Attack: {(editedParams.attack * 1000).toFixed(0)}ms
                   </label>
                   <input
@@ -310,7 +311,7 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
                     Decay: {(editedParams.decay * 1000).toFixed(0)}ms
                   </label>
                   <input
@@ -324,7 +325,7 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
                     Sustain: {(editedParams.sustain * 100).toFixed(0)}%
                   </label>
                   <input
@@ -338,7 +339,7 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
                     Release: {(editedParams.release * 1000).toFixed(0)}ms
                   </label>
                   <input
@@ -356,8 +357,8 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
           )}
 
           {/* Effects */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-4 text-blue-400">Effects</h3>
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+            <h3 className="text-lg font-medium mb-4 text-blue-600 dark:text-blue-400">Effects</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {Object.entries(editedParams.effects).map(([effect, enabled]) => (
                 <label key={effect} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -375,10 +376,10 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
+        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-300 dark:border-gray-700">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-700 text-gray-100 rounded hover:bg-gray-600"
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
           >
             Cancel
           </button>

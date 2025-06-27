@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from 'react'
 import { Sound, useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { exportAudioAsWAV, generateSoundFilename } from '@/utils/audioExport'
-import { Play, Square, Star, Hash, Edit, Download, MoreHorizontal } from 'lucide-react'
+import { Play, Square, Star, Hash, Edit, Download, Shuffle } from 'lucide-react'
+import SoundCardDropdown from './SoundCardDropdown'
 
 interface SoundCardProps {
   sound: Sound
@@ -18,8 +19,8 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
     focusedIndex,
     toggleSelection,
     toggleFavorite,
-    showDetail,
     showEditor,
+    showVariations,
     setCurrentlyPlaying,
     setFocusedIndex,
     addTag,
@@ -116,11 +117,6 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
     toggleFavorite(sound.id)
   }
 
-  const handleDetail = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    showDetail(sound.id)
-  }
-
   const handleAddTag = (e: React.FormEvent) => {
     e.preventDefault()
     if (newTag.trim()) {
@@ -170,7 +166,7 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
     >
       {/* Selection indicator */}
       {isSelected && (
-        <div className="absolute top-2 right-2 bg-primary-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">
+        <div className="absolute top-2 right-2 bg-primary-500/90 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium z-10 shadow-sm">
           ✓
         </div>
       )}
@@ -254,43 +250,39 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
           <Star size={14} fill={sound.favorite ? 'currentColor' : 'none'} />
         </button>
         
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            setShowTagInput(!showTagInput)
-          }}
-          className="flex items-center justify-center w-8 h-8 bg-surface dark:bg-gray-800 border border-border dark:border-gray-700 text-text-primary dark:text-gray-100 rounded transition-all hover:bg-background-tertiary dark:hover:bg-gray-700 hover:border-green-400 hover:text-green-500"
-          title="Add tag"
-        >
-          <Hash size={14} />
-        </button>
-        
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            showEditor(sound.id)
-          }}
-          className="flex items-center justify-center w-8 h-8 bg-surface dark:bg-gray-800 border border-border dark:border-gray-700 text-text-primary dark:text-gray-100 rounded transition-all hover:bg-background-tertiary dark:hover:bg-gray-700 hover:border-purple-400 hover:text-purple-500"
-          title="Edit sound"
-        >
-          <Edit size={14} />
-        </button>
-        
-        <button
-          onClick={handleExport}
-          className="flex items-center justify-center w-8 h-8 bg-surface dark:bg-gray-800 border border-border dark:border-gray-700 text-text-primary dark:text-gray-100 rounded transition-all hover:bg-background-tertiary dark:hover:bg-gray-700 hover:border-green-400 hover:text-green-500"
-          title="Export WAV"
-        >
-          <Download size={14} />
-        </button>
-        
-        <button
-          onClick={handleDetail}
-          className="flex items-center justify-center w-8 h-8 bg-surface dark:bg-gray-800 border border-border dark:border-gray-700 text-text-primary dark:text-gray-100 rounded transition-all hover:bg-background-tertiary dark:hover:bg-gray-700 hover:border-primary-400 hover:text-primary-500"
-          title="Details"
-        >
-          <MoreHorizontal size={14} />
-        </button>
+        <SoundCardDropdown 
+          items={[
+            {
+              icon: <Edit size={14} />,
+              label: 'Edit sound',
+              onClick: (e) => {
+                e.stopPropagation()
+                showEditor(sound.id)
+              }
+            },
+            {
+              icon: <Shuffle size={14} />,
+              label: 'Generate variations',
+              onClick: (e) => {
+                e.stopPropagation()
+                showVariations(sound.id)
+              }
+            },
+            {
+              icon: <Hash size={14} />,
+              label: 'Add tag',
+              onClick: (e) => {
+                e.stopPropagation()
+                setShowTagInput(!showTagInput)
+              }
+            },
+            {
+              icon: <Download size={14} />,
+              label: 'Export WAV',
+              onClick: handleExport
+            }
+          ]}
+        />
       </div>
     </div>
   )

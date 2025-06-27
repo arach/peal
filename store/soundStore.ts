@@ -41,6 +41,8 @@ interface SoundState {
   showShortcuts: boolean
   showEditorModal: boolean
   editorSoundId: string | null
+  showVariationModal: boolean
+  variationSoundId: string | null
   showGenerationParams: boolean
   theme: 'light' | 'dark' | 'system'
   
@@ -83,6 +85,8 @@ interface SoundState {
   hideDetail: () => void
   showEditor: (id: string) => void
   hideEditor: () => void
+  showVariations: (id: string) => void
+  hideVariations: () => void
   toggleShortcuts: () => void
   toggleGenerationParams: () => void
   setTheme: (theme: 'light' | 'dark' | 'system') => void
@@ -113,6 +117,8 @@ export const useSoundStore = create<SoundState>()(
       showShortcuts: false,
       showEditorModal: false,
       editorSoundId: null,
+      showVariationModal: false,
+      variationSoundId: null,
       showGenerationParams: false,
       theme: 'system',
       
@@ -239,6 +245,16 @@ export const useSoundStore = create<SoundState>()(
       hideEditor: () => set(() => ({ 
         showEditorModal: false, 
         editorSoundId: null 
+      })),
+      
+      showVariations: (id) => set(() => ({ 
+        showVariationModal: true, 
+        variationSoundId: id 
+      })),
+      
+      hideVariations: () => set(() => ({ 
+        showVariationModal: false, 
+        variationSoundId: null 
       })),
       
       toggleShortcuts: () => set((state) => ({ 
