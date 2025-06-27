@@ -9,10 +9,11 @@ import { Sound } from '@/store/soundStore'
 
 interface VibeSoundDesignerProps {
   onClose: () => void
+  initialPrompt?: string
 }
 
-export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
-  const [prompt, setPrompt] = useState('')
+export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundDesignerProps) {
+  const [prompt, setPrompt] = useState(initialPrompt || '')
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedSounds, setGeneratedSounds] = useState<Sound[]>([])
@@ -22,7 +23,12 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
 
   useEffect(() => {
     inputRef.current?.focus()
-  }, [])
+    // Auto-generate if we have an initial prompt
+    if (initialPrompt && initialPrompt.trim()) {
+      // Small delay to let the UI render first
+      setTimeout(() => handleGenerate(), 100)
+    }
+  }, [initialPrompt])
 
   useEffect(() => {
     // Update suggestions as user types

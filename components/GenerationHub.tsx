@@ -10,6 +10,7 @@ export default function GenerationHub() {
   const { sounds, showGenerationParams, toggleGenerationParams } = useSoundStore()
   const { generateBatch } = useSoundGeneration()
   const [showVibeDesigner, setShowVibeDesigner] = useState(false)
+  const [selectedPrompt, setSelectedPrompt] = useState('')
 
   return (
     <>
@@ -81,7 +82,10 @@ export default function GenerationHub() {
               ].map((example, i) => (
                 <button
                   key={i}
-                  onClick={() => setShowVibeDesigner(true)}
+                  onClick={() => {
+                    setSelectedPrompt(example)
+                    setShowVibeDesigner(true)
+                  }}
                   className="text-xs bg-gray-100 dark:bg-gray-800 hover:bg-purple-100 dark:hover:bg-purple-900/50 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 px-3 py-1 rounded-full transition-colors"
                 >
                   "{example}"
@@ -93,7 +97,13 @@ export default function GenerationHub() {
       </div>
 
       {showVibeDesigner && (
-        <VibeSoundDesigner onClose={() => setShowVibeDesigner(false)} />
+        <VibeSoundDesigner 
+          initialPrompt={selectedPrompt}
+          onClose={() => {
+            setShowVibeDesigner(false)
+            setSelectedPrompt('')
+          }} 
+        />
       )}
     </>
   )
