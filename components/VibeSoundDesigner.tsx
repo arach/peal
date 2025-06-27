@@ -94,20 +94,23 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
           totalDuration = Math.max(totalDuration, delay + (sound.parameters.duration || 0))
         }
 
-        const compositeSound: Sound & { compositeSounds?: Sound[] } = {
-          id: `vibe-composite-${Date.now()}`,
-          type: 'composite',
+        // Create a proper composite audio buffer by mixing all individual sounds
+        const compositeBuffer = await createCompositeBuffer(individualSounds, totalDuration)
+        
+        const compositeSound: Sound = {
+          id: `vibe-${Date.now()}`,
+          type: individualSounds[0].type, // Use the type of the first sound
           frequency: individualSounds[0].frequency,
           duration: Math.round(totalDuration * 1000),
           parameters: {
-            frequency: 0,
+            frequency: individualSounds[0].frequency,
             duration: totalDuration,
-            waveform: 'sine',
-            attack: 0,
-            decay: 0,
-            sustain: 1,
-            release: 0,
-            effects: {
+            waveform: individualSounds[0].parameters.waveform || 'sine',
+            attack: individualSounds[0].parameters.attack || 0.01,
+            decay: individualSounds[0].parameters.decay || 0.1,
+            sustain: individualSounds[0].parameters.sustain || 0.5,
+            release: individualSounds[0].parameters.release || 0.1,
+            effects: individualSounds[0].parameters.effects || {
               reverb: false,
               delay: false,
               filter: false,
@@ -117,10 +120,9 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
           },
           created: new Date(),
           favorite: false,
-          tags: ['vibe-generated', 'composite', ...prompt.split(' ').filter(w => w.length > 3)],
-          audioBuffer: null,
-          waveformData: null,
-          compositeSounds: individualSounds
+          tags: ['vibe-generated', ...prompt.split(' ').filter(w => w.length > 3)],
+          audioBuffer: compositeBuffer,
+          waveformData: compositeBuffer ? generateWaveformData(compositeBuffer) : null
         }
 
         setGeneratedSounds([compositeSound])
@@ -161,6 +163,57 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
     } catch (error) {
       console.error('Error playing sound:', error)
     }
+  }
+
+  // Helper function to create composite audio buffer
+  const createCompositeBuffer = async (sounds: (Sound & { delay?: number })[], totalDuration: number): Promise<AudioBuffer | null> => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const sampleRate = audioContext.sampleRate
+      const bufferLength = Math.floor(totalDuration * sampleRate)
+      
+      const compositeBuffer = audioContext.createBuffer(1, bufferLength, sampleRate)
+      const compositeData = compositeBuffer.getChannelData(0)
+      
+      for (const sound of sounds) {
+        if (!sound.audioBuffer) continue
+        
+        const delay = sound.delay || 0
+        const startSample = Math.floor(delay * sampleRate)
+        const soundData = sound.audioBuffer.getChannelData(0)
+        
+        // Mix the sound into the composite buffer
+        for (let i = 0; i < soundData.length && (startSample + i) < bufferLength; i++) {
+          compositeData[startSample + i] += soundData[i] * 0.5 // Reduce volume to prevent clipping
+        }
+      }
+      
+      await audioContext.close()
+      return compositeBuffer
+    } catch (error) {
+      console.error('Error creating composite buffer:', error)
+      return null
+    }
+  }
+
+  // Helper function to generate waveform data from audio buffer
+  const generateWaveformData = (buffer: AudioBuffer): number[] => {
+    const channelData = buffer.getChannelData(0)
+    const sampleStep = Math.floor(channelData.length / 100) // 100 data points
+    const waveformData: number[] = []
+    
+    for (let i = 0; i < 100; i++) {
+      const start = i * sampleStep
+      const end = Math.min(start + sampleStep, channelData.length)
+      
+      let max = 0
+      for (let j = start; j < end; j++) {
+        max = Math.max(max, Math.abs(channelData[j]))
+      }
+      waveformData.push(max)
+    }
+    
+    return waveformData
   }
 
   return (

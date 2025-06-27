@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 
 export interface Sound {
   id: string
-  type: 'tone' | 'chime' | 'click' | 'sweep' | 'pulse' | 'composite'
+  type: 'tone' | 'chime' | 'click' | 'sweep' | 'pulse'
   duration: number
   frequency: number
   brightness?: number
