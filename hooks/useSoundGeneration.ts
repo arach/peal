@@ -277,30 +277,39 @@ export class SoundGenerator {
 
     osc.type = 'sine'
 
-    const startFreq = params.direction === 'up' ? params.frequency : params.frequency * params.sweepRange
-    const endFreq = params.direction === 'up' ? params.frequency * params.sweepRange : params.frequency
+    // Validate and provide defaults for sweep parameters
+    const frequency = params.frequency || 440
+    const sweepRange = params.sweepRange || 2
+    const direction = params.direction || 'down'
+    const duration = Math.max(0.1, params.duration || 0.5)
 
-    osc.frequency.setValueAtTime(startFreq, now)
+    const startFreq = direction === 'up' ? frequency : frequency * sweepRange
+    const endFreq = direction === 'up' ? frequency * sweepRange : frequency
 
-    if (params.sweepType === 'exponential') {
-      osc.frequency.exponentialRampToValueAtTime(endFreq, now + params.duration)
+    // Ensure frequencies are valid
+    const safeStartFreq = Math.max(20, Math.min(20000, startFreq))
+    const safeEndFreq = Math.max(20, Math.min(20000, endFreq))
+
+    osc.frequency.setValueAtTime(safeStartFreq, now)
+
+    if (params.sweepType === 'exponential' && safeEndFreq > 0) {
+      osc.frequency.exponentialRampToValueAtTime(safeEndFreq, now + duration)
     } else {
-      osc.frequency.linearRampToValueAtTime(endFreq, now + params.duration)
+      osc.frequency.linearRampToValueAtTime(safeEndFreq, now + duration)
     }
 
-    const safeDuration = Math.max(0.1, params.duration)
-    const releaseTime = Math.max(0.01, Math.min(0.05, safeDuration - 0.02))
+    const releaseTime = Math.max(0.01, Math.min(0.05, duration - 0.02))
     
     gain.gain.setValueAtTime(0, now)
     gain.gain.linearRampToValueAtTime(0.4, now + 0.01)
-    gain.gain.setValueAtTime(0.4, now + safeDuration - releaseTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, now + safeDuration)
+    gain.gain.setValueAtTime(0.4, now + duration - releaseTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration)
 
     osc.connect(gain)
     gain.connect(ctx.destination)
 
     osc.start(now)
-    osc.stop(now + params.duration)
+    osc.stop(now + duration)
   }
 
   private createPulse(ctx: OfflineAudioContext, params: any) {
