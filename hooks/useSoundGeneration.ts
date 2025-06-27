@@ -358,24 +358,38 @@ export class SoundGenerator {
       return null
     }
     
-    // If no audio buffer, regenerate it
-    if (!sound.audioBuffer) {
+    // If no audio buffer or invalid buffer, regenerate it
+    if (!sound.audioBuffer || !(sound.audioBuffer instanceof AudioBuffer)) {
       console.log('Regenerating audio buffer for sound:', sound.id)
       await this.renderSound(sound)
       
-      if (!sound.audioBuffer) {
-        console.error('Failed to generate audio buffer for sound:', sound.id)
+      if (!sound.audioBuffer || !(sound.audioBuffer instanceof AudioBuffer)) {
+        console.error('Failed to generate valid audio buffer for sound:', sound.id)
         return null
       }
     }
 
-    const source = audioContext.createBufferSource()
-    source.buffer = sound.audioBuffer
-    source.connect(audioContext.destination)
-    source.start()
-
-    console.log('Sound started playing:', sound.id)
-    return source
+    try {
+      const source = audioContext.createBufferSource()
+      source.buffer = sound.audioBuffer
+      source.connect(audioContext.destination)
+      source.start()
+      
+      console.log('Sound started playing:', sound.id)
+      return source
+    } catch (error) {
+      console.error('Error setting buffer:', error)
+      // Try regenerating the sound
+      await this.renderSound(sound)
+      if (sound.audioBuffer && sound.audioBuffer instanceof AudioBuffer) {
+        const source = audioContext.createBufferSource()
+        source.buffer = sound.audioBuffer
+        source.connect(audioContext.destination)
+        source.start()
+        return source
+      }
+      return null
+    }
   }
 }
 

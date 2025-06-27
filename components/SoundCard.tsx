@@ -150,9 +150,19 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
         for (const individualSound of compositeSounds) {
           const delay = (individualSound as any).delay || 0
           if (delay > 0) {
-            setTimeout(() => playSound(individualSound), delay * 1000)
+            setTimeout(async () => {
+              try {
+                await playSound(individualSound)
+              } catch (error) {
+                console.error('Error playing individual sound:', error)
+              }
+            }, delay * 1000)
           } else {
-            playSound(individualSound)
+            try {
+              await playSound(individualSound)
+            } catch (error) {
+              console.error('Error playing individual sound:', error)
+            }
           }
         }
         
