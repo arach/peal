@@ -10,7 +10,8 @@ export default function StatsBar() {
     clearSelection,
     filteredSounds,
     sortBy,
-    setSortBy
+    setSortBy,
+    removeSelectedSounds
   } = useSoundStore()
 
   const filtered = filteredSounds()
@@ -28,6 +29,17 @@ export default function StatsBar() {
     }
     
     await exportSounds(selectedSoundsList)
+  }
+
+  const deleteSelected = () => {
+    if (selectedSounds.size === 0) return
+    
+    const count = selectedSounds.size
+    const confirmed = confirm(`Are you sure you want to delete ${count} selected sound${count > 1 ? 's' : ''}? This action cannot be undone.`)
+    
+    if (confirmed) {
+      removeSelectedSounds()
+    }
   }
 
   // Don't show stats bar when there are no sounds
@@ -85,6 +97,13 @@ export default function StatsBar() {
           className="btn-base btn-sm bg-surface dark:bg-gray-700 border-border dark:border-gray-600 text-text-primary dark:text-gray-100 hover:bg-background-tertiary dark:hover:bg-gray-600 focus-ring"
         >
           Select All
+        </button>
+        <button
+          onClick={deleteSelected}
+          disabled={selectedSounds.size === 0}
+          className="btn-base btn-sm bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed focus-ring"
+        >
+          Delete Selected
         </button>
         <button
           onClick={exportSelected}
