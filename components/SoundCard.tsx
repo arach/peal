@@ -38,10 +38,15 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
   const isFocused = focusedIndex === index
 
   useEffect(() => {
-    if (canvasRef.current && sound.waveformData) {
-      drawMiniWaveform(canvasRef.current, sound.waveformData)
+    if (canvasRef.current) {
+      if (sound.type === 'composite') {
+        // Draw a composite waveform representation
+        drawCompositeWaveform(canvasRef.current, sound)
+      } else if (sound.waveformData) {
+        drawMiniWaveform(canvasRef.current, sound.waveformData)
+      }
     }
-  }, [sound.waveformData])
+  }, [sound.waveformData, sound.type])
 
   const drawMiniWaveform = (canvas: HTMLCanvasElement, waveformData: number[]) => {
     const ctx = canvas.getContext('2d')
@@ -70,6 +75,52 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
     ctx.stroke()
   }
 
+  const drawCompositeWaveform = (canvas: HTMLCanvasElement, sound: Sound) => {
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const width = canvas.width
+    const height = canvas.height
+    
+    ctx.clearRect(0, 0, width, height)
+    
+    const compositeSounds = (sound as any).compositeSounds
+    if (!compositeSounds) return
+
+    // Calculate total duration for scaling
+    const totalDuration = sound.duration / 1000 // Convert to seconds
+    
+    // Draw background
+    ctx.fillStyle = '#f3f4f6'
+    ctx.fillRect(0, 0, width, height)
+    
+    // Draw each sound segment
+    compositeSounds.forEach((subSound: any, index: number) => {
+      const delay = subSound.delay || 0
+      const duration = subSound.parameters?.duration || 0.5
+      
+      // Calculate position and width
+      const startX = (delay / totalDuration) * width
+      const segmentWidth = (duration / totalDuration) * width
+      
+      // Use different colors for different sounds
+      const colors = ['#4a9eff', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444']
+      ctx.fillStyle = colors[index % colors.length]
+      
+      // Draw segment with height based on frequency
+      const normalizedFreq = Math.min(subSound.frequency / 2000, 1)
+      const segmentHeight = height * 0.6 * normalizedFreq + height * 0.2
+      const y = (height - segmentHeight) / 2
+      
+      ctx.fillRect(startX, y, Math.max(segmentWidth, 2), segmentHeight)
+    })
+    
+    // Add composite indicator
+    ctx.fillStyle = '#6b7280'
+    ctx.font = '8px sans-serif'
+    ctx.fillText(`${compositeSounds.length} parts`, 4, 12)
+  }
+
   const handlePlay = async (e: React.MouseEvent) => {
     e.stopPropagation()
     
@@ -89,16 +140,41 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
     }
 
     try {
-      const source = await playSound(sound)
-      if (source) {
-        currentSource.current = source
+      // Check if this is a composite sound
+      const compositeSounds = (sound as any).compositeSounds
+      if (compositeSounds && sound.type === 'composite') {
+        // Play all sounds with their delays
         setIsPlaying(true)
         setCurrentlyPlaying(sound.id)
         
-        source.onended = () => {
+        for (const individualSound of compositeSounds) {
+          const delay = (individualSound as any).delay || 0
+          if (delay > 0) {
+            setTimeout(() => playSound(individualSound), delay * 1000)
+          } else {
+            playSound(individualSound)
+          }
+        }
+        
+        // Set a timeout to stop the playing state after the longest sound
+        const totalDuration = Math.max(...compositeSounds.map((s: any) => ((s.delay || 0) + (s.parameters?.duration || 0)) * 1000))
+        setTimeout(() => {
           setIsPlaying(false)
           setCurrentlyPlaying(null)
-          currentSource.current = null
+        }, totalDuration)
+      } else {
+        // Regular single sound
+        const source = await playSound(sound)
+        if (source) {
+          currentSource.current = source
+          setIsPlaying(true)
+          setCurrentlyPlaying(sound.id)
+          
+          source.onended = () => {
+            setIsPlaying(false)
+            setCurrentlyPlaying(null)
+            currentSource.current = null
+          }
         }
       }
     } catch (error) {
@@ -185,7 +261,7 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
       <div className="flex justify-between items-center text-xs text-text-tertiary dark:text-gray-400 mb-2">
         <span>{sound.duration}ms</span>
         <span className="bg-surface-elevated dark:bg-gray-800 px-2 py-1 rounded text-primary-500">
-          {sound.type}
+          {sound.type === 'composite' ? `${(sound as any).compositeSounds?.length || 0} parts` : sound.type}
         </span>
       </div>
 

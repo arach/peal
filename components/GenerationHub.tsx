@@ -32,7 +32,6 @@ export default function GenerationHub() {
             >
               <Sparkles size={20} className="group-hover:animate-pulse" />
               Vibe Designer
-              <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full ml-2">AI-like</span>
             </button>
             
             <button
