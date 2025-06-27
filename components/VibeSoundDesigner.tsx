@@ -41,13 +41,14 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
       const intent = VibeParser.parsePrompt(prompt)
       const paramsList = VibeParser.generateParameters(intent)
 
-      const newSounds: Sound[] = []
+      // First, generate all individual sounds
+      const individualSounds: (Sound & { delay?: number })[] = []
       
       for (let i = 0; i < paramsList.length; i++) {
         const params = paramsList[i]
         
         // Create sound object
-        const sound: Sound = {
+        const sound: Sound & { delay?: number } = {
           id: `vibe-${Date.now()}-${i}`,
           type: params.type,
           frequency: params.frequency || 440,
@@ -76,15 +77,56 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
           tags: ['vibe-generated'],
           audioBuffer: null,
           waveformData: null,
-          delay: params.delay // Store the delay for playback
-        } as Sound & { delay?: number }
+          delay: params.delay
+        }
 
         // Generate audio
         await (generator as any).renderSound(sound)
-        newSounds.push(sound)
+        individualSounds.push(sound)
       }
 
-      setGeneratedSounds(newSounds)
+      // If multiple sounds, create a composite sound that contains all of them
+      if (individualSounds.length > 1) {
+        // Calculate total duration including delays
+        let totalDuration = 0
+        for (const sound of individualSounds) {
+          const delay = sound.delay || 0
+          totalDuration = Math.max(totalDuration, delay + (sound.parameters.duration || 0))
+        }
+
+        const compositeSound: Sound & { compositeSounds?: Sound[] } = {
+          id: `vibe-composite-${Date.now()}`,
+          type: 'composite',
+          frequency: individualSounds[0].frequency,
+          duration: Math.round(totalDuration * 1000),
+          parameters: {
+            frequency: 0,
+            duration: totalDuration,
+            waveform: 'sine',
+            attack: 0,
+            decay: 0,
+            sustain: 1,
+            release: 0,
+            effects: {
+              reverb: false,
+              delay: false,
+              filter: false,
+              distortion: false,
+              compression: false
+            }
+          },
+          created: new Date(),
+          favorite: false,
+          tags: ['vibe-generated', 'composite', ...prompt.split(' ').filter(w => w.length > 3)],
+          audioBuffer: null,
+          waveformData: null,
+          compositeSounds: individualSounds
+        }
+
+        setGeneratedSounds([compositeSound])
+      } else {
+        setGeneratedSounds(individualSounds)
+      }
     } catch (error) {
       console.error('Error generating vibe sounds:', error)
     } finally {
@@ -101,21 +143,23 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
 
   const playSound = async (sound: Sound) => {
     try {
-      await generator.playSound(sound)
+      // Check if this is a composite sound
+      const compositeSounds = (sound as any).compositeSounds
+      if (compositeSounds) {
+        // Play all sounds with their delays
+        for (const individualSound of compositeSounds) {
+          const delay = (individualSound as any).delay || 0
+          if (delay > 0) {
+            setTimeout(() => generator.playSound(individualSound), delay * 1000)
+          } else {
+            generator.playSound(individualSound)
+          }
+        }
+      } else {
+        await generator.playSound(sound)
+      }
     } catch (error) {
       console.error('Error playing sound:', error)
-    }
-  }
-
-  const playAllSounds = async () => {
-    // Play all sounds with their delays
-    for (const sound of generatedSounds) {
-      const delay = (sound as any).delay || 0
-      if (delay > 0) {
-        setTimeout(() => playSound(sound), delay * 1000)
-      } else {
-        playSound(sound)
-      }
     }
   }
 
@@ -193,42 +237,58 @@ export default function VibeSoundDesigner({ onClose }: VibeSoundDesignerProps) {
         {/* Generated Sounds */}
         {generatedSounds.length > 0 && !isGenerating && (
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Generated {generatedSounds.length} sound{generatedSounds.length > 1 ? 's' : ''}:
-              </h3>
-              {generatedSounds.length > 1 && (
-                <button
-                  onClick={playAllSounds}
-                  className="px-3 py-1 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition-colors"
-                >
-                  Play All
-                </button>
-              )}
-            </div>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Generated sound:
+            </h3>
             <div className="space-y-2">
-              {generatedSounds.map((sound, index) => (
-                <div
-                  key={sound.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-purple-500">
-                      Sound {index + 1}
-                    </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {sound.type} • {sound.duration}ms • {sound.frequency}Hz
-                      {(sound as any).delay ? ` • ${((sound as any).delay * 1000).toFixed(0)}ms delay` : ''}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => playSound(sound)}
-                    className="px-3 py-1 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition-colors"
+              {generatedSounds.map((sound, index) => {
+                const compositeSounds = (sound as any).compositeSounds
+                const isComposite = compositeSounds && compositeSounds.length > 1
+                
+                return (
+                  <div
+                    key={sound.id}
+                    className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
                   >
-                    Play
-                  </button>
-                </div>
-              ))}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-purple-500">
+                          {prompt}
+                        </span>
+                        {isComposite && (
+                          <span className="text-xs bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 px-2 py-1 rounded">
+                            {compositeSounds.length} parts
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => playSound(sound)}
+                        className="px-4 py-2 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition-colors"
+                      >
+                        ▶ Play
+                      </button>
+                    </div>
+                    
+                    {isComposite ? (
+                      <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                        <div>Total duration: {sound.duration}ms</div>
+                        <div className="pl-3 border-l-2 border-purple-200 dark:border-purple-700">
+                          {compositeSounds.map((subSound: any, i: number) => (
+                            <div key={i} className="py-1">
+                              {subSound.delay ? `${(subSound.delay * 1000).toFixed(0)}ms: ` : ''}
+                              {subSound.type} ({subSound.frequency}Hz, {(subSound.parameters.duration * 1000).toFixed(0)}ms)
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {sound.type} • {sound.duration}ms • {sound.frequency}Hz
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
 
             {/* Actions */}
