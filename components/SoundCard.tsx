@@ -161,7 +161,7 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
         hover:border-primary-400 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/50
         ${isSelected ? 'border-primary-400 bg-primary-50 dark:bg-primary-400/10' : ''}
         ${isFocused ? 'ring-2 ring-primary-400/50' : ''}
-        relative overflow-hidden shadow-sm
+        relative shadow-sm
       `}
     >
       {/* Selection indicator */}
@@ -172,7 +172,7 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
       )}
 
       {/* Waveform visualization */}
-      <div className="w-full h-15 bg-background-tertiary dark:bg-gray-950 rounded mb-3 relative overflow-hidden">
+      <div className="w-full h-15 bg-background-tertiary dark:bg-gray-950 rounded mb-3 overflow-hidden">
         <canvas
           ref={canvasRef}
           width={180}
@@ -279,7 +279,8 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
             {
               icon: <Download size={14} />,
               label: 'Export WAV',
-              onClick: handleExport
+              onClick: handleExport,
+              divider: true
             }
           ]}
         />
