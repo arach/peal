@@ -172,39 +172,6 @@ export default function Sidebar() {
         )}
       </div>
 
-      <style jsx>{`
-        .slider {
-          height: 6px;
-          -webkit-appearance: none;
-          appearance: none;
-          background: var(--tw-colors-gray-300);
-          border-radius: 3px;
-          outline: none;
-        }
-        
-        :global(.dark) .slider {
-          background: #374151;
-        }
-        
-        .slider::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 16px;
-          height: 16px;
-          background: #4a9eff;
-          border-radius: 50%;
-          cursor: pointer;
-        }
-        
-        .slider::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
-          background: #4a9eff;
-          border-radius: 50%;
-          cursor: pointer;
-          border: none;
-        }
-      `}</style>
     </aside>
   )
 }

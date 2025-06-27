@@ -221,7 +221,7 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
       )}
 
       {/* Actions */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-end">
         <button
           onClick={handlePlay}
           className={`

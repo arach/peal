@@ -69,7 +69,7 @@ export default function SoundCardDropdown({ items }: SoundCardDropdownProps) {
     setIsOpen(!isOpen)
   }
 
-  const dropdownContent = isOpen && mounted && (
+  const dropdownContent = (
     <div 
       ref={dropdownRef}
       className="fixed w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-2xl shadow-black/20 dark:shadow-black/40 overflow-hidden"
@@ -118,7 +118,7 @@ export default function SoundCardDropdown({ items }: SoundCardDropdownProps) {
       >
         <MoreVertical size={14} />
       </button>
-      {mounted && createPortal(dropdownContent, document.body)}
+      {mounted && isOpen && typeof document !== 'undefined' && createPortal(dropdownContent, document.body)}
     </>
   )
 }
