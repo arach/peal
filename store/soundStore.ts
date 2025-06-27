@@ -309,7 +309,7 @@ export const useSoundStore = create<SoundState>()(
             case 'frequency':
               return a.frequency - b.frequency
             case 'brightness':
-              return a.brightness - b.brightness
+              return (a.brightness || 0) - (b.brightness || 0)
             case 'type':
               return a.type.localeCompare(b.type)
             case 'creation':

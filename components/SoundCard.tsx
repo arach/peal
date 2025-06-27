@@ -4,8 +4,9 @@ import { useState, useRef, useEffect } from 'react'
 import { Sound, useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { exportAudioAsWAV, generateSoundFilename } from '@/utils/audioExport'
-import { Play, Square, Star, Hash, Edit, Download, Shuffle } from 'lucide-react'
+import { Play, Square, Star, Hash, Edit, Download, Shuffle, Palette } from 'lucide-react'
 import SoundCardDropdown from './SoundCardDropdown'
+import { useRouter } from 'next/navigation'
 
 interface SoundCardProps {
   sound: Sound
@@ -28,6 +29,7 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
   } = useSoundStore()
 
   const { playSound } = useSoundGeneration()
+  const router = useRouter()
   const [isPlaying, setIsPlaying] = useState(false)
   const [showTagInput, setShowTagInput] = useState(false)
   const [newTag, setNewTag] = useState('')
@@ -254,6 +256,14 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
         
         <SoundCardDropdown 
           items={[
+            {
+              icon: <Palette size={14} />,
+              label: 'Open in Studio',
+              onClick: (e) => {
+                e.stopPropagation()
+                router.push(`/studio?sound=${sound.id}`)
+              }
+            },
             {
               icon: <Edit size={14} />,
               label: 'Edit sound',

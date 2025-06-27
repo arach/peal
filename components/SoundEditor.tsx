@@ -75,14 +75,14 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
   }, [previewSound])
 
   const updateParam = (key: string, value: any) => {
-    setEditedParams(prev => ({
+    setEditedParams((prev: any) => ({
       ...prev,
       [key]: value
     }))
   }
 
   const updateEffect = (effect: string, enabled: boolean) => {
-    setEditedParams(prev => ({
+    setEditedParams((prev: any) => ({
       ...prev,
       effects: {
         ...prev.effects,
@@ -366,7 +366,7 @@ export default function SoundEditor({ sound, onClose }: SoundEditorProps) {
                 <label key={effect} className="flex items-center gap-2 text-sm cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={enabled}
+                    checked={Boolean(enabled)}
                     onChange={(e) => updateEffect(effect, e.target.checked)}
                     className="w-4 h-4 accent-blue-500"
                   />

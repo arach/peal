@@ -367,12 +367,12 @@ export class SoundGenerator {
       return null
     }
     
-    // If no audio buffer or invalid buffer, regenerate it
-    if (!sound.audioBuffer || !(sound.audioBuffer instanceof AudioBuffer)) {
+    // If no audio buffer, regenerate it
+    if (!sound.audioBuffer) {
       console.log('Regenerating audio buffer for sound:', sound.id)
       await this.renderSound(sound)
       
-      if (!sound.audioBuffer || !(sound.audioBuffer instanceof AudioBuffer)) {
+      if (!sound.audioBuffer) {
         console.error('Failed to generate valid audio buffer for sound:', sound.id)
         return null
       }
