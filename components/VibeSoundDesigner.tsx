@@ -275,7 +275,11 @@ export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundD
               {suggestions.map((suggestion, i) => (
                 <button
                   key={i}
-                  onClick={() => setPrompt(suggestion)}
+                  onClick={() => {
+                    setPrompt(suggestion)
+                    // Auto-generate after setting the prompt
+                    setTimeout(() => handleGenerate(), 100)
+                  }}
                   className="block w-full text-left px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-300 transition-colors"
                 >
                   {suggestion}
@@ -377,13 +381,26 @@ export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundD
             <h4 className="text-sm font-medium text-purple-900 dark:text-purple-300 mb-2">
               Example prompts:
             </h4>
-            <ul className="space-y-1 text-sm text-purple-700 dark:text-purple-400">
-              <li>• "A gentle notification chime"</li>
-              <li>• "Three short beeps increasing in pitch"</li>
-              <li>• "A deep, smooth swoosh sound"</li>
-              <li>• "Quick, punchy interface clicks"</li>
-              <li>• "A bright success ding"</li>
-            </ul>
+            <div className="space-y-1">
+              {[
+                "A gentle notification chime",
+                "Three short beeps increasing in pitch", 
+                "A deep, smooth swoosh sound",
+                "Quick, punchy interface clicks",
+                "A bright success ding"
+              ].map((example, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    setPrompt(example)
+                    setTimeout(() => handleGenerate(), 100)
+                  }}
+                  className="block w-full text-left text-sm text-purple-700 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-200 transition-colors"
+                >
+                  • "{example}"
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
