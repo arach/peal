@@ -227,10 +227,13 @@ export class SoundGenerator {
 
   private createClick(ctx: OfflineAudioContext, params: any) {
     const now = 0
+    // Ensure clickDuration has a valid value
+    const clickDuration = params.clickDuration || params.duration || 0.05
+    const safeClickDuration = Math.max(0.001, clickDuration)
 
     if (params.clickType === 'noise') {
       // Noise click
-      const bufferSize = ctx.sampleRate * params.clickDuration
+      const bufferSize = Math.floor(ctx.sampleRate * safeClickDuration)
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
       const data = buffer.getChannelData(0)
 
@@ -243,19 +246,19 @@ export class SoundGenerator {
 
       const filter = ctx.createBiquadFilter()
       filter.type = 'bandpass'
-      filter.frequency.value = params.frequency
-      filter.Q.value = params.resonance
+      filter.frequency.value = params.frequency || 1000
+      filter.Q.value = params.resonance || 5
 
       noise.connect(filter)
       filter.connect(ctx.destination)
       noise.start(now)
+      noise.stop(now + safeClickDuration)
     } else {
       // Tonal click
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
 
-      osc.frequency.value = params.frequency
-      const safeClickDuration = Math.max(0.001, params.clickDuration)
+      osc.frequency.value = params.frequency || 1000
       gain.gain.setValueAtTime(0.6, now)
       gain.gain.exponentialRampToValueAtTime(0.001, now + safeClickDuration)
 
@@ -263,7 +266,7 @@ export class SoundGenerator {
       gain.connect(ctx.destination)
 
       osc.start(now)
-      osc.stop(now + params.clickDuration)
+      osc.stop(now + safeClickDuration)
     }
   }
 

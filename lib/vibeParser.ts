@@ -14,7 +14,7 @@ export class VibeParser {
     // Sound types
     'beep': { type: 'tone', duration: 0.2, frequency: 800 },
     'chime': { type: 'chime', duration: 0.5, frequency: 600 },
-    'click': { type: 'click', duration: 0.05, frequency: 1000 },
+    'click': { type: 'click', duration: 0.05, frequency: 1000, clickDuration: 0.05 },
     'ding': { type: 'tone', duration: 0.3, frequency: 1200 },
     'ping': { type: 'tone', duration: 0.15, frequency: 1500 },
     'swoosh': { type: 'sweep', duration: 0.4, frequency: 400 },
@@ -110,6 +110,11 @@ export class VibeParser {
         if (intent.modifiers.decay) baseParams.decay = intent.modifiers.decay
         if (intent.modifiers.sustain) baseParams.sustain = intent.modifiers.sustain
         if (intent.modifiers.release) baseParams.release = intent.modifiers.release
+        
+        // Ensure click sounds have clickDuration
+        if (baseParams.type === 'click' && !baseParams.clickDuration) {
+          baseParams.clickDuration = baseParams.duration || 0.05
+        }
 
         // Add variation for multiple sounds
         if (count > 1) {
