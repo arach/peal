@@ -558,8 +558,8 @@ export default function Studio() {
       const soundToPlay = previewSound || currentSound
       if (!soundToPlay?.audioBuffer) return
       
-      const currentTime = Date.now() / 1000
-      const elapsed = currentTime - playbackStartTime.current
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const elapsed = audioContext.currentTime - playbackStartTime.current + pausedAt.current
       const duration = soundToPlay.audioBuffer.duration
       const position = Math.min(elapsed / duration, 1)
       
@@ -893,7 +893,7 @@ export default function Studio() {
         id: `track-${Date.now()}`,
         name: `Insert ${tracks.filter(t => t.name.includes('Insert')).length + 1}`,
         audioBuffer: insertSound.audioBuffer,
-        waveformData: insertSound.waveformData,
+        waveformData: generatePositionedWaveformData(insertSound.audioBuffer!, editStart, editEnd),
         muted: false,
         solo: false,
         volume: 1,
@@ -1062,7 +1062,8 @@ export default function Studio() {
           currentSource.current = source
           setIsPlaying(true)
           setIsPaused(false)
-          playbackStartTime.current = Date.now() / 1000
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+          playbackStartTime.current = audioContext.currentTime
           pausedAt.current = 0
           
           // Update main track buffer if it was just generated
@@ -1091,14 +1092,24 @@ export default function Studio() {
 
   const handlePause = () => {
     if (currentSource.current && isPlaying) {
-      const currentTime = Date.now() / 1000
-      pausedAt.current = currentTime - playbackStartTime.current
+      // Calculate how much has been played
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const elapsed = audioContext.currentTime - playbackStartTime.current
+      pausedAt.current = elapsed
       
+      // Stop the current source (Web Audio API doesn't support pause)
       currentSource.current.stop()
       currentSource.current = null
       
       setIsPlaying(false)
       setIsPaused(true)
+      
+      // Keep the playback position visible
+      const soundToPlay = previewSound || currentSound
+      if (soundToPlay?.audioBuffer) {
+        const position = Math.min(elapsed / soundToPlay.audioBuffer.duration, 1)
+        setPlaybackPosition(position)
+      }
     }
   }
 
@@ -1476,6 +1487,38 @@ export default function Studio() {
         max = Math.max(max, Math.abs(channelData[j]))
       }
       waveformData.push(max)
+    }
+    
+    return waveformData
+  }
+  
+  // Generate positioned waveform data for tracks with start/end positions
+  const generatePositionedWaveformData = (buffer: AudioBuffer, startPos: number, endPos: number): number[] => {
+    const waveformData = new Array(100).fill(0)
+    const channelData = buffer.getChannelData(0)
+    
+    // Calculate which portion of the 100 points this track occupies
+    const startIndex = Math.floor(startPos * 100)
+    const endIndex = Math.ceil(endPos * 100)
+    const trackPoints = endIndex - startIndex
+    
+    if (trackPoints <= 0) return waveformData
+    
+    // Calculate samples per point for this region
+    const samplesPerPoint = Math.floor(channelData.length / trackPoints)
+    
+    for (let i = 0; i < trackPoints; i++) {
+      const waveformIndex = startIndex + i
+      if (waveformIndex >= 0 && waveformIndex < 100) {
+        const start = i * samplesPerPoint
+        const end = Math.min(start + samplesPerPoint, channelData.length)
+        
+        let max = 0
+        for (let j = start; j < end; j++) {
+          max = Math.max(max, Math.abs(channelData[j]))
+        }
+        waveformData[waveformIndex] = max
+      }
     }
     
     return waveformData
@@ -2204,7 +2247,7 @@ export default function Studio() {
                       <div className="flex items-center justify-center gap-3">
                         <button 
                           onClick={handleStop}
-                          disabled={!isPlaying && !isPaused}
+                          disabled={!currentSound && !previewSound}
                           className="flex items-center justify-center w-14 h-14 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded-full transition-all"
                           title="Stop"
                         >
