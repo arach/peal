@@ -23,6 +23,7 @@ export default function Studio() {
   const [showVibePanel, setShowVibePanel] = useState(true)
   const [showParametersPanel, setShowParametersPanel] = useState(true)
   const [editMode, setEditMode] = useState(false)
+  const [insertMode, setInsertMode] = useState(false)
   const [trimMode, setTrimMode] = useState(false)
   const [trimStart, setTrimStart] = useState(0)
   const [trimEnd, setTrimEnd] = useState(1)
@@ -30,6 +31,24 @@ export default function Studio() {
   const [editEnd, setEditEnd] = useState(0.7)
   const [isDragging, setIsDragging] = useState<'start' | 'end' | 'region' | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
+  
+  // Track system state
+  interface Track {
+    id: string
+    name: string
+    audioBuffer: AudioBuffer | null
+    waveformData: number[] | null
+    muted: boolean
+    solo: boolean
+    volume: number
+    color: string
+    startPosition?: number // Position in the timeline (0-1)
+    endPosition?: number   // End position in the timeline (0-1)
+  }
+  
+  const [tracks, setTracks] = useState<Track[]>([])
+  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null)
+  const [showTracks, setShowTracks] = useState(false)
   
   // Vibe Designer state
   const [vibePrompt, setVibePrompt] = useState('')
@@ -40,7 +59,6 @@ export default function Studio() {
   const waveformCanvasRef = useRef<HTMLCanvasElement>(null)
   const timelineCanvasRef = useRef<HTMLCanvasElement>(null)
   const currentSource = useRef<AudioBufferSourceNode | null>(null)
-  const regenTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const playbackStartTime = useRef<number>(0)
   const pausedAt = useRef<number>(0)
   
@@ -59,9 +77,43 @@ export default function Studio() {
         setCurrentSound(sound)
         setEditedParams(sound.parameters)
         setShowParametersPanel(true)
+        setHasUnappliedChanges(false)
+        setPreviewSound(null)
+        
+        // Create main track for the loaded sound
+        const mainTrack: Track = {
+          id: `track-main-${sound.id}`,
+          name: 'Main',
+          audioBuffer: sound.audioBuffer,
+          waveformData: sound.waveformData,
+          muted: false,
+          solo: false,
+          volume: 1,
+          color: '#6b7280' // Gray for main track
+        }
+        setTracks([mainTrack])
+        
+        // Generate buffer for main track if it doesn't exist
+        if (!sound.audioBuffer) {
+          console.log('Generating buffer for main track...')
+          setTimeout(async () => {
+            await (generator as any).renderSound(sound)
+            console.log('Main track buffer generated:', !!sound.audioBuffer)
+            // Update the main track with the generated buffer
+            setTracks(prevTracks => {
+              const updated = prevTracks.map(t => 
+                t.id === mainTrack.id 
+                  ? { ...t, audioBuffer: sound.audioBuffer, waveformData: sound.waveformData }
+                  : t
+              )
+              console.log('Updated main track with buffer')
+              return updated
+            })
+          }, 100)
+        }
       }
     }
-  }, [searchParams, sounds])
+  }, [searchParams, sounds, generator])
 
   // Draw main waveform (clean, no trim overlays)
   const drawWaveform = (canvas: HTMLCanvasElement | null, waveformData: number[] | null, isPreview = false) => {
@@ -75,6 +127,70 @@ export default function Studio() {
     
     // Clear canvas
     ctx.clearRect(0, 0, width, height)
+    
+    // If in edit mode, highlight the edit region
+    if (editMode && !isPreview) {
+      const editStartX = editStart * width
+      const editEndX = editEnd * width
+      
+      // Dim non-edit regions
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'
+      ctx.fillRect(0, 0, editStartX, height)
+      ctx.fillRect(editEndX, 0, width - editEndX, height)
+      
+      // Highlight edit region
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.1)'
+      ctx.fillRect(editStartX, 0, editEndX - editStartX, height)
+      
+      // Draw edit boundaries
+      ctx.strokeStyle = '#3b82f6'
+      ctx.lineWidth = 2
+      ctx.setLineDash([5, 5])
+      
+      ctx.beginPath()
+      ctx.moveTo(editStartX, 0)
+      ctx.lineTo(editStartX, height)
+      ctx.stroke()
+      
+      ctx.beginPath()
+      ctx.moveTo(editEndX, 0)
+      ctx.lineTo(editEndX, height)
+      ctx.stroke()
+      
+      ctx.setLineDash([])
+    }
+    
+    // If in insert mode, highlight the insert region
+    if (insertMode && !isPreview) {
+      const editStartX = editStart * width
+      const editEndX = editEnd * width
+      
+      // Dim non-insert regions
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'
+      ctx.fillRect(0, 0, editStartX, height)
+      ctx.fillRect(editEndX, 0, width - editEndX, height)
+      
+      // Highlight insert region with purple
+      ctx.fillStyle = 'rgba(147, 51, 234, 0.1)'
+      ctx.fillRect(editStartX, 0, editEndX - editStartX, height)
+      
+      // Draw insert boundaries
+      ctx.strokeStyle = '#9333ea'
+      ctx.lineWidth = 2
+      ctx.setLineDash([5, 5])
+      
+      ctx.beginPath()
+      ctx.moveTo(editStartX, 0)
+      ctx.lineTo(editStartX, height)
+      ctx.stroke()
+      
+      ctx.beginPath()
+      ctx.moveTo(editEndX, 0)
+      ctx.lineTo(editEndX, height)
+      ctx.stroke()
+      
+      ctx.setLineDash([])
+    }
     
     // Draw background grid
     ctx.strokeStyle = 'rgba(75, 85, 99, 0.3)'
@@ -118,6 +234,20 @@ export default function Studio() {
     }
     
     ctx.stroke()
+    
+    // Draw playhead on waveform
+    if (playbackPosition > 0 && playbackPosition <= 1) {
+      const playheadX = playbackPosition * width
+      
+      // Draw playhead line
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = 2
+      ctx.setLineDash([])
+      ctx.beginPath()
+      ctx.moveTo(playheadX, 0)
+      ctx.lineTo(playheadX, height)
+      ctx.stroke()
+    }
   }
 
   // Draw timeline with trim controls
@@ -261,6 +391,52 @@ export default function Studio() {
       }
     }
     
+    // Overlay: Insert mode
+    if (insertMode) {
+      const editStartX = editStart * width
+      const editEndX = editEnd * width
+      
+      // Focus area background with purple
+      ctx.fillStyle = 'rgba(147, 51, 234, 0.2)'
+      ctx.fillRect(editStartX, 0, editEndX - editStartX, height)
+      
+      // Focus area border
+      ctx.strokeStyle = '#9333ea'
+      ctx.lineWidth = 2
+      ctx.strokeRect(editStartX, 0, editEndX - editStartX, height)
+      
+      // Draw insert handles
+      ctx.fillStyle = '#9333ea'
+      
+      // Start handle
+      ctx.fillRect(editStartX - 4, 0, 8, height)
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(editStartX - 2, height/4, 4, height/2)
+      
+      // End handle  
+      ctx.fillStyle = '#9333ea'
+      ctx.fillRect(editEndX - 4, 0, 8, height)
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(editEndX - 2, height/4, 4, height/2)
+      
+      // Add plus icon in center to indicate insertion
+      const centerX = (editStartX + editEndX) / 2
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = 2
+      
+      // Draw plus sign
+      const plusSize = 8
+      ctx.beginPath()
+      ctx.moveTo(centerX - plusSize/2, height/2)
+      ctx.lineTo(centerX + plusSize/2, height/2)
+      ctx.stroke()
+      
+      ctx.beginPath()
+      ctx.moveTo(centerX, height/2 - plusSize/2)
+      ctx.lineTo(centerX, height/2 + plusSize/2)
+      ctx.stroke()
+    }
+    
     // Draw time markers
     ctx.fillStyle = 'rgba(156, 163, 175, 0.8)'
     ctx.font = '10px sans-serif'
@@ -269,15 +445,47 @@ export default function Studio() {
       const timeMs = currentSound ? (i / 10) * currentSound.duration : 0
       ctx.fillText(`${timeMs.toFixed(0)}ms`, x + 2, height - 2)
     }
+    
+    // Draw playhead
+    if (playbackPosition > 0 && playbackPosition <= 1) {
+      const playheadX = playbackPosition * width
+      
+      // Draw playhead line
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.moveTo(playheadX, 0)
+      ctx.lineTo(playheadX, height)
+      ctx.stroke()
+      
+      // Draw playhead triangle at top
+      ctx.fillStyle = '#ffffff'
+      ctx.beginPath()
+      ctx.moveTo(playheadX - 6, 0)
+      ctx.lineTo(playheadX + 6, 0)
+      ctx.lineTo(playheadX, 10)
+      ctx.closePath()
+      ctx.fill()
+    }
   }
 
-  // Draw main waveform when sound or preview changes
+  // Draw main waveform when sound, preview, or edit mode changes
   useEffect(() => {
+    // If a track is selected and we're in edit mode, show the track's waveform
+    if (selectedTrackId && (editMode || insertMode)) {
+      const selectedTrack = tracks.find(t => t.id === selectedTrackId)
+      if (selectedTrack?.waveformData) {
+        drawWaveform(waveformCanvasRef.current, selectedTrack.waveformData, false)
+        return
+      }
+    }
+    
+    // Otherwise show the main sound or preview
     const soundToDisplay = previewSound || currentSound
     if (soundToDisplay?.waveformData) {
       drawWaveform(waveformCanvasRef.current, soundToDisplay.waveformData, !!previewSound)
     }
-  }, [currentSound?.waveformData, previewSound?.waveformData])
+  }, [currentSound?.waveformData, previewSound?.waveformData, editMode, insertMode, editStart, editEnd, playbackPosition, selectedTrackId, tracks])
 
   // Draw timeline when sound, selection values, or mode changes
   useEffect(() => {
@@ -285,24 +493,33 @@ export default function Studio() {
     if (soundToDisplay?.waveformData) {
       drawTimeline(timelineCanvasRef.current, soundToDisplay.waveformData)
     }
-  }, [currentSound?.waveformData, previewSound?.waveformData, trimStart, trimEnd, editStart, editEnd, editMode, trimMode, playbackPosition])
+  }, [currentSound?.waveformData, previewSound?.waveformData, trimStart, trimEnd, editStart, editEnd, editMode, insertMode, trimMode, playbackPosition])
 
-  // Debounced real-time regeneration (regional when in edit mode)
-  const debouncedRegenerate = useCallback(() => {
-    if (regenTimeoutRef.current) {
-      clearTimeout(regenTimeoutRef.current)
-    }
+  // Track if parameters have changed since last generation
+  const [hasUnappliedChanges, setHasUnappliedChanges] = useState(false)
+  
+  // Update playback position during playback
+  useEffect(() => {
+    if (!isPlaying || isPaused) return
     
-    regenTimeoutRef.current = setTimeout(async () => {
-      if (currentSound && editedParams) {
-        if (editMode) {
-          await generateRegionalPreview()
-        } else {
-          await generatePreview()
-        }
+    const interval = setInterval(() => {
+      const soundToPlay = previewSound || currentSound
+      if (!soundToPlay?.audioBuffer) return
+      
+      const currentTime = Date.now() / 1000
+      const elapsed = currentTime - playbackStartTime.current
+      const duration = soundToPlay.audioBuffer.duration
+      const position = Math.min(elapsed / duration, 1)
+      
+      setPlaybackPosition(position)
+      
+      if (position >= 1) {
+        clearInterval(interval)
       }
-    }, 300) // 300ms debounce
-  }, [currentSound, editedParams, editMode])
+    }, 16) // ~60fps update rate
+    
+    return () => clearInterval(interval)
+  }, [isPlaying, isPaused, currentSound, previewSound])
 
   const updateParam = (key: string, value: any) => {
     setEditedParams((prev: any) => {
@@ -312,7 +529,7 @@ export default function Studio() {
       }
       return newParams
     })
-    debouncedRegenerate()
+    setHasUnappliedChanges(true)
   }
 
   const updateEffect = (effect: string, enabled: boolean) => {
@@ -326,7 +543,23 @@ export default function Studio() {
       }
       return newParams
     })
-    debouncedRegenerate()
+    setHasUnappliedChanges(true)
+  }
+
+  const applyChanges = async () => {
+    if (!hasUnappliedChanges || !currentSound || !editedParams) return
+    
+    if (insertMode) {
+      await generateInsertPreview()
+    } else if (editMode && selectedTrackId) {
+      // If a track is selected, apply changes to that track
+      await generateRegionalPreviewForTrack()
+    } else if (editMode) {
+      await generateRegionalPreview()
+    } else {
+      await generatePreview()
+    }
+    setHasUnappliedChanges(false)
   }
 
   const generatePreview = async () => {
@@ -353,41 +586,145 @@ export default function Studio() {
     }
   }
 
+  const generateRegionalPreviewForTrack = async () => {
+    if (isGenerating || !currentSound || !editedParams || !selectedTrackId) return
+    
+    const track = tracks.find(t => t.id === selectedTrackId)
+    if (!track || !track.audioBuffer) return
+    
+    setIsGenerating(true)
+    try {
+      // Step 1: Generate a FULL sound with ALL new parameters
+      const workingSound: Sound = {
+        ...currentSound,
+        id: `${currentSound.id}-track-working-${Date.now()}`,
+        parameters: editedParams,
+        audioBuffer: null,
+        waveformData: null
+      }
+
+      await (generator as any).renderSound(workingSound)
+      
+      await new Promise(resolve => setTimeout(resolve, 50))
+      
+      if (!workingSound.audioBuffer) {
+        throw new Error('Failed to generate working buffer')
+      }
+
+      // Step 2: Extract the time-based region from the working buffer
+      const extractedRegion = await extractTimeRegion(
+        workingSound.audioBuffer,
+        editStart,
+        editEnd,
+        currentSound.parameters.duration
+      )
+
+      if (!extractedRegion) {
+        throw new Error('Failed to extract region from working buffer')
+      }
+
+      // Step 3: Paste the extracted region into the track's buffer
+      const compositBuffer = await pasteRegionIntoOriginal(
+        track.audioBuffer,
+        extractedRegion,
+        editStart,
+        editEnd
+      )
+
+      if (!compositBuffer) {
+        throw new Error('Failed to create composite buffer')
+      }
+
+      // Update the track with the new buffer
+      setTracks(tracks.map(t => 
+        t.id === selectedTrackId
+          ? {
+              ...t,
+              audioBuffer: compositBuffer,
+              waveformData: generateWaveformData(compositBuffer)
+            }
+          : t
+      ))
+      
+      // Clear preview since we've updated the track directly
+      setPreviewSound(null)
+    } catch (error) {
+      console.error('Error generating track regional preview:', error)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
   const generateRegionalPreview = async () => {
     if (isGenerating || !currentSound || !editedParams) return
     
     setIsGenerating(true)
     try {
-      // Step 1: Generate full sound with new parameters BUT preserve original duration
-      // This ensures the splice calculations work correctly
-      const newSound: Sound = {
+      // For now, disable regional editing for composite/click sounds with delays
+      // These sounds have complex timing that makes regional editing challenging
+      if (currentSound.type === 'click' && currentSound.tags.includes('vibe-generated')) {
+        console.warn('Regional editing not yet supported for composite click sounds')
+        // Fall back to full preview generation
+        await generatePreview()
+        return
+      }
+
+      // Ensure current sound has audio buffer
+      if (!currentSound.audioBuffer) {
+        console.log('Current sound missing audio buffer, regenerating...')
+        await (generator as any).renderSound(currentSound)
+        // Give it time to set the buffer
+        await new Promise(resolve => setTimeout(resolve, 100))
+        
+        if (!currentSound.audioBuffer) {
+          console.error('Failed to generate audio buffer for current sound')
+          throw new Error('Could not generate audio buffer for current sound')
+        }
+      }
+
+      // Step 1: Generate a FULL sound with ALL new parameters
+      // This is our "working buffer" that might have different duration/characteristics
+      const workingSound: Sound = {
         ...currentSound,
-        id: `${currentSound.id}-regional-${Date.now()}`,
-        parameters: {
-          ...editedParams,
-          // CRITICAL: Force same duration as original to maintain timing alignment
-          duration: currentSound.parameters.duration
-        },
+        id: `${currentSound.id}-working-${Date.now()}`,
+        parameters: editedParams, // Use ALL edited params including duration changes
         audioBuffer: null,
         waveformData: null
       }
 
-      await (generator as any).renderSound(newSound)
+      await (generator as any).renderSound(workingSound)
       
-      if (!newSound.audioBuffer || !currentSound.audioBuffer) {
-        throw new Error('Failed to generate audio buffers')
+      // Wait a moment for the buffer to be set
+      await new Promise(resolve => setTimeout(resolve, 50))
+      
+      if (!workingSound.audioBuffer) {
+        console.error('Failed to generate working buffer')
+        throw new Error('Failed to generate working buffer')
       }
 
-      // Step 2: Create composite buffer by splicing region
-      const compositBuffer = await spliceRegion(
+      // Step 2: Extract the time-based region from the working buffer
+      // This handles cases where duration/effects change the waveform timing
+      const extractedRegion = await extractTimeRegion(
+        workingSound.audioBuffer,
+        editStart,
+        editEnd,
+        currentSound.parameters.duration
+      )
+
+      if (!extractedRegion) {
+        throw new Error('Failed to extract region from working buffer')
+      }
+
+      // Step 3: Paste the extracted region into the original sound
+      const compositBuffer = await pasteRegionIntoOriginal(
         currentSound.audioBuffer,
-        newSound.audioBuffer,
+        extractedRegion,
         editStart,
         editEnd
       )
 
       if (compositBuffer) {
-        // Step 3: Create preview sound with spliced audio
+        // Step 4: Create preview sound with the composite audio
         const regionalPreview: Sound = {
           ...currentSound,
           id: `${currentSound.id}-regional-preview-${Date.now()}`,
@@ -404,8 +741,206 @@ export default function Studio() {
     }
   }
 
+  const generateInsertPreview = async () => {
+    if (isGenerating || !currentSound || !editedParams) return
+    
+    setIsGenerating(true)
+    try {
+      // Ensure current sound has audio buffer
+      if (!currentSound.audioBuffer) {
+        console.log('Current sound missing audio buffer, regenerating...')
+        await (generator as any).renderSound(currentSound)
+        await new Promise(resolve => setTimeout(resolve, 100))
+      }
+
+      if (!currentSound.audioBuffer) {
+        throw new Error('Failed to get audio buffer for current sound')
+      }
+
+      // Create new sound for the insert region
+      const insertSound: Sound = {
+        ...currentSound,
+        id: `${currentSound.id}-insert-${Date.now()}`,
+        parameters: editedParams,
+        audioBuffer: null,
+        waveformData: null
+      }
+
+      // Generate the insert sound
+      console.log('Generating insert sound:', insertSound.id, 'type:', insertSound.type)
+      await (generator as any).renderSound(insertSound)
+      
+      if (!insertSound.audioBuffer) {
+        throw new Error('Failed to generate insert sound')
+      }
+
+      // Create composite buffer with the inserted sound
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const originalBuffer = currentSound.audioBuffer
+      const insertBuffer = insertSound.audioBuffer
+      
+      // Calculate insertion points
+      const insertStartSample = Math.floor(editStart * originalBuffer.length)
+      const insertEndSample = Math.floor(editEnd * originalBuffer.length)
+      const regionSamples = insertEndSample - insertStartSample
+      
+      // Create output buffer
+      const outputBuffer = audioContext.createBuffer(
+        originalBuffer.numberOfChannels,
+        originalBuffer.length,
+        originalBuffer.sampleRate
+      )
+      
+      // Process each channel
+      for (let channel = 0; channel < originalBuffer.numberOfChannels; channel++) {
+        const originalData = originalBuffer.getChannelData(channel)
+        const insertData = insertBuffer.getChannelData(channel)
+        const outputData = outputBuffer.getChannelData(channel)
+        
+        // Copy original data
+        outputData.set(originalData)
+        
+        // Insert the new sound in the region
+        const samplesToInsert = Math.min(insertBuffer.length, regionSamples)
+        const crossfadeSamples = Math.min(256, Math.floor(samplesToInsert * 0.05)) // 5% or 256 samples
+        
+        for (let i = 0; i < samplesToInsert; i++) {
+          if (insertStartSample + i < outputBuffer.length) {
+            let insertValue = insertData[i] || 0
+            let originalValue = originalData[insertStartSample + i] || 0
+            
+            // Apply crossfade at boundaries
+            let mixRatio = 1.0
+            if (i < crossfadeSamples) {
+              // Fade in
+              mixRatio = i / crossfadeSamples
+            } else if (i > samplesToInsert - crossfadeSamples) {
+              // Fade out
+              mixRatio = (samplesToInsert - i) / crossfadeSamples
+            }
+            
+            // Mix insert with original (additive)
+            outputData[insertStartSample + i] = originalValue * (1 - mixRatio) + insertValue * mixRatio + originalValue * mixRatio * 0.5
+            
+            // Prevent clipping
+            outputData[insertStartSample + i] = Math.max(-1, Math.min(1, outputData[insertStartSample + i]))
+          }
+        }
+      }
+      
+      await audioContext.close()
+      
+      // Create the preview sound
+      // Don't create a preview - inserts should only add tracks
+      // Clear any existing preview
+      setPreviewSound(null)
+      
+      // Auto-create a track for the inserted sound with position info
+      // Use the insertSound's buffer directly, not the composite
+      const newTrack: Track = {
+        id: `track-${Date.now()}`,
+        name: `Insert ${tracks.filter(t => t.name.includes('Insert')).length + 1}`,
+        audioBuffer: insertSound.audioBuffer,
+        waveformData: insertSound.waveformData,
+        muted: false,
+        solo: false,
+        volume: 1,
+        color: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'][tracks.length % 5],
+        startPosition: editStart,
+        endPosition: editEnd
+      }
+      setTracks([...tracks, newTrack])
+      setSelectedTrackId(newTrack.id)
+      
+      // Auto-show tracks panel when creating a new track
+      if (!showTracks) {
+        setShowTracks(true)
+      }
+    } catch (error) {
+      console.error('Error generating insert preview:', error)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  // Mix all tracks into a single buffer for playback
+  const mixTracks = async (): Promise<AudioBuffer | null> => {
+    console.log('mixTracks called, all tracks:', tracks.map(t => ({ name: t.name, muted: t.muted, hasBuffer: !!t.audioBuffer })))
+    const activeTracks = tracks.filter(t => t.audioBuffer && !t.muted)
+    console.log('Active tracks (not muted with buffer):', activeTracks.length)
+    if (activeTracks.length === 0) return null
+    
+    // Handle solo mode
+    const soloTracks = activeTracks.filter(t => t.solo)
+    const tracksToMix = soloTracks.length > 0 ? soloTracks : activeTracks
+    console.log('Tracks to mix:', tracksToMix.length, 'solo mode:', soloTracks.length > 0)
+    
+    if (tracksToMix.length === 0) return null
+    
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const sampleRate = tracksToMix[0].audioBuffer!.sampleRate
+    const numberOfChannels = tracksToMix[0].audioBuffer!.numberOfChannels
+    
+    // Calculate total duration needed based on track positions and durations
+    let totalDuration = 0
+    for (const track of tracksToMix) {
+      const startPos = track.startPosition || 0
+      const trackDuration = track.audioBuffer!.length / sampleRate
+      const endTime = startPos * (currentSound?.duration || 1000) / 1000 + trackDuration
+      totalDuration = Math.max(totalDuration, endTime)
+    }
+    
+    const totalSamples = Math.ceil(totalDuration * sampleRate)
+    const mixedBuffer = audioContext.createBuffer(numberOfChannels, totalSamples, sampleRate)
+    
+    for (let channel = 0; channel < numberOfChannels; channel++) {
+      const mixedData = mixedBuffer.getChannelData(channel)
+      
+      for (const track of tracksToMix) {
+        const trackData = track.audioBuffer!.getChannelData(channel)
+        const startPos = track.startPosition || 0
+        const startSample = Math.floor(startPos * (currentSound?.duration || 1000) / 1000 * sampleRate)
+        
+        // Copy track data to the correct position in the mixed buffer
+        for (let i = 0; i < trackData.length; i++) {
+          if (startSample + i < totalSamples) {
+            mixedData[startSample + i] += trackData[i] * track.volume
+          }
+        }
+      }
+      
+      // Normalize to prevent clipping
+      const maxValue = Math.max(...mixedData.map(Math.abs))
+      if (maxValue > 1) {
+        for (let i = 0; i < mixedData.length; i++) {
+          mixedData[i] /= maxValue
+        }
+      }
+    }
+    
+    await audioContext.close()
+    return mixedBuffer
+  }
+
   const handlePlay = async () => {
-    const soundToPlay = previewSound || currentSound
+    let soundToPlay = previewSound || currentSound
+    
+    // If we have tracks, always use the mixed output (regardless of panel visibility)
+    if (tracks.length > 0 && !previewSound) {
+      console.log('Mixing tracks:', tracks.length, 'tracks')
+      const mixedBuffer = await mixTracks()
+      if (mixedBuffer) {
+        console.log('Mixed buffer created, duration:', mixedBuffer.duration)
+        soundToPlay = {
+          ...currentSound!,
+          audioBuffer: mixedBuffer,
+          waveformData: generateWaveformData(mixedBuffer)
+        }
+      } else {
+        console.log('No mixed buffer returned')
+      }
+    }
+    
     if (!soundToPlay) return
 
     if (isPaused) {
@@ -446,6 +981,15 @@ export default function Studio() {
           setIsPaused(false)
           playbackStartTime.current = Date.now() / 1000
           pausedAt.current = 0
+          
+          // Update main track buffer if it was just generated
+          if (soundToPlay === currentSound && currentSound.audioBuffer) {
+            setTracks(tracks.map(t => 
+              t.id === `track-main-${currentSound.id}`
+                ? { ...t, audioBuffer: currentSound.audioBuffer, waveformData: currentSound.waveformData }
+                : t
+            ))
+          }
           
           source.onended = () => {
             setIsPlaying(false)
@@ -488,7 +1032,7 @@ export default function Studio() {
 
   // Timeline interaction handlers
   const handleTimelineMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!editMode && !trimMode) return // Only interact when in edit or trim mode
+    if (!editMode && !trimMode && !insertMode) return // Only interact when in edit, trim, or insert mode
     
     const canvas = timelineCanvasRef.current
     if (!canvas) return
@@ -513,7 +1057,7 @@ export default function Studio() {
         setIsDragging('region')
         setDragOffset(normalizedX - trimStartX)
       }
-    } else if (editMode) {
+    } else if (editMode || insertMode) {
       const editStartX = editStart
       const editEndX = editEnd
       
@@ -541,10 +1085,15 @@ export default function Studio() {
     const normalizedX = Math.max(0, Math.min(1, x / canvas.offsetWidth))
 
     if (trimMode) {
+      // Define minimum region width (5% of total duration)
+      const MIN_REGION_WIDTH = 0.05
+      
       if (isDragging === 'start') {
-        setTrimStart(Math.min(normalizedX, trimEnd - 0.01))
+        const maxStart = trimEnd - MIN_REGION_WIDTH
+        setTrimStart(Math.min(normalizedX, maxStart))
       } else if (isDragging === 'end') {
-        setTrimEnd(Math.max(normalizedX, trimStart + 0.01))
+        const minEnd = trimStart + MIN_REGION_WIDTH
+        setTrimEnd(Math.max(normalizedX, minEnd))
       } else if (isDragging === 'region') {
         // Drag entire trim region
         const regionWidth = trimEnd - trimStart
@@ -553,11 +1102,16 @@ export default function Studio() {
         setTrimStart(newStart)
         setTrimEnd(newEnd)
       }
-    } else if (editMode) {
+    } else if (editMode || insertMode) {
+      // Define minimum region width (5% of total duration)
+      const MIN_REGION_WIDTH = 0.05
+      
       if (isDragging === 'start') {
-        setEditStart(Math.min(normalizedX, editEnd - 0.01))
+        const maxStart = editEnd - MIN_REGION_WIDTH
+        setEditStart(Math.min(normalizedX, maxStart))
       } else if (isDragging === 'end') {
-        setEditEnd(Math.max(normalizedX, editStart + 0.01))
+        const minEnd = editStart + MIN_REGION_WIDTH
+        setEditEnd(Math.max(normalizedX, minEnd))
       } else if (isDragging === 'region') {
         // Drag entire edit region
         const regionWidth = editEnd - editStart
@@ -579,7 +1133,7 @@ export default function Studio() {
     const canvas = timelineCanvasRef.current
     if (!canvas) return
 
-    if (!editMode && !trimMode) {
+    if (!editMode && !trimMode && !insertMode) {
       canvas.style.cursor = 'default'
       return
     }
@@ -601,7 +1155,17 @@ export default function Studio() {
       } else if (insideRegion) {
         cursor = isDragging === 'region' ? 'grabbing' : 'grab'
       }
-    } else if (editMode) {
+    } else if (editMode || insertMode) {
+      const nearStartHandle = Math.abs(normalizedX - editStart) < HANDLE_TOLERANCE
+      const nearEndHandle = Math.abs(normalizedX - editEnd) < HANDLE_TOLERANCE
+      const insideRegion = normalizedX > editStart + HANDLE_TOLERANCE && normalizedX < editEnd - HANDLE_TOLERANCE
+      
+      if (nearStartHandle || nearEndHandle) {
+        cursor = 'col-resize'
+      } else if (insideRegion) {
+        cursor = isDragging === 'region' ? 'grabbing' : 'grab'
+      }
+    } else if (insertMode) {
       const nearStartHandle = Math.abs(normalizedX - editStart) < HANDLE_TOLERANCE
       const nearEndHandle = Math.abs(normalizedX - editEnd) < HANDLE_TOLERANCE
       const insideRegion = normalizedX > editStart + HANDLE_TOLERANCE && normalizedX < editEnd - HANDLE_TOLERANCE
@@ -641,76 +1205,175 @@ export default function Studio() {
     return { current: currentIndex + 1, total: sounds.length }
   }
 
-  // Audio splicing utility
-  const spliceRegion = async (
-    originalBuffer: AudioBuffer, 
-    modifiedBuffer: AudioBuffer, 
-    startRatio: number, 
+
+  // Extract a time-based region from a buffer
+  const extractTimeRegion = async (
+    sourceBuffer: AudioBuffer,
+    startRatio: number,
+    endRatio: number,
+    originalDuration: number
+  ): Promise<AudioBuffer | null> => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      
+      // Calculate the TIME boundaries in the original sound
+      const startTime = startRatio * originalDuration
+      const endTime = endRatio * originalDuration
+      const regionDuration = endTime - startTime
+      
+      // Calculate corresponding sample positions in the source buffer
+      // This handles cases where the source might have different duration
+      const sourceDuration = sourceBuffer.length / sourceBuffer.sampleRate
+      const sourceStartRatio = startTime / sourceDuration
+      const sourceEndRatio = endTime / sourceDuration
+      
+      // Clamp ratios to valid range
+      const clampedStartRatio = Math.max(0, Math.min(1, sourceStartRatio))
+      const clampedEndRatio = Math.max(0, Math.min(1, sourceEndRatio))
+      
+      let startSample = Math.floor(clampedStartRatio * sourceBuffer.length)
+      let endSample = Math.floor(clampedEndRatio * sourceBuffer.length)
+      let sampleCount = endSample - startSample
+      
+      // Ensure we have at least some samples to extract
+      const minSamples = 256 // Minimum reasonable size
+      
+      // Special case: if the source buffer is smaller than minSamples
+      if (sourceBuffer.length < minSamples) {
+        console.warn(`Source buffer too small (${sourceBuffer.length} samples), using entire buffer`)
+        startSample = 0
+        endSample = sourceBuffer.length
+        sampleCount = sourceBuffer.length
+      } else if (sampleCount < minSamples) {
+        console.warn(`Region too small (${sampleCount} samples), using minimum size of ${minSamples}`)
+        
+        // Try to extend the region to meet minimum size
+        const halfMin = Math.floor(minSamples / 2)
+        let newStartSample = Math.max(0, startSample - halfMin)
+        let newEndSample = Math.min(sourceBuffer.length, newStartSample + minSamples)
+        
+        // If we hit the end, adjust start
+        if (newEndSample - newStartSample < minSamples) {
+          newStartSample = Math.max(0, newEndSample - minSamples)
+        }
+        
+        console.log('Adjusted extraction:', {
+          original: { startSample, endSample, sampleCount },
+          adjusted: { startSample: newStartSample, endSample: newEndSample, sampleCount: newEndSample - newStartSample }
+        })
+        
+        startSample = newStartSample
+        endSample = newEndSample
+        sampleCount = endSample - startSample
+      }
+      
+      console.log('Extracting time region:', {
+        originalTiming: { startTime, endTime, regionDuration },
+        sourceMapping: { sourceStartRatio, sourceEndRatio },
+        samples: { startSample, endSample, sampleCount }
+      })
+      
+      // Always create a buffer with at least minSamples (will pad with silence if needed)
+      const finalSampleCount = Math.max(minSamples, sampleCount)
+      
+      // Create a buffer containing just the extracted region
+      const extractedBuffer = audioContext.createBuffer(
+        sourceBuffer.numberOfChannels,
+        finalSampleCount,
+        sourceBuffer.sampleRate
+      )
+      
+      // Copy the region data
+      for (let channel = 0; channel < sourceBuffer.numberOfChannels; channel++) {
+        const sourceData = sourceBuffer.getChannelData(channel)
+        const extractedData = extractedBuffer.getChannelData(channel)
+        
+        // Copy the samples from the adjusted region
+        for (let i = 0; i < finalSampleCount; i++) {
+          if (startSample + i < sourceBuffer.length) {
+            extractedData[i] = sourceData[startSample + i]
+          } else {
+            extractedData[i] = 0 // Pad with silence if we run out of samples
+          }
+        }
+      }
+      
+      await audioContext.close()
+      return extractedBuffer
+    } catch (error) {
+      console.error('Error extracting time region:', error)
+      return null
+    }
+  }
+
+  // Paste an extracted region into the original sound at the correct position
+  const pasteRegionIntoOriginal = async (
+    originalBuffer: AudioBuffer,
+    extractedRegion: AudioBuffer,
+    startRatio: number,
     endRatio: number
   ): Promise<AudioBuffer | null> => {
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
       
-      // Validate buffers have same properties
-      if (originalBuffer.length !== modifiedBuffer.length) {
-        console.error('Buffer length mismatch:', originalBuffer.length, 'vs', modifiedBuffer.length)
-        return null
-      }
-      
-      if (originalBuffer.sampleRate !== modifiedBuffer.sampleRate) {
-        console.error('Sample rate mismatch:', originalBuffer.sampleRate, 'vs', modifiedBuffer.sampleRate)
-        return null
-      }
-      
-      // Calculate sample positions
+      // Calculate where to paste in the original
       const startSample = Math.floor(startRatio * originalBuffer.length)
       const endSample = Math.floor(endRatio * originalBuffer.length)
-      const regionLength = endSample - startSample
+      const expectedSampleCount = endSample - startSample
       
-      // Validate region bounds
-      if (startSample < 0 || endSample > originalBuffer.length || startSample >= endSample) {
-        console.error('Invalid region bounds:', { startSample, endSample, bufferLength: originalBuffer.length })
-        return null
-      }
-      
-      console.log('Splicing region:', {
-        startRatio: (startRatio * 100).toFixed(1) + '%',
-        endRatio: (endRatio * 100).toFixed(1) + '%',
-        startSample,
-        endSample,
-        regionLength,
-        bufferLength: originalBuffer.length,
-        regionDurationMs: (regionLength / originalBuffer.sampleRate * 1000).toFixed(1)
+      console.log('Pasting region:', {
+        originalLength: originalBuffer.length,
+        extractedLength: extractedRegion.length,
+        pastePosition: { startSample, endSample, expectedSampleCount }
       })
       
-      // Create output buffer with same length as original
+      // Create output buffer (copy of original)
       const outputBuffer = audioContext.createBuffer(
         originalBuffer.numberOfChannels,
         originalBuffer.length,
         originalBuffer.sampleRate
       )
       
-      // Copy data for each channel
+      // Process each channel
       for (let channel = 0; channel < originalBuffer.numberOfChannels; channel++) {
         const originalData = originalBuffer.getChannelData(channel)
-        const modifiedData = modifiedBuffer.getChannelData(channel)
+        const extractedData = extractedRegion.getChannelData(channel)
         const outputData = outputBuffer.getChannelData(channel)
         
-        // Start with original audio (full copy)
+        // Copy all original data first
         outputData.set(originalData)
         
-        // Extract and splice in the modified region
-        // Take the region from the modified buffer and put it in the same position in output
-        const modifiedRegion = modifiedData.slice(startSample, endSample)
-        outputData.set(modifiedRegion, startSample)
+        // Paste the extracted region with crossfade at boundaries
+        const samplesToWrite = Math.min(extractedRegion.length, expectedSampleCount)
+        const crossfadeSamples = Math.min(256, Math.floor(samplesToWrite * 0.01)) // 1% or 256 samples
         
-        console.log(`Channel ${channel}: Spliced ${modifiedRegion.length} samples at position ${startSample}`)
+        for (let i = 0; i < samplesToWrite; i++) {
+          if (startSample + i < outputBuffer.length) {
+            let fadeAmount = 1.0
+            
+            // Fade in at start
+            if (i < crossfadeSamples) {
+              fadeAmount = i / crossfadeSamples
+            }
+            // Fade out at end
+            else if (i >= samplesToWrite - crossfadeSamples) {
+              fadeAmount = (samplesToWrite - i) / crossfadeSamples
+            }
+            
+            // Crossfade between original and extracted
+            outputData[startSample + i] = 
+              originalData[startSample + i] * (1 - fadeAmount) +
+              extractedData[i] * fadeAmount
+          }
+        }
+        
+        console.log(`Channel ${channel}: Pasted ${samplesToWrite} samples at position ${startSample} with ${crossfadeSamples}-sample crossfade`)
       }
       
       await audioContext.close()
       return outputBuffer
     } catch (error) {
-      console.error('Error splicing audio region:', error)
+      console.error('Error pasting region:', error)
       return null
     }
   }
@@ -855,6 +1518,7 @@ export default function Studio() {
     setPreviewSound(null)
     setVibeGeneratedSounds([])
     setVibePrompt('')
+    setHasUnappliedChanges(false)
   }
 
   const handleVibePlaySound = async (sound: Sound) => {
@@ -923,37 +1587,8 @@ export default function Studio() {
           </div>
         </div>
 
-        {/* Center - Navigation Controls */}
-        {currentSound && (
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={navigateToPrevious}
-              disabled={!currentSound || sounds.findIndex(s => s.id === currentSound.id) === 0}
-              className="flex items-center justify-center w-10 h-10 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded-lg transition-colors"
-              title="Previous sound"
-            >
-              <ChevronLeft size={18} className="text-gray-300" />
-            </button>
-            
-            <div className="text-center px-3">
-              <div className="text-sm font-medium text-gray-100">
-                Sound {getCurrentSoundIndex().current} of {getCurrentSoundIndex().total}
-              </div>
-              <div className="text-xs text-gray-400">
-                Navigate Library
-              </div>
-            </div>
-            
-            <button 
-              onClick={navigateToNext}
-              disabled={!currentSound || sounds.findIndex(s => s.id === currentSound.id) === sounds.length - 1}
-              className="flex items-center justify-center w-10 h-10 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded-lg transition-colors"
-              title="Next sound"
-            >
-              <ChevronRight size={18} className="text-gray-300" />
-            </button>
-          </div>
-        )}
+        {/* Center - Empty for now */}
+        <div></div>
 
         {/* Right - Project Actions */}
         <div className="flex items-center gap-2">
@@ -1201,13 +1836,18 @@ export default function Studio() {
                 </div>
 
                 {/* Main Waveform Display */}
-                <div className="flex-1 flex flex-col p-8">
-                  <div className="w-full max-w-4xl mx-auto space-y-6">
+                <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+                  <div className="space-y-4">
                     {/* Main Waveform */}
                     <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                       <div className="flex items-center justify-between mb-4">
                         <h4 className="text-sm font-medium text-gray-300">
-                          Waveform {previewSound ? '(Preview)' : '(Original)'}
+                          Waveform {selectedTrackId && (editMode || insertMode) 
+                            ? `(${tracks.find(t => t.id === selectedTrackId)?.name || 'Track'})`
+                            : previewSound 
+                              ? '(Preview)' 
+                              : '(Original)'
+                          }
                         </h4>
                         <div className="flex items-center gap-2 text-xs text-gray-400">
                           <span>{currentSound.duration}ms</span>
@@ -1226,172 +1866,442 @@ export default function Studio() {
                     </div>
 
                     {/* Timeline & Trimmer */}
-                    <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-4">
-                          <h4 className="text-sm font-medium text-gray-300">Timeline</h4>
-                          <div className="flex items-center gap-2">
+                    <div className="bg-gray-900 rounded-xl border border-gray-800">
+                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-800 bg-gray-900/50">
+                        <div className="flex items-center gap-3">
+                          <h4 className="text-xs font-semibold text-gray-200 uppercase tracking-wider">Timeline</h4>
+                          <div className="flex items-center gap-1">
                             <button
                               onClick={() => {
                                 setEditMode(!editMode)
-                                if (!editMode) setTrimMode(false) // Only one mode at a time
+                                if (!editMode) {
+                                  setTrimMode(false)
+                                  setInsertMode(false)
+                                }
                               }}
-                              className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+                              className={`flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded transition-all ${
                                 editMode
-                                  ? 'bg-blue-600 text-white' 
-                                  : 'bg-gray-800 text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                                  ? 'bg-blue-500 text-white shadow-sm' 
+                                  : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
                               }`}
+                              title="Modify existing audio in selected region"
                             >
                               <Edit3 size={10} />
-                              {editMode ? 'Exit Edit' : 'Edit Mode'}
+                              {editMode ? 'Exit' : 'Edit'}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setInsertMode(!insertMode)
+                                if (!insertMode) {
+                                  setEditMode(false)
+                                  setTrimMode(false)
+                                }
+                              }}
+                              className={`flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded transition-all ${
+                                insertMode
+                                  ? 'bg-purple-500 text-white shadow-sm' 
+                                  : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
+                              }`}
+                              title="Insert new sound in selected region"
+                            >
+                              <Wand2 size={10} />
+                              {insertMode ? 'Exit' : 'Insert'}
                             </button>
                             <button
                               onClick={() => {
                                 setTrimMode(!trimMode)
-                                if (!trimMode) setEditMode(false) // Only one mode at a time
+                                if (!trimMode) {
+                                  setEditMode(false)
+                                  setInsertMode(false)
+                                }
                               }}
-                              className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+                              className={`flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded transition-all ${
                                 trimMode
-                                  ? 'bg-yellow-600 text-white' 
-                                  : 'bg-gray-800 text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                                  ? 'bg-yellow-500 text-white shadow-sm' 
+                                  : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
                               }`}
+                              title="Trim audio to keep only selected region"
                             >
                               <Scissors size={10} />
-                              {trimMode ? 'Exit Trim' : 'Trim Mode'}
+                              {trimMode ? 'Exit' : 'Trim'}
+                            </button>
+                            
+                            <div className="w-px h-3.5 bg-gray-700 mx-1"></div>
+                            
+                            <button
+                              onClick={() => setShowTracks(!showTracks)}
+                              className={`flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded transition-all ${
+                                showTracks
+                                  ? 'bg-gray-600 text-gray-100' 
+                                  : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
+                              }`}
+                              title="Show/hide track layers"
+                            >
+                              <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+                                <rect x="0" y="0" width="8" height="1.5" />
+                                <rect x="0" y="3" width="8" height="1.5" />
+                                <rect x="0" y="6" width="8" height="1.5" />
+                              </svg>
+                              Tracks
+                              {tracks.length > 0 && (
+                                <span className="ml-0.5 px-1 bg-gray-600 rounded text-[9px]">
+                                  {tracks.length}
+                                </span>
+                              )}
                             </button>
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                           {/* Mode-specific info */}
                           {trimMode && (
-                            <div className="flex items-center gap-3 text-xs text-gray-400">
-                              <span>Selection: {Math.round(trimStart * 100)}% - {Math.round(trimEnd * 100)}%</span>
-                              <span>Duration: {currentSound ? Math.round((trimEnd - trimStart) * currentSound.duration) : 0}ms</span>
+                            <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                              <span>Selection: {Math.round(trimStart * 100)}%-{Math.round(trimEnd * 100)}%</span>
+                              <span className="text-gray-600">•</span>
+                              <span>{currentSound ? Math.round((trimEnd - trimStart) * currentSound.duration) : 0}ms</span>
                             </div>
                           )}
                           {editMode && (
-                            <div className="flex items-center gap-3 text-xs text-gray-400">
-                              <span>Edit Region: {Math.round(editStart * 100)}% - {Math.round(editEnd * 100)}%</span>
-                              <span className="text-blue-400">Parameters apply here only</span>
+                            <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                              <span>Region: {Math.round(editStart * 100)}%-{Math.round(editEnd * 100)}%</span>
+                              {currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated') ? (
+                                <span className="text-yellow-400">Full edit</span>
+                              ) : (
+                                <span className="text-blue-400">Regional</span>
+                              )}
+                            </div>
+                          )}
+                          {insertMode && (
+                            <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                              <span>Insert: {Math.round(editStart * 100)}%-{Math.round(editEnd * 100)}%</span>
+                              <span className="text-purple-400">New sound</span>
                             </div>
                           )}
                           
-                          {/* Always show transport controls */}
-                          <div className="flex items-center gap-2">
-                            <button 
-                              onClick={handleStop}
-                              disabled={!isPlaying && !isPaused}
-                              className="flex items-center justify-center w-8 h-8 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded transition-colors"
-                              title="Stop and return to beginning"
-                            >
-                              <Square size={14} className="text-gray-300" />
-                            </button>
-                            
-                            {isPlaying ? (
-                              <button 
-                                onClick={handlePause}
-                                className="flex items-center justify-center w-8 h-8 bg-yellow-500 hover:bg-yellow-400 rounded transition-colors"
-                                title="Pause"
-                              >
-                                <Pause size={14} className="text-white" />
-                              </button>
-                            ) : (
-                              <button 
-                                onClick={handlePlay}
-                                disabled={!currentSound && !previewSound}
-                                className="flex items-center justify-center w-8 h-8 bg-primary-500 hover:bg-primary-400 disabled:bg-gray-700 disabled:cursor-not-allowed rounded transition-colors"
-                                title={isPaused ? "Resume" : "Play"}
-                              >
-                                <Play size={14} className="text-white ml-0.5" />
-                              </button>
-                            )}
-                            
-                            <button 
-                              onClick={() => {
-                                handleStop()
-                                setTimeout(() => handlePlay(), 100)
-                              }}
-                              disabled={!currentSound && !previewSound}
-                              className="flex items-center justify-center w-8 h-8 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded transition-colors"
-                              title="Restart from beginning"
-                            >
-                              <SkipBack size={14} className="text-gray-300" />
-                            </button>
+                          {/* Mode info display */}
+                          <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                            {trimMode && <span>Trim: {Math.round(trimStart * 100)}%-{Math.round(trimEnd * 100)}%</span>}
+                            {editMode && <span>Edit: {Math.round(editStart * 100)}%-{Math.round(editEnd * 100)}%</span>}
+                            {insertMode && <span>Insert: {Math.round(editStart * 100)}%-{Math.round(editEnd * 100)}%</span>}
                           </div>
                         </div>
                       </div>
                       
-                      <div className="bg-gray-950 rounded-lg overflow-hidden mb-3">
-                        <canvas
-                          ref={timelineCanvasRef}
-                          width={800}
-                          height={80}
-                          className="w-full h-20"
-                          onMouseDown={handleTimelineMouseDown}
-                          onMouseMove={isDragging ? handleTimelineMouseMove : handleTimelineMouseHover}
-                          onMouseUp={handleTimelineMouseUp}
-                          onMouseLeave={handleTimelineMouseUp}
-                        />
-                      </div>
+                      <div className="p-3">
+                        <div className="bg-gray-950 rounded-lg overflow-hidden">
+                          <canvas
+                            ref={timelineCanvasRef}
+                            width={800}
+                            height={60}
+                            className="w-full h-16"
+                            onMouseDown={handleTimelineMouseDown}
+                            onMouseMove={isDragging ? handleTimelineMouseMove : handleTimelineMouseHover}
+                            onMouseUp={handleTimelineMouseUp}
+                            onMouseLeave={handleTimelineMouseUp}
+                          />
+                        </div>
 
-                      {/* Mode-specific Controls */}
-                      {trimMode && (
-                        <div className="flex justify-between items-center">
-                          <div className="text-xs text-gray-500">
-                            Drag the orange handles to select audio portion to keep
+                        {/* Mode-specific Controls */}
+                        {trimMode && (
+                          <div className="flex justify-between items-center mt-2">
+                            <div className="text-[10px] text-gray-500">
+                              Drag handles to select portion to keep
+                            </div>
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => {
+                                  setTrimStart(0)
+                                  setTrimEnd(1)
+                                }}
+                                className="px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-[10px] text-gray-300 transition-colors"
+                              >
+                                Reset
+                              </button>
+                              <button
+                                onClick={() => {
+                                  // TODO: Apply trim to audio buffer
+                                  console.log('Apply trim:', trimStart, trimEnd)
+                                }}
+                                disabled={trimStart === 0 && trimEnd === 1}
+                                className="px-2 py-0.5 bg-yellow-500 hover:bg-yellow-400 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded text-[10px] font-medium transition-colors"
+                              >
+                                Apply
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => {
-                                setTrimStart(0)
-                                setTrimEnd(1)
-                              }}
-                              className="px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-xs text-gray-300"
-                            >
-                              Reset Selection
-                            </button>
-                            <button
-                              onClick={() => {
-                                // TODO: Apply trim to audio buffer
-                                console.log('Apply trim:', trimStart, trimEnd)
-                              }}
-                              disabled={trimStart === 0 && trimEnd === 1}
-                              className="px-2 py-1 bg-yellow-600 hover:bg-yellow-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded text-xs"
-                            >
-                              Apply Trim
-                            </button>
+                        )}
+                        
+                        {editMode && (
+                          <div className="flex justify-between items-center mt-2">
+                            <div className="text-[10px] text-gray-500">
+                              Drag handles • Parameters apply to selection only
+                            </div>
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => {
+                                  setEditStart(0.3)
+                                  setEditEnd(0.7)
+                                }}
+                                className="px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-[10px] text-gray-300 transition-colors"
+                              >
+                                Reset
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      
-                      {editMode && (
-                        <div className="flex justify-between items-center">
-                          <div className="text-xs text-gray-500">
-                            Drag the blue handles to select region • Parameter changes automatically apply to selected region only
+                        )}
+                        
+                        {insertMode && (
+                          <div className="flex justify-between items-center mt-2">
+                            <div className="text-[10px] text-gray-500">
+                              Drag handles • New sound will be inserted
+                            </div>
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => {
+                                  setEditStart(0.3)
+                                  setEditEnd(0.7)
+                                }}
+                                className="px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-[10px] text-gray-300 transition-colors"
+                              >
+                                Reset
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => {
-                                setEditStart(0.3)
-                                setEditEnd(0.7)
-                              }}
-                              className="px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-xs text-gray-300"
-                            >
-                              Reset Focus
-                            </button>
+                        )}
+                        
+                        {!trimMode && !editMode && !insertMode && (
+                          <div className="flex justify-center mt-2">
+                            <div className="text-[10px] text-gray-500">
+                              Select a mode above to edit your sound
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      
-                      {!trimMode && !editMode && (
-                        <div className="flex justify-center">
-                          <div className="text-xs text-gray-500">
-                            Playback timeline • Enable Edit mode for regional parameter changes • Enable Trim mode for audio length editing
-                          </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
+                    
+                    {/* Central Transport Controls */}
+                    <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
+                      <div className="flex items-center justify-center gap-3">
+                        <button 
+                          onClick={handleStop}
+                          disabled={!isPlaying && !isPaused}
+                          className="flex items-center justify-center w-14 h-14 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded-full transition-all"
+                          title="Stop"
+                        >
+                          <Square size={20} className="text-gray-300" />
+                        </button>
+                        
+                        {isPlaying ? (
+                          <button 
+                            onClick={handlePause}
+                            className="flex items-center justify-center w-20 h-20 bg-yellow-500 hover:bg-yellow-400 rounded-full shadow-lg transition-all transform hover:scale-105"
+                            title="Pause"
+                          >
+                            <Pause size={32} className="text-white" />
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={handlePlay}
+                            disabled={!currentSound && !previewSound}
+                            className="flex items-center justify-center w-20 h-20 bg-primary-500 hover:bg-primary-400 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-full shadow-lg transition-all transform hover:scale-105 disabled:transform-none"
+                            title={isPaused ? "Resume" : "Play"}
+                          >
+                            <Play size={32} className="text-white ml-1" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Tracks Panel - Below transport controls */}
+                    {showTracks && (
+                      <div className="bg-gray-900 rounded-xl border border-gray-800 transition-all duration-300 overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-800 bg-gray-900/50">
+                        <h4 className="text-xs font-semibold text-gray-200 uppercase tracking-wider">Tracks</h4>
+                        <button
+                          onClick={() => {
+                            // Add new empty track
+                            const newTrack: Track = {
+                              id: `track-${Date.now()}`,
+                              name: `Track ${tracks.length + 1}`,
+                              audioBuffer: null,
+                              waveformData: null,
+                              muted: false,
+                              solo: false,
+                              volume: 1,
+                              color: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'][tracks.length % 5]
+                            }
+                            setTracks([...tracks, newTrack])
+                          }}
+                          className="flex items-center gap-1 px-2.5 py-1 text-[11px] bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors"
+                        >
+                          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                            <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                          </svg>
+                          Add Track
+                        </button>
+                      </div>
+                      
+                      {tracks.length === 0 ? (
+                        <div className="text-center py-6 px-4 text-gray-500 text-xs">
+                          No tracks yet. Insert sounds to create tracks automatically,<br/>
+                          or click "Add Track" to create one manually.
+                        </div>
+                      ) : (
+                        <div className="divide-y divide-gray-800 max-h-64 overflow-y-auto">
+                          {tracks.map((track, index) => (
+                            <div
+                              key={track.id}
+                              className={`group relative transition-all cursor-pointer ${
+                                selectedTrackId === track.id 
+                                  ? 'bg-blue-500/10 border-l-2 border-blue-500' 
+                                  : 'hover:bg-gray-800/15 border-l-2 border-transparent'
+                              }`}
+                              onClick={() => setSelectedTrackId(track.id)}
+                            >
+                              <div className="px-3 py-2">
+                                <div className="flex items-center justify-between gap-3">
+                                  <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                                    <div 
+                                      className={`w-2 h-2 rounded-full flex-shrink-0 ring-2 ${
+                                        selectedTrackId === track.id ? 'ring-blue-500/50' : 'ring-gray-800/50'
+                                      }`}
+                                      style={{ backgroundColor: track.color }}
+                                    />
+                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                      <input
+                                        type="text"
+                                        value={track.name}
+                                        onChange={(e) => {
+                                          if (track.name !== 'Main') {
+                                            setTracks(tracks.map(t => 
+                                              t.id === track.id 
+                                                ? { ...t, name: e.target.value }
+                                                : t
+                                            ))
+                                          }
+                                        }}
+                                        onClick={(e) => e.stopPropagation()}
+                                        className={`bg-transparent text-xs font-medium outline-none border-b border-transparent transition-colors ${
+                                          track.name === 'Main' 
+                                            ? 'text-gray-300 cursor-default' 
+                                            : 'text-gray-200 hover:border-gray-600 focus:border-blue-500'
+                                        } w-full max-w-[100px]`}
+                                        readOnly={track.name === 'Main'}
+                                      />
+                                      {track.name === 'Main' && (
+                                        <span className="text-[10px] text-gray-500 font-normal">(Original)</span>
+                                      )}
+                                      {track.startPosition !== undefined && (
+                                        <span className="text-[10px] text-gray-500 font-normal">
+                                          @{Math.round(track.startPosition * 100)}%
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex items-center gap-1 flex-shrink-0">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        setTracks(tracks.map(t => 
+                                          t.id === track.id 
+                                            ? { ...t, solo: !t.solo }
+                                            : { ...t, solo: false }
+                                        ))
+                                      }}
+                                      className={`w-6 h-6 text-[10px] font-semibold rounded transition-all ${
+                                        track.solo 
+                                          ? 'bg-yellow-500 text-white shadow-sm' 
+                                          : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
+                                      }`}
+                                      title={track.solo ? 'Disable Solo - Hear all tracks' : 'Solo - Only hear this track'}
+                                    >
+                                      S
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        setTracks(tracks.map(t => 
+                                          t.id === track.id 
+                                            ? { ...t, muted: !t.muted }
+                                            : t
+                                        ))
+                                      }}
+                                      className={`w-6 h-6 text-[10px] font-semibold rounded transition-all ${
+                                        track.muted 
+                                          ? 'bg-red-500 text-white shadow-sm' 
+                                          : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
+                                      }`}
+                                      title={track.muted ? 'Unmute - Enable this track' : 'Mute - Silence this track'}
+                                    >
+                                      M
+                                    </button>
+                                    {track.name !== 'Main' && (
+                                      <div className="w-px h-4 bg-gray-700 mx-0.5" />
+                                    )}
+                                    {track.name !== 'Main' && (
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          if (confirm(`Delete "${track.name}"?`)) {
+                                            setTracks(tracks.filter(t => t.id !== track.id))
+                                            if (selectedTrackId === track.id) {
+                                              setSelectedTrackId(null)
+                                            }
+                                          }
+                                        }}
+                                        className="w-6 h-6 text-xs bg-gray-700/50 text-gray-400 hover:bg-red-500 hover:text-white rounded transition-all"
+                                      >
+                                        ×
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              
+                                {track.audioBuffer && (
+                                  <div className="mt-1.5">
+                                    <div className="h-6 bg-gray-800/30 rounded overflow-hidden">
+                                      {/* Mini waveform preview */}
+                                      <canvas
+                                        width={300}
+                                        height={24}
+                                        className={`w-full h-full ${
+                                          selectedTrackId === track.id ? 'opacity-80' : 'opacity-50'
+                                        }`}
+                                        ref={(canvas) => {
+                                          if (canvas && track.waveformData) {
+                                            const ctx = canvas.getContext('2d')
+                                            if (ctx) {
+                                              ctx.clearRect(0, 0, canvas.width, canvas.height)
+                                              ctx.strokeStyle = selectedTrackId === track.id ? '#3b82f6' : track.color
+                                              ctx.lineWidth = selectedTrackId === track.id ? 1 : 0.5
+                                              ctx.beginPath()
+                                              
+                                              const step = canvas.width / track.waveformData.length
+                                              const amplitude = canvas.height / 2
+                                              
+                                              track.waveformData.forEach((value, i) => {
+                                                const x = i * step
+                                                const y = amplitude - (value * amplitude * 0.7)
+                                                if (i === 0) ctx.moveTo(x, y)
+                                                else ctx.lineTo(x, y)
+                                              })
+                                              
+                                              ctx.stroke()
+                                            }
+                                          }
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </>
@@ -1444,8 +2354,25 @@ export default function Studio() {
                   <Settings size={16} className="text-primary-400" />
                   <span className="font-medium">Parameters</span>
                   {editMode && (
-                    <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded">
-                      Regional Edit
+                    <span className={`text-xs px-2 py-1 rounded ${
+                      currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
+                        ? 'bg-yellow-600 text-white'
+                        : 'bg-blue-600 text-white'
+                    }`}>
+                      {currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
+                        ? 'Full Edit Only'
+                        : 'Regional Edit'
+                      }
+                    </span>
+                  )}
+                  {insertMode && (
+                    <span className="text-xs px-2 py-1 rounded bg-purple-600 text-white">
+                      Insert Mode
+                    </span>
+                  )}
+                  {insertMode && selectedTrackId && (
+                    <span className="text-xs px-2 py-1 rounded bg-gray-700 text-gray-300">
+                      → {tracks.find(t => t.id === selectedTrackId)?.name || 'Track'}
                     </span>
                   )}
                 </div>
@@ -1461,6 +2388,37 @@ export default function Studio() {
               <div className="flex-1 p-4 space-y-6 overflow-y-auto">
                 {currentSound && editedParams ? (
                   <>
+                    {/* Apply Changes Button */}
+                    {hasUnappliedChanges && (
+                      <div className="sticky top-0 z-10 bg-gray-900 -mx-4 px-4 pb-4 pt-2 border-b border-gray-800">
+                        <button
+                          onClick={applyChanges}
+                          disabled={isGenerating}
+                          className={`w-full px-4 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                            isGenerating 
+                              ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                              : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg'
+                          }`}
+                        >
+                          {isGenerating ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                              Applying...
+                            </>
+                          ) : (
+                            <>
+                              <Settings size={16} />
+                              {insertMode ? 'Insert Sound' : 'Apply Changes'}
+                              {(editMode || insertMode) && (
+                                <span className="text-xs opacity-90">
+                                  ({insertMode ? 'in' : 'to'} {Math.round((editEnd - editStart) * 100)}% region)
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
                     {/* Basic Parameters */}
                     <div className="space-y-4">
                       <h3 className="text-sm font-medium text-gray-300">Basic Parameters</h3>
@@ -1469,6 +2427,9 @@ export default function Studio() {
                         <div>
                           <label className="block text-xs text-gray-400 mb-2">
                             Frequency: {Math.round(editedParams.frequency)}Hz
+                            {hasUnappliedChanges && currentSound && editedParams.frequency !== currentSound.parameters.frequency && (
+                              <span className="ml-2 text-green-400 text-xs">(modified)</span>
+                            )}
                           </label>
                           <input
                             type="range"
@@ -1476,13 +2437,20 @@ export default function Studio() {
                             max="2000"
                             value={editedParams.frequency}
                             onChange={(e) => updateParam('frequency', Number(e.target.value))}
-                            className="w-full accent-primary-500"
+                            className={`w-full accent-primary-500 ${
+                              hasUnappliedChanges && currentSound && editedParams.frequency !== currentSound.parameters.frequency
+                                ? 'accent-green-500'
+                                : ''
+                            }`}
                           />
                         </div>
                         
                         <div>
                           <label className="block text-xs text-gray-400 mb-2">
                             Duration: {Math.round(editedParams.duration * 1000)}ms
+                            {hasUnappliedChanges && currentSound && editedParams.duration !== currentSound.parameters.duration && (
+                              <span className="ml-2 text-green-400 text-xs">(modified)</span>
+                            )}
                           </label>
                           <input
                             type="range"
@@ -1491,7 +2459,11 @@ export default function Studio() {
                             step="0.01"
                             value={editedParams.duration}
                             onChange={(e) => updateParam('duration', Number(e.target.value))}
-                            className="w-full accent-primary-500"
+                            className={`w-full accent-primary-500 ${
+                              hasUnappliedChanges && currentSound && editedParams.duration !== currentSound.parameters.duration
+                                ? 'accent-green-500'
+                                : ''
+                            }`}
                           />
                         </div>
                         
