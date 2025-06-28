@@ -31,6 +31,7 @@ export default function Studio() {
   const [editEnd, setEditEnd] = useState(0.7)
   const [isDragging, setIsDragging] = useState<'start' | 'end' | 'region' | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
+  const [hasUnappliedChanges, setHasUnappliedChanges] = useState(false)
   
   // Track system state
   interface Track {
@@ -165,19 +166,24 @@ export default function Studio() {
       const editStartX = editStart * width
       const editEndX = editEnd * width
       
-      // Dim non-insert regions
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'
+      // Dim non-insert regions more
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
       ctx.fillRect(0, 0, editStartX, height)
       ctx.fillRect(editEndX, 0, width - editEndX, height)
       
-      // Highlight insert region with purple
-      ctx.fillStyle = 'rgba(147, 51, 234, 0.1)'
+      // Highlight insert region with animated purple gradient
+      const gradient = ctx.createLinearGradient(editStartX, 0, editEndX, 0)
+      gradient.addColorStop(0, 'rgba(147, 51, 234, 0.1)')
+      gradient.addColorStop(0.5, 'rgba(147, 51, 234, 0.2)')
+      gradient.addColorStop(1, 'rgba(147, 51, 234, 0.1)')
+      ctx.fillStyle = gradient
       ctx.fillRect(editStartX, 0, editEndX - editStartX, height)
       
-      // Draw insert boundaries
+      // Draw insert boundaries with glow
       ctx.strokeStyle = '#9333ea'
       ctx.lineWidth = 2
-      ctx.setLineDash([5, 5])
+      ctx.shadowColor = '#9333ea'
+      ctx.shadowBlur = 6
       
       ctx.beginPath()
       ctx.moveTo(editStartX, 0)
@@ -189,7 +195,17 @@ export default function Studio() {
       ctx.lineTo(editEndX, height)
       ctx.stroke()
       
-      ctx.setLineDash([])
+      ctx.shadowBlur = 0
+      
+      // Add "+" icon in the center of the region
+      const regionWidth = editEndX - editStartX
+      if (regionWidth > 30) {
+        ctx.fillStyle = '#9333ea'
+        ctx.font = 'bold 16px Inter'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('+', editStartX + regionWidth / 2, height / 2)
+      }
     }
     
     // Draw background grid
@@ -257,24 +273,42 @@ export default function Studio() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
     
-    const width = canvas.width
-    const height = canvas.height
+    // Set up proper scaling for high DPI
+    const rect = canvas.getBoundingClientRect()
+    const dpr = window.devicePixelRatio || 1
+    
+    // Set display size (css pixels)
+    canvas.style.width = rect.width + 'px'
+    canvas.style.height = rect.height + 'px'
+    
+    // Set actual size in memory (scaled up for DPI)
+    const width = rect.width * dpr
+    const height = rect.height * dpr
+    canvas.width = width
+    canvas.height = height
+    
+    // Scale drawing context to match device pixel ratio
+    ctx.scale(dpr, dpr)
+    
+    // Use CSS pixels for drawing
+    const drawWidth = rect.width
+    const drawHeight = rect.height
     
     // Clear canvas
-    ctx.clearRect(0, 0, width, height)
+    ctx.clearRect(0, 0, drawWidth, drawHeight)
     
     // Draw timeline background
     ctx.fillStyle = 'rgba(75, 85, 99, 0.1)'
-    ctx.fillRect(0, 0, width, height)
+    ctx.fillRect(0, 0, drawWidth, drawHeight)
     
     // Draw simplified waveform for timeline
     ctx.strokeStyle = 'rgba(59, 130, 246, 0.6)'
     ctx.lineWidth = 1
     ctx.beginPath()
     
-    const step = width / waveformData.length
-    const amplitude = height / 3 // Smaller amplitude for timeline
-    const centerY = height / 2
+    const step = drawWidth / waveformData.length
+    const amplitude = drawHeight / 3 // Smaller amplitude for timeline
+    const centerY = drawHeight / 2
     
     for (let i = 0; i < waveformData.length; i++) {
       const x = i * step
@@ -290,7 +324,7 @@ export default function Studio() {
     ctx.stroke()
     
     // Always show playback position (base layer)
-    const playbackX = playbackPosition * width
+    const playbackX = playbackPosition * drawWidth
     ctx.strokeStyle = '#10b981'
     ctx.lineWidth = 1
     ctx.beginPath()
@@ -304,13 +338,13 @@ export default function Studio() {
 
     // Overlay: Trim mode
     if (trimMode) {
-      const trimStartX = trimStart * width
-      const trimEndX = trimEnd * width
+      const trimStartX = trimStart * drawWidth
+      const trimEndX = trimEnd * drawWidth
       
       // Dimmed areas (what will be removed)
       ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
       ctx.fillRect(0, 0, trimStartX, height)
-      ctx.fillRect(trimEndX, 0, width - trimEndX, height)
+      ctx.fillRect(trimEndX, 0, drawWidth - trimEndX, height)
       
       // Selection border (what will be kept)
       ctx.strokeStyle = '#f59e0b'
@@ -349,8 +383,8 @@ export default function Studio() {
     
     // Overlay: Edit mode
     if (editMode) {
-      const editStartX = editStart * width
-      const editEndX = editEnd * width
+      const editStartX = editStart * drawWidth
+      const editEndX = editEnd * drawWidth
       
       // Focus area background
       ctx.fillStyle = 'rgba(59, 130, 246, 0.2)'
@@ -393,8 +427,8 @@ export default function Studio() {
     
     // Overlay: Insert mode
     if (insertMode) {
-      const editStartX = editStart * width
-      const editEndX = editEnd * width
+      const editStartX = editStart * drawWidth
+      const editEndX = editEnd * drawWidth
       
       // Focus area background with purple
       ctx.fillStyle = 'rgba(147, 51, 234, 0.2)'
@@ -438,17 +472,37 @@ export default function Studio() {
     }
     
     // Draw time markers
-    ctx.fillStyle = 'rgba(156, 163, 175, 0.8)'
-    ctx.font = '10px sans-serif'
-    for (let i = 0; i <= 10; i++) {
-      const x = (i / 10) * width
-      const timeMs = currentSound ? (i / 10) * currentSound.duration : 0
-      ctx.fillText(`${timeMs.toFixed(0)}ms`, x + 2, height - 2)
+    ctx.save()
+    ctx.fillStyle = 'rgba(156, 163, 175, 0.9)'
+    ctx.font = '12px Inter, system-ui, sans-serif'
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'bottom'
+    ctx.imageSmoothingEnabled = false
+    
+    // Draw fewer markers for cleaner look
+    const numMarkers = 5
+    for (let i = 0; i <= numMarkers; i++) {
+      const x = (i / numMarkers) * drawWidth
+      const timeMs = currentSound ? (i / numMarkers) * currentSound.duration : 0
+      
+      // Skip drawing at the very edge
+      if (i === 0) {
+        ctx.fillText(`${timeMs.toFixed(0)}ms`, x + 4, height - 4)
+      } else if (i === numMarkers) {
+        ctx.textAlign = 'right'
+        ctx.fillText(`${timeMs.toFixed(0)}ms`, x - 4, height - 4)
+        ctx.textAlign = 'left'
+      } else {
+        ctx.textAlign = 'center'
+        ctx.fillText(`${timeMs.toFixed(0)}ms`, x, height - 4)
+        ctx.textAlign = 'left'
+      }
     }
+    ctx.restore()
     
     // Draw playhead
     if (playbackPosition > 0 && playbackPosition <= 1) {
-      const playheadX = playbackPosition * width
+      const playheadX = playbackPosition * drawWidth
       
       // Draw playhead line
       ctx.strokeStyle = '#ffffff'
@@ -495,8 +549,6 @@ export default function Studio() {
     }
   }, [currentSound?.waveformData, previewSound?.waveformData, trimStart, trimEnd, editStart, editEnd, editMode, insertMode, trimMode, playbackPosition])
 
-  // Track if parameters have changed since last generation
-  const [hasUnappliedChanges, setHasUnappliedChanges] = useState(false)
   
   // Update playback position during playback
   useEffect(() => {
@@ -921,6 +973,37 @@ export default function Studio() {
     await audioContext.close()
     return mixedBuffer
   }
+
+  // Keyboard shortcuts for insert mode
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!insertMode) return
+      
+      // Quick region selection
+      if (e.key === '1' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault()
+        setEditStart(0)
+        setEditEnd(0.1)
+      } else if (e.key === '2' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault()
+        setEditStart(0.45)
+        setEditEnd(0.55)
+      } else if (e.key === '3' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault()
+        setEditStart(0.9)
+        setEditEnd(1)
+      }
+      
+      // Quick apply with Enter
+      if (e.key === 'Enter' && hasUnappliedChanges) {
+        e.preventDefault()
+        applyChanges()
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [insertMode, hasUnappliedChanges, applyChanges])
 
   const handlePlay = async () => {
     let soundToPlay = previewSound || currentSound
@@ -1984,6 +2067,42 @@ export default function Studio() {
                             {editMode && <span>Edit: {Math.round(editStart * 100)}%-{Math.round(editEnd * 100)}%</span>}
                             {insertMode && <span>Insert: {Math.round(editStart * 100)}%-{Math.round(editEnd * 100)}%</span>}
                           </div>
+                          
+                          {/* Quick region selectors for insert mode */}
+                          {insertMode && (
+                            <div className="flex items-center gap-1 ml-2">
+                              <button
+                                onClick={() => {
+                                  setEditStart(0)
+                                  setEditEnd(0.1)
+                                }}
+                                className="px-1.5 py-0.5 text-[9px] bg-purple-500/20 hover:bg-purple-500/30 rounded text-purple-300 transition-colors"
+                                title="Insert at start"
+                              >
+                                Start
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditStart(0.45)
+                                  setEditEnd(0.55)
+                                }}
+                                className="px-1.5 py-0.5 text-[9px] bg-purple-500/20 hover:bg-purple-500/30 rounded text-purple-300 transition-colors"
+                                title="Insert at middle"
+                              >
+                                Mid
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditStart(0.9)
+                                  setEditEnd(1)
+                                }}
+                                className="px-1.5 py-0.5 text-[9px] bg-purple-500/20 hover:bg-purple-500/30 rounded text-purple-300 transition-colors"
+                                title="Insert at end"
+                              >
+                                End
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                       
@@ -1991,9 +2110,10 @@ export default function Studio() {
                         <div className="bg-gray-950 rounded-lg overflow-hidden">
                           <canvas
                             ref={timelineCanvasRef}
-                            width={800}
-                            height={60}
                             className="w-full h-16"
+                            style={{ 
+                              cursor: isDragging ? 'grabbing' : 'pointer'
+                            }}
                             onMouseDown={handleTimelineMouseDown}
                             onMouseMove={isDragging ? handleTimelineMouseMove : handleTimelineMouseHover}
                             onMouseUp={handleTimelineMouseUp}
@@ -2147,7 +2267,7 @@ export default function Studio() {
                           or click "Add Track" to create one manually.
                         </div>
                       ) : (
-                        <div className="divide-y divide-gray-800 max-h-64 overflow-y-auto">
+                        <div className="divide-y divide-gray-800">
                           {tracks.map((track, index) => (
                             <div
                               key={track.id}
@@ -2386,7 +2506,276 @@ export default function Studio() {
               
               {/* Panel Content */}
               <div className="flex-1 p-4 space-y-6 overflow-y-auto">
-                {currentSound && editedParams ? (
+                {insertMode ? (
+                  // Insert Mode UI
+                  <div className="space-y-6">
+                    {/* Quick Insert Presets */}
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium text-gray-300">Quick Insert</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => {
+                            setEditedParams({
+                              ...editedParams,
+                              frequency: 800,
+                              duration: 0.05,
+                              waveform: 'sine',
+                              attack: 0.001,
+                              decay: 0.01,
+                              sustain: 0.2,
+                              release: 0.03
+                            })
+                            setHasUnappliedChanges(true)
+                          }}
+                          className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs text-gray-300 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-blue-500/20 rounded flex items-center justify-center">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            </div>
+                            Short Click
+                          </div>
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            setEditedParams({
+                              ...editedParams,
+                              frequency: 1200,
+                              duration: 0.15,
+                              waveform: 'sine',
+                              attack: 0.01,
+                              decay: 0.05,
+                              sustain: 0.5,
+                              release: 0.09
+                            })
+                            setHasUnappliedChanges(true)
+                          }}
+                          className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs text-gray-300 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-green-500/20 rounded flex items-center justify-center">
+                              <div className="w-3 h-1 bg-green-500 rounded-full"></div>
+                            </div>
+                            Beep
+                          </div>
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            setEditedParams({
+                              ...editedParams,
+                              frequency: 440,
+                              duration: 0.3,
+                              waveform: 'triangle',
+                              attack: 0.1,
+                              decay: 0.1,
+                              sustain: 0.3,
+                              release: 0.1
+                            })
+                            setHasUnappliedChanges(true)
+                          }}
+                          className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs text-gray-300 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-purple-500/20 rounded flex items-center justify-center">
+                              <div className="w-3 h-3 bg-purple-500 rounded-sm rotate-45"></div>
+                            </div>
+                            Swoosh
+                          </div>
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            setEditedParams({
+                              ...editedParams,
+                              frequency: 200,
+                              duration: 0.4,
+                              waveform: 'sawtooth',
+                              attack: 0.05,
+                              decay: 0.1,
+                              sustain: 0.4,
+                              release: 0.15
+                            })
+                            setHasUnappliedChanges(true)
+                          }}
+                          className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs text-gray-300 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-orange-500/20 rounded flex items-center justify-center">
+                              <div className="w-2 h-3 bg-orange-500"></div>
+                            </div>
+                            Thud
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Insert Type Selector */}
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium text-gray-300">Sound Character</h3>
+                      <div className="grid grid-cols-4 gap-1 bg-gray-800 p-1 rounded-lg">
+                        {['sine', 'square', 'triangle', 'sawtooth'].map((waveform) => (
+                          <button
+                            key={waveform}
+                            onClick={() => updateParam('waveform', waveform)}
+                            className={`px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                              editedParams.waveform === waveform
+                                ? 'bg-primary-500 text-white'
+                                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                            }`}
+                          >
+                            {waveform.charAt(0).toUpperCase() + waveform.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Simplified Controls for Insert */}
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-medium text-gray-300">Quick Adjust</h3>
+                      
+                      {/* Pitch Control */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-xs text-gray-400">Pitch</label>
+                          <span className="text-xs text-gray-500">{Math.round(editedParams.frequency)}Hz</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">Low</span>
+                          <input
+                            type="range"
+                            min="100"
+                            max="2000"
+                            value={editedParams.frequency}
+                            onChange={(e) => updateParam('frequency', Number(e.target.value))}
+                            className="flex-1 accent-primary-500"
+                          />
+                          <span className="text-xs text-gray-500">High</span>
+                        </div>
+                      </div>
+                      
+                      {/* Length Control */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-xs text-gray-400">Length</label>
+                          <span className="text-xs text-gray-500">{Math.round(editedParams.duration * 1000)}ms</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">Short</span>
+                          <input
+                            type="range"
+                            min="0.01"
+                            max="0.5"
+                            step="0.01"
+                            value={editedParams.duration}
+                            onChange={(e) => updateParam('duration', Number(e.target.value))}
+                            className="flex-1 accent-primary-500"
+                          />
+                          <span className="text-xs text-gray-500">Long</span>
+                        </div>
+                      </div>
+                      
+                      {/* Attack Control */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-xs text-gray-400">Attack</label>
+                          <span className="text-xs text-gray-500">{(editedParams.attack * 1000).toFixed(0)}ms</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">Soft</span>
+                          <input
+                            type="range"
+                            min="0.001"
+                            max="0.1"
+                            step="0.001"
+                            value={editedParams.attack}
+                            onChange={(e) => updateParam('attack', Number(e.target.value))}
+                            className="flex-1 accent-primary-500"
+                          />
+                          <span className="text-xs text-gray-500">Sharp</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Visual Region Indicator */}
+                    <div className="bg-gray-800 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-gray-400">Insert Region</span>
+                        <span className="text-xs text-gray-500">
+                          {Math.round(editStart * 100)}% - {Math.round(editEnd * 100)}%
+                        </span>
+                      </div>
+                      <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-purple-500"
+                          style={{
+                            marginLeft: `${editStart * 100}%`,
+                            width: `${(editEnd - editStart) * 100}%`
+                          }}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Insert Sound Button */}
+                    <div className="px-4 -mx-4">
+                      <button
+                        onClick={applyChanges}
+                        disabled={!hasUnappliedChanges || isGenerating}
+                        className={`w-full px-4 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                          isGenerating 
+                            ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                            : hasUnappliedChanges
+                              ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg transform hover:scale-[1.02]'
+                              : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                        }`}
+                      >
+                        {isGenerating ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                            Inserting...
+                          </>
+                        ) : (
+                          <>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                            Insert Sound
+                            <span className="text-xs opacity-75">
+                              ({Math.round((editEnd - editStart) * 100)}% region)
+                            </span>
+                          </>
+                        )}
+                      </button>
+                      <div className="text-center mt-2 text-xs text-gray-500">
+                        or press <kbd className="px-1.5 py-0.5 bg-gray-800 rounded">Enter</kbd>
+                      </div>
+                    </div>
+                    
+                    {/* Keyboard shortcuts help */}
+                    <div className="bg-purple-500/10 rounded-lg p-3 border border-purple-500/20">
+                      <div className="text-xs text-purple-300 space-y-1">
+                        <div className="font-medium mb-1">Keyboard Shortcuts:</div>
+                        <div className="flex items-center gap-2">
+                          <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-[10px]">1</kbd>
+                          <span className="text-gray-400">Insert at start</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-[10px]">2</kbd>
+                          <span className="text-gray-400">Insert at middle</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-[10px]">3</kbd>
+                          <span className="text-gray-400">Insert at end</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-[10px]">Enter</kbd>
+                          <span className="text-gray-400">Apply insert</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : currentSound && editedParams ? (
                   <>
                     {/* Apply Changes Button */}
                     {hasUnappliedChanges && (
