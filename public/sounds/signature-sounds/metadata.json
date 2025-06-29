@@ -1,0 +1,66 @@
+{
+  "generated": "2025-06-29T21:24:17.571Z",
+  "description": "Signature sounds inspired by Neural Pulse, Triple Click Cascade, and Haptic Click",
+  "sounds": {
+    "synaptic_fire": {
+      "duration": 0.6,
+      "category": "neural"
+    },
+    "cortex_wave": {
+      "duration": 0.8,
+      "category": "neural"
+    },
+    "dendrite_cascade": {
+      "duration": 0.5,
+      "category": "neural"
+    },
+    "deep_haptic_pulse": {
+      "duration": 0.05,
+      "category": "haptic"
+    },
+    "haptic_rumble": {
+      "duration": 0.15,
+      "category": "haptic"
+    },
+    "tactile_tap": {
+      "duration": 0.04,
+      "category": "haptic"
+    },
+    "vibration_pattern": {
+      "duration": 0.3,
+      "category": "haptic"
+    },
+    "quantum_cascade": {
+      "duration": 0.4,
+      "category": "cascade"
+    },
+    "domino_chain": {
+      "duration": 0.5,
+      "category": "cascade"
+    },
+    "ripple_cascade": {
+      "duration": 0.6,
+      "category": "cascade"
+    },
+    "biometric_scan": {
+      "duration": 0.6999773242630386,
+      "category": "experimental"
+    },
+    "molecular_bond": {
+      "duration": 0.4,
+      "category": "experimental"
+    },
+    "gravity_wave": {
+      "duration": 0.8,
+      "category": "experimental"
+    },
+    "crystal_shatter": {
+      "duration": 0.5,
+      "category": "experimental"
+    },
+    "plasma_discharge": {
+      "duration": 0.4,
+      "category": "experimental"
+    }
+  }
+}

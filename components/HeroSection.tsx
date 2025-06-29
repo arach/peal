@@ -3,7 +3,7 @@
 import { useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { useRouter } from 'next/navigation'
-import { Zap, Settings, Sliders, Activity, Music, Sparkles, Library } from 'lucide-react'
+import { Zap, Settings, Sliders, Activity, Music, Sparkles, Library, Brain } from 'lucide-react'
 
 export default function HeroSection() {
   const { sounds, showGenerationParams, toggleGenerationParams } = useSoundStore()
@@ -102,6 +102,14 @@ export default function HeroSection() {
             >
               <Sparkles size={14} />
               Open Studio
+            </button>
+            
+            <button
+              onClick={() => router.push('/signature')}
+              className="text-purple-500 hover:text-purple-400 text-sm font-medium flex items-center gap-1 transition-colors hover:underline"
+            >
+              <Brain size={14} />
+              Signature Sounds
             </button>
           </div>
         </div>
