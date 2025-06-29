@@ -6,47 +6,57 @@ export interface KeyboardSound {
   displayName: string
   description: string
   colorCode: string
+  useCase: string
+  tags?: string[]
 }
 
 export const keyboardPresets: KeyboardSound[] = [
   // Switch Types
   {
-    name: 'key_linear_red',
-    file: '/sounds/keyboard-sounds/key_linear_red.wav',
+    name: 'key_linear_realistic',
+    file: '/sounds/realistic-keyboard/key_linear_realistic.wav',
     switchType: 'linear',
     keyType: 'switch',
-    displayName: 'Linear (Red)',
-    description: 'Smooth, consistent press with no tactile bump',
-    colorCode: 'red'
+    displayName: 'Linear (Red) - Realistic',
+    description: 'Plastic impact with spring vibration, no tactile bump',
+    colorCode: 'red',
+    useCase: 'Gaming, fast typing without feedback',
+    tags: ['keyboard', 'linear', 'red', 'realistic', 'mechanical']
   },
   {
-    name: 'key_clicky_blue',
-    file: '/sounds/keyboard-sounds/key_clicky_blue.wav',
+    name: 'key_clicky_realistic',
+    file: '/sounds/realistic-keyboard/key_clicky_realistic.wav',
     switchType: 'clicky',
     keyType: 'switch',
-    displayName: 'Clicky (Blue)',
-    description: 'Tactile bump with audible click on press',
-    colorCode: 'blue'
+    displayName: 'Clicky (Blue) - Realistic',
+    description: 'Click jacket hitting housing with plastic resonance',
+    colorCode: 'blue',
+    useCase: 'Typing with audible feedback, not for quiet environments',
+    tags: ['keyboard', 'clicky', 'blue', 'realistic', 'loud']
   },
   {
-    name: 'key_tactile_brown',
-    file: '/sounds/keyboard-sounds/key_tactile_brown.wav',
+    name: 'key_tactile_realistic',
+    file: '/sounds/realistic-keyboard/key_tactile_realistic.wav',
     switchType: 'tactile',
     keyType: 'switch',
-    displayName: 'Tactile (Brown)',
-    description: 'Tactile bump without the click sound',
-    colorCode: 'amber'
+    displayName: 'Tactile (Brown) - Realistic',
+    description: 'Leaf spring bump with case resonance',
+    colorCode: 'amber',
+    useCase: 'Office typing, balanced feedback without noise',
+    tags: ['keyboard', 'tactile', 'brown', 'realistic', 'office']
   },
   
   // Special Keys
   {
-    name: 'key_spacebar',
-    file: '/sounds/keyboard-sounds/key_spacebar.wav',
+    name: 'key_spacebar_realistic',
+    file: '/sounds/realistic-keyboard/key_spacebar_realistic.wav',
     switchType: 'special',
     keyType: 'spacebar',
-    displayName: 'Spacebar',
-    description: 'Deep, resonant sound with stabilizer rattle',
-    colorCode: 'gray'
+    displayName: 'Spacebar - Realistic',
+    description: 'Multiple stabilizer rattles with PCB flex',
+    colorCode: 'gray',
+    useCase: 'Space key feedback in typing applications',
+    tags: ['keyboard', 'spacebar', 'stabilizer', 'realistic']
   },
   {
     name: 'key_enter',
@@ -55,7 +65,9 @@ export const keyboardPresets: KeyboardSound[] = [
     keyType: 'enter',
     displayName: 'Enter Key',
     description: 'Authoritative click for confirmations',
-    colorCode: 'green'
+    colorCode: 'green',
+    useCase: 'Confirmation actions, form submissions',
+    tags: ['keyboard', 'enter', 'confirm', 'authoritative']
   },
   {
     name: 'key_backspace',
@@ -64,7 +76,9 @@ export const keyboardPresets: KeyboardSound[] = [
     keyType: 'backspace',
     displayName: 'Backspace',
     description: 'Deliberate press for deletions',
-    colorCode: 'orange'
+    colorCode: 'orange',
+    useCase: 'Delete actions, error corrections',
+    tags: ['keyboard', 'backspace', 'delete', 'heavy']
   },
   {
     name: 'key_letter',
@@ -73,7 +87,9 @@ export const keyboardPresets: KeyboardSound[] = [
     keyType: 'letter',
     displayName: 'Letter Key',
     description: 'Quick, light press for fast typing',
-    colorCode: 'slate'
+    colorCode: 'slate',
+    useCase: 'Regular typing feedback, chat applications',
+    tags: ['keyboard', 'letter', 'typing', 'light', 'fast']
   },
   {
     name: 'key_modifier',
@@ -82,18 +98,22 @@ export const keyboardPresets: KeyboardSound[] = [
     keyType: 'modifier',
     displayName: 'Modifier Key',
     description: 'Distinct click for Shift/Ctrl/Alt',
-    colorCode: 'purple'
+    colorCode: 'purple',
+    useCase: 'Modifier key feedback, keyboard shortcuts',
+    tags: ['keyboard', 'modifier', 'shift', 'control', 'alt']
   },
   
   // Sequences
   {
-    name: 'typing_loop',
-    file: '/sounds/keyboard-sounds/typing_loop.wav',
+    name: 'typing_realistic',
+    file: '/sounds/realistic-keyboard/typing_realistic.wav',
     switchType: 'special',
     keyType: 'sequence',
-    displayName: 'Typing Loop',
-    description: 'Multiple keys in realistic typing sequence',
-    colorCode: 'indigo'
+    displayName: 'Realistic Typing',
+    description: 'Mix of different switches in natural typing pattern',
+    colorCode: 'indigo',
+    useCase: 'Background typing sounds, demo sequences',
+    tags: ['keyboard', 'typing', 'sequence', 'realistic', 'mechanical']
   },
   {
     name: 'keyboard_ambience',
@@ -102,6 +122,8 @@ export const keyboardPresets: KeyboardSound[] = [
     keyType: 'ambience',
     displayName: 'Keyboard Ambience',
     description: 'Background typing atmosphere',
-    colorCode: 'teal'
+    colorCode: 'teal',
+    useCase: 'Ambient office sounds, productivity apps',
+    tags: ['keyboard', 'ambience', 'background', 'atmosphere', 'office']
   }
 ]

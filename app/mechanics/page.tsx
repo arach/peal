@@ -60,7 +60,7 @@ export default function MechanicsPage() {
     const matchesCategory = selectedCategory === 'all' || sound.category === selectedCategory
     const matchesSearch = searchQuery === '' || 
       sound.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sound.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (sound.tags && sound.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))) ||
       sound.description.toLowerCase().includes(searchQuery.toLowerCase())
     
     return matchesCategory && matchesSearch
@@ -217,7 +217,7 @@ export default function MechanicsPage() {
                     <span className="font-medium">Use case:</span> {sound.useCase}
                   </p>
                   <div className="flex flex-wrap gap-1">
-                    {sound.tags.map(tag => (
+                    {sound.tags && sound.tags.map(tag => (
                       <span
                         key={tag}
                         className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded"
