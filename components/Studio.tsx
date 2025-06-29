@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ArrowLeft, Play, Pause, Square, Save, FolderOpen, Settings, Sparkles, Volume2, SkipBack, ChevronLeft, ChevronRight, Scissors, Edit3, Wand2 } from 'lucide-react'
+import { ArrowLeft, Play, Pause, Square, Save, FolderOpen, Settings, Sparkles, Volume2, SkipBack, ChevronLeft, ChevronRight, Scissors, Edit3, Wand2, HelpCircle } from 'lucide-react'
 import { useSoundStore, Sound } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { VibeParser } from '@/lib/vibeParser'
@@ -71,6 +71,9 @@ export default function Studio() {
   const [vibeSuggestions, setVibeSuggestions] = useState<string[]>([])
   const [isVibeGenerating, setIsVibeGenerating] = useState(false)
   const [vibeGeneratedSounds, setVibeGeneratedSounds] = useState<Sound[]>([])
+  
+  // Help modal state
+  const [showHelpModal, setShowHelpModal] = useState(false)
   
   const waveformCanvasRef = useRef<HTMLCanvasElement>(null)
   const timelineCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -1067,6 +1070,36 @@ export default function Studio() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [insertMode, hasUnappliedChanges, applyChanges])
 
+  // General keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Help modal
+      if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        e.preventDefault()
+        setShowHelpModal(true)
+      }
+      
+      // Close modal with ESC
+      if (e.key === 'Escape' && showHelpModal) {
+        e.preventDefault()
+        setShowHelpModal(false)
+      }
+      
+      // Space to play/pause
+      if (e.key === ' ' && e.target === document.body) {
+        e.preventDefault()
+        if (isPlaying) {
+          handleStop()
+        } else {
+          handlePlay()
+        }
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isPlaying, showHelpModal])
+
   const handlePlay = async () => {
     // Ensure we have a single AudioContext
     if (!audioContextRef.current) {
@@ -2021,6 +2054,13 @@ export default function Studio() {
           >
             <Save size={16} />
             Save
+          </button>
+          <button 
+            onClick={() => setShowHelpModal(true)}
+            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
+            title="Keyboard shortcuts (press ?)"
+          >
+            <HelpCircle size={16} />
           </button>
           <button 
             onClick={() => setShowParametersPanel(!showParametersPanel)}
@@ -3112,9 +3152,6 @@ export default function Studio() {
                           </>
                         )}
                       </button>
-                      <div className="text-center mt-2 text-xs text-gray-500">
-                        or press <kbd className="px-1.5 py-0.5 bg-gray-800 rounded">Enter</kbd>
-                      </div>
                     </div>
                   </div>
                 ) : currentSound && editedParams ? (
@@ -3437,6 +3474,95 @@ export default function Studio() {
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm">
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 px-4 py-2 rounded-lg shadow-xl">
               <p className="text-sm text-gray-300">Click to place selection • Right-click to cancel</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowHelpModal(false)}
+          />
+          <div className="relative bg-gray-900 rounded-xl shadow-2xl border border-gray-800 p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-100">Keyboard Shortcuts</h2>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="text-gray-400 hover:text-gray-100 transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Playback */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-300 mb-2">Playback</h3>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Play/Stop</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">Space</kbd>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Add Sound Mode */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-300 mb-2">Add Sound Mode</h3>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Insert sound</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">Enter</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Quick position: Start (0-10%)</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">1</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Quick position: Middle (45-55%)</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">2</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Quick position: End (90-100%)</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">3</kbd>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Track Actions */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-300 mb-2">Track Actions</h3>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Select region</span>
+                    <span className="text-xs text-gray-500">Click & drag on track</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Context menu</span>
+                    <span className="text-xs text-gray-500">Right-click on selection</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* General */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-300 mb-2">General</h3>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Show this help</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">?</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 pt-4 border-t border-gray-800">
+              <p className="text-xs text-gray-500 text-center">Press Esc to close</p>
             </div>
           </div>
         </div>
