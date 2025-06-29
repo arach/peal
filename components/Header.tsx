@@ -2,7 +2,7 @@
 
 import { useSoundStore } from '@/store/soundStore'
 import { useRouter } from 'next/navigation'
-import { Zap, Trash2, X, Library, Sparkles, Crown, Palette } from 'lucide-react'
+import { Zap, Trash2, X, Library, Sparkles, Crown, Palette, Cpu } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import DynamicPealLogo from './DynamicPealLogo'
 
@@ -51,6 +51,13 @@ export default function Header() {
             >
               <Palette size={16} />
               Brands
+            </button>
+            <button
+              onClick={() => router.push('/mechanics')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+            >
+              <Cpu size={16} />
+              Mechanics
             </button>
           </nav>
         </div>

@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useSoundStore, Sound } from '@/store/soundStore'
 import { playPresetSound } from '@/lib/presets/playPresetSound'
+import { getAutoTags } from '@/lib/presets/uiMechanicsPresets'
 
 export class SoundGenerator {
   private audioContext: AudioContext | null = null
@@ -51,6 +52,8 @@ export class SoundGenerator {
     const duration = Math.random() * (params.durationMax - params.durationMin) + params.durationMin
     const baseFreq = Math.random() * (params.frequencyMax - params.frequencyMin) + params.frequencyMin
 
+    const soundParameters = this.generateParameters(type, baseFreq, duration, params)
+    
     const sound: Sound = {
       id: Date.now() + Math.random().toString(36).substr(2, 9),
       type: type,
@@ -59,8 +62,8 @@ export class SoundGenerator {
       brightness: Math.round(Math.random() * 100),
       created: new Date(),
       favorite: false,
-      tags: [],
-      parameters: this.generateParameters(type, baseFreq, duration, params),
+      tags: getAutoTags(type, soundParameters),
+      parameters: soundParameters,
       waveformData: null,
       audioBuffer: null
     }
