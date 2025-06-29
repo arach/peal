@@ -77,6 +77,7 @@ export default function Studio() {
   const currentSource = useRef<AudioBufferSourceNode | null>(null)
   const playbackStartTime = useRef<number>(0)
   const pausedAt = useRef<number>(0)
+  const audioContextRef = useRef<AudioContext | null>(null)
   
   // Create a generator instance for the studio
   const [generator] = useState(() => {
@@ -130,6 +131,19 @@ export default function Studio() {
       }
     }
   }, [searchParams, sounds, generator])
+  
+  // Cleanup AudioContext on unmount
+  useEffect(() => {
+    return () => {
+      if (currentSource.current) {
+        currentSource.current.stop()
+        currentSource.current = null
+      }
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close()
+      }
+    }
+  }, [])
 
   // Draw main waveform (clean, no trim overlays)
   const drawWaveform = (canvas: HTMLCanvasElement | null, waveformData: number[] | null, isPreview = false) => {
@@ -606,14 +620,13 @@ export default function Studio() {
   
   // Update playback position during playback
   useEffect(() => {
-    if (!isPlaying || isPaused) return
+    if (!isPlaying || isPaused || !audioContextRef.current) return
     
     const interval = setInterval(() => {
       const soundToPlay = previewSound || currentSound
       if (!soundToPlay?.audioBuffer) return
       
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const elapsed = audioContext.currentTime - playbackStartTime.current + pausedAt.current
+      const elapsed = audioContextRef.current!.currentTime - playbackStartTime.current
       const duration = soundToPlay.audioBuffer.duration
       const position = Math.min(elapsed / duration, 1)
       
@@ -1055,6 +1068,16 @@ export default function Studio() {
   }, [insertMode, hasUnappliedChanges, applyChanges])
 
   const handlePlay = async () => {
+    // Ensure we have a single AudioContext
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
+    }
+    
+    // Resume AudioContext if it's suspended (required by some browsers)
+    if (audioContextRef.current.state === 'suspended') {
+      await audioContextRef.current.resume()
+    }
+    
     let soundToPlay = previewSound || currentSound
     
     // If we have tracks, always use the mixed output (regardless of panel visibility)
@@ -1073,77 +1096,67 @@ export default function Studio() {
       }
     }
     
-    if (!soundToPlay) return
+    if (!soundToPlay?.audioBuffer) {
+      console.log('No audio buffer, attempting to generate...')
+      if (soundToPlay === currentSound) {
+        await (generator as any).renderSound(soundToPlay)
+        if (!soundToPlay.audioBuffer) {
+          console.error('Failed to generate audio buffer')
+          return
+        }
+      } else {
+        console.error('No audio buffer to play')
+        return
+      }
+    }
 
-    if (isPaused) {
-      // Resume from paused position
-      try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-        const source = audioContext.createBufferSource()
-        source.buffer = soundToPlay.audioBuffer
-        source.connect(audioContext.destination)
-        
+    try {
+      // Stop any currently playing sound
+      if (currentSource.current) {
+        currentSource.current.stop()
+        currentSource.current = null
+      }
+      
+      const source = audioContextRef.current.createBufferSource()
+      source.buffer = soundToPlay.audioBuffer
+      source.connect(audioContextRef.current.destination)
+      
+      if (isPaused) {
+        // Resume from paused position
         const resumePosition = pausedAt.current
-        const remainingDuration = (soundToPlay.audioBuffer?.duration || 0) - resumePosition
-        
-        source.start(0, resumePosition, remainingDuration)
-        currentSource.current = source
-        
-        playbackStartTime.current = audioContext.currentTime - resumePosition
-        setIsPlaying(true)
-        setIsPaused(false)
-        
-        source.onended = () => {
+        source.start(0, resumePosition)
+        playbackStartTime.current = audioContextRef.current.currentTime - resumePosition
+      } else {
+        // Start from beginning
+        source.start(0)
+        playbackStartTime.current = audioContextRef.current.currentTime
+        pausedAt.current = 0
+      }
+      
+      currentSource.current = source
+      setIsPlaying(true)
+      setIsPaused(false)
+      
+      source.onended = () => {
+        if (currentSource.current === source) {
           setIsPlaying(false)
           setIsPaused(false)
           setPlaybackPosition(0)
           pausedAt.current = 0
           currentSource.current = null
         }
-      } catch (error) {
-        console.error('Error resuming sound:', error)
       }
-    } else {
-      // Start from beginning
-      try {
-        const source = await generator.playSound(soundToPlay)
-        if (source) {
-          currentSource.current = source
-          setIsPlaying(true)
-          setIsPaused(false)
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-          playbackStartTime.current = audioContext.currentTime
-          pausedAt.current = 0
-          
-          // Update main track buffer if it was just generated
-          if (soundToPlay === currentSound && currentSound.audioBuffer) {
-            setTracks(tracks.map(t => 
-              t.id === `track-main-${currentSound.id}`
-                ? { ...t, audioBuffer: currentSound.audioBuffer, waveformData: currentSound.waveformData }
-                : t
-            ))
-          }
-          
-          source.onended = () => {
-            setIsPlaying(false)
-            setIsPaused(false)
-            setPlaybackPosition(0)
-            pausedAt.current = 0
-            currentSource.current = null
-          }
-        }
-      } catch (error) {
-        console.error('Error playing sound:', error)
-        setIsPlaying(false)
-      }
+    } catch (error) {
+      console.error('Error playing sound:', error)
+      setIsPlaying(false)
+      setIsPaused(false)
     }
   }
 
   const handlePause = () => {
-    if (currentSource.current && isPlaying) {
+    if (currentSource.current && isPlaying && audioContextRef.current) {
       // Calculate how much has been played
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const elapsed = audioContext.currentTime - playbackStartTime.current
+      const elapsed = audioContextRef.current.currentTime - playbackStartTime.current
       pausedAt.current = elapsed
       
       // Stop the current source (Web Audio API doesn't support pause)
