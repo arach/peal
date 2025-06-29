@@ -565,20 +565,34 @@ export default function Studio() {
 
   // Draw main waveform when sound, preview, or edit mode changes
   useEffect(() => {
-    // If a track is selected and we're in edit mode, show the track's waveform
-    if (selectedTrackId && (editMode || insertMode)) {
-      const selectedTrack = tracks.find(t => t.id === selectedTrackId)
-      if (selectedTrack?.waveformData) {
-        drawWaveform(waveformCanvasRef.current, selectedTrack.waveformData, false)
-        return
+    const drawMainWaveform = async () => {
+      // If a track is selected and we're in edit mode, show the track's waveform
+      if (selectedTrackId && (editMode || insertMode)) {
+        const selectedTrack = tracks.find(t => t.id === selectedTrackId)
+        if (selectedTrack?.waveformData) {
+          drawWaveform(waveformCanvasRef.current, selectedTrack.waveformData, false)
+          return
+        }
+      }
+      
+      // If no track is selected and we have multiple tracks, show the combined waveform
+      if (!selectedTrackId && tracks.length > 1 && !previewSound) {
+        const mixedBuffer = await mixTracks()
+        if (mixedBuffer) {
+          const mixedWaveform = generateWaveformData(mixedBuffer)
+          drawWaveform(waveformCanvasRef.current, mixedWaveform, false)
+          return
+        }
+      }
+      
+      // Otherwise show the main sound or preview
+      const soundToDisplay = previewSound || currentSound
+      if (soundToDisplay?.waveformData) {
+        drawWaveform(waveformCanvasRef.current, soundToDisplay.waveformData, !!previewSound)
       }
     }
     
-    // Otherwise show the main sound or preview
-    const soundToDisplay = previewSound || currentSound
-    if (soundToDisplay?.waveformData) {
-      drawWaveform(waveformCanvasRef.current, soundToDisplay.waveformData, !!previewSound)
-    }
+    drawMainWaveform()
   }, [currentSound?.waveformData, previewSound?.waveformData, editMode, insertMode, editStart, editEnd, playbackPosition, selectedTrackId, tracks, trackSelection])
 
   // Draw timeline when sound, selection values, or mode changes
@@ -1867,6 +1881,41 @@ export default function Studio() {
     setVibePrompt('')
     setHasUnappliedChanges(false)
   }
+  
+  const handleVibeAddAsTrack = async (sound: Sound) => {
+    // Add the vibe sound as a new track instead of replacing
+    if (!currentSound || !sound.audioBuffer) return
+    
+    // Create a new track with the vibe sound
+    const newTrack: Track = {
+      id: `track-vibe-${Date.now()}`,
+      name: sound.name || 'Vibe Insert',
+      audioBuffer: sound.audioBuffer,
+      waveformData: sound.waveformData || generateWaveformData(sound.audioBuffer),
+      muted: false,
+      solo: false,
+      volume: 0.8,
+      color: ['#9333ea', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'][tracks.length % 5],
+      // Position at the end of current timeline by default
+      startPosition: 0.5,
+      endPosition: Math.min(1, 0.5 + (sound.parameters.duration / currentSound.duration))
+    }
+    
+    setTracks([...tracks, newTrack])
+    setSelectedTrackId(newTrack.id)
+    setVibeGeneratedSounds([])
+    setVibePrompt('')
+    
+    // Auto-enter move mode so user can position the sound
+    setTimeout(() => {
+      setTrackSelection({
+        trackId: newTrack.id,
+        startPosition: newTrack.startPosition || 0.5,
+        endPosition: newTrack.endPosition || 0.7
+      })
+      setMoveMode(true)
+    }, 100)
+  }
 
   const handleVibePlaySound = async (sound: Sound) => {
     try {
@@ -2080,12 +2129,38 @@ export default function Studio() {
                             {sound.type} • {sound.duration}ms • {sound.frequency}Hz
                           </div>
 
-                          <button
-                            onClick={() => handleVibeLoadToStudio(sound)}
-                            className="w-full px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
-                          >
-                            Load to Studio
-                          </button>
+                          {currentSound ? (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleVibeAddAsTrack(sound)}
+                                className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all flex items-center justify-center gap-1"
+                                title="Add this sound as a new track in your current composition"
+                              >
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                                  <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                </svg>
+                                Add as Track
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (confirm('This will replace your current sound. Continue?')) {
+                                    handleVibeLoadToStudio(sound)
+                                  }
+                                }}
+                                className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-all"
+                                title="Replace current sound"
+                              >
+                                Replace
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => handleVibeLoadToStudio(sound)}
+                              className="w-full px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                            >
+                              Load to Studio
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -3256,15 +3331,45 @@ export default function Studio() {
           </button>
           <button
             onClick={() => {
-              // TODO: Implement copy
+              if (!trackSelection) return
+              
+              const sourceTrack = tracks.find(t => t.id === trackSelection.trackId)
+              if (!sourceTrack || !sourceTrack.audioBuffer) return
+              
+              // Clone the track
+              const cloneTrack: Track = {
+                id: `track-clone-${Date.now()}`,
+                name: `${sourceTrack.name} (copy)`,
+                audioBuffer: sourceTrack.audioBuffer,
+                waveformData: sourceTrack.waveformData,
+                muted: false,
+                solo: false,
+                volume: sourceTrack.volume * 0.7, // Slightly reduce volume for layering
+                color: sourceTrack.color,
+                startPosition: sourceTrack.startPosition,
+                endPosition: sourceTrack.endPosition
+              }
+              
+              setTracks([...tracks, cloneTrack])
+              setSelectedTrackId(cloneTrack.id)
               setContextMenu(null)
+              
+              // Auto-select the cloned track for moving
+              setTrackSelection({
+                trackId: cloneTrack.id,
+                startPosition: sourceTrack.startPosition || 0,
+                endPosition: sourceTrack.endPosition || 1
+              })
+              
+              // Optionally auto-start move mode
+              setTimeout(() => setMoveMode(true), 100)
             }}
             className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
               <path d="M10 0H2C1.4 0 1 0.4 1 1v9h2V2h7V0zm2 3H5C4.4 3 4 3.4 4 4v9c0 0.6 0.4 1 1 1h7c0.6 0 1-0.4 1-1V4c0-0.6-0.4-1-1-1zm0 10H5V4h7v9z"/>
             </svg>
-            Copy
+            Clone & Move
           </button>
           <button
             onClick={() => {
