@@ -51,6 +51,21 @@ export default function Studio() {
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null)
   const [showTracks, setShowTracks] = useState(false)
   
+  // Track region selection state
+  interface TrackSelection {
+    trackId: string
+    startPosition: number // 0-1 normalized position
+    endPosition: number   // 0-1 normalized position
+  }
+  const [trackSelection, setTrackSelection] = useState<TrackSelection | null>(null)
+  const [isSelectingRegion, setIsSelectingRegion] = useState(false)
+  const [selectionStart, setSelectionStart] = useState(0)
+  
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
+  const [moveMode, setMoveMode] = useState(false)
+  const [movePreview, setMovePreview] = useState<{ position: number } | null>(null)
+  
   // Vibe Designer state
   const [vibePrompt, setVibePrompt] = useState('')
   const [vibeSuggestions, setVibeSuggestions] = useState<string[]>([])
@@ -123,8 +138,16 @@ export default function Studio() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
     
-    const width = canvas.width
-    const height = canvas.height
+    // Set canvas size with DPR scaling
+    const rect = canvas.getBoundingClientRect()
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = rect.width * dpr
+    canvas.height = rect.height * dpr
+    ctx.scale(dpr, dpr)
+    
+    // Use CSS dimensions for drawing
+    const width = rect.width
+    const height = rect.height
     
     // Clear canvas
     ctx.clearRect(0, 0, width, height)
@@ -425,7 +448,7 @@ export default function Studio() {
       }
     }
     
-    // Overlay: Insert mode
+    // Overlay: Add Sound mode
     if (insertMode) {
       const editStartX = editStart * drawWidth
       const editEndX = editEnd * drawWidth
@@ -500,6 +523,23 @@ export default function Studio() {
     }
     ctx.restore()
     
+    // Draw move preview if in move mode
+    if (moveMode && movePreview && trackSelection) {
+      const regionWidth = (trackSelection.endPosition - trackSelection.startPosition) * drawWidth
+      const previewX = movePreview.position * drawWidth
+      
+      // Draw preview region
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.3)'
+      ctx.fillRect(previewX, 0, regionWidth, height)
+      
+      // Draw preview border
+      ctx.strokeStyle = '#3b82f6'
+      ctx.lineWidth = 2
+      ctx.setLineDash([4, 4])
+      ctx.strokeRect(previewX, 0, regionWidth, height)
+      ctx.setLineDash([])
+    }
+    
     // Draw playhead
     if (playbackPosition > 0 && playbackPosition <= 1) {
       const playheadX = playbackPosition * drawWidth
@@ -539,7 +579,7 @@ export default function Studio() {
     if (soundToDisplay?.waveformData) {
       drawWaveform(waveformCanvasRef.current, soundToDisplay.waveformData, !!previewSound)
     }
-  }, [currentSound?.waveformData, previewSound?.waveformData, editMode, insertMode, editStart, editEnd, playbackPosition, selectedTrackId, tracks])
+  }, [currentSound?.waveformData, previewSound?.waveformData, editMode, insertMode, editStart, editEnd, playbackPosition, selectedTrackId, tracks, trackSelection])
 
   // Draw timeline when sound, selection values, or mode changes
   useEffect(() => {
@@ -547,7 +587,7 @@ export default function Studio() {
     if (soundToDisplay?.waveformData) {
       drawTimeline(timelineCanvasRef.current, soundToDisplay.waveformData)
     }
-  }, [currentSound?.waveformData, previewSound?.waveformData, trimStart, trimEnd, editStart, editEnd, editMode, insertMode, trimMode, playbackPosition])
+  }, [currentSound?.waveformData, previewSound?.waveformData, trimStart, trimEnd, editStart, editEnd, editMode, insertMode, trimMode, playbackPosition, moveMode, movePreview, trackSelection])
 
   
   // Update playback position during playback
@@ -903,11 +943,6 @@ export default function Studio() {
       }
       setTracks([...tracks, newTrack])
       setSelectedTrackId(newTrack.id)
-      
-      // Auto-show tracks panel when creating a new track
-      if (!showTracks) {
-        setShowTracks(true)
-      }
     } catch (error) {
       console.error('Error generating insert preview:', error)
     } finally {
@@ -1122,6 +1157,192 @@ export default function Studio() {
     setIsPaused(false)
     setPlaybackPosition(0)
     pausedAt.current = 0
+  }
+
+  // Track interaction handlers
+  const handleTrackMouseDown = (e: React.MouseEvent<HTMLCanvasElement>, trackId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    const canvas = e.currentTarget
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const normalizedX = x / canvas.width
+    
+    // Start region selection
+    setIsSelectingRegion(true)
+    setSelectionStart(normalizedX)
+    setTrackSelection({
+      trackId,
+      startPosition: normalizedX,
+      endPosition: normalizedX
+    })
+  }
+  
+  const handleTrackMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isSelectingRegion || !trackSelection) return
+    
+    const canvas = e.currentTarget
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const normalizedX = Math.max(0, Math.min(1, x / canvas.width))
+    
+    setTrackSelection({
+      ...trackSelection,
+      startPosition: Math.min(selectionStart, normalizedX),
+      endPosition: Math.max(selectionStart, normalizedX)
+    })
+  }
+  
+  const handleTrackMouseUp = () => {
+    setIsSelectingRegion(false)
+  }
+  
+  const handleTrackContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (!trackSelection) return
+    
+    setContextMenu({ x: e.clientX, y: e.clientY })
+  }
+  
+  // Move mode handlers
+  const startMoveMode = () => {
+    setMoveMode(true)
+    setContextMenu(null)
+  }
+  
+  const handleMoveRegion = async (newPosition: number) => {
+    if (!trackSelection || !moveMode) return
+    
+    const track = tracks.find(t => t.id === trackSelection.trackId)
+    if (!track) return
+    
+    // For insert tracks, we need to recalculate the position-based waveform
+    if (track.startPosition !== undefined && track.endPosition !== undefined) {
+      // Calculate the new positions
+      const regionWidth = track.endPosition - track.startPosition
+      const newStartPos = Math.max(0, Math.min(1 - regionWidth, newPosition))
+      const newEndPos = newStartPos + regionWidth
+      
+      // Update track with new position and regenerate positioned waveform
+      setTracks(tracks.map(t => 
+        t.id === track.id
+          ? {
+              ...t,
+              startPosition: newStartPos,
+              endPosition: newEndPos,
+              waveformData: track.audioBuffer 
+                ? generatePositionedWaveformData(track.audioBuffer, newStartPos, newEndPos)
+                : t.waveformData
+            }
+          : t
+      ))
+      
+      // Clear selection
+      setTrackSelection(null)
+    }
+    
+    setMoveMode(false)
+    setMovePreview(null)
+  }
+  
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClick = () => {
+      setContextMenu(null)
+    }
+    
+    if (contextMenu) {
+      document.addEventListener('click', handleClick)
+      return () => document.removeEventListener('click', handleClick)
+    }
+  }, [contextMenu])
+  
+  // Auto-show tracks panel when there are multiple tracks
+  useEffect(() => {
+    if (tracks.length > 1 && !showTracks) {
+      setShowTracks(true)
+    }
+  }, [tracks.length])
+  
+  // Save/Load functionality
+  const handleSaveProject = async () => {
+    if (!currentSound) return
+    
+    const projectData = {
+      version: '1.0',
+      timestamp: new Date().toISOString(),
+      sound: {
+        id: currentSound.id,
+        name: currentSound.name,
+        parameters: currentSound.parameters
+      },
+      editedParams,
+      tracks: tracks.map(track => ({
+        id: track.id,
+        name: track.name,
+        muted: track.muted,
+        solo: track.solo,
+        volume: track.volume,
+        color: track.color,
+        startPosition: track.startPosition,
+        endPosition: track.endPosition,
+        // We'll need to serialize audio data separately
+        hasAudio: !!track.audioBuffer
+      })),
+      editSettings: {
+        editMode,
+        insertMode,
+        trimMode,
+        editStart,
+        editEnd,
+        trimStart,
+        trimEnd
+      }
+    }
+    
+    // Create a blob and download
+    const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${currentSound.name || 'sound'}-project.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+  
+  const handleLoadProject = async () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.json'
+    
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      
+      try {
+        const text = await file.text()
+        const projectData = JSON.parse(text)
+        
+        // Validate version
+        if (projectData.version !== '1.0') {
+          alert('Incompatible project version')
+          return
+        }
+        
+        // TODO: Load the project data
+        console.log('Loading project:', projectData)
+        alert('Project loading is coming soon!')
+        
+      } catch (error) {
+        console.error('Error loading project:', error)
+        alert('Error loading project file')
+      }
+    }
+    
+    input.click()
   }
 
   // Timeline interaction handlers
@@ -1718,11 +1939,24 @@ export default function Studio() {
 
         {/* Right - Project Actions */}
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors">
+          <button 
+            onClick={handleLoadProject}
+            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
+            title="Open a saved project"
+          >
             <FolderOpen size={16} />
             Open
           </button>
-          <button className="flex items-center gap-2 px-3 py-2 bg-primary-500 hover:bg-primary-400 text-white rounded-lg transition-colors">
+          <button 
+            onClick={handleSaveProject}
+            disabled={!currentSound}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+              currentSound 
+                ? 'bg-primary-500 hover:bg-primary-400 text-white' 
+                : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+            }`}
+            title="Save current project"
+          >
             <Save size={16} />
             Save
           </button>
@@ -2028,10 +2262,12 @@ export default function Studio() {
                                   ? 'bg-purple-500 text-white shadow-sm' 
                                   : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
                               }`}
-                              title="Insert new sound in selected region"
+                              title="Add new sound at specific position"
                             >
-                              <Wand2 size={10} />
-                              {insertMode ? 'Exit' : 'Insert'}
+                              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                                <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                              </svg>
+                              {insertMode ? 'Exit' : 'Add Sound'}
                             </button>
                             <button
                               onClick={() => {
@@ -2280,34 +2516,11 @@ export default function Studio() {
                       <div className="bg-gray-900 rounded-xl border border-gray-800 transition-all duration-300 overflow-hidden">
                       <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-800 bg-gray-900/50">
                         <h4 className="text-xs font-semibold text-gray-200 uppercase tracking-wider">Tracks</h4>
-                        <button
-                          onClick={() => {
-                            // Add new empty track
-                            const newTrack: Track = {
-                              id: `track-${Date.now()}`,
-                              name: `Track ${tracks.length + 1}`,
-                              audioBuffer: null,
-                              waveformData: null,
-                              muted: false,
-                              solo: false,
-                              volume: 1,
-                              color: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'][tracks.length % 5]
-                            }
-                            setTracks([...tracks, newTrack])
-                          }}
-                          className="flex items-center gap-1 px-2.5 py-1 text-[11px] bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors"
-                        >
-                          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-                            <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                          </svg>
-                          Add Track
-                        </button>
                       </div>
                       
                       {tracks.length === 0 ? (
                         <div className="text-center py-6 px-4 text-gray-500 text-xs">
-                          No tracks yet. Insert sounds to create tracks automatically,<br/>
-                          or click "Add Track" to create one manually.
+                          No tracks yet. Use "Add Sound" to create tracks.
                         </div>
                       ) : (
                         <div className="divide-y divide-gray-800">
@@ -2354,9 +2567,9 @@ export default function Studio() {
                                       {track.name === 'Main' && (
                                         <span className="text-[10px] text-gray-500 font-normal">(Original)</span>
                                       )}
-                                      {track.startPosition !== undefined && (
+                                      {track.startPosition !== undefined && currentSound && (
                                         <span className="text-[10px] text-gray-500 font-normal">
-                                          @{Math.round(track.startPosition * 100)}%
+                                          {Math.round(track.startPosition * currentSound.duration)}ms
                                         </span>
                                       )}
                                     </div>
@@ -2428,14 +2641,35 @@ export default function Studio() {
                                       <canvas
                                         width={300}
                                         height={24}
-                                        className={`w-full h-full ${
+                                        className={`w-full h-full cursor-crosshair ${
                                           selectedTrackId === track.id ? 'opacity-80' : 'opacity-50'
                                         }`}
+                                        onMouseDown={(e) => handleTrackMouseDown(e, track.id)}
+                                        onMouseMove={handleTrackMouseMove}
+                                        onMouseUp={handleTrackMouseUp}
+                                        onContextMenu={handleTrackContextMenu}
                                         ref={(canvas) => {
                                           if (canvas && track.waveformData) {
                                             const ctx = canvas.getContext('2d')
                                             if (ctx) {
                                               ctx.clearRect(0, 0, canvas.width, canvas.height)
+                                              
+                                              // Draw selection if this track has one
+                                              if (trackSelection && trackSelection.trackId === track.id) {
+                                                ctx.fillStyle = 'rgba(59, 130, 246, 0.2)'
+                                                const selStart = trackSelection.startPosition * canvas.width
+                                                const selEnd = trackSelection.endPosition * canvas.width
+                                                ctx.fillRect(selStart, 0, selEnd - selStart, canvas.height)
+                                                
+                                                // Draw selection borders
+                                                ctx.strokeStyle = '#3b82f6'
+                                                ctx.lineWidth = 1
+                                                ctx.setLineDash([2, 2])
+                                                ctx.strokeRect(selStart, 0, selEnd - selStart, canvas.height)
+                                                ctx.setLineDash([])
+                                              }
+                                              
+                                              // Draw waveform
                                               ctx.strokeStyle = selectedTrackId === track.id ? '#3b82f6' : track.color
                                               ctx.lineWidth = selectedTrackId === track.id ? 1 : 0.5
                                               ctx.beginPath()
@@ -2783,7 +3017,7 @@ export default function Studio() {
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                               <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                             </svg>
-                            Insert Sound
+                            Add Sound
                             <span className="text-xs opacity-75">
                               ({Math.round((editEnd - editStart) * 100)}% region)
                             </span>
@@ -2792,29 +3026,6 @@ export default function Studio() {
                       </button>
                       <div className="text-center mt-2 text-xs text-gray-500">
                         or press <kbd className="px-1.5 py-0.5 bg-gray-800 rounded">Enter</kbd>
-                      </div>
-                    </div>
-                    
-                    {/* Keyboard shortcuts help */}
-                    <div className="bg-purple-500/10 rounded-lg p-3 border border-purple-500/20">
-                      <div className="text-xs text-purple-300 space-y-1">
-                        <div className="font-medium mb-1">Keyboard Shortcuts:</div>
-                        <div className="flex items-center gap-2">
-                          <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-[10px]">1</kbd>
-                          <span className="text-gray-400">Insert at start</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-[10px]">2</kbd>
-                          <span className="text-gray-400">Insert at middle</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-[10px]">3</kbd>
-                          <span className="text-gray-400">Insert at end</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-[10px]">Enter</kbd>
-                          <span className="text-gray-400">Apply insert</span>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -2840,7 +3051,7 @@ export default function Studio() {
                           ) : (
                             <>
                               <Settings size={16} />
-                              {insertMode ? 'Insert Sound' : 'Apply Changes'}
+                              {insertMode ? 'Add Sound' : 'Apply Changes'}
                               {(editMode || insertMode) && (
                                 <span className="text-xs opacity-90">
                                   ({insertMode ? 'in' : 'to'} {Math.round((editEnd - editStart) * 100)}% region)
@@ -3015,6 +3226,103 @@ export default function Studio() {
           )}
         </div>
       </div>
+      
+      {/* Context Menu */}
+      {contextMenu && trackSelection && (
+        <div
+          className="fixed z-50 bg-gray-900 border border-gray-700 rounded-lg shadow-xl py-1 min-w-[160px]"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={startMoveMode}
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <path d="M7 2L5 0v2H2v2h3v2l2-2 2 2V4h3V2H9V0L7 2zM2 7h2v3H2v2h2v2l2-2h4l2 2v-2h2v-2h-2V7h2V5H0v2h2z" opacity="0.5"/>
+              <path d="M5 6h4v4H5z"/>
+            </svg>
+            Move
+          </button>
+          <button
+            onClick={() => {
+              // TODO: Implement cut
+              setContextMenu(null)
+            }}
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2"
+          >
+            <Scissors size={14} />
+            Cut
+          </button>
+          <button
+            onClick={() => {
+              // TODO: Implement copy
+              setContextMenu(null)
+            }}
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <path d="M10 0H2C1.4 0 1 0.4 1 1v9h2V2h7V0zm2 3H5C4.4 3 4 3.4 4 4v9c0 0.6 0.4 1 1 1h7c0.6 0 1-0.4 1-1V4c0-0.6-0.4-1-1-1zm0 10H5V4h7v9z"/>
+            </svg>
+            Copy
+          </button>
+          <button
+            onClick={() => {
+              // TODO: Implement delete
+              setContextMenu(null)
+            }}
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <path d="M11 2h-1V1c0-0.6-0.4-1-1-1H5C4.4 0 4 0.4 4 1v1H3C2.4 2 2 2.4 2 3v1h10V3c0-0.6-0.4-1-1-1zM5 1h4v1H5V1zm6 4H3l0.5 8.1c0 0.5 0.4 0.9 0.9 0.9h5.2c0.5 0 0.9-0.4 0.9-0.9L11 5z"/>
+            </svg>
+            Delete
+          </button>
+          <div className="border-t border-gray-800 my-1"></div>
+          <button
+            onClick={() => {
+              // TODO: Implement extract to new track
+              setContextMenu(null)
+            }}
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+          >
+            Extract to New Track
+          </button>
+        </div>
+      )}
+      
+      {/* Move Mode Overlay */}
+      {moveMode && (
+        <div
+          className="fixed inset-0 z-40 cursor-move"
+          onMouseMove={(e) => {
+            const timelineCanvas = timelineCanvasRef.current
+            if (!timelineCanvas) return
+            
+            const rect = timelineCanvas.getBoundingClientRect()
+            const x = e.clientX - rect.left
+            const position = Math.max(0, Math.min(1, x / rect.width))
+            
+            setMovePreview({ position })
+          }}
+          onClick={(e) => {
+            if (movePreview) {
+              handleMoveRegion(movePreview.position)
+            }
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault()
+            setMoveMode(false)
+            setMovePreview(null)
+          }}
+        >
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 px-4 py-2 rounded-lg shadow-xl">
+              <p className="text-sm text-gray-300">Click to place selection • Right-click to cancel</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
