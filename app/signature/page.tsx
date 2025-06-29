@@ -103,44 +103,44 @@ const signatureSounds: SignatureSound[] = [
   
   // Experimental sounds
   {
-    name: 'biometric_scan',
-    file: '/sounds/signature-sounds/biometric_scan.wav',
+    name: 'biometric_scan_pro',
+    file: '/sounds/refined-sounds/biometric_scan_pro.wav',
     category: 'experimental',
-    displayName: 'Biometric Scan',
-    description: 'Scanning sweep with heartbeat detection',
-    inspiration: 'Futuristic biometric authentication'
+    displayName: 'Biometric Scan Pro',
+    description: 'Professional scanning with authentication sequence',
+    inspiration: 'Enterprise-grade biometric security system'
   },
   {
-    name: 'molecular_bond',
-    file: '/sounds/signature-sounds/molecular_bond.wav',
+    name: 'secure_auth',
+    file: '/sounds/refined-sounds/secure_auth.wav',
     category: 'experimental',
-    displayName: 'Molecular Bond',
-    description: 'Two atoms forming a chemical bond',
-    inspiration: 'Microscopic interaction made audible'
+    displayName: 'Secure Authentication',
+    description: 'Three-stage security authentication sequence',
+    inspiration: 'Key insert, processing, and success confirmation'
   },
   {
-    name: 'gravity_wave',
-    file: '/sounds/signature-sounds/gravity_wave.wav',
+    name: 'data_sync',
+    file: '/sounds/refined-sounds/data_sync.wav',
     category: 'experimental',
-    displayName: 'Gravity Wave',
-    description: 'Spacetime warping with gravitational chirp',
-    inspiration: 'LIGO gravitational wave detection'
+    displayName: 'Data Sync Cascade',
+    description: 'Multiple data streams synchronizing',
+    inspiration: 'Cloud sync and data transfer completion'
   },
   {
-    name: 'crystal_shatter',
-    file: '/sounds/signature-sounds/crystal_shatter.wav',
+    name: 'machine_startup',
+    file: '/sounds/refined-sounds/machine_startup.wav',
     category: 'experimental',
-    displayName: 'Crystal Shatter',
-    description: 'Cascading crystal shard fracture',
-    inspiration: 'Delicate destruction in slow motion'
+    displayName: 'Machine Startup',
+    description: 'Industrial system boot sequence',
+    inspiration: 'Power button, turbine spin-up, ready beeps'
   },
   {
-    name: 'plasma_discharge',
-    file: '/sounds/signature-sounds/plasma_discharge.wav',
+    name: 'achievement_unlock',
+    file: '/sounds/refined-sounds/achievement_unlock.wav',
     category: 'experimental',
-    displayName: 'Plasma Discharge',
-    description: 'Building charge and electrical discharge',
-    inspiration: 'High-energy physics made audible'
+    displayName: 'Achievement Unlock',
+    description: 'Triumphant unlock with celebration notes',
+    inspiration: 'Gaming achievement and milestone celebration'
   }
 ]
 
