@@ -1,0 +1,46 @@
+{
+  "generated": "2025-06-29T21:41:20.000Z",
+  "description": "Synthetic mechanical keyboard sounds - various switch types",
+  "sounds": {
+    "key_linear_red": {
+      "duration": 0.06,
+      "category": "keypress"
+    },
+    "key_clicky_blue": {
+      "duration": 0.08,
+      "category": "keypress"
+    },
+    "key_tactile_brown": {
+      "duration": 0.07,
+      "category": "keypress"
+    },
+    "key_spacebar": {
+      "duration": 0.08,
+      "category": "keypress"
+    },
+    "key_enter": {
+      "duration": 0.09,
+      "category": "keypress"
+    },
+    "key_backspace": {
+      "duration": 0.07,
+      "category": "keypress"
+    },
+    "key_letter": {
+      "duration": 0.05,
+      "category": "keypress"
+    },
+    "key_modifier": {
+      "duration": 0.07498866213151928,
+      "category": "keypress"
+    },
+    "typing_loop": {
+      "duration": 0.8,
+      "category": "sequence"
+    },
+    "keyboard_ambience": {
+      "duration": 1,
+      "category": "sequence"
+    }
+  }
+}

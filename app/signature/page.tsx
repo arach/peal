@@ -111,20 +111,20 @@ const signatureSounds: SignatureSound[] = [
     inspiration: 'Enterprise-grade biometric security system'
   },
   {
-    name: 'secure_auth',
-    file: '/sounds/refined-sounds/secure_auth.wav',
+    name: 'secure_auth_simple',
+    file: '/sounds/improved-sounds/secure_auth_simple.wav',
     category: 'experimental',
     displayName: 'Secure Authentication',
-    description: 'Three-stage security authentication sequence',
-    inspiration: 'Key insert, processing, and success confirmation'
+    description: 'Simple, clean authentication sequence',
+    inspiration: 'Scan beep, process, success chord'
   },
   {
-    name: 'data_sync',
-    file: '/sounds/refined-sounds/data_sync.wav',
+    name: 'data_sync_v2',
+    file: '/sounds/improved-sounds/data_sync_v2.wav',
     category: 'experimental',
     displayName: 'Data Sync Cascade',
-    description: 'Multiple data streams synchronizing',
-    inspiration: 'Cloud sync and data transfer completion'
+    description: 'Three rising sync pulses with completion',
+    inspiration: 'Clear, impactful data synchronization'
   },
   {
     name: 'machine_startup',
@@ -135,12 +135,12 @@ const signatureSounds: SignatureSound[] = [
     inspiration: 'Power button, turbine spin-up, ready beeps'
   },
   {
-    name: 'achievement_unlock',
-    file: '/sounds/refined-sounds/achievement_unlock.wav',
+    name: 'achievement_clean',
+    file: '/sounds/improved-sounds/achievement_clean.wav',
     category: 'experimental',
     displayName: 'Achievement Unlock',
-    description: 'Triumphant unlock with celebration notes',
-    inspiration: 'Gaming achievement and milestone celebration'
+    description: 'Clean sweep, impact, and major chord arpeggio',
+    inspiration: 'Focused celebration without the clutter'
   }
 ]
 

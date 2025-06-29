@@ -1,15 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ArrowLeft, Play, Pause, Loader, MousePointer, Cpu, Filter, Download } from 'lucide-react'
+import { ArrowLeft, Play, Pause, Loader, MousePointer, Cpu, Filter, Download, Keyboard } from 'lucide-react'
 import Link from 'next/link'
 import { uiMechanicsPresets, UIMechanicsSound } from '@/lib/presets/uiMechanicsPresets'
 import { dotsPatternPresets, DotsPatternSound } from '@/lib/presets/dotsPatternPresets'
+import { keyboardPresets, KeyboardSound } from '@/lib/presets/keyboardPresets'
 import { Howl } from 'howler'
 
-type CategoryFilter = 'all' | 'loading' | 'processing' | 'click' | 'dots' | 'sequence' | 'multi-click'
-type MechanicsSound = (UIMechanicsSound | DotsPatternSound) & { 
-  category: 'loading' | 'processing' | 'click' | 'dots' | 'sequence' | 'multi-click' 
+type CategoryFilter = 'all' | 'loading' | 'processing' | 'click' | 'dots' | 'sequence' | 'multi-click' | 'keyboard'
+type MechanicsSound = (UIMechanicsSound | DotsPatternSound | KeyboardSound) & { 
+  category: 'loading' | 'processing' | 'click' | 'dots' | 'sequence' | 'multi-click' | 'keyboard' 
 }
 
 export default function MechanicsPage() {
@@ -22,7 +23,8 @@ export default function MechanicsPage() {
   // Merge all sounds
   const allSounds: MechanicsSound[] = [
     ...uiMechanicsPresets,
-    ...dotsPatternPresets
+    ...dotsPatternPresets,
+    ...keyboardPresets.map(k => ({ ...k, category: 'keyboard' as const }))
   ] as MechanicsSound[]
 
   // Clean up on unmount
@@ -40,7 +42,8 @@ export default function MechanicsPage() {
     click: <MousePointer className="w-4 h-4" />,
     dots: <span className="w-4 h-4 flex items-center justify-center">•••</span>,
     sequence: <span className="w-4 h-4 flex items-center justify-center">→</span>,
-    'multi-click': <MousePointer className="w-4 h-4" />
+    'multi-click': <MousePointer className="w-4 h-4" />,
+    keyboard: <Keyboard className="w-4 h-4" />
   }
 
   const categoryColors = {
@@ -49,7 +52,8 @@ export default function MechanicsPage() {
     click: 'green',
     dots: 'amber',
     sequence: 'indigo',
-    'multi-click': 'teal'
+    'multi-click': 'teal',
+    keyboard: 'red'
   }
 
   const filteredSounds = allSounds.filter(sound => {
@@ -104,7 +108,8 @@ export default function MechanicsPage() {
     { value: 'click', label: 'Clicks', count: allSounds.filter(s => s.category === 'click').length },
     { value: 'dots', label: 'Dots', count: allSounds.filter(s => s.category === 'dots').length },
     { value: 'sequence', label: 'Sequences', count: allSounds.filter(s => s.category === 'sequence').length },
-    { value: 'multi-click', label: 'Multi-Click', count: allSounds.filter(s => s.category === 'multi-click').length }
+    { value: 'multi-click', label: 'Multi-Click', count: allSounds.filter(s => s.category === 'multi-click').length },
+    { value: 'keyboard', label: 'Keyboard', count: allSounds.filter(s => s.category === 'keyboard').length }
   ]
 
   return (
@@ -199,6 +204,7 @@ export default function MechanicsPage() {
                       colorClass === 'amber' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' :
                       colorClass === 'indigo' ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' :
                       colorClass === 'teal' ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400' :
+                      colorClass === 'red' ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' :
                       'bg-gray-100 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400'
                     }
                   `}>
