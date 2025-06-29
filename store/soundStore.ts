@@ -39,8 +39,6 @@ interface SoundState {
   showDetailModal: boolean
   detailSoundId: string | null
   showShortcuts: boolean
-  showEditorModal: boolean
-  editorSoundId: string | null
   showVariationModal: boolean
   variationSoundId: string | null
   showGenerationParams: boolean
@@ -83,8 +81,6 @@ interface SoundState {
   // Modal controls
   showDetail: (id: string) => void
   hideDetail: () => void
-  showEditor: (id: string) => void
-  hideEditor: () => void
   showVariations: (id: string) => void
   hideVariations: () => void
   toggleShortcuts: () => void
@@ -115,8 +111,6 @@ export const useSoundStore = create<SoundState>()(
       showDetailModal: false,
       detailSoundId: null,
       showShortcuts: false,
-      showEditorModal: false,
-      editorSoundId: null,
       showVariationModal: false,
       variationSoundId: null,
       showGenerationParams: false,
@@ -237,15 +231,6 @@ export const useSoundStore = create<SoundState>()(
         detailSoundId: null 
       })),
       
-      showEditor: (id) => set(() => ({ 
-        showEditorModal: true, 
-        editorSoundId: id 
-      })),
-      
-      hideEditor: () => set(() => ({ 
-        showEditorModal: false, 
-        editorSoundId: null 
-      })),
       
       showVariations: (id) => set(() => ({ 
         showVariationModal: true, 

@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useSoundStore, Sound } from '@/store/soundStore'
+import { playPresetSound } from '@/lib/presets/playPresetSound'
 
 export class SoundGenerator {
   private audioContext: AudioContext | null = null
@@ -417,6 +418,9 @@ export function useSoundGeneration() {
     setGenerating(true)
     setGenerationProgress(0)
     setGenerationStatus('Initializing sound generation...')
+    
+    // Play start sound
+    await playPresetSound('confirm-pop', 0.2)
 
     try {
       const sounds: Sound[] = []
@@ -438,6 +442,9 @@ export function useSoundGeneration() {
       
       addSounds(sounds)
       setGenerationStatus('Generation complete!')
+      
+      // Play completion sound
+      await playPresetSound('success-chime', 0.25)
       
     } catch (error) {
       console.error('Error generating sounds:', error)

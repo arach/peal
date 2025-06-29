@@ -8,7 +8,6 @@ import Sidebar from './Sidebar'
 import SoundGrid from './SoundGrid'
 import LoadingOverlay from './LoadingOverlay'
 import DetailModal from './DetailModal'
-import SoundEditor from './SoundEditor'
 import SoundVariationModal from './SoundVariationModal'
 import ShortcutsPanel from './ShortcutsPanel'
 import StatsBar from './StatsBar'
@@ -22,8 +21,6 @@ export default function SoundDesigner() {
   const {
     isGenerating,
     showDetailModal,
-    showEditorModal,
-    editorSoundId,
     showVariationModal,
     variationSoundId,
     showShortcuts,
@@ -34,7 +31,6 @@ export default function SoundDesigner() {
     setFocusedIndex,
     selectAll,
     clearSelection,
-    hideEditor,
     hideVariations,
     removeSelectedSounds,
   } = useSoundStore()
@@ -154,12 +150,6 @@ export default function SoundDesigner() {
 
       {isGenerating && <LoadingOverlay />}
       {showDetailModal && <DetailModal />}
-      {showEditorModal && editorSoundId && (
-        <SoundEditor
-          sound={sounds.find(s => s.id === editorSoundId)!}
-          onClose={hideEditor}
-        />
-      )}
       {showVariationModal && variationSoundId && (
         <SoundVariationModal
           sound={sounds.find(s => s.id === variationSoundId)!}

@@ -2,11 +2,13 @@
 
 import { useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
-import { Zap, Settings, Sliders, Activity, Music } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Zap, Settings, Sliders, Activity, Music, Sparkles, Library } from 'lucide-react'
 
 export default function HeroSection() {
   const { sounds, showGenerationParams, toggleGenerationParams } = useSoundStore()
   const { generateBatch } = useSoundGeneration()
+  const router = useRouter()
 
   // Show hero only when there are no sounds (zero state)
   if (sounds.length > 0) return null
@@ -53,36 +55,53 @@ export default function HeroSection() {
 
         {/* Main CTA */}
         <div className="space-y-6">
-          <button
-            onClick={async () => {
-              // Initialize audio context with user gesture
-              if (typeof window !== 'undefined') {
-                try {
-                  const AudioContext = window.AudioContext || (window as any).webkitAudioContext
-                  const ctx = new AudioContext()
-                  if (ctx.state === 'suspended') {
-                    await ctx.resume()
+          <div className="flex items-center justify-center gap-4">
+            <button
+              onClick={async () => {
+                // Initialize audio context with user gesture
+                if (typeof window !== 'undefined') {
+                  try {
+                    const AudioContext = window.AudioContext || (window as any).webkitAudioContext
+                    const ctx = new AudioContext()
+                    if (ctx.state === 'suspended') {
+                      await ctx.resume()
+                    }
+                  } catch (error) {
+                    console.log('AudioContext initialization will happen during generation')
                   }
-                } catch (error) {
-                  console.log('AudioContext initialization will happen during generation')
                 }
-              }
-              generateBatch()
-            }}
-            className="btn-base text-lg px-8 py-4 bg-primary-500 text-white hover:bg-primary-400 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary-500/40 focus-ring mx-auto transition-all duration-300 font-semibold"
-          >
-            <Zap size={24} />
-            Generate Sounds
-          </button>
+                generateBatch()
+              }}
+              className="btn-base text-lg px-8 py-4 bg-primary-500 text-white hover:bg-primary-400 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary-500/40 focus-ring transition-all duration-300 font-semibold"
+            >
+              <Zap size={24} />
+              Generate Sounds
+            </button>
+            
+            <button
+              onClick={() => router.push('/presets')}
+              className="btn-base text-lg px-8 py-4 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:-translate-y-1 hover:shadow-2xl hover:shadow-gray-800/40 focus-ring transition-all duration-300 font-semibold"
+            >
+              <Library size={24} />
+              Browse Presets
+            </button>
+          </div>
 
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-text-tertiary dark:text-gray-500 text-sm">Want to customize first?</span>
+          <div className="flex items-center justify-center gap-6">
             <button
               onClick={toggleGenerationParams}
               className="text-primary-500 hover:text-primary-400 text-sm font-medium flex items-center gap-1 transition-colors hover:underline"
             >
               <Settings size={14} />
               Advanced Settings
+            </button>
+            
+            <button
+              onClick={() => router.push('/studio')}
+              className="text-primary-500 hover:text-primary-400 text-sm font-medium flex items-center gap-1 transition-colors hover:underline"
+            >
+              <Sparkles size={14} />
+              Open Studio
             </button>
           </div>
         </div>

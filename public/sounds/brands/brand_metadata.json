@@ -1,0 +1,447 @@
+{
+  "generated": "2025-06-29T19:36:24.719Z",
+  "sampleRate": 48000,
+  "brands": {
+    "slack": {
+      "sounds": {
+        "knock": {
+          "type": "knock_pattern",
+          "frequencies": [
+            300,
+            400
+          ],
+          "pattern": [
+            0,
+            0.15
+          ],
+          "duration": 0.3,
+          "envelope": {
+            "attack": 0.005,
+            "decay": 0.04,
+            "sustain": 0,
+            "release": 0.05
+          },
+          "amplitude": 0.12,
+          "filename": "knock.wav"
+        },
+        "huddle_join": {
+          "type": "warm_bell",
+          "frequency": 660,
+          "duration": 0.25,
+          "envelope": {
+            "attack": 0.01,
+            "decay": 0.05,
+            "sustain": 0.3,
+            "release": 0.19
+          },
+          "harmonics": [
+            1,
+            0.5,
+            0.3
+          ],
+          "reverb": 0.15,
+          "amplitude": 0.1,
+          "filename": "huddle_join.wav"
+        },
+        "typing_dots": {
+          "type": "tick_pattern",
+          "frequency": 800,
+          "tickCount": 3,
+          "tickDuration": 0.03,
+          "tickSpacing": 0.12,
+          "envelope": {
+            "attack": 0.001,
+            "decay": 0.029,
+            "sustain": 0,
+            "release": 0
+          },
+          "amplitude": 0.08,
+          "filename": "typing_dots.wav"
+        },
+        "message_sent": {
+          "type": "filtered_whoosh",
+          "startFreq": 200,
+          "endFreq": 800,
+          "duration": 0.15,
+          "envelope": {
+            "attack": 0.01,
+            "decay": 0.14,
+            "sustain": 0,
+            "release": 0
+          },
+          "filter": {
+            "type": "bandpass",
+            "freq": 600,
+            "q": 2
+          },
+          "amplitude": 0.1,
+          "filename": "message_sent.wav"
+        }
+      }
+    },
+    "discord": {
+      "sounds": {
+        "voice_join": {
+          "type": "double_beep",
+          "frequencies": [
+            600,
+            800
+          ],
+          "duration": 0.15,
+          "gap": 0.05,
+          "envelope": {
+            "attack": 0.002,
+            "decay": 0.02,
+            "sustain": 0.4,
+            "release": 0.03
+          },
+          "amplitude": 0.12,
+          "filename": "voice_join.wav"
+        },
+        "voice_leave": {
+          "type": "double_beep",
+          "frequencies": [
+            800,
+            600
+          ],
+          "duration": 0.15,
+          "gap": 0.05,
+          "envelope": {
+            "attack": 0.002,
+            "decay": 0.02,
+            "sustain": 0.4,
+            "release": 0.03
+          },
+          "amplitude": 0.12,
+          "filename": "voice_leave.wav"
+        },
+        "mention": {
+          "type": "synth_pluck",
+          "frequency": 1000,
+          "duration": 0.2,
+          "envelope": {
+            "attack": 0.001,
+            "decay": 0.05,
+            "sustain": 0.2,
+            "release": 0.149
+          },
+          "modulation": {
+            "frequency": 2000,
+            "depth": 0.3
+          },
+          "amplitude": 0.11,
+          "filename": "mention.wav"
+        },
+        "stream_start": {
+          "type": "power_up",
+          "startFreq": 400,
+          "endFreq": 1200,
+          "duration": 0.25,
+          "envelope": {
+            "attack": 0.1,
+            "decay": 0,
+            "sustain": 1,
+            "release": 0.05
+          },
+          "harmonics": [
+            1,
+            0.5,
+            0.25
+          ],
+          "amplitude": 0.1,
+          "filename": "stream_start.wav"
+        }
+      }
+    },
+    "fluent": {
+      "sounds": {
+        "system_notify": {
+          "type": "chime_sequence",
+          "frequencies": [
+            880,
+            1320,
+            1760
+          ],
+          "durations": [
+            0.1,
+            0.08,
+            0.12
+          ],
+          "gaps": [
+            0.02,
+            0.02
+          ],
+          "envelope": {
+            "attack": 0.005,
+            "decay": 0.02,
+            "sustain": 0.5,
+            "release": 0.03
+          },
+          "reverb": 0.1,
+          "amplitude": 0.09,
+          "filename": "system_notify.wav"
+        },
+        "task_complete": {
+          "type": "gentle_ding",
+          "frequency": 1047,
+          "duration": 0.3,
+          "envelope": {
+            "attack": 0.003,
+            "decay": 0.05,
+            "sustain": 0.3,
+            "release": 0.247
+          },
+          "harmonics": [
+            1,
+            0.3,
+            0.1
+          ],
+          "amplitude": 0.08,
+          "filename": "task_complete.wav"
+        },
+        "processing": {
+          "type": "rotating_ticks",
+          "baseFreq": 600,
+          "tickCount": 4,
+          "tickDuration": 0.02,
+          "rotationTime": 0.8,
+          "frequencyShift": 1.2,
+          "amplitude": 0.07,
+          "filename": "processing.wav"
+        },
+        "focus_on": {
+          "type": "subtle_sweep",
+          "startFreq": 300,
+          "endFreq": 600,
+          "duration": 0.2,
+          "envelope": {
+            "attack": 0.05,
+            "decay": 0,
+            "sustain": 1,
+            "release": 0.05
+          },
+          "filter": {
+            "type": "lowpass",
+            "freq": 1000,
+            "q": 1
+          },
+          "amplitude": 0.06,
+          "filename": "focus_on.wav"
+        }
+      }
+    },
+    "spotify": {
+      "sounds": {
+        "play_start": {
+          "type": "musical_tap",
+          "frequency": 440,
+          "duration": 0.08,
+          "envelope": {
+            "attack": 0.001,
+            "decay": 0.02,
+            "sustain": 0.3,
+            "release": 0.059
+          },
+          "harmonics": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "harmonicAmps": [
+            1,
+            0.5,
+            0.3,
+            0.2
+          ],
+          "amplitude": 0.11,
+          "filename": "play_start.wav"
+        },
+        "track_skip": {
+          "type": "pitch_bend",
+          "startFreq": 600,
+          "endFreq": 900,
+          "duration": 0.06,
+          "envelope": {
+            "attack": 0.001,
+            "decay": 0.059,
+            "sustain": 0,
+            "release": 0
+          },
+          "amplitude": 0.1,
+          "filename": "track_skip.wav"
+        },
+        "track_like": {
+          "type": "major_chord",
+          "frequencies": [
+            523,
+            659,
+            784
+          ],
+          "duration": 0.15,
+          "envelope": {
+            "attack": 0.01,
+            "decay": 0.03,
+            "sustain": 0.5,
+            "release": 0.11
+          },
+          "reverb": 0.2,
+          "amplitude": 0.09,
+          "filename": "track_like.wav"
+        },
+        "queue_add": {
+          "type": "rhythmic_beep",
+          "pattern": [
+            0,
+            0.08,
+            0.16
+          ],
+          "frequency": 700,
+          "tickDuration": 0.03,
+          "envelope": {
+            "attack": 0.001,
+            "decay": 0.029,
+            "sustain": 0,
+            "release": 0
+          },
+          "amplitude": 0.08,
+          "filename": "queue_add.wav"
+        }
+      }
+    },
+    "notion": {
+      "sounds": {
+        "page_turn": {
+          "type": "paper_whoosh",
+          "duration": 0.1,
+          "envelope": {
+            "attack": 0.01,
+            "decay": 0.09,
+            "sustain": 0,
+            "release": 0
+          },
+          "filter": {
+            "type": "highpass",
+            "freq": 400,
+            "q": 1
+          },
+          "noise": true,
+          "amplitude": 0.06,
+          "filename": "page_turn.wav"
+        },
+        "task_check": {
+          "type": "soft_click",
+          "frequency": 2000,
+          "duration": 0.03,
+          "envelope": {
+            "attack": 0.001,
+            "decay": 0.01,
+            "sustain": 0.1,
+            "release": 0.019
+          },
+          "filter": {
+            "type": "bandpass",
+            "freq": 2500,
+            "q": 4
+          },
+          "amplitude": 0.08,
+          "filename": "task_check.wav"
+        },
+        "typing_indicator": {
+          "type": "subtle_ticks",
+          "frequency": 1200,
+          "tickCount": 3,
+          "tickDuration": 0.02,
+          "tickSpacing": 0.15,
+          "fadeIn": true,
+          "amplitude": 0.05,
+          "filename": "typing_indicator.wav"
+        },
+        "block_add": {
+          "type": "gentle_pop",
+          "frequency": 800,
+          "duration": 0.05,
+          "envelope": {
+            "attack": 0.002,
+            "decay": 0.01,
+            "sustain": 0.2,
+            "release": 0.038
+          },
+          "pitch": {
+            "start": 0.9,
+            "end": 1.1
+          },
+          "amplitude": 0.07,
+          "filename": "block_add.wav"
+        }
+      }
+    },
+    "processing": {
+      "sounds": {
+        "loading_dots": {
+          "type": "tick_pattern",
+          "frequency": 600,
+          "tickCount": 4,
+          "tickDuration": 0.04,
+          "tickSpacing": 0.2,
+          "envelope": {
+            "attack": 0.01,
+            "decay": 0.03,
+            "sustain": 0,
+            "release": 0
+          },
+          "ascending": true,
+          "amplitude": 0.08,
+          "filename": "loading_dots.wav"
+        },
+        "spinner": {
+          "type": "continuous_modulation",
+          "baseFreq": 400,
+          "modFreq": 3,
+          "modDepth": 50,
+          "duration": 1,
+          "envelope": {
+            "attack": 0.1,
+            "decay": 0,
+            "sustain": 1,
+            "release": 0.1
+          },
+          "amplitude": 0.06,
+          "filename": "spinner.wav"
+        },
+        "progress_tick": {
+          "type": "single_tick",
+          "frequency": 1000,
+          "duration": 0.02,
+          "envelope": {
+            "attack": 0.001,
+            "decay": 0.019,
+            "sustain": 0,
+            "release": 0
+          },
+          "amplitude": 0.1,
+          "filename": "progress_tick.wav"
+        },
+        "process_done": {
+          "type": "success_flourish",
+          "frequencies": [
+            600,
+            800,
+            1000,
+            1200
+          ],
+          "duration": 0.3,
+          "envelope": {
+            "attack": 0.01,
+            "decay": 0.05,
+            "sustain": 0.3,
+            "release": 0.04
+          },
+          "stagger": 0.05,
+          "amplitude": 0.09,
+          "filename": "process_done.wav"
+        }
+      }
+    }
+  }
+}

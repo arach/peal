@@ -1,24 +1,58 @@
 'use client'
 
 import { useSoundStore } from '@/store/soundStore'
-import { Zap, Trash2, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Zap, Trash2, X, Library, Sparkles, Crown, Palette } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import DynamicPealLogo from './DynamicPealLogo'
 
 export default function Header() {
   const { selectedSounds, removeSelectedSounds, clearSelection } = useSoundStore()
+  const router = useRouter()
 
   return (
     <header className="bg-surface/90 dark:bg-gray-900/90 border-b border-border dark:border-gray-800 backdrop-blur-md section-padding-sm">
       <div className="container flex justify-between items-center">
-        <div className="flex items-center">
+        <div className="flex items-center gap-6">
           <DynamicPealLogo 
             width={120} 
             height={40}
             preset="layered"
             animated={false}
-            className="text-text-primary dark:text-gray-100"
+            className="text-text-primary dark:text-gray-100 cursor-pointer"
+            onClick={() => router.push('/')}
           />
+          
+          <nav className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => router.push('/presets')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+            >
+              <Library size={16} />
+              Presets
+            </button>
+            <button
+              onClick={() => router.push('/studio')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+            >
+              <Sparkles size={16} />
+              Studio
+            </button>
+            <button
+              onClick={() => router.push('/premium')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+            >
+              <Crown size={16} />
+              Premium
+            </button>
+            <button
+              onClick={() => router.push('/brands')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+            >
+              <Palette size={16} />
+              Brands
+            </button>
+          </nav>
         </div>
         
         <div className="flex items-center gap-3">
