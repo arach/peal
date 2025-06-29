@@ -4,9 +4,13 @@ import { useState, useEffect } from 'react'
 import { ArrowLeft, Play, Pause, Loader, MousePointer, Cpu, Filter, Download } from 'lucide-react'
 import Link from 'next/link'
 import { uiMechanicsPresets, UIMechanicsSound } from '@/lib/presets/uiMechanicsPresets'
+import { dotsPatternPresets, DotsPatternSound } from '@/lib/presets/dotsPatternPresets'
 import { Howl } from 'howler'
 
-type CategoryFilter = 'all' | 'loading' | 'processing' | 'click'
+type CategoryFilter = 'all' | 'loading' | 'processing' | 'click' | 'dots' | 'sequence' | 'multi-click'
+type MechanicsSound = (UIMechanicsSound | DotsPatternSound) & { 
+  category: 'loading' | 'processing' | 'click' | 'dots' | 'sequence' | 'multi-click' 
+}
 
 export default function MechanicsPage() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all')
@@ -14,6 +18,12 @@ export default function MechanicsPage() {
   const [playingSound, setPlayingSound] = useState<string | null>(null)
   const [currentHowl, setCurrentHowl] = useState<Howl | null>(null)
   const [volume, setVolume] = useState(0.5)
+  
+  // Merge all sounds
+  const allSounds: MechanicsSound[] = [
+    ...uiMechanicsPresets,
+    ...dotsPatternPresets
+  ] as MechanicsSound[]
 
   // Clean up on unmount
   useEffect(() => {
@@ -27,16 +37,22 @@ export default function MechanicsPage() {
   const categoryIcons = {
     loading: <Loader className="w-4 h-4" />,
     processing: <Cpu className="w-4 h-4" />,
-    click: <MousePointer className="w-4 h-4" />
+    click: <MousePointer className="w-4 h-4" />,
+    dots: <span className="w-4 h-4 flex items-center justify-center">•••</span>,
+    sequence: <span className="w-4 h-4 flex items-center justify-center">→</span>,
+    'multi-click': <MousePointer className="w-4 h-4" />
   }
 
   const categoryColors = {
     loading: 'blue',
     processing: 'purple',
-    click: 'green'
+    click: 'green',
+    dots: 'amber',
+    sequence: 'indigo',
+    'multi-click': 'teal'
   }
 
-  const filteredSounds = uiMechanicsPresets.filter(sound => {
+  const filteredSounds = allSounds.filter(sound => {
     const matchesCategory = selectedCategory === 'all' || sound.category === selectedCategory
     const matchesSearch = searchQuery === '' || 
       sound.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -46,7 +62,7 @@ export default function MechanicsPage() {
     return matchesCategory && matchesSearch
   })
 
-  const playSound = (sound: UIMechanicsSound) => {
+  const playSound = (sound: MechanicsSound) => {
     // Stop current sound if playing
     if (currentHowl) {
       currentHowl.stop()
@@ -72,7 +88,7 @@ export default function MechanicsPage() {
     setPlayingSound(sound.file)
   }
 
-  const downloadSound = (sound: UIMechanicsSound) => {
+  const downloadSound = (sound: MechanicsSound) => {
     const link = document.createElement('a')
     link.href = sound.file
     link.download = `${sound.name.toLowerCase().replace(/\s+/g, '_')}.wav`
@@ -82,10 +98,13 @@ export default function MechanicsPage() {
   }
 
   const categories: { value: CategoryFilter; label: string; count: number }[] = [
-    { value: 'all', label: 'All Sounds', count: uiMechanicsPresets.length },
-    { value: 'loading', label: 'Loading', count: uiMechanicsPresets.filter(s => s.category === 'loading').length },
-    { value: 'processing', label: 'Processing', count: uiMechanicsPresets.filter(s => s.category === 'processing').length },
-    { value: 'click', label: 'Clicks', count: uiMechanicsPresets.filter(s => s.category === 'click').length }
+    { value: 'all', label: 'All Sounds', count: allSounds.length },
+    { value: 'loading', label: 'Loading', count: allSounds.filter(s => s.category === 'loading').length },
+    { value: 'processing', label: 'Processing', count: allSounds.filter(s => s.category === 'processing').length },
+    { value: 'click', label: 'Clicks', count: allSounds.filter(s => s.category === 'click').length },
+    { value: 'dots', label: 'Dots', count: allSounds.filter(s => s.category === 'dots').length },
+    { value: 'sequence', label: 'Sequences', count: allSounds.filter(s => s.category === 'sequence').length },
+    { value: 'multi-click', label: 'Multi-Click', count: allSounds.filter(s => s.category === 'multi-click').length }
   ]
 
   return (
@@ -96,7 +115,7 @@ export default function MechanicsPage() {
             <Link href="/" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
               <ArrowLeft size={20} />
             </Link>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">UI Mechanics</h1>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">UI Mechanics & Patterns</h1>
           </div>
           <div className="flex items-center gap-4">
             <input
@@ -174,7 +193,14 @@ export default function MechanicsPage() {
                   </div>
                   <div className={`
                     w-10 h-10 rounded-lg flex items-center justify-center
-                    bg-${colorClass}-100 dark:bg-${colorClass}-900/30 text-${colorClass}-600 dark:text-${colorClass}-400
+                    ${colorClass === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                      colorClass === 'purple' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' :
+                      colorClass === 'green' ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' :
+                      colorClass === 'amber' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' :
+                      colorClass === 'indigo' ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' :
+                      colorClass === 'teal' ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400' :
+                      'bg-gray-100 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400'
+                    }
                   `}>
                     {categoryIcons[sound.category]}
                   </div>
