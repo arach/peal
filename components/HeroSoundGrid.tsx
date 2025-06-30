@@ -1,0 +1,291 @@
+'use client'
+
+import { useState, useRef, useEffect } from 'react'
+import { Howl } from 'howler'
+import { Play, Pause, Star, MoreVertical } from 'lucide-react'
+import { motion } from 'framer-motion'
+
+const heroSounds = [
+  { 
+    id: 'quantum-cascade',
+    name: 'Quantum Cascade',
+    file: '/sounds/signature-sounds/quantum_cascade.wav',
+    duration: '1.1s',
+    type: 'cascade',
+    tags: ['futuristic', 'cascade', 'tech'],
+    waveform: Array.from({ length: 40 }, (_, i) => {
+      const phase = (i / 40) * Math.PI * 3
+      return Math.abs(Math.sin(phase) * Math.sin(phase * 4) * 0.8) + 0.1
+    })
+  },
+  { 
+    id: 'neural-pulse',
+    name: 'Neural Pulse',
+    file: '/sounds/dots-patterns/neural_pulse.wav',
+    duration: '428ms',
+    type: 'pulse',
+    tags: ['neural', 'pulse', 'tech'],
+    waveform: Array.from({ length: 30 }, (_, i) => {
+      if (i < 5) return 0.1
+      if (i < 10) return 0.8 + Math.random() * 0.2
+      if (i < 15) return 0.6 + Math.random() * 0.2
+      if (i < 20) return 0.4 + Math.random() * 0.1
+      return 0.1
+    })
+  },
+  { 
+    id: 'achievement',
+    name: 'Achievement Unlock',
+    file: '/sounds/refined-sounds/achievement_unlock.wav',
+    duration: '400ms',
+    type: 'success',
+    tags: ['success', 'achievement', 'positive'],
+    waveform: Array.from({ length: 25 }, (_, i) => {
+      const attack = i < 3 ? i / 3 : 1
+      const decay = i > 20 ? (25 - i) / 5 : 1
+      return attack * decay * (0.7 + Math.sin(i * 0.8) * 0.3)
+    })
+  },
+  { 
+    id: 'haptic-pulse',
+    name: 'Deep Haptic',
+    file: '/sounds/signature-sounds/deep_haptic_pulse.wav',
+    duration: '1.4s',
+    type: 'haptic',
+    tags: ['haptic', 'deep', 'tactile'],
+    waveform: Array.from({ length: 50 }, (_, i) => {
+      const wave = Math.sin((i / 50) * Math.PI * 2) * 0.5 + 0.5
+      const pulse = i % 10 < 5 ? 1 : 0.3
+      return wave * pulse * 0.9 + 0.1
+    })
+  },
+  { 
+    id: 'dendrite',
+    name: 'Dendrite Cascade',
+    file: '/sounds/signature-sounds/dendrite_cascade.wav',
+    duration: '933ms',
+    type: 'cascade',
+    tags: ['organic', 'cascade', 'neural'],
+    waveform: Array.from({ length: 35 }, (_, i) => {
+      const branches = Math.sin(i * 0.3) * Math.cos(i * 0.7)
+      return Math.abs(branches) * 0.8 + 0.2
+    })
+  },
+  { 
+    id: 'crystal',
+    name: 'Crystal Shatter',
+    file: '/sounds/signature-sounds/crystal_shatter.wav',
+    duration: '1.1s',
+    type: 'impact',
+    tags: ['impact', 'shatter', 'crystal'],
+    waveform: Array.from({ length: 45 }, (_, i) => {
+      if (i < 5) return Math.random() * 0.3 + 0.7
+      const decay = Math.exp(-i * 0.1)
+      const shimmer = Math.random() * 0.3
+      return decay * (0.5 + shimmer) + 0.05
+    })
+  }
+]
+
+interface SoundCardProps {
+  sound: typeof heroSounds[0]
+  isPlaying: boolean
+  onPlay: () => void
+  onStop: () => void
+}
+
+function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const animationRef = useRef<number>()
+  const progressRef = useRef(0)
+
+  useEffect(() => {
+    if (!canvasRef.current) return
+    
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    // Set canvas size
+    canvas.width = canvas.offsetWidth * 2
+    canvas.height = canvas.offsetHeight * 2
+    ctx.scale(2, 2)
+
+    const draw = () => {
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      // Draw waveform
+      const width = canvas.offsetWidth
+      const height = canvas.offsetHeight
+      const barWidth = width / sound.waveform.length
+      const centerY = height / 2
+      const barGap = 2
+
+      sound.waveform.forEach((value, index) => {
+        const barHeight = value * height * 0.8
+        const x = index * barWidth
+        const y = centerY - barHeight / 2
+        
+        // Highlight played portion when playing
+        const isPlayed = isPlaying && (index / sound.waveform.length) < progressRef.current
+        
+        // Create gradient for each bar
+        const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight)
+        if (isPlayed) {
+          gradient.addColorStop(0, 'rgba(74, 158, 255, 1)')
+          gradient.addColorStop(0.5, 'rgba(100, 180, 255, 1)')
+          gradient.addColorStop(1, 'rgba(74, 158, 255, 1)')
+        } else {
+          gradient.addColorStop(0, 'rgba(74, 158, 255, 0.8)')
+          gradient.addColorStop(0.5, 'rgba(74, 158, 255, 1)')
+          gradient.addColorStop(1, 'rgba(74, 158, 255, 0.8)')
+        }
+        
+        ctx.fillStyle = gradient
+        ctx.fillRect(x + barGap/2, y, barWidth - barGap, barHeight)
+        
+        // Add subtle reflection
+        ctx.fillStyle = isPlayed ? 'rgba(74, 158, 255, 0.2)' : 'rgba(74, 158, 255, 0.1)'
+        ctx.fillRect(x + barGap/2, centerY + barHeight / 2 + 2, barWidth - barGap, barHeight * 0.2)
+      })
+      
+      if (isPlaying) {
+        progressRef.current += 0.02
+        if (progressRef.current > 1) progressRef.current = 0
+        animationRef.current = requestAnimationFrame(draw)
+      }
+    }
+    
+    draw()
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [sound.waveform, isPlaying])
+  
+  useEffect(() => {
+    if (!isPlaying) {
+      progressRef.current = 0
+    }
+  }, [isPlaying])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-4 hover:border-gray-700 transition-all group"
+    >
+      {/* Waveform */}
+      <div className="h-16 mb-3 relative">
+        <canvas 
+          ref={canvasRef}
+          className="w-full h-full"
+          style={{ width: '100%', height: '100%' }}
+        />
+      </div>
+
+      {/* Sound name */}
+      <h3 className="font-medium text-white mb-2">{sound.name}</h3>
+      
+      {/* Duration and type */}
+      <div className="flex justify-between items-center mb-2 text-xs">
+        <span className="text-gray-400">{sound.duration}</span>
+        <span className="text-blue-400">{sound.type}</span>
+      </div>
+
+      {/* Tags */}
+      <div className="flex gap-2 flex-wrap mb-3">
+        {sound.tags.map(tag => (
+          <span
+            key={tag}
+            className="px-2 py-1 bg-gray-800 text-gray-300 rounded text-xs"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={isPlaying ? onStop : onPlay}
+          className={`p-2 rounded transition-colors ${
+            isPlaying 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+          }`}
+        >
+          {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+        </button>
+        
+        <div className="flex gap-1">
+          <button className="p-2 text-gray-500 hover:text-gray-300 transition-colors">
+            <Star size={16} />
+          </button>
+          <button className="p-2 text-gray-500 hover:text-gray-300 transition-colors">
+            <MoreVertical size={16} />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+export default function HeroSoundGrid() {
+  const [playing, setPlaying] = useState<string | null>(null)
+  const [sounds, setSounds] = useState<{ [key: string]: Howl }>({})
+
+  useEffect(() => {
+    // Preload all sounds
+    const loadedSounds: { [key: string]: Howl } = {}
+    heroSounds.forEach(sound => {
+      loadedSounds[sound.id] = new Howl({
+        src: [sound.file],
+        onend: () => setPlaying(null)
+      })
+    })
+    setSounds(loadedSounds)
+
+    return () => {
+      // Cleanup
+      Object.values(loadedSounds).forEach(sound => sound.unload())
+    }
+  }, [])
+
+  const playSound = (soundId: string) => {
+    // Stop any currently playing sound
+    if (playing && sounds[playing]) {
+      sounds[playing].stop()
+    }
+    
+    // Play new sound
+    if (sounds[soundId]) {
+      sounds[soundId].play()
+      setPlaying(soundId)
+    }
+  }
+
+  const stopSound = () => {
+    if (playing && sounds[playing]) {
+      sounds[playing].stop()
+      setPlaying(null)
+    }
+  }
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {heroSounds.map((sound) => (
+        <HeroSoundCard
+          key={sound.id}
+          sound={sound}
+          isPlaying={playing === sound.id}
+          onPlay={() => playSound(sound.id)}
+          onStop={stopSound}
+        />
+      ))}
+    </div>
+  )
+}
