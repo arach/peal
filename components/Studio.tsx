@@ -6,6 +6,8 @@ import { ArrowLeft, Play, Pause, Square, Save, FolderOpen, Settings, Sparkles, V
 import { useSoundStore, Sound } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { VibeParser } from '@/lib/vibeParser'
+import VibeDesignerModal from './VibeDesignerModal'
+import SoundLibraryModal from './SoundLibraryModal'
 
 export default function Studio() {
   const router = useRouter()
@@ -20,7 +22,7 @@ export default function Studio() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [playbackPosition, setPlaybackPosition] = useState(0)
-  const [showVibePanel, setShowVibePanel] = useState(true)
+  const [showVibePanel, setShowVibePanel] = useState(false)
   const [showParametersPanel, setShowParametersPanel] = useState(true)
   const [editMode, setEditMode] = useState(false)
   const [insertMode, setInsertMode] = useState(false)
@@ -79,6 +81,10 @@ export default function Studio() {
   
   // Help modal state
   const [showHelpModal, setShowHelpModal] = useState(false)
+  
+  // Modal states
+  const [showVibeModal, setShowVibeModal] = useState(false)
+  const [showLibraryModal, setShowLibraryModal] = useState(false)
   
   const waveformCanvasRef = useRef<HTMLCanvasElement>(null)
   const timelineCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -2006,6 +2012,22 @@ export default function Studio() {
       return null
     }
   }
+  
+  const handleVibeSoundGenerated = (sound: Sound) => {
+    setCurrentSound(sound)
+    setEditedParams(sound.parameters)
+    setPreviewSound(null)
+    setHasUnappliedChanges(false)
+    setShowVibeModal(false)
+  }
+  
+  const handleLibrarySoundSelected = (sound: Sound) => {
+    setCurrentSound(sound)
+    setEditedParams(sound.parameters)
+    setPreviewSound(null)
+    setHasUnappliedChanges(false)
+    setShowLibraryModal(false)
+  }
 
   return (
     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
@@ -2859,27 +2881,20 @@ export default function Studio() {
                       Welcome to Sound Studio
                     </h2>
                     <p className="text-gray-400 leading-relaxed">
-                      Create, edit, and perfect your sounds with AI-powered design tools and precision controls.
-                      Use the Vibe Designer to describe what you want, or dive into the parameters for detailed editing.
+                      Create custom sounds with AI or browse our curated library.
+                      Start with a description of what you need, or pick from professional presets.
                     </p>
                   </div>
                   <div className="flex gap-3 justify-center">
                     <button 
-                      onClick={() => {
-                        setShowVibePanel(true)
-                        // Focus on the vibe input after panel opens
-                        setTimeout(() => {
-                          const vibeInput = document.querySelector('input[placeholder*="Describe the sound"]') as HTMLInputElement
-                          if (vibeInput) vibeInput.focus()
-                        }, 100)
-                      }}
+                      onClick={() => setShowVibeModal(true)}
                       className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
                     >
                       <Sparkles size={16} />
                       Start with Vibe
                     </button>
                     <button 
-                      onClick={() => router.push('/#sounds')}
+                      onClick={() => setShowLibraryModal(true)}
                       className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
                     >
                       <FolderOpen size={16} />
@@ -3592,6 +3607,20 @@ export default function Studio() {
           </div>
         </div>
       )}
+      
+      {/* Modals */}
+      <VibeDesignerModal
+        isOpen={showVibeModal}
+        onClose={() => setShowVibeModal(false)}
+        onSoundGenerated={handleVibeSoundGenerated}
+        generator={generator}
+      />
+      
+      <SoundLibraryModal
+        isOpen={showLibraryModal}
+        onClose={() => setShowLibraryModal(false)}
+        onSelectSound={handleLibrarySoundSelected}
+      />
     </div>
   )
 }
