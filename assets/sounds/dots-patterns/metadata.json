@@ -1,0 +1,66 @@
+{
+  "generated": "2025-06-29T21:16:02.470Z",
+  "description": "Three dots patterns and multi-part sequential sounds",
+  "sounds": {
+    "three_dots_ascending": {
+      "duration": 0.4,
+      "category": "dots"
+    },
+    "three_dots_descending": {
+      "duration": 0.4,
+      "category": "dots"
+    },
+    "three_dots_fast": {
+      "duration": 0.2,
+      "category": "dots"
+    },
+    "three_dots_echo": {
+      "duration": 0.6,
+      "category": "dots"
+    },
+    "five_dots_melody": {
+      "duration": 0.6,
+      "category": "dots"
+    },
+    "double_click": {
+      "duration": 0.12,
+      "category": "multi-click"
+    },
+    "triple_click_cascade": {
+      "duration": 0.18,
+      "category": "multi-click"
+    },
+    "mech_sequence": {
+      "duration": 0.3,
+      "category": "multi-click"
+    },
+    "neural_pulse": {
+      "duration": 0.5,
+      "category": "dots"
+    },
+    "quantum_dots": {
+      "duration": 0.4,
+      "category": "dots"
+    },
+    "processing_steps": {
+      "duration": 0.6,
+      "category": "sequence"
+    },
+    "morse_dots": {
+      "duration": 0.5,
+      "category": "dots"
+    },
+    "typewriter_seq": {
+      "duration": 0.4,
+      "category": "multi-click"
+    },
+    "radar_dots": {
+      "duration": 0.8,
+      "category": "dots"
+    },
+    "comm_burst": {
+      "duration": 0.34997732426303857,
+      "category": "sequence"
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "generated": "2025-06-29T20:29:39.939Z",
+  "description": "UI mechanics sounds - loading, processing, and clicks",
+  "sounds": {
+    "spinner_tick": {
+      "duration": 0.08,
+      "category": "loading"
+    },
+    "progress_tick": {
+      "duration": 0.12,
+      "category": "processing"
+    },
+    "loading_pulse": {
+      "duration": 0.3,
+      "category": "loading"
+    },
+    "loading_whoosh": {
+      "duration": 0.5,
+      "category": "loading"
+    },
+    "processing_tick": {
+      "duration": 0.15,
+      "category": "processing"
+    },
+    "data_chirp": {
+      "duration": 0.2,
+      "category": "processing"
+    },
+    "quantum_process": {
+      "duration": 0.3,
+      "category": "processing"
+    },
+    "mech_click": {
+      "duration": 0.04,
+      "category": "click"
+    },
+    "soft_click": {
+      "duration": 0.06,
+      "category": "click"
+    },
+    "glass_click": {
+      "duration": 0.08,
+      "category": "click"
+    },
+    "haptic_click": {
+      "duration": 0.03,
+      "category": "click"
+    },
+    "switch_click": {
+      "duration": 0.05,
+      "category": "click"
+    },
+    "circular_sweep": {
+      "duration": 1,
+      "category": "loading"
+    },
+    "packet_sound": {
+      "duration": 0.1,
+      "category": "processing"
+    },
+    "ai_thinking": {
+      "duration": 0.4,
+      "category": "processing"
+    }
+  }
+}

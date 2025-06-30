@@ -1,27 +1,80 @@
 'use client'
 
+import { useState } from 'react'
 import { useSoundStore } from '@/store/soundStore'
-import { Zap, Trash2, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Zap, Trash2, X, Library, Sparkles, Crown, Menu } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import DynamicPealLogo from './DynamicPealLogo'
 
 export default function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { selectedSounds, removeSelectedSounds, clearSelection } = useSoundStore()
+  const router = useRouter()
 
   return (
     <header className="bg-surface/90 dark:bg-gray-900/90 border-b border-border dark:border-gray-800 backdrop-blur-md section-padding-sm">
       <div className="container flex justify-between items-center">
-        <div className="flex items-center">
-          <DynamicPealLogo 
-            width={120} 
-            height={40}
-            preset="layered"
-            animated={false}
-            className="text-text-primary dark:text-gray-100"
-          />
+        <div className="flex items-center gap-6">
+          <button
+            onClick={() => router.push('/')}
+            className="focus:outline-none"
+          >
+            <DynamicPealLogo 
+              width={120} 
+              height={40}
+              preset="layered"
+              animated={false}
+              className="text-text-primary dark:text-gray-100"
+            />
+          </button>
+          
+          <nav className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => router.push('/')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors"
+            >
+              Home
+            </button>
+            <button
+              onClick={() => router.push('/library')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+            >
+              <Library size={16} />
+              Library
+            </button>
+            <button
+              onClick={() => router.push('/studio')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+            >
+              <Sparkles size={16} />
+              Studio
+            </button>
+            <button
+              onClick={() => router.push('/presets')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+            >
+              <Crown size={16} />
+              Presets
+            </button>
+            <button
+              onClick={() => router.push('/about')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors"
+            >
+              About
+            </button>
+          </nav>
         </div>
         
         <div className="flex items-center gap-3">
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100"
+          >
+            <Menu size={24} />
+          </button>
+          
           {selectedSounds.size > 0 && (
             <>
               <span className="mr-2 text-text-secondary dark:text-gray-400 text-sm">
@@ -49,6 +102,62 @@ export default function Header() {
           <ThemeToggle />
         </div>
       </div>
+      
+      {/* Mobile menu dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-border dark:border-gray-800 bg-surface dark:bg-gray-900">
+          <nav className="container py-4 space-y-2">
+            <button
+              onClick={() => {
+                router.push('/')
+                setMobileMenuOpen(false)
+              }}
+              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              Home
+            </button>
+            <button
+              onClick={() => {
+                router.push('/library')
+                setMobileMenuOpen(false)
+              }}
+              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Library size={16} />
+              Library
+            </button>
+            <button
+              onClick={() => {
+                router.push('/studio')
+                setMobileMenuOpen(false)
+              }}
+              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Sparkles size={16} />
+              Studio
+            </button>
+            <button
+              onClick={() => {
+                router.push('/presets')
+                setMobileMenuOpen(false)
+              }}
+              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Crown size={16} />
+              Presets
+            </button>
+            <button
+              onClick={() => {
+                router.push('/about')
+                setMobileMenuOpen(false)
+              }}
+              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              About
+            </button>
+          </nav>
+        </div>
+      )}
     </header>
   )
 }

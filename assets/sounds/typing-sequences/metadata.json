@@ -1,0 +1,18 @@
+{
+  "generated": "2025-06-30T01:42:15.904Z",
+  "description": "30-second typing sequences comparing learned synthesis vs sample manipulation",
+  "sequences": {
+    "learned_typing_30s": {
+      "duration": 30,
+      "description": "Pure code-generated typing based on learned characteristics",
+      "generationTime": "77ms",
+      "fileSize": "2.52MB"
+    },
+    "sample_typing_30s": {
+      "duration": 30,
+      "description": "Sample-based typing with pitch and volume variations",
+      "generationTime": "113ms",
+      "fileSize": "2.52MB"
+    }
+  }
+}

@@ -76,11 +76,14 @@ export function generatePealWaveData(options: WaveGeneratorOptions): BarData[] {
             (x / canvasWidth) * waveFrequency * Math.PI * 2 + wavePhase + animationTime
         );
 
-        // Apply randomness to bar height
+        // Apply deterministic "randomness" to bar height based on position
         let randomMultiplier = 1;
         if (heightRandomness > 0) {
-            // Generate a random value between -heightRandomness and +heightRandomness
-            const randomDeviation = (Math.random() * 2 - 1) * heightRandomness;
+            // Use a deterministic pseudo-random based on position
+            const seed = x * 13.37;
+            const pseudoRandom = Math.sin(seed) * 10000;
+            const randomValue = pseudoRandom - Math.floor(pseudoRandom);
+            const randomDeviation = (randomValue * 2 - 1) * heightRandomness;
             randomMultiplier = 1 + randomDeviation;
         }
         
@@ -115,9 +118,9 @@ export function generatePealWaveData(options: WaveGeneratorOptions): BarData[] {
         if (currentBarWidth > 0 && rectHeight > 0) {
             barData.push({
                 x: x,
-                y: rectY,
+                y: Math.round(rectY * 1000) / 1000,
                 width: currentBarWidth,
-                height: rectHeight,
+                height: Math.round(rectHeight * 1000) / 1000,
                 color: barColor
             });
         }

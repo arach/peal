@@ -3,18 +3,15 @@
 import { useEffect, useState } from 'react'
 import { useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
-import Header from './Header'
-import Sidebar from './Sidebar'
 import SoundGrid from './SoundGrid'
 import LoadingOverlay from './LoadingOverlay'
 import DetailModal from './DetailModal'
-import SoundEditor from './SoundEditor'
 import SoundVariationModal from './SoundVariationModal'
 import ShortcutsPanel from './ShortcutsPanel'
-import StatsBar from './StatsBar'
-import HeroSection from './HeroSection'
-import GenerationParamsPanel from './GenerationParamsPanel'
-import GenerationHub from './GenerationHub'
+import SimpleStatsBar from './SimpleStatsBar'
+import SelectionBar from './SelectionBar'
+import SimpleSidebar from './SimpleSidebar'
+import LibraryWelcome from './LibraryWelcome'
 
 export default function SoundDesigner() {
   const [isHydrated, setIsHydrated] = useState(false)
@@ -22,8 +19,6 @@ export default function SoundDesigner() {
   const {
     isGenerating,
     showDetailModal,
-    showEditorModal,
-    editorSoundId,
     showVariationModal,
     variationSoundId,
     showShortcuts,
@@ -34,7 +29,6 @@ export default function SoundDesigner() {
     setFocusedIndex,
     selectAll,
     clearSelection,
-    hideEditor,
     hideVariations,
     removeSelectedSounds,
   } = useSoundStore()
@@ -123,7 +117,7 @@ export default function SoundDesigner() {
   // Show loading until hydrated to avoid hydration mismatch
   if (!isHydrated) {
     return (
-      <div className="min-h-screen bg-background dark:bg-gray-950 text-text-primary dark:text-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-text-primary dark:text-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-border dark:border-gray-700 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-text-secondary dark:text-gray-400">Loading Peal...</p>
@@ -133,33 +127,23 @@ export default function SoundDesigner() {
   }
 
   return (
-    <div className="min-h-screen bg-background dark:bg-gray-950 text-text-primary dark:text-gray-100">
-      <Header />
-      
-      <div className="container space-y-section pt-section">
-        <HeroSection />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-text-primary dark:text-gray-100">
+      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <LibraryWelcome />
         
-        <GenerationHub />
-        <GenerationParamsPanel />
+        <SelectionBar />
+        <SimpleStatsBar />
         
-        <StatsBar />
-        
-        <div className="grid-main">
-          <Sidebar />
-          <main>
+        <div className="flex gap-8 mt-6">
+          <SimpleSidebar />
+          <div className="flex-1">
             <SoundGrid />
-          </main>
+          </div>
         </div>
       </div>
 
       {isGenerating && <LoadingOverlay />}
       {showDetailModal && <DetailModal />}
-      {showEditorModal && editorSoundId && (
-        <SoundEditor
-          sound={sounds.find(s => s.id === editorSoundId)!}
-          onClose={hideEditor}
-        />
-      )}
       {showVariationModal && variationSoundId && (
         <SoundVariationModal
           sound={sounds.find(s => s.id === variationSoundId)!}

@@ -1,0 +1,117 @@
+{
+  "generated": "2025-06-29T17:39:39.528Z",
+  "sampleRate": 48000,
+  "sounds": {
+    "tap": {
+      "frequency": 3400,
+      "duration": 0.04,
+      "type": "fm",
+      "modIndex": 5,
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.01,
+        "sustain": 0.3,
+        "release": 0.029
+      },
+      "filename": "tap.wav"
+    },
+    "click": {
+      "frequency": 1000,
+      "duration": 0.08,
+      "type": "fm",
+      "modIndex": 3,
+      "envelope": {
+        "attack": 0.002,
+        "decay": 0.038,
+        "sustain": 0.3,
+        "release": 0.04
+      },
+      "filename": "click.wav"
+    },
+    "beep": {
+      "frequency": 200,
+      "duration": 0.15,
+      "type": "additive",
+      "harmonics": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "harmonicAmps": [
+        1,
+        0.5,
+        0.3,
+        0.2
+      ],
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.05,
+        "sustain": 0.7,
+        "release": 0.099
+      },
+      "filename": "beep.wav"
+    },
+    "success": {
+      "frequencies": [
+        800,
+        1000,
+        1200
+      ],
+      "duration": 0.2,
+      "type": "fm",
+      "modIndex": 2,
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.02,
+        "sustain": 0.5,
+        "release": 0.03
+      },
+      "filename": "success.wav"
+    },
+    "error": {
+      "frequencies": [
+        400,
+        420
+      ],
+      "duration": 0.15,
+      "type": "fm",
+      "modIndex": 8,
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.03,
+        "sustain": 0.6,
+        "release": 0.02
+      },
+      "filename": "error.wav"
+    },
+    "transition": {
+      "startFreq": 500,
+      "endFreq": 2500,
+      "duration": 0.15,
+      "type": "sweep",
+      "envelope": {
+        "attack": 0.01,
+        "decay": 0,
+        "sustain": 1,
+        "release": 0.05
+      },
+      "filename": "transition.wav"
+    },
+    "alert": {
+      "frequency": 1500,
+      "duration": 0.1,
+      "pulses": 2,
+      "gap": 0.05,
+      "type": "fm",
+      "modIndex": 4,
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.02,
+        "sustain": 0.5,
+        "release": 0.03
+      },
+      "filename": "alert.wav"
+    }
+  }
+}

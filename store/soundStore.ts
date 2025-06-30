@@ -23,6 +23,7 @@ export interface SoundFilters {
   durationMax: number
   frequencyMin: number
   frequencyMax: number
+  search?: string
 }
 
 interface SoundState {
@@ -39,8 +40,6 @@ interface SoundState {
   showDetailModal: boolean
   detailSoundId: string | null
   showShortcuts: boolean
-  showEditorModal: boolean
-  editorSoundId: string | null
   showVariationModal: boolean
   variationSoundId: string | null
   showGenerationParams: boolean
@@ -83,8 +82,6 @@ interface SoundState {
   // Modal controls
   showDetail: (id: string) => void
   hideDetail: () => void
-  showEditor: (id: string) => void
-  hideEditor: () => void
   showVariations: (id: string) => void
   hideVariations: () => void
   toggleShortcuts: () => void
@@ -115,8 +112,6 @@ export const useSoundStore = create<SoundState>()(
       showDetailModal: false,
       detailSoundId: null,
       showShortcuts: false,
-      showEditorModal: false,
-      editorSoundId: null,
       showVariationModal: false,
       variationSoundId: null,
       showGenerationParams: false,
@@ -237,15 +232,6 @@ export const useSoundStore = create<SoundState>()(
         detailSoundId: null 
       })),
       
-      showEditor: (id) => set(() => ({ 
-        showEditorModal: true, 
-        editorSoundId: id 
-      })),
-      
-      hideEditor: () => set(() => ({ 
-        showEditorModal: false, 
-        editorSoundId: null 
-      })),
       
       showVariations: (id) => set(() => ({ 
         showVariationModal: true, 
@@ -278,6 +264,16 @@ export const useSoundStore = create<SoundState>()(
       filteredSounds: () => {
         const { sounds, filters, sortBy } = get()
         let filtered = sounds
+        
+        // Apply search filter
+        if (filters.search && filters.search.trim()) {
+          const searchLower = filters.search.toLowerCase()
+          filtered = filtered.filter(s => 
+            s.type.toLowerCase().includes(searchLower) ||
+            s.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
+            s.id.toLowerCase().includes(searchLower)
+          )
+        }
         
         // Apply filters
         if (filters.type.length > 0) {

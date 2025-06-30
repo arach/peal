@@ -20,7 +20,6 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
     focusedIndex,
     toggleSelection,
     toggleFavorite,
-    showEditor,
     showVariations,
     setCurrentlyPlaying,
     setFocusedIndex,
@@ -257,19 +256,11 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
         <SoundCardDropdown 
           items={[
             {
-              icon: <Palette size={14} />,
-              label: 'Open in Studio',
+              icon: <Edit size={14} />,
+              label: 'Edit',
               onClick: (e) => {
                 e.stopPropagation()
                 router.push(`/studio?sound=${sound.id}`)
-              }
-            },
-            {
-              icon: <Edit size={14} />,
-              label: 'Edit sound',
-              onClick: (e) => {
-                e.stopPropagation()
-                showEditor(sound.id)
               }
             },
             {

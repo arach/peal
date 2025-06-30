@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ArrowLeft, Play, Pause, Square, Save, FolderOpen, Settings, Sparkles, Volume2, SkipBack, ChevronLeft, ChevronRight, Scissors, Edit3, Wand2 } from 'lucide-react'
+import { ArrowLeft, Play, Pause, Square, Save, FolderOpen, Settings, Sparkles, Volume2, SkipBack, ChevronLeft, ChevronRight, Scissors, Edit3, Wand2, HelpCircle } from 'lucide-react'
 import { useSoundStore, Sound } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { VibeParser } from '@/lib/vibeParser'
+import VibeDesignerModal from './VibeDesignerModal'
+import SoundLibraryModal from './SoundLibraryModal'
 
 export default function Studio() {
   const router = useRouter()
@@ -20,7 +22,7 @@ export default function Studio() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [playbackPosition, setPlaybackPosition] = useState(0)
-  const [showVibePanel, setShowVibePanel] = useState(true)
+  const [showVibePanel, setShowVibePanel] = useState(false)
   const [showParametersPanel, setShowParametersPanel] = useState(true)
   const [editMode, setEditMode] = useState(false)
   const [insertMode, setInsertMode] = useState(false)
@@ -68,15 +70,28 @@ export default function Studio() {
   
   // Vibe Designer state
   const [vibePrompt, setVibePrompt] = useState('')
-  const [vibeSuggestions, setVibeSuggestions] = useState<string[]>([])
+  const [vibeSuggestions, setVibeSuggestions] = useState<string[]>([
+    'a soft notification chime',
+    '3 quick UI clicks',
+    'futuristic success sound',
+    'deep error rumble'
+  ])
   const [isVibeGenerating, setIsVibeGenerating] = useState(false)
   const [vibeGeneratedSounds, setVibeGeneratedSounds] = useState<Sound[]>([])
+  
+  // Help modal state
+  const [showHelpModal, setShowHelpModal] = useState(false)
+  
+  // Modal states
+  const [showVibeModal, setShowVibeModal] = useState(false)
+  const [showLibraryModal, setShowLibraryModal] = useState(false)
   
   const waveformCanvasRef = useRef<HTMLCanvasElement>(null)
   const timelineCanvasRef = useRef<HTMLCanvasElement>(null)
   const currentSource = useRef<AudioBufferSourceNode | null>(null)
   const playbackStartTime = useRef<number>(0)
   const pausedAt = useRef<number>(0)
+  const audioContextRef = useRef<AudioContext | null>(null)
   
   // Create a generator instance for the studio
   const [generator] = useState(() => {
@@ -130,6 +145,19 @@ export default function Studio() {
       }
     }
   }, [searchParams, sounds, generator])
+  
+  // Cleanup AudioContext on unmount
+  useEffect(() => {
+    return () => {
+      if (currentSource.current) {
+        currentSource.current.stop()
+        currentSource.current = null
+      }
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close()
+      }
+    }
+  }, [])
 
   // Draw main waveform (clean, no trim overlays)
   const drawWaveform = (canvas: HTMLCanvasElement | null, waveformData: number[] | null, isPreview = false) => {
@@ -606,14 +634,13 @@ export default function Studio() {
   
   // Update playback position during playback
   useEffect(() => {
-    if (!isPlaying || isPaused) return
+    if (!isPlaying || isPaused || !audioContextRef.current) return
     
     const interval = setInterval(() => {
       const soundToPlay = previewSound || currentSound
       if (!soundToPlay?.audioBuffer) return
       
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const elapsed = audioContext.currentTime - playbackStartTime.current + pausedAt.current
+      const elapsed = audioContextRef.current!.currentTime - playbackStartTime.current
       const duration = soundToPlay.audioBuffer.duration
       const position = Math.min(elapsed / duration, 1)
       
@@ -1054,7 +1081,47 @@ export default function Studio() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [insertMode, hasUnappliedChanges, applyChanges])
 
+  // General keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Help modal
+      if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        e.preventDefault()
+        setShowHelpModal(true)
+      }
+      
+      // Close modal with ESC
+      if (e.key === 'Escape' && showHelpModal) {
+        e.preventDefault()
+        setShowHelpModal(false)
+      }
+      
+      // Space to play/pause
+      if (e.key === ' ' && e.target === document.body) {
+        e.preventDefault()
+        if (isPlaying) {
+          handleStop()
+        } else {
+          handlePlay()
+        }
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isPlaying, showHelpModal])
+
   const handlePlay = async () => {
+    // Ensure we have a single AudioContext
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
+    }
+    
+    // Resume AudioContext if it's suspended (required by some browsers)
+    if (audioContextRef.current.state === 'suspended') {
+      await audioContextRef.current.resume()
+    }
+    
     let soundToPlay = previewSound || currentSound
     
     // If we have tracks, always use the mixed output (regardless of panel visibility)
@@ -1073,77 +1140,67 @@ export default function Studio() {
       }
     }
     
-    if (!soundToPlay) return
+    if (!soundToPlay?.audioBuffer) {
+      console.log('No audio buffer, attempting to generate...')
+      if (soundToPlay === currentSound && soundToPlay) {
+        await (generator as any).renderSound(soundToPlay)
+        if (!soundToPlay.audioBuffer) {
+          console.error('Failed to generate audio buffer')
+          return
+        }
+      } else {
+        console.error('No audio buffer to play')
+        return
+      }
+    }
 
-    if (isPaused) {
-      // Resume from paused position
-      try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-        const source = audioContext.createBufferSource()
-        source.buffer = soundToPlay.audioBuffer
-        source.connect(audioContext.destination)
-        
+    try {
+      // Stop any currently playing sound
+      if (currentSource.current) {
+        currentSource.current.stop()
+        currentSource.current = null
+      }
+      
+      const source = audioContextRef.current.createBufferSource()
+      source.buffer = soundToPlay.audioBuffer
+      source.connect(audioContextRef.current.destination)
+      
+      if (isPaused) {
+        // Resume from paused position
         const resumePosition = pausedAt.current
-        const remainingDuration = (soundToPlay.audioBuffer?.duration || 0) - resumePosition
-        
-        source.start(0, resumePosition, remainingDuration)
-        currentSource.current = source
-        
-        playbackStartTime.current = audioContext.currentTime - resumePosition
-        setIsPlaying(true)
-        setIsPaused(false)
-        
-        source.onended = () => {
+        source.start(0, resumePosition)
+        playbackStartTime.current = audioContextRef.current.currentTime - resumePosition
+      } else {
+        // Start from beginning
+        source.start(0)
+        playbackStartTime.current = audioContextRef.current.currentTime
+        pausedAt.current = 0
+      }
+      
+      currentSource.current = source
+      setIsPlaying(true)
+      setIsPaused(false)
+      
+      source.onended = () => {
+        if (currentSource.current === source) {
           setIsPlaying(false)
           setIsPaused(false)
           setPlaybackPosition(0)
           pausedAt.current = 0
           currentSource.current = null
         }
-      } catch (error) {
-        console.error('Error resuming sound:', error)
       }
-    } else {
-      // Start from beginning
-      try {
-        const source = await generator.playSound(soundToPlay)
-        if (source) {
-          currentSource.current = source
-          setIsPlaying(true)
-          setIsPaused(false)
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-          playbackStartTime.current = audioContext.currentTime
-          pausedAt.current = 0
-          
-          // Update main track buffer if it was just generated
-          if (soundToPlay === currentSound && currentSound.audioBuffer) {
-            setTracks(tracks.map(t => 
-              t.id === `track-main-${currentSound.id}`
-                ? { ...t, audioBuffer: currentSound.audioBuffer, waveformData: currentSound.waveformData }
-                : t
-            ))
-          }
-          
-          source.onended = () => {
-            setIsPlaying(false)
-            setIsPaused(false)
-            setPlaybackPosition(0)
-            pausedAt.current = 0
-            currentSource.current = null
-          }
-        }
-      } catch (error) {
-        console.error('Error playing sound:', error)
-        setIsPlaying(false)
-      }
+    } catch (error) {
+      console.error('Error playing sound:', error)
+      setIsPlaying(false)
+      setIsPaused(false)
     }
   }
 
   const handlePause = () => {
-    if (currentSource.current && isPlaying) {
+    if (currentSource.current && isPlaying && audioContextRef.current) {
       // Calculate how much has been played
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const elapsed = audioContext.currentTime - playbackStartTime.current
+      const elapsed = audioContextRef.current.currentTime - playbackStartTime.current
       pausedAt.current = elapsed
       
       // Stop the current source (Web Audio API doesn't support pause)
@@ -1288,7 +1345,7 @@ export default function Studio() {
       timestamp: new Date().toISOString(),
       sound: {
         id: currentSound.id,
-        name: currentSound.name,
+        name: `${currentSound.type}_${currentSound.id}`,
         parameters: currentSound.parameters
       },
       editedParams,
@@ -1320,7 +1377,7 @@ export default function Studio() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${currentSound.name || 'sound'}-project.json`
+    a.download = `${currentSound.type}-${currentSound.id}-project.json`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -1889,7 +1946,7 @@ export default function Studio() {
     // Create a new track with the vibe sound
     const newTrack: Track = {
       id: `track-vibe-${Date.now()}`,
-      name: sound.name || 'Vibe Insert',
+      name: 'Vibe Insert',
       audioBuffer: sound.audioBuffer,
       waveformData: sound.waveformData || generateWaveformData(sound.audioBuffer),
       muted: false,
@@ -1955,6 +2012,22 @@ export default function Studio() {
       return null
     }
   }
+  
+  const handleVibeSoundGenerated = (sound: Sound) => {
+    setCurrentSound(sound)
+    setEditedParams(sound.parameters)
+    setPreviewSound(null)
+    setHasUnappliedChanges(false)
+    setShowVibeModal(false)
+  }
+  
+  const handleLibrarySoundSelected = (sound: Sound) => {
+    setCurrentSound(sound)
+    setEditedParams(sound.parameters)
+    setPreviewSound(null)
+    setHasUnappliedChanges(false)
+    setShowLibraryModal(false)
+  }
 
   return (
     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
@@ -1963,7 +2036,7 @@ export default function Studio() {
         {/* Left - Navigation & Project */}
         <div className="flex items-center gap-4">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/library')}
             className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
           >
             <ArrowLeft size={18} />
@@ -2010,6 +2083,13 @@ export default function Studio() {
             Save
           </button>
           <button 
+            onClick={() => setShowHelpModal(true)}
+            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
+            title="Keyboard shortcuts (press ?)"
+          >
+            <HelpCircle size={16} />
+          </button>
+          <button 
             onClick={() => setShowParametersPanel(!showParametersPanel)}
             className={`flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
               showParametersPanel ? 'bg-gray-700 text-gray-100' : 'bg-gray-800 text-gray-400 hover:text-gray-100'
@@ -2049,6 +2129,16 @@ export default function Studio() {
               
               {/* Panel Content */}
               <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+                {/* Welcome message for empty state */}
+                {vibePrompt.length === 0 && vibeGeneratedSounds.length === 0 && (
+                  <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-700/30 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-gray-300 leading-relaxed">
+                      Describe sounds in plain English and let AI bring them to life. 
+                      Try describing timing, pitch, or the feeling you want.
+                    </p>
+                  </div>
+                )}
+                
                 {/* Input Section */}
                 <div className="space-y-3">
                   <label className="block text-sm font-medium text-gray-300">
@@ -2073,8 +2163,11 @@ export default function Studio() {
                   </div>
 
                   {/* Suggestions */}
-                  {vibeSuggestions.length > 0 && vibePrompt.length < 20 && (
+                  {vibeSuggestions.length > 0 && (vibePrompt.length === 0 || vibePrompt.length < 20) && (
                     <div className="space-y-1">
+                      <p className="text-xs text-gray-400 mb-2">
+                        {vibePrompt.length === 0 ? 'Try one of these:' : 'Suggestions:'}
+                      </p>
                       {vibeSuggestions.slice(0, 4).map((suggestion, i) => (
                         <button
                           key={i}
@@ -2082,9 +2175,9 @@ export default function Studio() {
                             setVibePrompt(suggestion)
                             setTimeout(() => handleVibeGenerate(), 100)
                           }}
-                          className="block w-full text-left px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors"
+                          className="block w-full text-left px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors group"
                         >
-                          {suggestion}
+                          <span className="group-hover:text-purple-400 transition-colors">{suggestion}</span>
                         </button>
                       ))}
                     </div>
@@ -2788,23 +2881,23 @@ export default function Studio() {
                       Welcome to Sound Studio
                     </h2>
                     <p className="text-gray-400 leading-relaxed">
-                      Create, edit, and perfect your sounds with AI-powered design tools and precision controls.
-                      Use the Vibe Designer to describe what you want, or dive into the parameters for detailed editing.
+                      Create custom sounds with AI or browse our curated library.
+                      Start with a description of what you need, or pick from professional presets.
                     </p>
                   </div>
                   <div className="flex gap-3 justify-center">
                     <button 
-                      onClick={() => setShowVibePanel(true)}
+                      onClick={() => setShowVibeModal(true)}
                       className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
                     >
                       <Sparkles size={16} />
-                      Start with Vibe
+                      Design your first sound
                     </button>
                     <button 
-                      onClick={() => router.push('/')}
+                      onClick={() => setShowLibraryModal(true)}
                       className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
                     >
-                      <Settings size={16} />
+                      <FolderOpen size={16} />
                       Browse Library
                     </button>
                   </div>
@@ -3099,9 +3192,6 @@ export default function Studio() {
                           </>
                         )}
                       </button>
-                      <div className="text-center mt-2 text-xs text-gray-500">
-                        or press <kbd className="px-1.5 py-0.5 bg-gray-800 rounded">Enter</kbd>
-                      </div>
                     </div>
                   </div>
                 ) : currentSound && editedParams ? (
@@ -3428,6 +3518,109 @@ export default function Studio() {
           </div>
         </div>
       )}
+      
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowHelpModal(false)}
+          />
+          <div className="relative bg-gray-900 rounded-xl shadow-2xl border border-gray-800 p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-100">Keyboard Shortcuts</h2>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="text-gray-400 hover:text-gray-100 transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Playback */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-300 mb-2">Playback</h3>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Play/Stop</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">Space</kbd>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Add Sound Mode */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-300 mb-2">Add Sound Mode</h3>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Insert sound</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">Enter</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Quick position: Start (0-10%)</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">1</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Quick position: Middle (45-55%)</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">2</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Quick position: End (90-100%)</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">3</kbd>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Track Actions */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-300 mb-2">Track Actions</h3>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Select region</span>
+                    <span className="text-xs text-gray-500">Click & drag on track</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Context menu</span>
+                    <span className="text-xs text-gray-500">Right-click on selection</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* General */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-300 mb-2">General</h3>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Show this help</span>
+                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">?</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 pt-4 border-t border-gray-800">
+              <p className="text-xs text-gray-500 text-center">Press Esc to close</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modals */}
+      <VibeDesignerModal
+        isOpen={showVibeModal}
+        onClose={() => setShowVibeModal(false)}
+        onSoundGenerated={handleVibeSoundGenerated}
+        generator={generator}
+      />
+      
+      <SoundLibraryModal
+        isOpen={showLibraryModal}
+        onClose={() => setShowLibraryModal(false)}
+        onSelectSound={handleLibrarySoundSelected}
+      />
     </div>
   )
 }

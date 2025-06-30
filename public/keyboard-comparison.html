@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyboard Sound Comparison</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .category {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .sound-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .sound-card {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      padding: 15px;
+      transition: all 0.2s;
+    }
+    .sound-card:hover {
+      border-color: #007bff;
+      box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+    }
+    .sound-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #495057;
+    }
+    .sound-desc {
+      font-size: 0.875rem;
+      color: #6c757d;
+      margin-bottom: 10px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button:active {
+      transform: translateY(1px);
+    }
+    .reference { border-left: 4px solid #6c757d; }
+    .realistic { border-left: 4px solid #007bff; }
+    .experimental { border-left: 4px solid #28a745; }
+    .playing {
+      background: #e7f3ff;
+      border-color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Keyboard Sound Comparison</h1>
+  <p>Compare reference recordings with synthetic keyboard sounds</p>
+
+  <div class="category">
+    <h2>📼 Reference Samples (Real Recording)</h2>
+    <div class="sound-grid" id="reference-sounds"></div>
+  </div>
+
+  <div class="category">
+    <h2>✅ Best Realistic Sounds</h2>
+    <div class="sound-grid" id="realistic-sounds"></div>
+  </div>
+
+  <div class="category">
+    <h2>🧪 Experimental Sounds</h2>
+    <div class="sound-grid" id="experimental-sounds"></div>
+  </div>
+
+  <script>
+    // Sound definitions
+    const sounds = {
+      reference: [
+        {
+          name: 'Reference Key 1',
+          file: '/sounds/typing-samples/single_key_1.wav',
+          desc: 'Real creamy keyboard single keystroke'
+        },
+        {
+          name: 'Reference Sequence',
+          file: '/sounds/typing-samples/typing_sequence_1.wav',
+          desc: 'Real typing sequence (1.5s)'
+        },
+        {
+          name: 'Reference Long',
+          file: '/sounds/typing-samples/typing_long_1.wav',
+          desc: 'Real extended typing (3s)'
+        }
+      ],
+      realistic: [
+        {
+          name: 'Tactile Brown',
+          file: '/sounds/realistic-keyboard/key_tactile_realistic.wav',
+          desc: 'Realistic tactile with balanced frequencies'
+        },
+        {
+          name: 'Creamy Tactile',
+          file: '/sounds/creamy-keys/creamy_tactile.wav',
+          desc: 'Subtle bump with creamy thock'
+        },
+        {
+          name: 'Spacebar',
+          file: '/sounds/realistic-keyboard/key_spacebar_realistic.wav',
+          desc: 'Realistic spacebar with stabilizers'
+        },
+        {
+          name: 'Creamy Typing',
+          file: '/sounds/creamy-keys/creamy_typing.wav',
+          desc: 'Natural typing rhythm'
+        }
+      ],
+      experimental: [
+        {
+          name: 'Balanced Key',
+          file: '/sounds/balanced-typing/balanced_single_key.wav',
+          desc: 'Balanced frequency profile'
+        },
+        {
+          name: 'Balanced Typing',
+          file: '/sounds/balanced-typing/balanced_typing_mix.wav',
+          desc: 'Mixed switch types, balanced frequencies'
+        },
+        {
+          name: 'Proper Single',
+          file: '/sounds/proper-keyboard/single_key.wav',
+          desc: 'Single key with breathing room'
+        },
+        {
+          name: 'Word Typing',
+          file: '/sounds/proper-keyboard/word_typing.wav',
+          desc: '5-6 keys as a word'
+        }
+      ]
+    };
+
+    let currentAudio = null;
+    let currentCard = null;
+
+    function createSoundCard(sound, category) {
+      const card = document.createElement('div');
+      card.className = `sound-card ${category}`;
+      card.innerHTML = `
+        <div class="sound-name">${sound.name}</div>
+        <div class="sound-desc">${sound.desc}</div>
+        <button onclick="playSound('${sound.file}', this.parentElement)">Play</button>
+      `;
+      return card;
+    }
+
+    function playSound(file, card) {
+      // Stop current audio if playing
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+      if (currentCard) {
+        currentCard.classList.remove('playing');
+      }
+
+      // Play new audio
+      currentAudio = new Audio(file);
+      currentCard = card;
+      card.classList.add('playing');
+      
+      currentAudio.play();
+      currentAudio.onended = () => {
+        card.classList.remove('playing');
+        currentAudio = null;
+        currentCard = null;
+      };
+    }
+
+    // Populate sounds
+    Object.entries(sounds).forEach(([category, soundList]) => {
+      const container = document.getElementById(`${category}-sounds`);
+      soundList.forEach(sound => {
+        container.appendChild(createSoundCard(sound, category));
+      });
+    });
+
+    // Keyboard shortcut to stop audio
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Escape') {
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          currentCard.classList.remove('playing');
+          currentAudio = null;
+          currentCard = null;
+          e.preventDefault();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

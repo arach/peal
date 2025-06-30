@@ -1,0 +1,26 @@
+{
+  "generated": "2025-06-29T21:52:23.921Z",
+  "description": "Realistic mechanical keyboard sounds with proper impact noise",
+  "sounds": {
+    "key_linear_realistic": {
+      "duration": 0.04498866213151927,
+      "category": "keyboard"
+    },
+    "key_clicky_realistic": {
+      "duration": 0.054988662131519275,
+      "category": "keyboard"
+    },
+    "key_tactile_realistic": {
+      "duration": 0.05,
+      "category": "keyboard"
+    },
+    "key_spacebar_realistic": {
+      "duration": 0.06498866213151927,
+      "category": "keyboard"
+    },
+    "typing_realistic": {
+      "duration": 0.6,
+      "category": "keyboard"
+    }
+  }
+}

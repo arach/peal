@@ -1,0 +1,14 @@
+{
+  "generated": "2025-06-29T22:12:53.349Z",
+  "description": "Brighter keyboard sounds with more character and variety",
+  "sounds": {
+    "bright_single_key": {
+      "duration": 0.3,
+      "category": "keyboard"
+    },
+    "bright_typing_mix": {
+      "duration": 2.5,
+      "category": "keyboard"
+    }
+  }
+}
