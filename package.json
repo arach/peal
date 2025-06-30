@@ -1,10 +1,10 @@
 {
   "name": "@peal-sounds/peal",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "bin": {
     "peal": "./cli/index.js"
   },
-  "description": "A lightweight sound effect library for web and desktop applications",
+  "description": "Professional UI sounds for web apps - CLI to manage sounds, thin Howler.js wrapper to play them",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

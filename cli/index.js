@@ -329,6 +329,134 @@ program
     });
   });
 
+// Remove command
+program
+  .command('remove [sounds...]')
+  .description('Remove sound effects from your project')
+  .option('-d, --dir <directory>', 'Directory where sounds are stored', './peal')
+  .action(async (soundsToRemove, options) => {
+    const targetDir = path.join(process.cwd(), options.dir);
+    
+    // Check if directory exists
+    try {
+      await fs.access(targetDir);
+    } catch {
+      console.error(chalk.red(`Sound directory not found: ${options.dir}`));
+      console.log(chalk.yellow('Have you added sounds yet? Use: peal add'));
+      process.exit(1);
+    }
+    
+    // If no sounds specified, show interactive selection
+    if (!soundsToRemove || soundsToRemove.length === 0) {
+      // List existing sounds in the directory
+      const files = await fs.readdir(targetDir);
+      const existingSounds = files
+        .filter(f => f.endsWith('.wav') || f.endsWith('.mp3'))
+        .map(f => f.replace(/\.(wav|mp3)$/, ''));
+      
+      if (existingSounds.length === 0) {
+        console.log(chalk.yellow('No sounds found in ' + options.dir));
+        process.exit(0);
+      }
+      
+      const { selectedSounds } = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'selectedSounds',
+          message: 'Select sounds to remove:',
+          choices: existingSounds
+        }
+      ]);
+      
+      soundsToRemove = selectedSounds;
+    }
+    
+    if (soundsToRemove.length === 0) {
+      console.log(chalk.yellow('No sounds selected for removal'));
+      process.exit(0);
+    }
+    
+    // Confirm removal
+    const { confirmRemove } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'confirmRemove',
+        message: `Remove ${soundsToRemove.length} sound(s)?`,
+        default: false
+      }
+    ]);
+    
+    if (!confirmRemove) {
+      console.log(chalk.gray('Removal cancelled'));
+      process.exit(0);
+    }
+    
+    // Remove sound files
+    const spinner = ora('Removing sounds...').start();
+    let removedCount = 0;
+    
+    for (const sound of soundsToRemove) {
+      const wavPath = path.join(targetDir, `${sound}.wav`);
+      const mp3Path = path.join(targetDir, `${sound}.mp3`);
+      
+      try {
+        try {
+          await fs.unlink(wavPath);
+          removedCount++;
+        } catch {
+          // Try MP3
+          await fs.unlink(mp3Path);
+          removedCount++;
+        }
+      } catch {
+        spinner.warn(`Could not remove: ${sound}`);
+      }
+    }
+    
+    spinner.succeed(`Removed ${removedCount} sound(s)`);
+    
+    // Update helper file if it exists
+    const helperPath = path.join(process.cwd(), 'peal.js');
+    const tsHelperPath = path.join(process.cwd(), 'peal.ts');
+    
+    try {
+      // Get remaining sounds
+      const files = await fs.readdir(targetDir);
+      const remainingSounds = files
+        .filter(f => f.endsWith('.wav') || f.endsWith('.mp3'))
+        .map(f => f.replace(/\.(wav|mp3)$/, ''));
+      
+      if (remainingSounds.length > 0) {
+        // Update helper with remaining sounds
+        try {
+          await fs.access(tsHelperPath);
+          await createPealHelper(process.cwd(), remainingSounds);
+          console.log(chalk.green('✓ Updated peal.ts'));
+        } catch {
+          try {
+            await fs.access(helperPath);
+            await createJavaScriptHelper(process.cwd(), remainingSounds);
+            console.log(chalk.green('✓ Updated peal.js'));
+          } catch {
+            // No helper file to update
+          }
+        }
+      } else {
+        // Remove helper if no sounds left
+        try {
+          await fs.unlink(helperPath);
+          console.log(chalk.gray('Removed peal.js (no sounds left)'));
+        } catch {}
+        try {
+          await fs.unlink(tsHelperPath);
+          console.log(chalk.gray('Removed peal.ts (no sounds left)'));
+        } catch {}
+      }
+    } catch {
+      // Could not update helper
+    }
+  });
+
 // Play command
 program
   .command('play <sound>')

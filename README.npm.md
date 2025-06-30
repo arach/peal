@@ -1,24 +1,26 @@
 # @peal-sounds/peal
 
-Professional UI sound effects for your web applications - ready to use in seconds.
+Professional UI sound effects for your web applications.
+
+- **CLI**: Add and manage sounds from our curated collection
+- **Library**: Easy audio playback with volume control for web apps
 
 ## Quick Start
 
-Add beautiful sounds to your project:
+Step 1: Add sounds from our collection:
 
 ```bash
 npx @peal-sounds/peal add success error notification
 ```
 
-Then use them:
+Step 2: Use the generated helper that knows where your sounds are:
 
 ```javascript
 import { peal } from './peal';
 
-// Play sounds
-peal.play('success');
-peal.error();
-peal.notification();
+// The generated peal.js handles all the paths for you
+peal.success();   // Plays ./peal/success.wav
+peal.error();     // Plays ./peal/error.wav
 ```
 
 ## Installation
@@ -39,7 +41,7 @@ npm install -g @peal-sounds/peal
 
 ### As a library
 
-Install Peal as a dependency to use it programmatically:
+The Peal library is a thin wrapper around Howler.js that works with the sounds added via CLI:
 
 ```bash
 npm install @peal-sounds/peal
@@ -49,18 +51,15 @@ yarn add @peal-sounds/peal
 pnpm add @peal-sounds/peal
 ```
 
-Then use it with built-in sounds:
+The CLI generates a `peal.js` file that handles all the paths for you:
 
 ```javascript
-// ES Modules
-import { PealWithSounds } from '@peal-sounds/peal'
+// After running: npx @peal-sounds/peal add click success
+import { peal } from './peal';
 
-// Or via CDN for quick prototyping
-import { PealWithSounds } from 'https://unpkg.com/@peal-sounds/peal@latest/dist/index.mjs'
-
-const peal = new PealWithSounds()
-peal.click() // Play click sound
-peal.success() // Play success sound
+// Just use it - paths are handled automatically
+peal.click();
+peal.success();
 ```
 
 ## Available Sounds
@@ -106,6 +105,18 @@ npx @peal-sounds/peal add --dir ./sounds
 
 # Generate TypeScript helper
 npx @peal-sounds/peal add --typescript
+```
+
+### Remove sounds from your project
+```bash
+# Interactive removal
+npx @peal-sounds/peal remove
+
+# Remove specific sounds
+npx @peal-sounds/peal remove click tap
+
+# Remove from custom directory
+npx @peal-sounds/peal remove --dir ./sounds
 ```
 
 ## Usage Examples
@@ -171,33 +182,49 @@ document.querySelector('#submit').addEventListener('click', () => {
 });
 ```
 
-## API Reference
+## Library API Reference
 
-### Methods
+The Peal library is designed to work seamlessly with sounds added via the CLI. The generated `peal.js` or `peal.ts` file automatically knows where your sounds are located.
 
-- `peal.play(soundName, options)` - Play a sound with options
-- `peal.stop(soundName)` - Stop a playing sound
-- `peal.stopAll()` - Stop all playing sounds
-- `peal.setVolume(0-1)` - Set global volume
-- `peal.mute(boolean)` - Mute/unmute all sounds
+### Core Methods
+
+- `peal.play(soundName, options?)` - Play a sound
+- `peal.stop(soundName?)` - Stop a specific sound or all sounds
+- `peal.pause(soundName?)` - Pause a specific sound or all sounds
+- `peal.volume(level?)` - Get/set global volume (0-1)
+- `peal.mute(muted?)` - Get/set mute state
 
 ### Convenience Methods
 
-Each sound has a convenience method:
+The generated helper file includes convenience methods for each sound you've added:
 
-- `peal.success(options)`
-- `peal.error(options)`
-- `peal.notification(options)`
-- etc.
+```javascript
+// If you added: peal add click success error
+peal.click()      // Same as peal.play('click')
+peal.success()    // Same as peal.play('success')
+peal.error()      // Same as peal.play('error')
+```
 
-### Options
+### Play Options
 
 ```javascript
 peal.play('success', {
-  volume: 0.5,    // 0-1
-  loop: false,    // boolean
-  rate: 1.0      // playback rate
+  volume: 0.5,    // Volume (0-1)
+  loop: false,    // Loop the sound
+  rate: 1.0      // Playback rate
 });
+```
+
+### Advanced Usage with Base Library
+
+If you need more control, you can use the base Peal class directly:
+
+```javascript
+import { Peal } from '@peal-sounds/peal'
+
+const peal = new Peal()
+peal.load('custom', '/path/to/sound.mp3')
+peal.play('custom')
 ```
 
 ## TypeScript Support
