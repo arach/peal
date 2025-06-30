@@ -1,28 +1,28 @@
 export default function SkeletonCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm animate-pulse">
-      {/* Header skeleton */}
-      <div className="flex justify-between items-start mb-3">
-        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+    <div className="relative bg-white dark:bg-gray-900/50 rounded-xl border-2 border-gray-200 dark:border-gray-800 animate-pulse">
+      {/* Type icon skeleton */}
+      <div className="absolute top-3 right-3">
+        <div className="w-8 h-8 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
       </div>
       
-      {/* Waveform skeleton */}
-      <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded mb-3"></div>
-      
-      {/* Tags skeleton */}
-      <div className="flex gap-2 mb-3">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
-      </div>
-      
-      {/* Actions skeleton */}
-      <div className="flex justify-between items-center">
-        <div className="flex gap-2">
-          <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
-          <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+      <div className="p-4">
+        {/* Waveform skeleton */}
+        <div className="h-20 bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-950 rounded-lg mb-3"></div>
+        
+        {/* Tags skeleton */}
+        <div className="flex gap-1 mb-3 min-h-[24px]">
+          <div className="h-6 bg-gray-200 dark:bg-gray-800 rounded-full w-16"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-800 rounded-full w-20"></div>
         </div>
-        <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+        
+        {/* Actions skeleton */}
+        <div className="flex gap-2">
+          <div className="flex-1 h-9 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
+          <div className="w-9 h-9 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
+          <div className="w-9 h-9 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
+          <div className="w-9 h-9 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
+        </div>
       </div>
     </div>
   )

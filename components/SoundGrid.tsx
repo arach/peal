@@ -1,7 +1,7 @@
 'use client'
 
 import { useSoundStore } from '@/store/soundStore'
-import SoundCard from './SoundCard'
+import SoundCardRedesign from './SoundCardRedesign'
 import SkeletonCard from './SkeletonCard'
 
 export default function SoundGrid() {
@@ -11,8 +11,8 @@ export default function SoundGrid() {
   // Show skeletons while generating
   if (isGenerating && sounds.length === 0) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
-        {[...Array(6)].map((_, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {[...Array(8)].map((_, i) => (
           <SkeletonCard key={i} />
         ))}
       </div>
@@ -25,9 +25,9 @@ export default function SoundGrid() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {sounds.map((sound, index) => (
-        <SoundCard
+        <SoundCardRedesign
           key={sound.id}
           sound={sound}
           index={index}
