@@ -1,14 +1,9 @@
 export default function SkeletonCard() {
   return (
     <div className="relative bg-white dark:bg-gray-900/50 rounded-xl border-2 border-gray-200 dark:border-gray-800 animate-pulse">
-      {/* Type icon skeleton */}
-      <div className="absolute top-3 right-3">
-        <div className="w-8 h-8 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
-      </div>
-      
       <div className="p-4">
         {/* Waveform skeleton */}
-        <div className="h-20 bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-950 rounded-lg mb-3"></div>
+        <div className="h-20 bg-blue-50 dark:bg-gray-900/50 rounded-lg mb-3"></div>
         
         {/* Tags skeleton */}
         <div className="flex gap-1 mb-3 min-h-[24px]">

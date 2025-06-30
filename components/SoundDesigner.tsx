@@ -9,8 +9,8 @@ import DetailModal from './DetailModal'
 import SoundVariationModal from './SoundVariationModal'
 import ShortcutsPanel from './ShortcutsPanel'
 import SimpleStatsBar from './SimpleStatsBar'
-import FilterBar from './FilterBar'
 import SelectionBar from './SelectionBar'
+import SimpleSidebar from './SimpleSidebar'
 import LibraryHero from './LibraryHero'
 
 export default function SoundDesigner() {
@@ -128,14 +128,18 @@ export default function SoundDesigner() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-text-primary dark:text-gray-100">
-      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 py-8">
+      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <LibraryHero />
         
-        <FilterBar />
         <SelectionBar />
         <SimpleStatsBar />
         
-        <SoundGrid />
+        <div className="flex gap-8 mt-6">
+          <SimpleSidebar />
+          <div className="flex-1">
+            <SoundGrid />
+          </div>
+        </div>
       </div>
 
       {isGenerating && <LoadingOverlay />}

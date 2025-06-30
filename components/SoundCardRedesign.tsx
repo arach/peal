@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Sound, useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { exportAudioAsWAV, generateSoundFilename } from '@/utils/audioExport'
-import { Play, Pause, Star, Sparkles, MoreVertical, Zap, Bell, CheckCircle, AlertCircle, Waves } from 'lucide-react'
+import { Play, Pause, Star, Sliders, MoreVertical } from 'lucide-react'
 import SoundCardDropdown from './SoundCardDropdown'
 import { useRouter } from 'next/navigation'
 
@@ -13,14 +13,6 @@ interface SoundCardProps {
   index: number
 }
 
-// Sound type icons
-const typeIcons: Record<string, any> = {
-  click: Zap,
-  notification: Bell,
-  success: CheckCircle,
-  error: AlertCircle,
-  ambient: Waves,
-}
 
 export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
   const {
@@ -45,7 +37,6 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
   const progressRef = useRef(0)
 
   const isSelected = selectedSounds.has(sound.id)
-  const TypeIcon = typeIcons[sound.type] || Zap
 
   useEffect(() => {
     if (canvasRef.current && sound.waveformData) {
@@ -91,13 +82,13 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
         const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight)
         
         if (isPlayed) {
-          gradient.addColorStop(0, 'rgba(59, 130, 246, 0.9)')
-          gradient.addColorStop(0.5, 'rgba(96, 165, 250, 1)')
-          gradient.addColorStop(1, 'rgba(59, 130, 246, 0.9)')
+          gradient.addColorStop(0, 'rgba(74, 158, 255, 0.8)')
+          gradient.addColorStop(0.5, 'rgba(74, 158, 255, 1)')
+          gradient.addColorStop(1, 'rgba(74, 158, 255, 0.8)')
         } else {
-          gradient.addColorStop(0, 'rgba(156, 163, 175, 0.4)')
-          gradient.addColorStop(0.5, 'rgba(156, 163, 175, 0.6)')
-          gradient.addColorStop(1, 'rgba(156, 163, 175, 0.4)')
+          gradient.addColorStop(0, 'rgba(74, 158, 255, 0.3)')
+          gradient.addColorStop(0.5, 'rgba(74, 158, 255, 0.4)')
+          gradient.addColorStop(1, 'rgba(74, 158, 255, 0.3)')
         }
         
         ctx.fillStyle = gradient
@@ -183,26 +174,26 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
         </div>
       )}
 
-      {/* Sound type icon */}
-      <div className="absolute top-3 right-3 z-10">
-        <div className="w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-          <TypeIcon size={16} className="text-gray-600 dark:text-gray-400" />
-        </div>
-      </div>
 
       <div className="p-4">
-        {/* Waveform with duration overlay */}
-        <div className="relative h-20 mb-3 rounded-lg overflow-hidden bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+        {/* Sound type and info */}
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            {sound.type}
+          </span>
+          <span className="text-xs text-gray-500 dark:text-gray-500">
+            {sound.duration}ms
+          </span>
+        </div>
+
+        {/* Waveform visualization */}
+        <div className="relative h-20 mb-3 rounded-lg overflow-hidden bg-blue-50 dark:bg-gray-900/50">
           <canvas
             ref={canvasRef}
             width={240}
             height={80}
             className="w-full h-full"
           />
-          {/* Duration overlay */}
-          <div className="absolute bottom-2 left-2 bg-black/70 dark:bg-black/80 text-white text-xs px-2 py-1 rounded">
-            {sound.duration}ms
-          </div>
         </div>
 
         {/* Tags */}
@@ -261,10 +252,10 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
           {/* Studio button */}
           <button
             onClick={handleStudio}
-            className="w-9 h-9 flex items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/20 hover:bg-purple-200 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 transition-all"
-            title="Open in Studio"
+            className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all"
+            title="Edit in Studio"
           >
-            <Sparkles size={16} />
+            <Sliders size={16} />
           </button>
 
           {/* More options */}

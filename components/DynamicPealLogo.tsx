@@ -23,11 +23,10 @@ export default function DynamicPealLogo({
   const [animationTime, setAnimationTime] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
   
-  // Determine color theme based on system theme
+  // Determine color theme based on theme setting
   const colorTheme = useMemo(() => {
-    const isDark = theme === 'dark' || 
-      (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    
+    // For 'system', default to light theme to avoid hydration mismatch
+    const isDark = theme === 'dark'
     return isDark ? colorThemes.dark : colorThemes.light
   }, [theme])
 
@@ -101,9 +100,7 @@ export default function DynamicPealLogo({
         height={height * 0.6}
         rx={height * 0.3}
         ry={height * 0.3}
-        fill={theme === 'dark' || (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) 
-          ? 'rgba(17, 24, 39, 0.6)' 
-          : 'rgba(255, 255, 255, 0.7)'}
+        fill={theme === 'dark' ? 'rgba(17, 24, 39, 0.6)' : 'rgba(255, 255, 255, 0.7)'}
         filter={`url(#textBgBlur-${preset})`}
       />
       
