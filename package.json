@@ -1,16 +1,16 @@
 {
-  "name": "@arach/peal",
-  "version": "0.1.0",
+  "name": "@peal-sounds/peal",
+  "version": "0.1.3",
   "bin": {
-    "peal": "./cli/index.js"
+    "peal": "./cli/cli.js"
   },
   "description": "A lightweight sound effect library for web and desktop applications",
+  "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "assets",
     "cli"
   ],
   "scripts": {
@@ -23,7 +23,8 @@
     "test": "vitest",
     "lint": "next lint",
     "lint:lib": "eslint src --ext .ts",
-    "prepublishOnly": "pnpm build:lib",
+    "prepublishOnly": "cp README.npm.md README.md && pnpm build:lib",
+    "postpublish": "git checkout README.md",
     "cli": "node cli/index.js",
     "cli:generate-sounds": "node cli/generate-cli-sounds.cjs"
   },
@@ -46,6 +47,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/howler": "^2.2.12",
+    "@types/jszip": "^3.4.1",
     "@types/node": "^20.11.5",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
@@ -54,27 +56,26 @@
     "autoprefixer": "^10.4.19",
     "eslint": "^8.56.0",
     "eslint-config-next": "15.3.4",
-    "postcss": "^8.4.39",
-    "puppeteer": "^24.10.2",
-    "tailwindcss": "^3.4.4",
-    "tsup": "^8.0.1",
-    "typescript": "^5.3.3",
-    "vitest": "^1.2.0"
-  },
-  "dependencies": {
-    "@types/jszip": "^3.4.1",
-    "chalk": "^5.3.0",
-    "commander": "^12.0.0",
     "framer-motion": "^12.19.2",
-    "howler": "^2.2.4",
-    "inquirer": "^9.2.15",
     "jszip": "^3.10.1",
     "lucide-react": "^0.523.0",
     "next": "15.3.4",
-    "ora": "^8.0.1",
+    "postcss": "^8.4.39",
+    "puppeteer": "^24.10.2",
     "react": "19.0.0-rc.1",
     "react-dom": "19.0.0-rc.1",
+    "tailwindcss": "^3.4.4",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0",
     "zustand": "^4.5.4"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "howler": "^2.2.4",
+    "inquirer": "^9.2.15",
+    "ora": "^8.0.1"
   },
   "engines": {
     "node": ">=16"
