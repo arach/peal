@@ -118,9 +118,9 @@ export function generatePealWaveData(options: WaveGeneratorOptions): BarData[] {
         if (currentBarWidth > 0 && rectHeight > 0) {
             barData.push({
                 x: x,
-                y: rectY,
+                y: Math.round(rectY * 1000) / 1000,
                 width: currentBarWidth,
-                height: rectHeight,
+                height: Math.round(rectHeight * 1000) / 1000,
                 color: barColor
             });
         }

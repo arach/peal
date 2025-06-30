@@ -21,6 +21,7 @@ export default function DynamicPealLogo({
 }: DynamicPealLogoProps) {
   const theme = useSoundStore(state => state.theme)
   const [animationTime, setAnimationTime] = useState(0)
+  const [isMounted, setIsMounted] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   
   // Determine color theme based on theme setting
@@ -30,6 +31,11 @@ export default function DynamicPealLogo({
     return isDark ? colorThemes.dark : colorThemes.light
   }, [theme])
 
+  // Track mounting state
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   // Generate wave data
   const bars = useMemo(() => {
     const presetConfig = logoPresets[preset]
@@ -38,9 +44,9 @@ export default function DynamicPealLogo({
       canvasHeight: height,
       ...presetConfig,
       colorTheme,
-      animationTime: animationTime // Always use current animation time
+      animationTime: isMounted ? animationTime : 0 // Use 0 during SSR
     })
-  }, [width, height, preset, colorTheme, animationTime])
+  }, [width, height, preset, colorTheme, animationTime, isMounted])
 
   // Animation loop - only runs when animated or hovered
   // When stopped, animation pauses at current time rather than resetting
@@ -81,11 +87,11 @@ export default function DynamicPealLogo({
       {/* Render wave bars */}
       {bars.map((bar: BarData, index: number) => (
         <rect
-          key={index}
+          key={`${index}-${bar.x}-${bar.y}`}
           x={bar.x}
-          y={bar.y}
+          y={Math.round(bar.y * 1000) / 1000}
           width={bar.width}
-          height={bar.height}
+          height={Math.round(bar.height * 1000) / 1000}
           fill={bar.color}
           rx={bar.width / 2}
           ry={bar.width / 2}

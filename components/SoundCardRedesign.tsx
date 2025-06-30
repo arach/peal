@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Sound, useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { exportAudioAsWAV, generateSoundFilename } from '@/utils/audioExport'
-import { Play, Pause, Star, Sliders, MoreVertical } from 'lucide-react'
+import { Play, Pause, Star, Sliders, MoreVertical, Sparkles } from 'lucide-react'
 import SoundCardDropdown from './SoundCardDropdown'
 import { useRouter } from 'next/navigation'
 
