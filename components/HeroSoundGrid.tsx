@@ -176,7 +176,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-4 hover:border-gray-700 transition-all group"
+      className="bg-white dark:bg-gray-900/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:border-blue-400 dark:hover:border-gray-700 transition-all group shadow-sm hover:shadow-md"
     >
       {/* Waveform */}
       <div className="h-16 mb-3 relative">
@@ -188,12 +188,12 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
       </div>
 
       {/* Sound name */}
-      <h3 className="font-medium text-white mb-2">{sound.name}</h3>
+      <h3 className="font-medium text-gray-900 dark:text-white mb-2">{sound.name}</h3>
       
       {/* Duration and type */}
       <div className="flex justify-between items-center mb-2 text-xs">
-        <span className="text-gray-400">{sound.duration}</span>
-        <span className="text-blue-400">{sound.type}</span>
+        <span className="text-gray-500 dark:text-gray-400">{sound.duration}</span>
+        <span className="text-blue-600 dark:text-blue-400">{sound.type}</span>
       </div>
 
       {/* Tags */}
@@ -201,7 +201,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
         {sound.tags.map(tag => (
           <span
             key={tag}
-            className="px-2 py-1 bg-gray-800 text-gray-300 rounded text-xs"
+            className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-xs"
           >
             {tag}
           </span>
@@ -215,17 +215,17 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
           className={`p-2 rounded transition-colors ${
             isPlaying 
               ? 'bg-blue-600 text-white' 
-              : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+              : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
           }`}
         >
           {isPlaying ? <Pause size={16} /> : <Play size={16} />}
         </button>
         
         <div className="flex gap-1">
-          <button className="p-2 text-gray-500 hover:text-gray-300 transition-colors">
+          <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
             <Star size={16} />
           </button>
-          <button className="p-2 text-gray-500 hover:text-gray-300 transition-colors">
+          <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
             <MoreVertical size={16} />
           </button>
         </div>
