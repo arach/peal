@@ -38,22 +38,24 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
 
   const isSelected = selectedSounds.has(sound.id)
 
+  // Cleanup on unmount
   useEffect(() => {
-    if (canvasRef.current && sound.waveformData) {
-      drawWaveform()
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
+      }
+      if (currentSource.current) {
+        currentSource.current.stop()
+        currentSource.current = null
+      }
     }
-  }, [sound.waveformData, isPlaying])
+  }, [])
 
   useEffect(() => {
-    if (!isPlaying) {
-      progressRef.current = 0
-    }
-  }, [isPlaying])
-
-  const drawWaveform = () => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvasRef.current || !sound.waveformData) return
     
+    const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
@@ -97,19 +99,35 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
       
       if (isPlaying) {
         progressRef.current += 0.02
-        if (progressRef.current > 1) progressRef.current = 0
+        if (progressRef.current > 1) {
+          progressRef.current = 0
+        }
         animationRef.current = requestAnimationFrame(animate)
       }
     }
     
+    // Start animation or draw static
     animate()
     
+    // Cleanup function
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
       }
     }
-  }
+  }, [sound.waveformData, isPlaying])
+
+  useEffect(() => {
+    if (!isPlaying) {
+      progressRef.current = 0
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
+      }
+    }
+  }, [isPlaying])
+
 
   const handlePlay = async (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -136,6 +154,11 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
           setIsPlaying(false)
           setCurrentlyPlaying(null)
           currentSource.current = null
+          progressRef.current = 0
+          if (animationRef.current) {
+            cancelAnimationFrame(animationRef.current)
+            animationRef.current = null
+          }
         }
       }
     } catch (error) {
