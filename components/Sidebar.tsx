@@ -1,6 +1,7 @@
 'use client'
 
 import { useSoundStore } from '@/store/soundStore'
+import { Search } from 'lucide-react'
 
 export default function Sidebar() {
   const {
@@ -30,6 +31,20 @@ export default function Sidebar() {
 
   return (
     <aside className="surface-secondary rounded-xl card-padding h-fit sticky top-[160px] space-y-subsection shadow-sm">
+      {/* Search */}
+      <div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Search sounds..."
+            value={filters.search || ''}
+            onChange={(e) => updateFilters({ search: e.target.value })}
+            className="w-full pl-10 pr-3 py-2 bg-background dark:bg-gray-800 border border-border dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400"
+          />
+        </div>
+      </div>
+
       {/* Filters */}
       <div>
         <h3 className="section-header text-primary-500">
@@ -154,7 +169,7 @@ export default function Sidebar() {
         {/* Clear filters button */}
         {(filters.favoriteOnly || filters.type.length > 0 || filters.tags.length > 0 || 
           filters.durationMin > 0 || filters.durationMax < 5000 || 
-          filters.frequencyMin > 0 || filters.frequencyMax < 5000) && (
+          filters.frequencyMin > 0 || filters.frequencyMax < 5000 || filters.search) && (
           <button
             onClick={() => updateFilters({
               favoriteOnly: false,
@@ -163,7 +178,8 @@ export default function Sidebar() {
               durationMin: 0,
               durationMax: 5000,
               frequencyMin: 0,
-              frequencyMax: 5000
+              frequencyMax: 5000,
+              search: ''
             })}
             className="btn-base w-full bg-surface-secondary dark:bg-gray-700 text-text-primary dark:text-gray-100 hover:bg-background-tertiary dark:hover:bg-gray-600 focus-ring"
           >

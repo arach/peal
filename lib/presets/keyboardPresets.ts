@@ -11,6 +11,120 @@ export interface KeyboardSound {
 }
 
 export const keyboardPresets: KeyboardSound[] = [
+  // Properly Spaced Sounds
+  {
+    name: 'single_key',
+    file: '/sounds/proper-keyboard/single_key.wav',
+    switchType: 'linear',
+    keyType: 'switch',
+    displayName: 'Single Key (Spaced)',
+    description: 'Single keypress with proper silence before and after',
+    colorCode: 'emerald',
+    useCase: 'UI feedback, single key actions',
+    tags: ['keyboard', 'single', 'spaced', 'breathable', 'proper']
+  },
+  {
+    name: 'two_keys',
+    file: '/sounds/proper-keyboard/two_keys.wav',
+    switchType: 'special',
+    keyType: 'sequence',
+    displayName: 'Two Keys',
+    description: 'Two keypresses with natural spacing',
+    colorCode: 'emerald',
+    useCase: 'Double key actions, shortcuts',
+    tags: ['keyboard', 'double', 'sequence', 'spaced', 'natural']
+  },
+  {
+    name: 'word_typing',
+    file: '/sounds/proper-keyboard/word_typing.wav',
+    switchType: 'special',
+    keyType: 'sequence',
+    displayName: 'Word Typing',
+    description: '5-6 keys typed as a word with natural rhythm',
+    colorCode: 'emerald',
+    useCase: 'Word completion, typing feedback',
+    tags: ['keyboard', 'word', 'typing', 'rhythm', 'natural']
+  },
+  {
+    name: 'sentence_typing',
+    file: '/sounds/proper-keyboard/sentence_typing.wav',
+    switchType: 'special',
+    keyType: 'sequence',
+    displayName: 'Sentence Typing',
+    description: 'Full sentence with spaces and punctuation',
+    colorCode: 'emerald',
+    useCase: 'Typing demonstrations, ambient feedback',
+    tags: ['keyboard', 'sentence', 'typing', 'complete', 'varied']
+  },
+  {
+    name: 'typing_ambience',
+    file: '/sounds/proper-keyboard/typing_ambience.wav',
+    switchType: 'special',
+    keyType: 'ambience',
+    displayName: 'Typing Ambience (Loopable)',
+    description: 'Multiple layers of typing, perfect for backgrounds',
+    colorCode: 'emerald',
+    useCase: 'Background ambience, office sounds, productivity apps',
+    tags: ['keyboard', 'ambience', 'loop', 'background', 'office']
+  },
+  
+  // Creamy Sounds
+  {
+    name: 'creamy_keypress',
+    file: '/sounds/creamy-keys/creamy_keypress.wav',
+    switchType: 'linear',
+    keyType: 'switch',
+    displayName: 'Creamy Thock',
+    description: 'Deep, satisfying thock with smooth mid frequencies',
+    colorCode: 'purple',
+    useCase: 'Premium typing experience, ASMR content',
+    tags: ['keyboard', 'creamy', 'thock', 'deep', 'satisfying']
+  },
+  {
+    name: 'creamy_linear',
+    file: '/sounds/creamy-keys/creamy_linear.wav',
+    switchType: 'linear',
+    keyType: 'switch',
+    displayName: 'Creamy Linear',
+    description: 'Smooth linear with creamy bottom-out',
+    colorCode: 'purple',
+    useCase: 'Smooth typing with satisfying feedback',
+    tags: ['keyboard', 'creamy', 'linear', 'smooth', 'thock']
+  },
+  {
+    name: 'creamy_tactile',
+    file: '/sounds/creamy-keys/creamy_tactile.wav',
+    switchType: 'tactile',
+    keyType: 'switch',
+    displayName: 'Creamy Tactile',
+    description: 'Subtle bump with creamy thock',
+    colorCode: 'purple',
+    useCase: 'Tactile typing with premium sound',
+    tags: ['keyboard', 'creamy', 'tactile', 'bump', 'premium']
+  },
+  {
+    name: 'creamy_spacebar',
+    file: '/sounds/creamy-keys/creamy_spacebar.wav',
+    switchType: 'special',
+    keyType: 'spacebar',
+    displayName: 'Creamy Spacebar',
+    description: 'Deep spacebar with minimal rattle',
+    colorCode: 'purple',
+    useCase: 'Well-tuned spacebar sound',
+    tags: ['keyboard', 'creamy', 'spacebar', 'deep', 'tuned']
+  },
+  {
+    name: 'creamy_typing',
+    file: '/sounds/creamy-keys/creamy_typing.wav',
+    switchType: 'special',
+    keyType: 'sequence',
+    displayName: 'Creamy Typing',
+    description: 'Natural typing rhythm with creamy sounds',
+    colorCode: 'purple',
+    useCase: 'Background typing, ASMR content',
+    tags: ['keyboard', 'creamy', 'typing', 'sequence', 'asmr']
+  },
+  
   // Switch Types
   {
     name: 'key_linear_realistic',
@@ -44,6 +158,30 @@ export const keyboardPresets: KeyboardSound[] = [
     colorCode: 'amber',
     useCase: 'Office typing, balanced feedback without noise',
     tags: ['keyboard', 'tactile', 'brown', 'realistic', 'office']
+  },
+  
+  // Balanced Typing Sounds (Not Too High)
+  {
+    name: 'balanced_single_key',
+    file: '/sounds/balanced-typing/balanced_single_key.wav',
+    switchType: 'tactile',
+    keyType: 'switch',
+    displayName: 'Balanced Key',
+    description: 'Natural keypress centered around 400-1200 Hz',
+    colorCode: 'orange',
+    useCase: 'UI feedback with pleasant, balanced tone',
+    tags: ['keyboard', 'balanced', 'natural', 'tactile', 'pleasant']
+  },
+  {
+    name: 'balanced_typing_mix',
+    file: '/sounds/balanced-typing/balanced_typing_mix.wav',
+    switchType: 'special',
+    keyType: 'sequence',
+    displayName: 'Balanced Typing Mix',
+    description: 'Natural typing with balanced frequency profile',
+    colorCode: 'orange',
+    useCase: 'Typing demonstrations with realistic sound',
+    tags: ['keyboard', 'typing', 'balanced', 'natural', 'sequence']
   },
   
   // Special Keys

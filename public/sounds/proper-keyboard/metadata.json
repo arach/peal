@@ -1,0 +1,26 @@
+{
+  "generated": "2025-06-29T22:03:55.343Z",
+  "description": "Properly spaced keyboard sounds with breathing room",
+  "sounds": {
+    "single_key": {
+      "duration": 0.3,
+      "category": "keyboard"
+    },
+    "two_keys": {
+      "duration": 0.6,
+      "category": "keyboard"
+    },
+    "word_typing": {
+      "duration": 1.5,
+      "category": "keyboard"
+    },
+    "sentence_typing": {
+      "duration": 3,
+      "category": "keyboard"
+    },
+    "typing_ambience": {
+      "duration": 4,
+      "category": "keyboard"
+    }
+  }
+}

@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@types/jszip": "^3.4.1",
+    "framer-motion": "^12.19.2",
     "howler": "^2.2.4",
     "jszip": "^3.10.1",
     "lucide-react": "^0.523.0",

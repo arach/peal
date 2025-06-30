@@ -1,0 +1,27 @@
+{
+  "generated": "2025-06-30T01:32:59.258Z",
+  "description": "Keyboard sounds based on analysis of real keyboard recordings",
+  "analysis": "Based on 54.5 minute keyboard recording with characteristics: fast attack (<10ms), strong low frequencies (11-100Hz), mid resonances (500-600Hz)",
+  "sounds": {
+    "learned_keypress": {
+      "duration": 0.05,
+      "category": "keyboard"
+    },
+    "learned_tactile": {
+      "duration": 0.054988662131519275,
+      "category": "keyboard"
+    },
+    "learned_clicky": {
+      "duration": 0.06,
+      "category": "keyboard"
+    },
+    "learned_spacebar": {
+      "duration": 0.08,
+      "category": "keyboard"
+    },
+    "learned_typing": {
+      "duration": 2,
+      "category": "keyboard"
+    }
+  }
+}

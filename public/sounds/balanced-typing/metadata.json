@@ -1,0 +1,14 @@
+{
+  "generated": "2025-06-29T22:21:14.877Z",
+  "description": "Balanced keyboard sounds with frequencies centered around 400-1200 Hz",
+  "sounds": {
+    "balanced_single_key": {
+      "duration": 0.06,
+      "category": "keyboard"
+    },
+    "balanced_typing_mix": {
+      "duration": 2,
+      "category": "keyboard"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "generated": "2025-06-29T21:59:57.348Z",
+  "description": "Creamy keyboard sounds - deep thock with smooth mid frequencies",
+  "sounds": {
+    "creamy_keypress": {
+      "duration": 0.04,
+      "category": "keyboard"
+    },
+    "creamy_linear": {
+      "duration": 0.04498866213151927,
+      "category": "keyboard"
+    },
+    "creamy_tactile": {
+      "duration": 0.04798185941043084,
+      "category": "keyboard"
+    },
+    "creamy_spacebar": {
+      "duration": 0.054988662131519275,
+      "category": "keyboard"
+    },
+    "creamy_typing": {
+      "duration": 0.8,
+      "category": "keyboard"
+    }
+  }
+}

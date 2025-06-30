@@ -25,11 +25,10 @@ export default function Header() {
           
           <nav className="hidden md:flex items-center gap-4">
             <button
-              onClick={() => router.push('/presets')}
-              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+              onClick={() => router.push('/')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors"
             >
-              <Library size={16} />
-              Presets
+              Home
             </button>
             <button
               onClick={() => router.push('/studio')}
@@ -39,32 +38,17 @@ export default function Header() {
               Studio
             </button>
             <button
-              onClick={() => router.push('/premium')}
+              onClick={() => router.push('/presets')}
               className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
             >
-              <Crown size={16} />
-              Premium
+              <Library size={16} />
+              Presets
             </button>
             <button
-              onClick={() => router.push('/brands')}
-              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+              onClick={() => router.push('/about')}
+              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors"
             >
-              <Palette size={16} />
-              Brands
-            </button>
-            <button
-              onClick={() => router.push('/mechanics')}
-              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
-            >
-              <Cpu size={16} />
-              Mechanics
-            </button>
-            <button
-              onClick={() => router.push('/signature')}
-              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
-            >
-              <Brain size={16} />
-              Signature
+              About
             </button>
           </nav>
         </div>

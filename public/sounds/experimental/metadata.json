@@ -1,0 +1,18 @@
+{
+  "generated": "2025-06-29T22:30:45.501Z",
+  "description": "Experimental keyboard sounds for testing",
+  "sounds": {
+    "deep_thock": {
+      "duration": 0.05,
+      "category": "experimental"
+    },
+    "sharp_clack": {
+      "duration": 0.04498866213151927,
+      "category": "experimental"
+    },
+    "hybrid_switch": {
+      "duration": 0.054988662131519275,
+      "category": "experimental"
+    }
+  }
+}

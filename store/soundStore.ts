@@ -23,6 +23,7 @@ export interface SoundFilters {
   durationMax: number
   frequencyMin: number
   frequencyMax: number
+  search?: string
 }
 
 interface SoundState {
@@ -263,6 +264,16 @@ export const useSoundStore = create<SoundState>()(
       filteredSounds: () => {
         const { sounds, filters, sortBy } = get()
         let filtered = sounds
+        
+        // Apply search filter
+        if (filters.search && filters.search.trim()) {
+          const searchLower = filters.search.toLowerCase()
+          filtered = filtered.filter(s => 
+            s.type.toLowerCase().includes(searchLower) ||
+            s.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
+            s.id.toLowerCase().includes(searchLower)
+          )
+        }
         
         // Apply filters
         if (filters.type.length > 0) {
