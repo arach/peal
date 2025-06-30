@@ -68,7 +68,12 @@ export default function Studio() {
   
   // Vibe Designer state
   const [vibePrompt, setVibePrompt] = useState('')
-  const [vibeSuggestions, setVibeSuggestions] = useState<string[]>([])
+  const [vibeSuggestions, setVibeSuggestions] = useState<string[]>([
+    'a soft notification chime',
+    '3 quick UI clicks',
+    'futuristic success sound',
+    'deep error rumble'
+  ])
   const [isVibeGenerating, setIsVibeGenerating] = useState(false)
   const [vibeGeneratedSounds, setVibeGeneratedSounds] = useState<Sound[]>([])
   
@@ -2102,6 +2107,16 @@ export default function Studio() {
               
               {/* Panel Content */}
               <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+                {/* Welcome message for empty state */}
+                {vibePrompt.length === 0 && vibeGeneratedSounds.length === 0 && (
+                  <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-700/30 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-gray-300 leading-relaxed">
+                      Describe sounds in plain English and let AI bring them to life. 
+                      Try describing timing, pitch, or the feeling you want.
+                    </p>
+                  </div>
+                )}
+                
                 {/* Input Section */}
                 <div className="space-y-3">
                   <label className="block text-sm font-medium text-gray-300">
@@ -2126,8 +2141,11 @@ export default function Studio() {
                   </div>
 
                   {/* Suggestions */}
-                  {vibeSuggestions.length > 0 && vibePrompt.length < 20 && (
+                  {vibeSuggestions.length > 0 && (vibePrompt.length === 0 || vibePrompt.length < 20) && (
                     <div className="space-y-1">
+                      <p className="text-xs text-gray-400 mb-2">
+                        {vibePrompt.length === 0 ? 'Try one of these:' : 'Suggestions:'}
+                      </p>
                       {vibeSuggestions.slice(0, 4).map((suggestion, i) => (
                         <button
                           key={i}
@@ -2135,9 +2153,9 @@ export default function Studio() {
                             setVibePrompt(suggestion)
                             setTimeout(() => handleVibeGenerate(), 100)
                           }}
-                          className="block w-full text-left px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors"
+                          className="block w-full text-left px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors group"
                         >
-                          {suggestion}
+                          <span className="group-hover:text-purple-400 transition-colors">{suggestion}</span>
                         </button>
                       ))}
                     </div>
@@ -2847,17 +2865,24 @@ export default function Studio() {
                   </div>
                   <div className="flex gap-3 justify-center">
                     <button 
-                      onClick={() => setShowVibePanel(true)}
+                      onClick={() => {
+                        setShowVibePanel(true)
+                        // Focus on the vibe input after panel opens
+                        setTimeout(() => {
+                          const vibeInput = document.querySelector('input[placeholder*="Describe the sound"]') as HTMLInputElement
+                          if (vibeInput) vibeInput.focus()
+                        }, 100)
+                      }}
                       className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
                     >
                       <Sparkles size={16} />
                       Start with Vibe
                     </button>
                     <button 
-                      onClick={() => router.push('/')}
+                      onClick={() => router.push('/#sounds')}
                       className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
                     >
-                      <Settings size={16} />
+                      <FolderOpen size={16} />
                       Browse Library
                     </button>
                   </div>
