@@ -1,4 +1,3 @@
-import SoundDesigner from '@/components/SoundDesigner'
 import LandingHero from '@/components/LandingHero'
 import WelcomeModal from '@/components/WelcomeModal'
 import ErrorBoundary from '@/components/ErrorBoundary'
@@ -10,11 +9,6 @@ export default function Home() {
       <ErrorBoundary>
         <LandingHero />
       </ErrorBoundary>
-      <div id="sounds">
-        <ErrorBoundary>
-          <SoundDesigner />
-        </ErrorBoundary>
-      </div>
     </main>
   )
 }

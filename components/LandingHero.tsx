@@ -45,7 +45,7 @@ export default function LandingHero() {
             className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
           >
             <a
-              href="#sounds"
+              href="/library"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-lg transition-colors touch-manipulation"
             >
               <Volume2 size={20} />
@@ -96,21 +96,55 @@ export default function LandingHero() {
             <div className="flex items-center justify-center gap-2 mb-6">
               <Code className="text-blue-600 dark:text-blue-400" size={20} />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Dead simple integration
+                Seamless integration
               </h3>
             </div>
             
-            <pre className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 p-6 rounded-xl text-sm text-left overflow-x-auto font-mono">
-              <code>{`// Using Peal with Howler.js
-import { Howl } from 'howler'
-
-const sound = new Howl({
-  src: ['/sounds/success.wav']
-})
-
-// Play on user action
-button.onclick = () => sound.play()`}</code>
-            </pre>
+            <div className="space-y-3">
+              <div className="bg-gray-950 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800">
+                {/* Terminal command */}
+                <div className="bg-gray-900 dark:bg-black p-3 border-b border-gray-800">
+                  <code className="font-mono text-xs">
+                    <span className="text-gray-500">&gt;</span> <span className="text-purple-400">npx peal</span> <span className="text-gray-100">add success notification error</span>
+                  </code>
+                </div>
+                {/* Terminal output */}
+                <div className="p-3">
+                  <code className="font-mono text-xs text-gray-300">
+                    <div className="text-gray-400">🎧 Added 3 sounds:</div>
+                    <div className="mt-1 space-y-0.5 ml-2">
+                      <div><span className="text-green-400">✓</span> success</div>
+                      <div><span className="text-green-400">✓</span> notification</div>
+                      <div><span className="text-green-400">✓</span> error</div>
+                    </div>
+                  </code>
+                </div>
+              </div>
+              
+              <pre className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-3 rounded-lg text-xs text-left overflow-x-auto">
+                <code className="font-mono">
+                  <span className="text-gray-500 dark:text-gray-400">// Use in your app</span>
+                  {'\n'}
+                  <span className="text-blue-600 dark:text-blue-400">import</span> {'{ '}<span className="text-orange-600 dark:text-orange-400">play</span>, <span className="text-orange-600 dark:text-orange-400">pause</span>, <span className="text-orange-600 dark:text-orange-400">stop</span>{' }'} <span className="text-blue-600 dark:text-blue-400">from</span> <span className="text-green-600 dark:text-green-400">'@/peal'</span>
+                  {'\n\n'}
+                  <span className="text-gray-500 dark:text-gray-400">// Play sounds with built-in volume control</span>
+                  {'\n'}<span className="text-orange-600 dark:text-orange-400">play</span>(<span className="text-green-600 dark:text-green-400">'success'</span>)             
+                  {'\n'}<span className="text-orange-600 dark:text-orange-400">play</span>(<span className="text-green-600 dark:text-green-400">'notification'</span>, <span className="text-green-600 dark:text-green-400">'loud'</span>)  
+                  {'\n'}<span className="text-orange-600 dark:text-orange-400">play</span>(<span className="text-green-600 dark:text-green-400">'error'</span>, <span className="text-green-600 dark:text-green-400">'quiet'</span>)    
+                  {'\n\n'}
+                  <span className="text-gray-500 dark:text-gray-400">// Or use namespaced if you need 'play' elsewhere</span>
+                  {'\n'}<span className="text-blue-600 dark:text-blue-400">import</span> <span className="text-orange-600 dark:text-orange-400">peal</span> <span className="text-blue-600 dark:text-blue-400">from</span> <span className="text-green-600 dark:text-green-400">'@/peal'</span>
+                  {'\n'}<span className="text-orange-600 dark:text-orange-400">peal</span>.<span className="text-blue-600 dark:text-blue-400">play</span>(<span className="text-green-600 dark:text-green-400">'success'</span>)
+                </code>
+              </pre>
+              
+              <p className="text-center text-xs text-gray-500 dark:text-gray-400">
+                Copy individual sounds or generate custom ones.{' '}
+                <span className="text-blue-600 dark:text-blue-400">
+                  No npm packages, no dependencies.
+                </span>
+              </p>
+            </div>
           </div>
         </motion.div>
 
@@ -125,9 +159,9 @@ button.onclick = () => sound.play()`}</code>
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4">
               <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Lightweight</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Copy & Paste</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Tiny file sizes, instant playback. No bloat, just sound.
+              No packages to install. Just copy the code you need.
             </p>
           </motion.div>
 
@@ -140,9 +174,9 @@ button.onclick = () => sound.play()`}</code>
             <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto mb-4">
               <Sparkles className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Studio Built-in</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Customizable</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Create custom sounds with our real-time synthesis studio.
+              Tweak any sound to match your brand perfectly.
             </p>
           </motion.div>
 
@@ -155,9 +189,9 @@ button.onclick = () => sound.play()`}</code>
             <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-4">
               <Code className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Easy Integration</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Zero Dependencies</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Works with any framework. Just add and play.
+              Pure Web Audio API. Works everywhere, owns nothing.
             </p>
           </motion.div>
         </div>

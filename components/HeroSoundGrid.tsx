@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Howl } from 'howler'
-import { Play, Pause, Star, MoreVertical } from 'lucide-react'
+import { Play, Pause, Code2 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import SoundCodeModal from './SoundCodeModal'
 
 const heroSounds = [
   { 
@@ -11,7 +12,7 @@ const heroSounds = [
     name: 'Resonant Pulse',
     file: '/sounds/hero-sounds/resonant-pulse.wav',
     duration: '1.4s',
-    type: 'pulse',
+    type: 'notification',
     tags: ['resonant', 'deep', 'pulse'],
     waveform: Array.from({ length: 45 }, (_, i) => {
       const resonance = Math.sin((i / 45) * Math.PI * 2) * Math.sin((i / 45) * Math.PI * 8)
@@ -23,7 +24,7 @@ const heroSounds = [
     name: 'Ethereal Chime',
     file: '/sounds/hero-sounds/ethereal-chime.wav',
     duration: '1.3s',
-    type: 'chime',
+    type: 'success',
     tags: ['ethereal', 'ambient', 'chime'],
     waveform: Array.from({ length: 40 }, (_, i) => {
       const envelope = Math.sin((i / 40) * Math.PI) 
@@ -36,7 +37,7 @@ const heroSounds = [
     name: 'Crystal Pulse',
     file: '/sounds/hero-sounds/crystal-pulse.wav',
     duration: '1.3s',
-    type: 'pulse',
+    type: 'click',
     tags: ['crystal', 'bright', 'pulse'],
     waveform: Array.from({ length: 38 }, (_, i) => {
       if (i < 3) return 0.9
@@ -50,7 +51,7 @@ const heroSounds = [
     name: 'Ripple Cascade',
     file: '/sounds/signature-sounds/ripple_cascade.wav',
     duration: '1.3s',
-    type: 'cascade',
+    type: 'notification',
     tags: ['ripple', 'cascade', 'flow'],
     waveform: Array.from({ length: 42 }, (_, i) => {
       const ripple = Math.sin((i / 42) * Math.PI * 4) * Math.exp(-i * 0.05)
@@ -63,7 +64,7 @@ const heroSounds = [
     name: 'Quantum Cascade',
     file: '/sounds/signature-sounds/quantum_cascade.wav',
     duration: '1.1s',
-    type: 'cascade',
+    type: 'success',
     tags: ['futuristic', 'cascade', 'tech'],
     waveform: Array.from({ length: 40 }, (_, i) => {
       const phase = (i / 40) * Math.PI * 3
@@ -75,7 +76,7 @@ const heroSounds = [
     name: 'Neural Pulse',
     file: '/sounds/dots-patterns/neural_pulse.wav',
     duration: '428ms',
-    type: 'pulse',
+    type: 'click',
     tags: ['neural', 'pulse', 'tech'],
     waveform: Array.from({ length: 30 }, (_, i) => {
       if (i < 5) return 0.1
@@ -92,9 +93,10 @@ interface SoundCardProps {
   isPlaying: boolean
   onPlay: () => void
   onStop: () => void
+  onShowCode: () => void
 }
 
-function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
+function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)
   const progressRef = useRef(0)
@@ -176,7 +178,8 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-900/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:border-blue-400 dark:hover:border-gray-700 transition-all group shadow-sm hover:shadow-md"
+      className="bg-white dark:bg-gray-900/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:border-blue-400 dark:hover:border-gray-700 transition-all group shadow-sm hover:shadow-md cursor-pointer"
+      onClick={onShowCode}
     >
       {/* Waveform */}
       <div className="h-16 mb-3 relative">
@@ -190,10 +193,12 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
       {/* Sound name */}
       <h3 className="font-medium text-gray-900 dark:text-white mb-2">{sound.name}</h3>
       
-      {/* Duration and type */}
+      {/* Duration and action hint */}
       <div className="flex justify-between items-center mb-2 text-xs">
         <span className="text-gray-500 dark:text-gray-400">{sound.duration}</span>
-        <span className="text-blue-600 dark:text-blue-400">{sound.type}</span>
+        <span className="text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+          <Code2 size={12} /> View code
+        </span>
       </div>
 
       {/* Tags */}
@@ -211,7 +216,10 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
       {/* Actions */}
       <div className="flex items-center justify-between">
         <button
-          onClick={isPlaying ? onStop : onPlay}
+          onClick={(e) => {
+            e.stopPropagation()
+            isPlaying ? onStop() : onPlay()
+          }}
           className={`p-2 rounded transition-colors ${
             isPlaying 
               ? 'bg-blue-600 text-white' 
@@ -221,14 +229,16 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
           {isPlaying ? <Pause size={16} /> : <Play size={16} />}
         </button>
         
-        <div className="flex gap-1">
-          <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-            <Star size={16} />
-          </button>
-          <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-            <MoreVertical size={16} />
-          </button>
-        </div>
+        <button 
+          onClick={(e) => {
+            e.stopPropagation()
+            onShowCode()
+          }}
+          className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded transition-colors flex items-center gap-1"
+        >
+          <Code2 size={16} />
+          <span className="text-xs">Code</span>
+        </button>
       </div>
     </motion.div>
   )
@@ -237,6 +247,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
 export default function HeroSoundGrid() {
   const [playing, setPlaying] = useState<string | null>(null)
   const [sounds, setSounds] = useState<{ [key: string]: Howl }>({})
+  const [selectedSound, setSelectedSound] = useState<typeof heroSounds[0] | null>(null)
 
   useEffect(() => {
     // Preload all sounds
@@ -276,16 +287,26 @@ export default function HeroSoundGrid() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {heroSounds.map((sound) => (
-        <HeroSoundCard
-          key={sound.id}
-          sound={sound}
-          isPlaying={playing === sound.id}
-          onPlay={() => playSound(sound.id)}
-          onStop={stopSound}
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {heroSounds.map((sound) => (
+          <HeroSoundCard
+            key={sound.id}
+            sound={sound}
+            isPlaying={playing === sound.id}
+            onPlay={() => playSound(sound.id)}
+            onStop={stopSound}
+            onShowCode={() => setSelectedSound(sound)}
+          />
+        ))}
+      </div>
+      
+      {selectedSound && (
+        <SoundCodeModal
+          sound={selectedSound}
+          onClose={() => setSelectedSound(null)}
         />
-      ))}
-    </div>
+      )}
+    </>
   )
 }
