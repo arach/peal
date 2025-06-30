@@ -404,6 +404,205 @@ export class SoundGenerator {
       return null
     }
   }
+
+  async renderSequence(sound: Sound, paramsList: any[]): Promise<void> {
+    const audioContext = await this.getAudioContext()
+    if (!audioContext) return
+
+    // Calculate total duration
+    let totalDuration = 0
+    for (const params of paramsList) {
+      totalDuration = Math.max(totalDuration, (params.delay || 0) + (params.duration || 0.5))
+    }
+
+    const sampleRate = 44100
+    const offlineContext = new OfflineAudioContext(1, sampleRate * totalDuration, sampleRate)
+
+    try {
+      // Render each sound in the sequence
+      for (const params of paramsList) {
+        const startTime = params.delay || 0
+        
+        switch (params.type) {
+          case 'tone':
+            this.createToneAtTime(offlineContext, params, startTime)
+            break
+          case 'chime':
+            this.createChimeAtTime(offlineContext, params, startTime)
+            break
+          case 'click':
+            this.createClickAtTime(offlineContext, params, startTime)
+            break
+          case 'sweep':
+            this.createSweepAtTime(offlineContext, params, startTime)
+            break
+          case 'pulse':
+            this.createPulseAtTime(offlineContext, params, startTime)
+            break
+        }
+      }
+
+      const buffer = await offlineContext.startRendering()
+      sound.audioBuffer = buffer
+      sound.waveformData = this.extractWaveformData(buffer)
+    } catch (error) {
+      console.error('Error rendering sequence:', error)
+    }
+  }
+
+  // Helper methods for creating sounds at specific times
+  private createToneAtTime(ctx: OfflineAudioContext, params: any, startTime: number) {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+
+    osc.type = params.waveform || 'sine'
+    osc.frequency.value = params.frequency
+
+    const safeAttack = Math.max(0.001, params.attack || 0.01)
+    const safeDecay = Math.max(0.001, params.decay || 0.1)
+    const safeRelease = Math.max(0.001, params.release || 0.1)
+
+    gain.gain.setValueAtTime(0, startTime)
+    gain.gain.linearRampToValueAtTime(0.5, startTime + safeAttack)
+    gain.gain.linearRampToValueAtTime((params.sustain || 0.5) * 0.5, startTime + safeAttack + safeDecay)
+    gain.gain.setValueAtTime((params.sustain || 0.5) * 0.5, startTime + params.duration - safeRelease)
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + params.duration)
+
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+
+    osc.start(startTime)
+    osc.stop(startTime + params.duration)
+  }
+
+  private createClickAtTime(ctx: OfflineAudioContext, params: any, startTime: number) {
+    const clickDuration = params.clickDuration || 0.05
+    const safeClickDuration = Math.max(0.001, clickDuration)
+
+    if (params.clickType === 'noise') {
+      const bufferSize = Math.floor(ctx.sampleRate * safeClickDuration)
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / bufferSize * 10)
+      }
+
+      const noise = ctx.createBufferSource()
+      noise.buffer = buffer
+
+      const filter = ctx.createBiquadFilter()
+      filter.type = 'bandpass'
+      filter.frequency.value = params.frequency || 1000
+      filter.Q.value = params.resonance || 5
+
+      noise.connect(filter)
+      filter.connect(ctx.destination)
+      noise.start(startTime)
+      noise.stop(startTime + safeClickDuration)
+    } else {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+
+      osc.frequency.value = params.frequency || 1000
+      gain.gain.setValueAtTime(0.6, startTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + safeClickDuration)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(startTime)
+      osc.stop(startTime + safeClickDuration)
+    }
+  }
+
+  private createChimeAtTime(ctx: OfflineAudioContext, params: any, startTime: number) {
+    const fundamentalFreq = params.frequency
+    const harmonics = params.harmonics || 3
+
+    for (let i = 0; i < harmonics; i++) {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      const delay = i * (params.spread || 0.05)
+
+      osc.frequency.value = fundamentalFreq * (i + 1)
+      osc.type = 'sine'
+
+      const safeDelay = Math.max(0, delay)
+      const safeDecay = Math.max(0.01, params.decay || 0.3)
+      
+      gain.gain.setValueAtTime(0, startTime + safeDelay)
+      gain.gain.linearRampToValueAtTime(0.4 / (i + 1), startTime + safeDelay + 0.01)
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + safeDelay + safeDecay)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(startTime + delay)
+      osc.stop(startTime + params.duration)
+    }
+  }
+
+  private createSweepAtTime(ctx: OfflineAudioContext, params: any, startTime: number) {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+
+    osc.type = 'sine'
+
+    const frequency = params.frequency || 440
+    const sweepRange = params.sweepRange || 2
+    const direction = params.direction || 'down'
+    const duration = params.duration || 0.5
+
+    const startFreq = direction === 'up' ? frequency : frequency * sweepRange
+    const endFreq = direction === 'up' ? frequency * sweepRange : frequency
+
+    osc.frequency.setValueAtTime(startFreq, startTime)
+
+    if (params.sweepType === 'exponential' && endFreq > 0) {
+      osc.frequency.exponentialRampToValueAtTime(endFreq, startTime + duration)
+    } else {
+      osc.frequency.linearRampToValueAtTime(endFreq, startTime + duration)
+    }
+
+    gain.gain.setValueAtTime(0, startTime)
+    gain.gain.linearRampToValueAtTime(0.4, startTime + 0.01)
+    gain.gain.setValueAtTime(0.4, startTime + duration - 0.05)
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration)
+
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+
+    osc.start(startTime)
+    osc.stop(startTime + duration)
+  }
+
+  private createPulseAtTime(ctx: OfflineAudioContext, params: any, startTime: number) {
+    const pulseDuration = 1 / (params.pulseRate || 5)
+    const numPulses = Math.floor(params.duration / pulseDuration)
+
+    for (let i = 0; i < numPulses; i++) {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      const pulseStart = startTime + i * pulseDuration
+      const pulseLength = pulseDuration * (params.pulseWidth || 0.5)
+
+      osc.frequency.value = params.frequency
+      osc.type = 'square'
+
+      const amplitude = 0.4 * Math.exp(-i * (params.pulseDecay || 0.1))
+      gain.gain.setValueAtTime(0, pulseStart)
+      gain.gain.linearRampToValueAtTime(amplitude, pulseStart + 0.001)
+      gain.gain.setValueAtTime(amplitude, pulseStart + pulseLength - 0.001)
+      gain.gain.linearRampToValueAtTime(0, pulseStart + pulseLength)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(pulseStart)
+      osc.stop(pulseStart + pulseLength)
+    }
+  }
 }
 
 export function useSoundGeneration() {
@@ -417,7 +616,7 @@ export function useSoundGeneration() {
 
   const generator = useMemo(() => new SoundGenerator(), [])
 
-  const generateBatch = useCallback(async (count: number = 50) => {
+  const generateBatch = useCallback(async (count: number = 50, customParams?: any) => {
     setGenerating(true)
     setGenerationProgress(0)
     setGenerationStatus('Initializing sound generation...')
@@ -428,6 +627,9 @@ export function useSoundGeneration() {
     try {
       const sounds: Sound[] = []
       
+      // Use custom params if provided, otherwise use default generation params
+      const params = customParams || generationParams
+      
       for (let i = 0; i < count; i++) {
         setGenerationStatus(`Generating sound ${i + 1} of ${count}...`)
         setGenerationProgress((i + 1) / count * 100)
@@ -435,11 +637,11 @@ export function useSoundGeneration() {
         // Generate sound with slight delay to show progress
         await new Promise(resolve => setTimeout(resolve, 50))
         
-        const type = generationParams.enabledTypes[
-          Math.floor(Math.random() * generationParams.enabledTypes.length)
+        const type = params.enabledTypes[
+          Math.floor(Math.random() * params.enabledTypes.length)
         ] as Sound['type']
         
-        const sound = await generator.generateSound(type, generationParams)
+        const sound = await generator.generateSound(type, params)
         sounds.push(sound)
       }
       

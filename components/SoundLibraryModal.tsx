@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, Search, Play, Pause, Check } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sound, useSoundStore } from '@/store/soundStore'
-import { Howl } from 'howler'
+import SoundGridRenderer from './SoundGridRenderer'
 
 interface SoundLibraryModalProps {
   isOpen: boolean
@@ -17,7 +17,6 @@ export default function SoundLibraryModal({ isOpen, onClose, onSelectSound }: So
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [playingId, setPlayingId] = useState<string | null>(null)
-  const [loadedSounds, setLoadedSounds] = useState<{ [key: string]: Howl }>({})
 
   // Filter sounds based on category and search
   const filteredSounds = sounds.filter(sound => {
@@ -28,54 +27,16 @@ export default function SoundLibraryModal({ isOpen, onClose, onSelectSound }: So
     return matchesCategory && matchesSearch
   })
 
-  // Preload sounds
-  useEffect(() => {
-    if (isOpen) {
-      const loaded: { [key: string]: Howl } = {}
-      filteredSounds.slice(0, 20).forEach(sound => {
-        if (sound.audioBuffer) {
-          // Convert AudioBuffer to data URL for Howler
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-          const buffer = sound.audioBuffer
-          const channels = buffer.numberOfChannels
-          const length = buffer.length
-          const sampleRate = buffer.sampleRate
-          const arrayBuffer = audioContext.createBuffer(channels, length, sampleRate)
-          
-          for (let i = 0; i < channels; i++) {
-            arrayBuffer.copyToChannel(buffer.getChannelData(i), i)
-          }
-          
-          loaded[sound.id] = new Howl({
-            src: [`data:audio/wav;base64,${btoa('dummy')}`], // Placeholder, would need proper encoding
-            onend: () => setPlayingId(null)
-          })
-        }
-      })
-      setLoadedSounds(loaded)
-    }
-
-    return () => {
-      Object.values(loadedSounds).forEach(howl => howl.unload())
-    }
-  }, [isOpen, filteredSounds])
+  // No need for preloading - we'll use Web Audio API directly
 
   const handlePlay = (soundId: string) => {
     if (playingId === soundId) {
-      if (loadedSounds[soundId]) {
-        loadedSounds[soundId].stop()
-      }
+      // Can't stop Web Audio API sounds easily, just clear the playing state
       setPlayingId(null)
     } else {
-      // Stop any currently playing sound
-      if (playingId && loadedSounds[playingId]) {
-        loadedSounds[playingId].stop()
-      }
-      
       // Play new sound
       const sound = sounds.find(s => s.id === soundId)
       if (sound?.audioBuffer) {
-        // For now, use the Web Audio API directly
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
         const source = audioContext.createBufferSource()
         source.buffer = sound.audioBuffer
@@ -165,59 +126,17 @@ export default function SoundLibraryModal({ isOpen, onClose, onSelectSound }: So
 
               {/* Sound Grid */}
               <div className="flex-1 overflow-y-auto p-6">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {filteredSounds.map((sound) => (
-                    <motion.div
-                      key={sound.id}
-                      layout
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="group relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-blue-400 dark:hover:border-blue-500 transition-all cursor-pointer"
-                      onClick={() => handleSelectSound(sound)}
-                    >
-                      {/* Play button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handlePlay(sound.id)
-                        }}
-                        className="absolute top-2 right-2 p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        {playingId === sound.id ? (
-                          <Pause size={16} className="text-blue-600 dark:text-blue-400" />
-                        ) : (
-                          <Play size={16} className="text-gray-600 dark:text-gray-300" />
-                        )}
-                      </button>
-
-                      {/* Sound info */}
-                      <div className="pr-10">
-                        <h3 className="font-medium text-gray-900 dark:text-white mb-1">
-                          {sound.type}
-                        </h3>
-                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                          <span>{sound.duration}ms</span>
-                          <span>•</span>
-                          <span>{sound.frequency}Hz</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {sound.tags.slice(0, 3).map(tag => (
-                            <span
-                              key={tag}
-                              className="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded text-xs"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Selection indicator */}
-                      <div className="absolute inset-0 border-2 border-blue-500 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity" />
-                    </motion.div>
-                  ))}
-                </div>
+                <SoundGridRenderer
+                  sounds={filteredSounds}
+                  columns={{
+                    default: 2,
+                    sm: 2,
+                    lg: 3,
+                    xl: 3
+                  }}
+                  gap={4}
+                  onSoundClick={handleSelectSound}
+                />
 
                 {filteredSounds.length === 0 && (
                   <div className="text-center py-12">

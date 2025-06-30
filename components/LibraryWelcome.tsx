@@ -2,51 +2,36 @@
 
 import { useState } from 'react'
 import { useSoundStore } from '@/store/soundStore'
-import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { useRouter } from 'next/navigation'
-import { Zap, Sparkles, ChevronRight } from 'lucide-react'
+import { Zap, Sparkles, ChevronRight, Sliders } from 'lucide-react'
+import GenerateOptionsModal from './GenerateOptionsModal'
 
 export default function LibraryWelcome() {
   const { sounds } = useSoundStore()
-  const { generateBatch } = useSoundGeneration()
   const router = useRouter()
+  const [showOptionsModal, setShowOptionsModal] = useState(false)
   
   // Always show welcome, but adjust content based on whether there are sounds
   const hasSounds = sounds.length > 0
 
   return (
     <div className="mb-8">
-      <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          {hasSounds ? 'Your Sound Library' : 'Start Building Your Library'}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          {hasSounds 
-            ? `${sounds.length} sounds in your collection`
-            : 'Choose how you\'d like to create your first sounds'
-          }
-        </p>
-      </div>
+      {!hasSounds && (
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Start Building Your Library
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Choose how you'd like to create your first sounds
+          </p>
+        </div>
+      )}
 
       {!hasSounds && (
         <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
           {/* Quick Generate */}
           <button
-            onClick={async () => {
-              // Initialize audio context
-              if (typeof window !== 'undefined') {
-                try {
-                  const AudioContext = window.AudioContext || (window as any).webkitAudioContext
-                  const ctx = new AudioContext()
-                  if (ctx.state === 'suspended') {
-                    await ctx.resume()
-                  }
-                } catch (error) {
-                  console.log('AudioContext initialization will happen during generation')
-                }
-              }
-              generateBatch()
-            }}
+            onClick={() => setShowOptionsModal(true)}
             className="p-6 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400 transition-all bg-white dark:bg-gray-900 group"
           >
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
@@ -70,7 +55,7 @@ export default function LibraryWelcome() {
             className="p-6 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-400 transition-all bg-white dark:bg-gray-900 group"
           >
             <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-              <Sparkles className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              <Sliders className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
               AI Studio
@@ -105,6 +90,11 @@ export default function LibraryWelcome() {
           </button>
         </div>
       )}
+      
+      <GenerateOptionsModal 
+        isOpen={showOptionsModal}
+        onClose={() => setShowOptionsModal(false)}
+      />
     </div>
   )
 }

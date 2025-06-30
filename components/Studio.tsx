@@ -2036,7 +2036,7 @@ export default function Studio() {
         {/* Left - Navigation & Project */}
         <div className="flex items-center gap-4">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/library')}
             className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
           >
             <ArrowLeft size={18} />
@@ -2891,7 +2891,7 @@ export default function Studio() {
                       className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
                     >
                       <Sparkles size={16} />
-                      Start with Vibe
+                      Design your first sound
                     </button>
                     <button 
                       onClick={() => setShowLibraryModal(true)}

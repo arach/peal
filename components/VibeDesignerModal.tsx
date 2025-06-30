@@ -49,37 +49,68 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
 
       if (paramsList.length === 0) return
 
-      const params = paramsList[0]
-      const sound: Sound = {
-        id: `vibe-${Date.now()}`,
-        type: params.type,
-        frequency: params.frequency || 440,
-        duration: Math.round((params.duration || 0.5) * 1000),
-        parameters: {
-          frequency: params.frequency || 440,
-          duration: params.duration || 0.5,
-          waveform: params.waveform || 'sine',
-          attack: params.attack || 0.01,
-          decay: params.decay || 0.1,
-          sustain: params.sustain || 0.5,
-          release: params.release || 0.1,
-          effects: params.effects || {
-            reverb: false,
-            delay: false,
-            filter: false,
-            distortion: false,
-            compression: false
-          }
-        },
-        created: new Date(),
-        favorite: false,
-        tags: ['vibe-generated', ...prompt.split(' ').filter(w => w.length > 3)],
-        audioBuffer: null,
-        waveformData: null
-      }
+      // If multiple sounds, create a sequence
+      if (paramsList.length > 1) {
+        // Calculate total duration including delays
+        let totalDuration = 0
+        for (const params of paramsList) {
+          totalDuration = Math.max(totalDuration, (params.delay || 0) + (params.duration || 0.5))
+        }
 
-      await generator.renderSound(sound)
-      setGeneratedSound(sound)
+        // Create a composite sound that plays all the individual sounds
+        const compositeSound: Sound = {
+          id: `vibe-${Date.now()}`,
+          type: 'sequence',
+          frequency: paramsList[0].frequency || 440,
+          duration: Math.round(totalDuration * 1000),
+          parameters: {
+            sequence: paramsList,
+            duration: totalDuration
+          },
+          created: new Date(),
+          favorite: false,
+          tags: ['vibe-generated', 'sequence', ...prompt.split(' ').filter(w => w.length > 3)],
+          audioBuffer: null,
+          waveformData: null
+        }
+
+        // Render the sequence
+        await generator.renderSequence(compositeSound, paramsList)
+        setGeneratedSound(compositeSound)
+      } else {
+        // Single sound
+        const params = paramsList[0]
+        const sound: Sound = {
+          id: `vibe-${Date.now()}`,
+          type: params.type,
+          frequency: params.frequency || 440,
+          duration: Math.round((params.duration || 0.5) * 1000),
+          parameters: {
+            frequency: params.frequency || 440,
+            duration: params.duration || 0.5,
+            waveform: params.waveform || 'sine',
+            attack: params.attack || 0.01,
+            decay: params.decay || 0.1,
+            sustain: params.sustain || 0.5,
+            release: params.release || 0.1,
+            effects: params.effects || {
+              reverb: false,
+              delay: false,
+              filter: false,
+              distortion: false,
+              compression: false
+            }
+          },
+          created: new Date(),
+          favorite: false,
+          tags: ['vibe-generated', ...prompt.split(' ').filter(w => w.length > 3)],
+          audioBuffer: null,
+          waveformData: null
+        }
+
+        await generator.renderSound(sound)
+        setGeneratedSound(sound)
+      }
     } catch (error) {
       console.error('Error generating sound:', error)
     } finally {
