@@ -11,7 +11,7 @@ import ShortcutsPanel from './ShortcutsPanel'
 import SimpleStatsBar from './SimpleStatsBar'
 import SelectionBar from './SelectionBar'
 import SimpleSidebar from './SimpleSidebar'
-import LibraryHero from './LibraryHero'
+import LibraryWelcome from './LibraryWelcome'
 
 export default function SoundDesigner() {
   const [isHydrated, setIsHydrated] = useState(false)
@@ -129,7 +129,7 @@ export default function SoundDesigner() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-text-primary dark:text-gray-100">
       <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <LibraryHero />
+        <LibraryWelcome />
         
         <SelectionBar />
         <SimpleStatsBar />

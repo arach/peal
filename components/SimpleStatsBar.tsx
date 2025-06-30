@@ -24,7 +24,13 @@ export default function SimpleStatsBar() {
       </div>
       
       <button
-        onClick={generateBatch}
+        onClick={async () => {
+          try {
+            await generateBatch(6) // Generate 6 more sounds
+          } catch (error) {
+            console.error('Error generating sounds:', error)
+          }
+        }}
         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg transition-colors"
       >
         <Sparkles size={14} />
