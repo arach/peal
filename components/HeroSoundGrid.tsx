@@ -46,16 +46,16 @@ const heroSounds = [
     })
   },
   { 
-    id: 'ambient-chime',
-    name: 'Ambient Chime',
-    file: '/sounds/hero-sounds/ambient-chime.wav',
+    id: 'ripple-cascade',
+    name: 'Ripple Cascade',
+    file: '/sounds/signature-sounds/ripple_cascade.wav',
     duration: '1.3s',
-    type: 'chime',
-    tags: ['ambient', 'soft', 'chime'],
-    waveform: Array.from({ length: 40 }, (_, i) => {
-      const attack = i < 5 ? i / 5 : 1
-      const sustain = Math.sin((i / 40) * Math.PI * 1.5)
-      return attack * sustain * 0.8 + 0.15
+    type: 'cascade',
+    tags: ['ripple', 'cascade', 'flow'],
+    waveform: Array.from({ length: 42 }, (_, i) => {
+      const ripple = Math.sin((i / 42) * Math.PI * 4) * Math.exp(-i * 0.05)
+      const cascade = Math.sin(i * 0.3) * 0.3
+      return Math.abs(ripple + cascade) * 0.7 + 0.2
     })
   },
   { 
