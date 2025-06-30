@@ -54,7 +54,7 @@ export default function GenerationHub() {
               className="flex-1 btn-base btn-lg bg-primary-500 text-white hover:bg-primary-400 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-500/30 focus-ring"
             >
               <Zap size={20} />
-              Generate Random
+              Generate Your Own
             </button>
           </div>
 

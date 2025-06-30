@@ -5,7 +5,7 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background dark:bg-gray-950">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <WelcomeModal />
       <ErrorBoundary>
         <LandingHero />

@@ -1,12 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import { Code, Sparkles, Zap, ChevronDown, Volume2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import HeroSoundGrid from './HeroSoundGrid'
 
 export default function LandingHero() {
-  const [showCode, setShowCode] = useState(false)
 
   return (
     <section className="relative bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-20 px-4 overflow-hidden">
@@ -91,29 +89,19 @@ export default function LandingHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-3xl mx-auto"
+          className="relative overflow-hidden"
         >
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
-            Dead simple integration
-          </h3>
-          
-          <button
-            onClick={() => setShowCode(!showCode)}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-2 mx-auto mb-4"
-          >
-            <Code size={16} />
-            {showCode ? 'Hide' : 'Show'} integration code
-          </button>
-
-          {showCode && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mt-4"
-            >
-              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm text-left overflow-x-auto">
-                <code>{`// Using Peal with Howler.js
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl" />
+          <div className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-gray-800 p-8 max-w-3xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Code className="text-blue-600 dark:text-blue-400" size={20} />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Dead simple integration
+              </h3>
+            </div>
+            
+            <pre className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 p-6 rounded-xl text-sm text-left overflow-x-auto font-mono">
+              <code>{`// Using Peal with Howler.js
 import { Howl } from 'howler'
 
 const sound = new Howl({
@@ -122,9 +110,8 @@ const sound = new Howl({
 
 // Play on user action
 button.onclick = () => sound.play()`}</code>
-              </pre>
-            </motion.div>
-          )}
+            </pre>
+          </div>
         </motion.div>
 
         {/* Features */}

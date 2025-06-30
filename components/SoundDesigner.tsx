@@ -119,7 +119,7 @@ export default function SoundDesigner() {
   // Show loading until hydrated to avoid hydration mismatch
   if (!isHydrated) {
     return (
-      <div className="min-h-screen bg-background dark:bg-gray-950 text-text-primary dark:text-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-text-primary dark:text-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-border dark:border-gray-700 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-text-secondary dark:text-gray-400">Loading Peal...</p>
@@ -129,7 +129,7 @@ export default function SoundDesigner() {
   }
 
   return (
-    <div className="min-h-screen bg-background dark:bg-gray-950 text-text-primary dark:text-gray-100">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-text-primary dark:text-gray-100">
       <Header />
       
       <div className="container space-y-section pt-section">

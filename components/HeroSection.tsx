@@ -14,16 +14,10 @@ export default function HeroSection() {
   if (sounds.length > 0) return null
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-background dark:from-gray-900/50 dark:via-gray-950 dark:to-gray-950 border border-border dark:border-gray-800 rounded-2xl shadow-xl">
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 w-60 h-60 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl"></div>
-      
-      {/* Subtle dot pattern */}
-      <div className="absolute inset-0 opacity-30 dark:opacity-20" style={{
-        backgroundImage: 'radial-gradient(circle at 1px 1px, rgb(74, 158, 255) 1px, transparent 0)',
-        backgroundSize: '32px 32px'
-      }}></div>
+    <div className="relative overflow-hidden bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-2xl">
+      {/* Background decoration - matching landing page */}
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 dark:bg-blue-900 rounded-full blur-3xl opacity-20"></div>
+      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 dark:bg-purple-900 rounded-full blur-3xl opacity-20"></div>
       
       <div className="relative text-center py-20 px-8 space-y-8">
         {/* Header */}
