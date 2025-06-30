@@ -23,6 +23,8 @@ peal.notification();
 
 ## Installation
 
+### As a CLI tool
+
 You can use Peal without installing it globally:
 
 ```bash
@@ -35,6 +37,32 @@ Or install globally for frequent use:
 npm install -g @peal-sounds/peal
 ```
 
+### As a library
+
+Install Peal as a dependency to use it programmatically:
+
+```bash
+npm install @peal-sounds/peal
+# or
+yarn add @peal-sounds/peal
+# or
+pnpm add @peal-sounds/peal
+```
+
+Then use it with built-in sounds:
+
+```javascript
+// ES Modules
+import { PealWithSounds } from '@peal-sounds/peal'
+
+// Or via CDN for quick prototyping
+import { PealWithSounds } from 'https://unpkg.com/@peal-sounds/peal@latest/dist/index.mjs'
+
+const peal = new PealWithSounds()
+peal.click() // Play click sound
+peal.success() // Play success sound
+```
+
 ## Available Sounds
 
 - **UI Feedback**: `success`, `error`, `notification`, `click`, `tap`
@@ -45,10 +73,39 @@ npm install -g @peal-sounds/peal
 - **Interactive**: `hover`, `select`, `toggle`
 - **System**: `startup`, `shutdown`, `unlock`
 
-List all available sounds:
+## CLI Commands
 
+### List all sounds
 ```bash
 npx @peal-sounds/peal list
+```
+
+### Play sounds
+```bash
+# Play a specific sound
+npx @peal-sounds/peal play click
+npx @peal-sounds/peal play success
+
+# Play a demo of all sounds
+npx @peal-sounds/peal demo
+
+# Demo with custom delay (ms) between sounds
+npx @peal-sounds/peal demo --delay 2000
+```
+
+### Add sounds to your project
+```bash
+# Interactive selection
+npx @peal-sounds/peal add
+
+# Add specific sounds
+npx @peal-sounds/peal add click success error
+
+# Add to custom directory
+npx @peal-sounds/peal add --dir ./sounds
+
+# Generate TypeScript helper
+npx @peal-sounds/peal add --typescript
 ```
 
 ## Usage Examples

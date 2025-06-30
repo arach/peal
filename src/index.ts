@@ -171,3 +171,47 @@ export class Peal {
 
 // Export for convenience
 export default Peal
+
+// Export built-in sounds
+export { PEAL_SOUNDS, SOUND_CATEGORIES, type PealSoundName } from './sounds'
+
+/**
+ * Pre-configured Peal instance with built-in sounds
+ * For quick prototyping and demos
+ */
+export class PealWithSounds extends Peal {
+  constructor(options: PealOptions & { soundsPath?: string } = {}) {
+    super(options)
+    
+    // Base path for sounds (can be customized)
+    const basePath = options.soundsPath || 'https://unpkg.com/@peal-sounds/peal@latest/cli/sounds/'
+    
+    // Load all built-in sounds
+    this.load('success', `${basePath}success.wav`)
+    this.load('error', `${basePath}error.wav`)
+    this.load('notification', `${basePath}notification.wav`)
+    this.load('click', `${basePath}click.wav`)
+    this.load('tap', `${basePath}tap.wav`)
+    this.load('transition', `${basePath}transition.wav`)
+    this.load('swoosh', `${basePath}swoosh.wav`)
+    this.load('loading', `${basePath}loading.wav`)
+    this.load('complete', `${basePath}complete.wav`)
+    this.load('alert', `${basePath}alert.wav`)
+    this.load('warning', `${basePath}warning.wav`)
+    this.load('message', `${basePath}message.wav`)
+    this.load('mention', `${basePath}mention.wav`)
+    this.load('hover', `${basePath}hover.wav`)
+    this.load('select', `${basePath}select.wav`)
+    this.load('toggle', `${basePath}toggle.wav`)
+    this.load('startup', `${basePath}startup.wav`)
+    this.load('shutdown', `${basePath}shutdown.wav`)
+    this.load('unlock', `${basePath}unlock.wav`)
+  }
+  
+  // Convenience methods for common sounds
+  success() { return this.play('success') }
+  error() { return this.play('error') }
+  notification() { return this.play('notification') }
+  click() { return this.play('click') }
+  tap() { return this.play('tap') }
+}

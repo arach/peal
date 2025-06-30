@@ -329,4 +329,110 @@ program
     });
   });
 
+// Play command
+program
+  .command('play <sound>')
+  .description('Play a sound effect')
+  .option('-v, --volume <level>', 'Volume level (0-1)', '1')
+  .action(async (soundName, options) => {
+    if (!AVAILABLE_SOUNDS[soundName]) {
+      console.error(chalk.red(`Sound "${soundName}" not found.`));
+      console.log(chalk.yellow('\nAvailable sounds:'));
+      console.log(Object.keys(AVAILABLE_SOUNDS).join(', '));
+      process.exit(1);
+    }
+
+    const soundPath = path.join(__dirname, AVAILABLE_SOUNDS[soundName]);
+    
+    // Detect platform and use appropriate command
+    const platform = process.platform;
+    let command;
+    
+    if (platform === 'darwin') {
+      // macOS
+      command = `afplay "${soundPath}"`;
+    } else if (platform === 'win32') {
+      // Windows - use PowerShell
+      command = `powershell -c "(New-Object Media.SoundPlayer '${soundPath}').PlaySync()"`;
+    } else {
+      // Linux/Unix - try multiple commands
+      const players = ['aplay', 'paplay', 'play'];
+      let playerFound = false;
+      
+      for (const player of players) {
+        try {
+          execSync(`which ${player}`, { stdio: 'ignore' });
+          command = `${player} "${soundPath}"`;
+          playerFound = true;
+          break;
+        } catch {
+          // Continue to next player
+        }
+      }
+      
+      if (!playerFound) {
+        console.error(chalk.red('No audio player found. Please install aplay, paplay, or sox.'));
+        process.exit(1);
+      }
+    }
+    
+    try {
+      console.log(chalk.green(`🔊 Playing ${soundName}...`));
+      execSync(command, { stdio: 'inherit' });
+    } catch (error) {
+      console.error(chalk.red(`Failed to play sound: ${error.message}`));
+      process.exit(1);
+    }
+  });
+
+// Play all command - demo all sounds
+program
+  .command('demo')
+  .description('Play a demo of all available sounds')
+  .option('-d, --delay <ms>', 'Delay between sounds in milliseconds', '1000')
+  .action(async (options) => {
+    console.log(chalk.green('🎵 Playing demo of all Peal sounds...\n'));
+    
+    const delay = parseInt(options.delay);
+    const allSounds = Object.entries(AVAILABLE_SOUNDS);
+    
+    for (const [soundName, soundPath] of allSounds) {
+      console.log(chalk.blue(`▶ ${soundName}`));
+      
+      const fullPath = path.join(__dirname, soundPath);
+      const platform = process.platform;
+      let command;
+      
+      if (platform === 'darwin') {
+        command = `afplay "${fullPath}"`;
+      } else if (platform === 'win32') {
+        command = `powershell -c "(New-Object Media.SoundPlayer '${fullPath}').PlaySync()"`;
+      } else {
+        // Use the first available player on Linux
+        const players = ['aplay', 'paplay', 'play'];
+        for (const player of players) {
+          try {
+            execSync(`which ${player}`, { stdio: 'ignore' });
+            command = `${player} "${fullPath}"`;
+            break;
+          } catch {
+            // Continue
+          }
+        }
+      }
+      
+      if (command) {
+        try {
+          execSync(command, { stdio: 'ignore' });
+          // Wait before playing next sound
+          await new Promise(resolve => setTimeout(resolve, delay));
+        } catch {
+          console.log(chalk.yellow(`  ⚠ Could not play ${soundName}`));
+        }
+      }
+    }
+    
+    console.log(chalk.green('\n✨ Demo complete!'));
+  });
+
 program.parse();

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peal Web Usage Example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .category {
+            margin-top: 30px;
+        }
+        .category h3 {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔊 Peal Sound Library - Web Demo</h1>
+        
+        <p>This demo shows how to use Peal in a web browser with built-in sounds.</p>
+        
+        <h2>Quick Start</h2>
+        <pre><code>// Using CDN
+import { PealWithSounds } from 'https://unpkg.com/@peal-sounds/peal@latest/dist/index.mjs'
+
+const peal = new PealWithSounds()
+peal.click() // Play click sound</code></pre>
+
+        <h2>Interactive Demo</h2>
+        <p>Click any button to play the sound:</p>
+        
+        <div id="sounds-container"></div>
+        
+        <h2>Volume Control</h2>
+        <label>
+            Volume: 
+            <input type="range" id="volume" min="0" max="100" value="50">
+            <span id="volume-value">50%</span>
+        </label>
+    </div>
+
+    <script type="module">
+        // For this demo, we'll use the local build
+        // In production, use: https://unpkg.com/@peal-sounds/peal@latest/dist/index.mjs
+        import { PealWithSounds, SOUND_CATEGORIES } from '../dist/index.mjs'
+        
+        // Initialize Peal with built-in sounds
+        // Using local sounds for demo
+        const peal = new PealWithSounds({
+            soundsPath: '../cli/sounds/',
+            volume: 0.5
+        })
+        
+        // Create buttons for each sound category
+        const container = document.getElementById('sounds-container')
+        
+        Object.entries(SOUND_CATEGORIES).forEach(([category, sounds]) => {
+            const categoryDiv = document.createElement('div')
+            categoryDiv.className = 'category'
+            
+            const title = document.createElement('h3')
+            title.textContent = category
+            categoryDiv.appendChild(title)
+            
+            const grid = document.createElement('div')
+            grid.className = 'sound-grid'
+            
+            sounds.forEach(sound => {
+                const button = document.createElement('button')
+                button.textContent = sound
+                button.onclick = () => {
+                    peal.play(sound)
+                }
+                grid.appendChild(button)
+            })
+            
+            categoryDiv.appendChild(grid)
+            container.appendChild(categoryDiv)
+        })
+        
+        // Volume control
+        const volumeSlider = document.getElementById('volume')
+        const volumeValue = document.getElementById('volume-value')
+        
+        volumeSlider.addEventListener('input', (e) => {
+            const volume = e.target.value / 100
+            peal.volume(volume)
+            volumeValue.textContent = `${e.target.value}%`
+        })
+    </script>
+</body>
+</html>
