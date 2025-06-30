@@ -1,0 +1,45 @@
+{
+  "name": "peal-cli",
+  "version": "0.1.0",
+  "description": "CLI for adding Peal sound effects to your project",
+  "bin": {
+    "peal": "./index.js"
+  },
+  "type": "module",
+  "files": [
+    "index.js",
+    "sounds/",
+    "templates/",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "node index.js",
+    "generate-sounds": "node generate-cli-sounds.cjs",
+    "prepublishOnly": "npm run generate-sounds"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/peal.git",
+    "directory": "cli"
+  },
+  "keywords": [
+    "sound",
+    "audio",
+    "effects",
+    "cli",
+    "ui-sounds",
+    "howler",
+    "web-audio"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "inquirer": "^9.2.15",
+    "ora": "^8.0.1"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

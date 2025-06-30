@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peal Sounds - Vanilla JS Example</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #f5f5f5;
+    }
+    
+    .sound-section {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .sound-section h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    
+    button {
+      padding: 0.5rem 1rem;
+      margin: 0.25rem;
+      border: none;
+      border-radius: 4px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    button:hover {
+      background: #0056b3;
+      transform: translateY(-1px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .controls {
+      background: #e9ecef;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    input[type="range"] {
+      width: 200px;
+    }
+    
+    .mute-btn {
+      background: #6c757d;
+    }
+    
+    .mute-btn.muted {
+      background: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔊 Peal Sound Effects Demo</h1>
+  <p>Click the buttons below to play different sound effects</p>
+  
+  <div class="controls">
+    <div class="volume-control">
+      <label for="volume">Volume:</label>
+      <input type="range" id="volume" min="0" max="1" step="0.1" value="0.7">
+      <span id="volume-display">70%</span>
+    </div>
+    <button id="mute-btn" class="mute-btn">🔊 Mute</button>
+  </div>
+  
+  <div class="sound-section">
+    <h3>UI Feedback</h3>
+    <button onclick="peal.success()">✅ Success</button>
+    <button onclick="peal.error()">❌ Error</button>
+    <button onclick="peal.notification()">🔔 Notification</button>
+    <button onclick="peal.click()">👆 Click</button>
+    <button onclick="peal.tap()">👇 Tap</button>
+  </div>
+  
+  <div class="sound-section">
+    <h3>Transitions & Effects</h3>
+    <button onclick="peal.transition()">➡️ Transition</button>
+    <button onclick="peal.swoosh()">💨 Swoosh</button>
+  </div>
+  
+  <div class="sound-section">
+    <h3>Loading & Progress</h3>
+    <button id="loading-btn" onclick="toggleLoading()">⏳ Start Loading</button>
+    <button onclick="peal.complete()">✨ Complete</button>
+  </div>
+  
+  <div class="sound-section">
+    <h3>Alerts & Notifications</h3>
+    <button onclick="peal.alert()">🚨 Alert</button>
+    <button onclick="peal.warning()">⚠️ Warning</button>
+    <button onclick="peal.message()">💬 Message</button>
+    <button onclick="peal.mention()">@ Mention</button>
+  </div>
+  
+  <div class="sound-section">
+    <h3>Interactive Elements</h3>
+    <button 
+      onmouseenter="peal.hover()" 
+      onclick="peal.select()"
+    >🎯 Hover & Select</button>
+    <button onclick="peal.toggle()">🎚️ Toggle</button>
+  </div>
+  
+  <div class="sound-section">
+    <h3>System Sounds</h3>
+    <button onclick="peal.startup()">🚀 Startup</button>
+    <button onclick="peal.shutdown()">⏻ Shutdown</button>
+    <button onclick="peal.unlock()">🔓 Unlock</button>
+  </div>
+  
+  <!-- 
+    Important: Make sure to include howler.js and your generated peal.js file
+    You can get howler.js from: https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js
+  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+  <script type="module">
+    // Import the generated peal helper
+    import { peal } from './peal.js';
+    
+    // Make peal available globally for onclick handlers
+    window.peal = peal;
+    
+    // Volume control
+    const volumeSlider = document.getElementById('volume');
+    const volumeDisplay = document.getElementById('volume-display');
+    
+    volumeSlider.addEventListener('input', (e) => {
+      const volume = parseFloat(e.target.value);
+      peal.setVolume(volume);
+      volumeDisplay.textContent = `${Math.round(volume * 100)}%`;
+    });
+    
+    // Mute control
+    const muteBtn = document.getElementById('mute-btn');
+    let isMuted = false;
+    
+    muteBtn.addEventListener('click', () => {
+      isMuted = !isMuted;
+      peal.mute(isMuted);
+      muteBtn.textContent = isMuted ? '🔇 Unmute' : '🔊 Mute';
+      muteBtn.classList.toggle('muted', isMuted);
+    });
+    
+    // Loading toggle
+    let isLoading = false;
+    const loadingBtn = document.getElementById('loading-btn');
+    
+    window.toggleLoading = () => {
+      if (isLoading) {
+        peal.stop('loading');
+        loadingBtn.textContent = '⏳ Start Loading';
+        isLoading = false;
+      } else {
+        peal.play('loading', { loop: true, volume: 0.3 });
+        loadingBtn.textContent = '⏹️ Stop Loading';
+        isLoading = true;
+      }
+    };
+    
+    // Demo: Play startup sound on page load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        peal.play('startup', { volume: 0.3 });
+      }, 500);
+    });
+  </script>
+</body>
+</html>
