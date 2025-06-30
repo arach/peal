@@ -4,11 +4,14 @@ import { useSoundStore } from '@/store/soundStore'
 
 export default function SimpleSidebar() {
   const {
+    sounds,
     searchQuery,
     setSearchQuery,
     filterType,
     setFilterType,
   } = useSoundStore()
+
+  if (sounds.length === 0) return null
 
   return (
     <aside className="w-64 space-y-6">
