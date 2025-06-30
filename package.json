@@ -1,8 +1,8 @@
 {
   "name": "@peal-sounds/peal",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "bin": {
-    "peal": "./cli/cli.js"
+    "peal": "./cli/cli.cjs"
   },
   "description": "A lightweight sound effect library for web and desktop applications",
   "type": "module",

@@ -1,5 +1,30 @@
+"use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
 // src/index.ts
-import { Howl, Howler } from "howler";
+var index_exports = {};
+__export(index_exports, {
+  Peal: () => Peal,
+  default: () => index_default
+});
+module.exports = __toCommonJS(index_exports);
+var import_howler = require("howler");
 var Peal = class {
   constructor(options = {}) {
     this.sounds = /* @__PURE__ */ new Map();
@@ -10,10 +35,10 @@ var Peal = class {
       ...options
     };
     if (this.options.volume !== void 0) {
-      Howler.volume(this.options.volume);
+      import_howler.Howler.volume(this.options.volume);
     }
     if (this.options.mute) {
-      Howler.mute(true);
+      import_howler.Howler.mute(true);
     }
   }
   /**
@@ -25,7 +50,7 @@ var Peal = class {
       this.unload(id);
     }
     const sources = Array.isArray(src) ? src : [src];
-    const howl = new Howl({
+    const howl = new import_howler.Howl({
       src: sources,
       preload: this.options.preload,
       ...options,
@@ -90,18 +115,18 @@ var Peal = class {
    */
   volume(level) {
     if (level !== void 0) {
-      Howler.volume(level);
+      import_howler.Howler.volume(level);
     }
-    return Howler.volume();
+    return import_howler.Howler.volume();
   }
   /**
    * Mute/unmute all sounds
    */
   mute(muted) {
     if (muted !== void 0) {
-      Howler.mute(muted);
+      import_howler.Howler.mute(muted);
     }
-    return Howler._muted || false;
+    return import_howler.Howler._muted || false;
   }
   /**
    * Unload a sound and free up memory
@@ -135,7 +160,7 @@ var Peal = class {
   }
 };
 var index_default = Peal;
-export {
-  Peal,
-  index_default as default
-};
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  Peal
+});
