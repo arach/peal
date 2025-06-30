@@ -13,7 +13,7 @@ interface SoundLibraryModalProps {
 }
 
 export default function SoundLibraryModal({ isOpen, onClose, onSelectSound }: SoundLibraryModalProps) {
-  const { sounds, categories } = useSoundStore()
+  const { sounds } = useSoundStore()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [playingId, setPlayingId] = useState<string | null>(null)

@@ -37,10 +37,10 @@ export default function SoundPlayer({
         setIsLoading(false)
         setError(null)
       },
-      onloaderror: (id, error) => {
+      onloaderror: (id: number, error: unknown) => {
         setIsLoading(false)
         setError('Failed to load sound')
-        onError?.(new Error(error))
+        onError?.(new Error(String(error)))
       },
       onplay: () => {
         setIsPlaying(true)

@@ -96,7 +96,7 @@ interface SoundCardProps {
 
 function HeroSoundCard({ sound, isPlaying, onPlay, onStop }: SoundCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | null>(null)
   const progressRef = useRef(0)
 
   useEffect(() => {

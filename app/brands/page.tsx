@@ -239,7 +239,7 @@ export default function BrandsPage() {
                         : 'bg-gray-800 text-gray-400 hover:text-gray-100'
                     }`}
                   >
-                    <span>{brandIcons[preset.brand]}</span>
+                    <span>{brandIcons[preset.brand as keyof typeof brandIcons]}</span>
                     {preset.name}
                   </button>
                 ))}
@@ -322,7 +322,7 @@ export default function BrandsPage() {
             {groupedSounds.map((preset) => (
               <div key={preset.id}>
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-2xl">{brandIcons[preset.brand]}</span>
+                  <span className="text-2xl">{brandIcons[preset.brand as keyof typeof brandIcons]}</span>
                   <h2 className="text-xl font-semibold">{preset.name}</h2>
                   <span className="text-sm text-gray-400">— {preset.philosophy}</span>
                 </div>

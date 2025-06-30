@@ -1142,7 +1142,7 @@ export default function Studio() {
     
     if (!soundToPlay?.audioBuffer) {
       console.log('No audio buffer, attempting to generate...')
-      if (soundToPlay === currentSound) {
+      if (soundToPlay === currentSound && soundToPlay) {
         await (generator as any).renderSound(soundToPlay)
         if (!soundToPlay.audioBuffer) {
           console.error('Failed to generate audio buffer')
@@ -1345,7 +1345,7 @@ export default function Studio() {
       timestamp: new Date().toISOString(),
       sound: {
         id: currentSound.id,
-        name: currentSound.name,
+        name: `${currentSound.type}_${currentSound.id}`,
         parameters: currentSound.parameters
       },
       editedParams,
@@ -1377,7 +1377,7 @@ export default function Studio() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${currentSound.name || 'sound'}-project.json`
+    a.download = `${currentSound.type}-${currentSound.id}-project.json`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -1946,7 +1946,7 @@ export default function Studio() {
     // Create a new track with the vibe sound
     const newTrack: Track = {
       id: `track-vibe-${Date.now()}`,
-      name: sound.name || 'Vibe Insert',
+      name: 'Vibe Insert',
       audioBuffer: sound.audioBuffer,
       waveformData: sound.waveformData || generateWaveformData(sound.audioBuffer),
       muted: false,

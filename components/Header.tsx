@@ -16,14 +16,18 @@ export default function Header() {
     <header className="bg-surface/90 dark:bg-gray-900/90 border-b border-border dark:border-gray-800 backdrop-blur-md section-padding-sm">
       <div className="container flex justify-between items-center">
         <div className="flex items-center gap-6">
-          <DynamicPealLogo 
-            width={120} 
-            height={40}
-            preset="layered"
-            animated={false}
-            className="text-text-primary dark:text-gray-100 cursor-pointer"
+          <button
             onClick={() => router.push('/')}
-          />
+            className="focus:outline-none"
+          >
+            <DynamicPealLogo 
+              width={120} 
+              height={40}
+              preset="layered"
+              animated={false}
+              className="text-text-primary dark:text-gray-100"
+            />
+          </button>
           
           <nav className="hidden md:flex items-center gap-4">
             <button

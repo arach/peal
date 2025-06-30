@@ -90,7 +90,7 @@ export default function PremiumSoundsPage() {
       crisp: 'bg-blue-900 text-blue-300',
     }
     return (
-      <span className={`px-2 py-0.5 rounded-full text-xs ${colors[style] || colors.minimal}`}>
+      <span className={`px-2 py-0.5 rounded-full text-xs ${colors[style as keyof typeof colors] || colors.minimal}`}>
         {style} • {intensity}
       </span>
     )
