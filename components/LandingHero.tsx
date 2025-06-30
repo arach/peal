@@ -6,10 +6,12 @@ import { Play, Pause, Code, Sparkles, Zap } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const demoSounds = [
-  { name: 'Success', file: '/sounds/custom/scout-success.wav', icon: '✨' },
-  { name: 'Start', file: '/sounds/custom/scout-start.wav', icon: '🚀' },
-  { name: 'Stop', file: '/sounds/custom/scout-stop.wav', icon: '🛑' },
-  { name: 'Error', file: '/sounds/custom/scout-error.wav', icon: '⚡' }
+  { name: 'Quantum', file: '/sounds/signature-sounds/quantum_cascade.wav', icon: '⚛️' },
+  { name: 'Neural', file: '/sounds/dots-patterns/neural_pulse.wav', icon: '🧠' },
+  { name: 'Achieve', file: '/sounds/refined-sounds/achievement_unlock.wav', icon: '🏆' },
+  { name: 'Haptic', file: '/sounds/signature-sounds/deep_haptic_pulse.wav', icon: '📳' },
+  { name: 'Cascade', file: '/sounds/signature-sounds/dendrite_cascade.wav', icon: '🌊' },
+  { name: 'Crystal', file: '/sounds/signature-sounds/crystal_shatter.wav', icon: '💎' }
 ]
 
 export default function LandingHero() {
@@ -93,7 +95,7 @@ export default function LandingHero() {
               Try it now
             </h3>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
               {demoSounds.map((sound) => (
                 <button
                   key={sound.name}
