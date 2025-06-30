@@ -1,12 +1,14 @@
 'use client'
 
+import { useState } from 'react'
 import { useSoundStore } from '@/store/soundStore'
 import { useRouter } from 'next/navigation'
-import { Zap, Trash2, X, Library, Sparkles, Crown, Palette, Cpu, Brain } from 'lucide-react'
+import { Zap, Trash2, X, Library, Sparkles, Crown, Palette, Cpu, Brain, Menu } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import DynamicPealLogo from './DynamicPealLogo'
 
 export default function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { selectedSounds, removeSelectedSounds, clearSelection } = useSoundStore()
   const router = useRouter()
 
@@ -54,6 +56,14 @@ export default function Header() {
         </div>
         
         <div className="flex items-center gap-3">
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100"
+          >
+            <Menu size={24} />
+          </button>
+          
           {selectedSounds.size > 0 && (
             <>
               <span className="mr-2 text-text-secondary dark:text-gray-400 text-sm">
@@ -81,6 +91,52 @@ export default function Header() {
           <ThemeToggle />
         </div>
       </div>
+      
+      {/* Mobile menu dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-border dark:border-gray-800 bg-surface dark:bg-gray-900">
+          <nav className="container py-4 space-y-2">
+            <button
+              onClick={() => {
+                router.push('/')
+                setMobileMenuOpen(false)
+              }}
+              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              Home
+            </button>
+            <button
+              onClick={() => {
+                router.push('/studio')
+                setMobileMenuOpen(false)
+              }}
+              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Sparkles size={16} />
+              Studio
+            </button>
+            <button
+              onClick={() => {
+                router.push('/presets')
+                setMobileMenuOpen(false)
+              }}
+              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Library size={16} />
+              Presets
+            </button>
+            <button
+              onClick={() => {
+                router.push('/about')
+                setMobileMenuOpen(false)
+              }}
+              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              About
+            </button>
+          </nav>
+        </div>
+      )}
     </header>
   )
 }
