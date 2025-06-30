@@ -1,17 +1,21 @@
 {
-  "name": "peal",
+  "name": "@arach/peal",
   "version": "0.1.0",
+  "bin": {
+    "peal": "./cli/index.js"
+  },
   "description": "A lightweight sound effect library for web and desktop applications",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "assets"
+    "assets",
+    "cli"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "build:lib": "tsup src/index.ts --format cjs,esm --dts",
+    "build:lib": "tsup src/index.ts --format cjs,esm --dts --tsconfig tsconfig.lib.json",
     "build:web": "next build",
     "dev": "next dev",
     "dev:lib": "tsup src/index.ts --format cjs,esm --dts --watch",
@@ -19,7 +23,9 @@
     "test": "vitest",
     "lint": "next lint",
     "lint:lib": "eslint src --ext .ts",
-    "prepublishOnly": "pnpm build:lib"
+    "prepublishOnly": "pnpm build:lib",
+    "cli": "node cli/index.js",
+    "cli:generate-sounds": "node cli/generate-cli-sounds.cjs"
   },
   "keywords": [
     "sound",
@@ -28,7 +34,15 @@
     "ui",
     "web-audio"
   ],
-  "author": "",
+  "author": "arach",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arach/peal.git"
+  },
+  "homepage": "https://github.com/arach/peal#readme",
+  "bugs": {
+    "url": "https://github.com/arach/peal/issues"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/howler": "^2.2.12",
@@ -49,11 +63,15 @@
   },
   "dependencies": {
     "@types/jszip": "^3.4.1",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
     "framer-motion": "^12.19.2",
     "howler": "^2.2.4",
+    "inquirer": "^9.2.15",
     "jszip": "^3.10.1",
     "lucide-react": "^0.523.0",
     "next": "15.3.4",
+    "ora": "^8.0.1",
     "react": "19.0.0-rc.1",
     "react-dom": "19.0.0-rc.1",
     "zustand": "^4.5.4"

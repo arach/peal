@@ -131,7 +131,7 @@ export class Peal {
     if (muted !== undefined) {
       Howler.mute(muted)
     }
-    return Howler._muted
+    return (Howler as any)._muted || false
   }
   
   /**

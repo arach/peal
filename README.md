@@ -48,7 +48,30 @@ Peal is a professional web application for creating, exploring, and managing not
 - **Sound Editing**: Modify parameters and regenerate sounds
 - **WAV Export**: Download individual or multiple sounds as WAV files
 
-## 🚀 Getting Started
+## 🎯 Quick Start - CLI
+
+Add Peal sounds to your project in seconds:
+
+```bash
+npx peal add success error notification
+```
+
+This will:
+- Copy high-quality UI sounds to your project
+- Generate a helper file for easy playback
+- Prompt to install dependencies if needed
+
+```javascript
+import { peal } from './peal';
+
+// Play sounds
+peal.play('success');
+peal.error({ volume: 0.5 });
+```
+
+See [CLI documentation](./cli/README.md) for more options.
+
+## 🚀 Getting Started - Web App
 
 ### Prerequisites
 

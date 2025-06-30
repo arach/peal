@@ -1,0 +1,39 @@
+# Source files
+src/
+app/
+components/
+hooks/
+lib/
+store/
+styles/
+
+# Development files
+.next/
+.turbo/
+node_modules/
+coverage/
+.vscode/
+.idea/
+
+# Config files (keep only necessary ones)
+next.config.mjs
+next-env.d.ts
+tailwind.config.ts
+postcss.config.mjs
+vitest.config.ts
+.eslintrc.json
+.gitignore
+
+# Public files (not needed for CLI)
+public/
+
+# Test files
+test-cli/
+*.test.ts
+*.spec.ts
+
+# Other
+.env*
+*.log
+.DS_Store
+CLAUDE.md
