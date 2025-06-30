@@ -27,9 +27,9 @@ const heroSounds = [
     tags: ['neural', 'pulse', 'tech'],
     waveform: Array.from({ length: 30 }, (_, i) => {
       if (i < 5) return 0.1
-      if (i < 10) return 0.8 + Math.random() * 0.2
-      if (i < 15) return 0.6 + Math.random() * 0.2
-      if (i < 20) return 0.4 + Math.random() * 0.1
+      if (i < 10) return 0.8 + Math.sin(i * 1.2) * 0.2
+      if (i < 15) return 0.6 + Math.sin(i * 0.8) * 0.2
+      if (i < 20) return 0.4 + Math.sin(i * 0.5) * 0.1
       return 0.1
     })
   },
@@ -79,9 +79,9 @@ const heroSounds = [
     type: 'impact',
     tags: ['impact', 'shatter', 'crystal'],
     waveform: Array.from({ length: 45 }, (_, i) => {
-      if (i < 5) return Math.random() * 0.3 + 0.7
+      if (i < 5) return Math.sin(i * 2.5) * 0.15 + 0.85
       const decay = Math.exp(-i * 0.1)
-      const shimmer = Math.random() * 0.3
+      const shimmer = Math.sin(i * 3) * 0.15 + 0.15
       return decay * (0.5 + shimmer) + 0.05
     })
   }
