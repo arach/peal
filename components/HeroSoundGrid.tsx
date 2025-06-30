@@ -7,6 +7,58 @@ import { motion } from 'framer-motion'
 
 const heroSounds = [
   { 
+    id: 'resonant-pulse',
+    name: 'Resonant Pulse',
+    file: '/sounds/hero-sounds/resonant-pulse.wav',
+    duration: '1.4s',
+    type: 'pulse',
+    tags: ['resonant', 'deep', 'pulse'],
+    waveform: Array.from({ length: 45 }, (_, i) => {
+      const resonance = Math.sin((i / 45) * Math.PI * 2) * Math.sin((i / 45) * Math.PI * 8)
+      return Math.abs(resonance) * 0.8 + 0.2
+    })
+  },
+  { 
+    id: 'ethereal-chime',
+    name: 'Ethereal Chime',
+    file: '/sounds/hero-sounds/ethereal-chime.wav',
+    duration: '1.3s',
+    type: 'chime',
+    tags: ['ethereal', 'ambient', 'chime'],
+    waveform: Array.from({ length: 40 }, (_, i) => {
+      const envelope = Math.sin((i / 40) * Math.PI) 
+      const harmonic = Math.sin(i * 0.5) * 0.3
+      return envelope * (0.7 + harmonic) + 0.1
+    })
+  },
+  { 
+    id: 'crystal-pulse',
+    name: 'Crystal Pulse',
+    file: '/sounds/hero-sounds/crystal-pulse.wav',
+    duration: '1.3s',
+    type: 'pulse',
+    tags: ['crystal', 'bright', 'pulse'],
+    waveform: Array.from({ length: 38 }, (_, i) => {
+      if (i < 3) return 0.9
+      const decay = Math.exp(-i * 0.08)
+      const oscillation = Math.sin(i * 0.7) * 0.2
+      return decay * (0.6 + oscillation) + 0.1
+    })
+  },
+  { 
+    id: 'ambient-chime',
+    name: 'Ambient Chime',
+    file: '/sounds/hero-sounds/ambient-chime.wav',
+    duration: '1.3s',
+    type: 'chime',
+    tags: ['ambient', 'soft', 'chime'],
+    waveform: Array.from({ length: 40 }, (_, i) => {
+      const attack = i < 5 ? i / 5 : 1
+      const sustain = Math.sin((i / 40) * Math.PI * 1.5)
+      return attack * sustain * 0.8 + 0.15
+    })
+  },
+  { 
     id: 'quantum-cascade',
     name: 'Quantum Cascade',
     file: '/sounds/signature-sounds/quantum_cascade.wav',
@@ -31,58 +83,6 @@ const heroSounds = [
       if (i < 15) return 0.6 + Math.sin(i * 0.8) * 0.2
       if (i < 20) return 0.4 + Math.sin(i * 0.5) * 0.1
       return 0.1
-    })
-  },
-  { 
-    id: 'achievement',
-    name: 'Achievement Unlock',
-    file: '/sounds/refined-sounds/achievement_unlock.wav',
-    duration: '400ms',
-    type: 'success',
-    tags: ['success', 'achievement', 'positive'],
-    waveform: Array.from({ length: 25 }, (_, i) => {
-      const attack = i < 3 ? i / 3 : 1
-      const decay = i > 20 ? (25 - i) / 5 : 1
-      return attack * decay * (0.7 + Math.sin(i * 0.8) * 0.3)
-    })
-  },
-  { 
-    id: 'haptic-pulse',
-    name: 'Deep Haptic',
-    file: '/sounds/signature-sounds/deep_haptic_pulse.wav',
-    duration: '1.4s',
-    type: 'haptic',
-    tags: ['haptic', 'deep', 'tactile'],
-    waveform: Array.from({ length: 50 }, (_, i) => {
-      const wave = Math.sin((i / 50) * Math.PI * 2) * 0.5 + 0.5
-      const pulse = i % 10 < 5 ? 1 : 0.3
-      return wave * pulse * 0.9 + 0.1
-    })
-  },
-  { 
-    id: 'dendrite',
-    name: 'Dendrite Cascade',
-    file: '/sounds/signature-sounds/dendrite_cascade.wav',
-    duration: '933ms',
-    type: 'cascade',
-    tags: ['organic', 'cascade', 'neural'],
-    waveform: Array.from({ length: 35 }, (_, i) => {
-      const branches = Math.sin(i * 0.3) * Math.cos(i * 0.7)
-      return Math.abs(branches) * 0.8 + 0.2
-    })
-  },
-  { 
-    id: 'crystal',
-    name: 'Crystal Shatter',
-    file: '/sounds/signature-sounds/crystal_shatter.wav',
-    duration: '1.1s',
-    type: 'impact',
-    tags: ['impact', 'shatter', 'crystal'],
-    waveform: Array.from({ length: 45 }, (_, i) => {
-      if (i < 5) return Math.sin(i * 2.5) * 0.15 + 0.85
-      const decay = Math.exp(-i * 0.1)
-      const shimmer = Math.sin(i * 3) * 0.15 + 0.15
-      return decay * (0.5 + shimmer) + 0.05
     })
   }
 ]
