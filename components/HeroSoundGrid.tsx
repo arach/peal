@@ -5,12 +5,13 @@ import { Howl } from 'howler'
 import { Play, Pause, Code2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import SoundCodeModal from './SoundCodeModal'
+import { getPublicUrl } from '@/utils/url'
 
 const heroSounds = [
   { 
     id: 'resonant-pulse',
     name: 'Resonant Pulse',
-    file: '/sounds/hero-sounds/resonant-pulse.wav',
+    file: getPublicUrl('/sounds/hero-sounds/resonant-pulse.wav'),
     duration: '1.4s',
     type: 'notification',
     tags: ['resonant', 'deep', 'pulse'],
@@ -22,7 +23,7 @@ const heroSounds = [
   { 
     id: 'ethereal-chime',
     name: 'Ethereal Chime',
-    file: '/sounds/hero-sounds/ethereal-chime.wav',
+    file: getPublicUrl('/sounds/hero-sounds/ethereal-chime.wav'),
     duration: '1.3s',
     type: 'success',
     tags: ['ethereal', 'ambient', 'chime'],
@@ -35,7 +36,7 @@ const heroSounds = [
   { 
     id: 'crystal-pulse',
     name: 'Crystal Pulse',
-    file: '/sounds/hero-sounds/crystal-pulse.wav',
+    file: getPublicUrl('/sounds/hero-sounds/crystal-pulse.wav'),
     duration: '1.3s',
     type: 'click',
     tags: ['crystal', 'bright', 'pulse'],
@@ -49,7 +50,7 @@ const heroSounds = [
   { 
     id: 'ripple-cascade',
     name: 'Ripple Cascade',
-    file: '/sounds/signature-sounds/ripple_cascade.wav',
+    file: getPublicUrl('/sounds/signature-sounds/ripple_cascade.wav'),
     duration: '1.3s',
     type: 'notification',
     tags: ['ripple', 'cascade', 'flow'],
@@ -62,7 +63,7 @@ const heroSounds = [
   { 
     id: 'quantum-cascade',
     name: 'Quantum Cascade',
-    file: '/sounds/signature-sounds/quantum_cascade.wav',
+    file: getPublicUrl('/sounds/signature-sounds/quantum_cascade.wav'),
     duration: '1.1s',
     type: 'success',
     tags: ['futuristic', 'cascade', 'tech'],
@@ -74,7 +75,7 @@ const heroSounds = [
   { 
     id: 'neural-pulse',
     name: 'Neural Pulse',
-    file: '/sounds/dots-patterns/neural_pulse.wav',
+    file: getPublicUrl('/sounds/dots-patterns/neural_pulse.wav'),
     duration: '428ms',
     type: 'click',
     tags: ['neural', 'pulse', 'tech'],

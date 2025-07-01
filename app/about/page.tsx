@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Github, Mail, ExternalLink } from 'lucide-react'
+import { isStaticBuild } from '@/utils/build'
 
 export default function AboutPage() {
   return (
@@ -23,12 +24,14 @@ export default function AboutPage() {
             <li>• <strong>No dependencies:</strong> Just add the sounds you need</li>
           </ul>
 
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mt-12 mb-4">
-            How to Use
-          </h2>
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 mb-8">
-            <pre className="text-sm overflow-x-auto">
-              <code className="language-javascript">{`// Install Howler.js
+          {!isStaticBuild && (
+            <>
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mt-12 mb-4">
+                How to Use
+              </h2>
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 mb-8">
+                <pre className="text-sm overflow-x-auto">
+                  <code className="language-javascript">{`// Install Howler.js
 npm install howler
 
 // Use Peal sounds
@@ -39,8 +42,10 @@ const sound = new Howl({
 })
 
 sound.play()`}</code>
-            </pre>
-          </div>
+                </pre>
+              </div>
+            </>
+          )}
 
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mt-12 mb-4">
             Sound Categories
@@ -85,27 +90,31 @@ sound.play()`}</code>
             </p>
           </div>
 
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mt-12 mb-4">
-            Contact
-          </h2>
-          <div className="flex gap-4">
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
-            >
-              <Github size={20} />
-              GitHub
-            </a>
-            <a
-              href="mailto:hello@peal.app"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Mail size={20} />
-              Email
-            </a>
-          </div>
+          {!isStaticBuild && (
+            <>
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mt-12 mb-4">
+                Contact
+              </h2>
+              <div className="flex gap-4">
+                <a
+                  href="https://github.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
+                >
+                  <Github size={20} />
+                  GitHub
+                </a>
+                <a
+                  href="mailto:hello@peal.app"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Mail size={20} />
+                  Email
+                </a>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

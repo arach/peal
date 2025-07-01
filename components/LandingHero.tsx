@@ -3,6 +3,7 @@
 import { Code, Sparkles, Zap, ChevronDown, Volume2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import HeroSoundGrid from './HeroSoundGrid'
+import { isStaticBuild } from '@/utils/build'
 
 export default function LandingHero() {
 
@@ -44,20 +45,41 @@ export default function LandingHero() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
           >
-            <a
-              href="/library"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-lg transition-colors touch-manipulation"
-            >
-              <Volume2 size={20} />
-              Explore Library
-            </a>
-            <a
-              href="/studio"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
-            >
-              <Sparkles size={20} />
-              Open Studio
-            </a>
+            {isStaticBuild ? (
+              <>
+                <a
+                  href="/docs"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-lg transition-colors touch-manipulation"
+                >
+                  <Code size={20} />
+                  Read the Docs
+                </a>
+                <a
+                  href="/about"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
+                >
+                  <Sparkles size={20} />
+                  Learn More
+                </a>
+              </>
+            ) : (
+              <>
+                <a
+                  href="/library"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-lg transition-colors touch-manipulation"
+                >
+                  <Volume2 size={20} />
+                  Explore Library
+                </a>
+                <a
+                  href="/studio"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
+                >
+                  <Sparkles size={20} />
+                  Open Studio
+                </a>
+              </>
+            )}
           </motion.div>
 
           {/* Scroll indicator */}

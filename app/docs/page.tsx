@@ -3,6 +3,7 @@
 import Header from '@/components/Header'
 import Link from 'next/link'
 import { useState } from 'react'
+import { isStaticBuild } from '@/utils/build'
 import { 
   FileCode, 
   Zap, 
@@ -16,12 +17,19 @@ import {
   CheckCircle
 } from 'lucide-react'
 
-const sections = [
-  {
-    id: 'quick-start',
-    title: 'Quick Start',
-    icon: Zap,
-    content: `
+const quickStartContent = isStaticBuild ? `
+# Quick Start
+
+Peal will be available soon! We're putting the finishing touches on our sound library.
+
+## What's Coming
+
+1. **Professional UI Sounds** - Carefully crafted sounds for modern web apps
+2. **Easy Integration** - Simple API that works with any framework
+3. **Lightweight** - Tiny footprint, big impact
+
+Stay tuned for the official launch!
+` : `
 # Quick Start
 
 Get Peal sounds working in your app in under 2 minutes.
@@ -38,7 +46,14 @@ This downloads professional UI sounds and generates a helper file.
 
 \`\`\`bash
 npm install @peal-sounds/peal
-\`\`\`
+\`\`\``
+
+const sections = [
+  {
+    id: 'quick-start',
+    title: 'Quick Start',
+    icon: Zap,
+    content: quickStartContent + `
 
 ## 3. Use It (1 minute)
 
@@ -506,45 +521,47 @@ export default function DocsPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <Link
-              href="https://www.npmjs.com/package/@peal-sounds/peal"
-              target="_blank"
-              className="group p-6 bg-gray-50 dark:bg-gray-900 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <Package className="w-8 h-8 text-blue-600 mb-3" />
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-1">npm Package</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                @peal-sounds/peal
-              </p>
-              <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
+          {!isStaticBuild && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              <Link
+                href="https://www.npmjs.com/package/@peal-sounds/peal"
+                target="_blank"
+                className="group p-6 bg-gray-50 dark:bg-gray-900 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <Package className="w-8 h-8 text-blue-600 mb-3" />
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">npm Package</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  @peal-sounds/peal
+                </p>
+                <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
+              </Link>
 
-            <Link
-              href="https://github.com/arach/peal"
-              target="_blank"
-              className="group p-6 bg-gray-50 dark:bg-gray-900 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <FileCode className="w-8 h-8 text-blue-600 mb-3" />
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-1">GitHub</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Source code & issues
-              </p>
-              <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
+              <Link
+                href="https://github.com/arach/peal"
+                target="_blank"
+                className="group p-6 bg-gray-50 dark:bg-gray-900 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <FileCode className="w-8 h-8 text-blue-600 mb-3" />
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">GitHub</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Source code & issues
+                </p>
+                <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
+              </Link>
 
-            <button
-              onClick={() => setActiveSection('quick-start')}
-              className="group p-6 bg-gray-50 dark:bg-gray-900 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
-            >
-              <Zap className="w-8 h-8 text-blue-600 mb-3" />
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Quick Start</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Get started in 2 minutes
-              </p>
-              <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
+              <button
+                onClick={() => setActiveSection('quick-start')}
+                className="group p-6 bg-gray-50 dark:bg-gray-900 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
+              >
+                <Zap className="w-8 h-8 text-blue-600 mb-3" />
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Quick Start</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Get started in 2 minutes
+                </p>
+                <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          )}
 
           {/* Documentation Content */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

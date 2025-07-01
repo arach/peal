@@ -18,7 +18,7 @@
     "build:lib": "tsup src/index.ts --format cjs,esm --dts --tsconfig tsconfig.lib.json",
     "build:web": "next build",
     "prebuild:static": "node scripts/prepare-static-build.js",
-    "build:static": "BUILD_STATIC=true next build",
+    "build:static": "BUILD_STATIC=true NEXT_PUBLIC_BUILD_STATIC=true next build",
     "dev": "next dev",
     "dev:lib": "tsup src/index.ts --format cjs,esm --dts --watch",
     "start": "next start",
