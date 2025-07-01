@@ -387,17 +387,13 @@ peal.load('click', '/peal/click.wav');
 function CodeBlock({ children, language = 'javascript' }: { children: string, language?: string }) {
   // Enhanced syntax highlighting
   const highlightCode = (code: string) => {
-    // Preserve HTML entities
     let highlighted = code
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
     
-    // Comments (must come first)
+    // Comments (must come first to avoid conflicts)
     highlighted = highlighted.replace(/(\/\/.*$)/gm, '<span class="text-gray-500">$1</span>')
     
-    // Strings
-    highlighted = highlighted.replace(/(['"`])(?:(?=(\\?))\2[\s\S])*?\1/g, '<span class="text-green-600 dark:text-green-400">$&</span>')
+    // Strings (improved to handle escaped quotes)
+    highlighted = highlighted.replace(/(['"`])(?:[^\\]|\\.)*?\1/g, '<span class="text-green-600 dark:text-green-400">$&</span>')
     
     // Keywords
     highlighted = highlighted.replace(/\b(import|from|const|let|var|function|async|await|try|catch|if|else|return|new|export|default|class|extends|constructor|throw|finally)\b/g, '<span class="text-blue-600 dark:text-blue-400">$1</span>')
@@ -439,10 +435,11 @@ function CodeBlock({ children, language = 'javascript' }: { children: string, la
   
   return (
     <pre className="bg-gray-50 dark:bg-gray-950/50 border border-gray-200 dark:border-gray-800 p-3 rounded-md text-xs overflow-x-auto my-2">
-      <code 
-        className="font-mono leading-5"
-        dangerouslySetInnerHTML={{ __html: highlightCode(children) }}
-      />
+      <code className="font-mono leading-5">
+        {isTerminal ? children : (
+          <span dangerouslySetInnerHTML={{ __html: highlightCode(children) }} />
+        )}
+      </code>
     </pre>
   )
 }
