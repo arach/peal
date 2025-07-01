@@ -8,6 +8,7 @@ import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { VibeParser } from '@/lib/vibeParser'
 import VibeDesignerModal from './VibeDesignerModal'
 import SoundLibraryModal from './SoundLibraryModal'
+import CodeEditor from './CodeEditor'
 
 export default function Studio() {
   const router = useRouter()
@@ -34,6 +35,10 @@ export default function Studio() {
   const [isDragging, setIsDragging] = useState<'start' | 'end' | 'region' | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
   const [hasUnappliedChanges, setHasUnappliedChanges] = useState(false)
+  
+  // Code editor panel width state
+  const [codeEditorWidth, setCodeEditorWidth] = useState(400)
+  const [isResizing, setIsResizing] = useState(false)
   
   // Track system state
   interface Track {
@@ -98,6 +103,46 @@ export default function Studio() {
     const { SoundGenerator } = require('@/hooks/useSoundGeneration')
     return new SoundGenerator()
   })
+
+  // Handle URL parameters for direct sound loading
+  useEffect(() => {
+    const soundId = searchParams.get('sound')
+    const soundType = searchParams.get('type')
+    
+    if (soundId && soundType && !currentSound) {
+      // Create a basic sound from URL parameters
+      const urlSound: Sound = {
+        id: soundId,
+        type: soundType as "click" | "tone" | "chime" | "sweep" | "pulse",
+        frequency: 440,
+        duration: 500,
+        parameters: {
+          frequency: 440,
+          duration: 0.5,
+          waveform: 'sine',
+          attack: 0.01,
+          decay: 0.1,
+          sustain: 0.5,
+          release: 0.1,
+          effects: {
+            reverb: false,
+            delay: false,
+            filter: false,
+            distortion: false,
+            compression: false
+          }
+        },
+        created: new Date(),
+        favorite: false,
+        tags: ['imported'],
+        audioBuffer: null,
+        waveformData: null
+      }
+      
+      setCurrentSound(urlSound)
+      setEditedParams(urlSound.parameters)
+    }
+  }, [searchParams, currentSound])
 
   // Load sound from URL parameters
   useEffect(() => {
@@ -663,6 +708,25 @@ export default function Studio() {
       return newParams
     })
     setHasUnappliedChanges(true)
+    
+    // Update currentSound to keep code editor in sync
+    if (currentSound) {
+      const updatedSound = {
+        ...currentSound,
+        parameters: {
+          ...currentSound.parameters,
+          [key]: value
+        }
+      }
+      if (key === 'frequency') {
+        updatedSound.frequency = value
+      }
+      if (key === 'duration') {
+        updatedSound.duration = Math.round(value * 1000)
+      }
+      console.log('Studio updateParam - setting new currentSound:', updatedSound.id, key, value)
+      setCurrentSound(updatedSound)
+    }
   }
 
   const updateEffect = (effect: string, enabled: boolean) => {
@@ -677,6 +741,22 @@ export default function Studio() {
       return newParams
     })
     setHasUnappliedChanges(true)
+    
+    // Update currentSound to keep code editor in sync
+    if (currentSound) {
+      const updatedSound = {
+        ...currentSound,
+        parameters: {
+          ...currentSound.parameters,
+          effects: {
+            ...currentSound.parameters.effects,
+            [effect]: enabled
+          }
+        }
+      }
+      console.log('Studio updateEffect - setting new currentSound:', updatedSound.id, effect, enabled)
+      setCurrentSound(updatedSound)
+    }
   }
 
   const applyChanges = async () => {
@@ -1931,6 +2011,7 @@ export default function Studio() {
 
   const handleVibeLoadToStudio = (sound: Sound) => {
     // Load the generated sound into the studio for editing
+    console.log('Loading vibe sound to studio:', sound.id, sound.parameters)
     setCurrentSound(sound)
     setEditedParams(sound.parameters)
     setPreviewSound(null)
@@ -2022,6 +2103,7 @@ export default function Studio() {
   }
   
   const handleLibrarySoundSelected = (sound: Sound) => {
+    console.log('Loading library sound to studio:', sound.id, sound.parameters)
     setCurrentSound(sound)
     setEditedParams(sound.parameters)
     setPreviewSound(null)
@@ -2030,7 +2112,7 @@ export default function Studio() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+    <div className={`h-screen flex flex-col bg-gray-950 text-gray-100 ${isResizing ? 'cursor-ew-resize select-none' : ''}`}>
       {/* Top Toolbar */}
       <div className="flex items-center justify-between px-6 py-3 bg-gray-900 border-b border-gray-800">
         {/* Left - Navigation & Project */}
@@ -2102,207 +2184,56 @@ export default function Studio() {
 
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel - Vibe Designer */}
-        <div className={`bg-gray-900 border-r border-gray-800 transition-all duration-300 ${
-          showVibePanel ? 'w-80' : 'w-0'
-        } overflow-hidden`}>
-          {showVibePanel && (
-            <div className="h-full flex flex-col">
-              {/* Panel Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                    <Sparkles size={14} className="text-white" />
-                  </div>
-                  <div>
-                    <span className="font-medium">Vibe Designer</span>
-                    <p className="text-xs text-gray-400">AI-powered sound creation</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setShowVibePanel(false)}
-                  className="text-gray-400 hover:text-gray-100 transition-colors"
-                >
-                  ×
-                </button>
-              </div>
+        {/* Left Panel - Code Editor */}
+        <div 
+          className="relative"
+          style={{ width: `${codeEditorWidth}px`, minWidth: '300px', maxWidth: '600px' }}
+        >
+          <CodeEditor 
+            currentSound={currentSound}
+            tracks={tracks}
+            onSoundChange={async (updatedSound) => {
+              setCurrentSound(updatedSound)
+              setEditedParams(updatedSound.parameters)
+              setHasUnappliedChanges(true)
               
-              {/* Panel Content */}
-              <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-                {/* Welcome message for empty state */}
-                {vibePrompt.length === 0 && vibeGeneratedSounds.length === 0 && (
-                  <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-700/30 rounded-lg p-4 mb-4">
-                    <p className="text-sm text-gray-300 leading-relaxed">
-                      Describe sounds in plain English and let AI bring them to life. 
-                      Try describing timing, pitch, or the feeling you want.
-                    </p>
-                  </div>
-                )}
-                
-                {/* Input Section */}
-                <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-300">
-                    Describe your sound
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={vibePrompt}
-                      onChange={(e) => setVibePrompt(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleVibeGenerate()}
-                      placeholder="Try: 'a short high beep' or '3 quick clicks'"
-                      className="w-full px-3 py-2 pr-10 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                    <button 
-                      onClick={handleVibeGenerate}
-                      disabled={!vibePrompt.trim() || isVibeGenerating}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-purple-500 text-white rounded hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <Wand2 size={14} />
-                    </button>
-                  </div>
-
-                  {/* Suggestions */}
-                  {vibeSuggestions.length > 0 && (vibePrompt.length === 0 || vibePrompt.length < 20) && (
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-400 mb-2">
-                        {vibePrompt.length === 0 ? 'Try one of these:' : 'Suggestions:'}
-                      </p>
-                      {vibeSuggestions.slice(0, 4).map((suggestion, i) => (
-                        <button
-                          key={i}
-                          onClick={() => {
-                            setVibePrompt(suggestion)
-                            setTimeout(() => handleVibeGenerate(), 100)
-                          }}
-                          className="block w-full text-left px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors group"
-                        >
-                          <span className="group-hover:text-purple-400 transition-colors">{suggestion}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Loading State */}
-                {isVibeGenerating && (
-                  <div className="text-center py-6">
-                    <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                    <p className="text-sm text-gray-400">Generating from your vibe...</p>
-                  </div>
-                )}
-
-                {/* Generated Sounds */}
-                {vibeGeneratedSounds.length > 0 && !isVibeGenerating && (
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-gray-300">
-                      Generated Sound
-                    </h3>
-                    <div className="space-y-2">
-                      {vibeGeneratedSounds.map((sound) => (
-                        <div
-                          key={sound.id}
-                          className="p-3 bg-gray-800 rounded-lg border border-gray-700"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-purple-400">
-                                "{vibePrompt}"
-                              </span>
-                            </div>
-                            <button
-                              onClick={() => handleVibePlaySound(sound)}
-                              className="px-2 py-1 bg-purple-500 text-white text-xs rounded hover:bg-purple-600 transition-colors"
-                            >
-                              ▶ Test
-                            </button>
-                          </div>
-                          
-                          <div className="text-xs text-gray-400 mb-3">
-                            {sound.type} • {sound.duration}ms • {sound.frequency}Hz
-                          </div>
-
-                          {currentSound ? (
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleVibeAddAsTrack(sound)}
-                                className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all flex items-center justify-center gap-1"
-                                title="Add this sound as a new track in your current composition"
-                              >
-                                <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-                                  <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                                </svg>
-                                Add as Track
-                              </button>
-                              <button
-                                onClick={() => {
-                                  if (confirm('This will replace your current sound. Continue?')) {
-                                    handleVibeLoadToStudio(sound)
-                                  }
-                                }}
-                                className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-all"
-                                title="Replace current sound"
-                              >
-                                Replace
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => handleVibeLoadToStudio(sound)}
-                              className="w-full px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
-                            >
-                              Load to Studio
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="flex gap-2 pt-2">
-                      <button
-                        onClick={() => {
-                          setVibeGeneratedSounds([])
-                          setVibePrompt('')
-                        }}
-                        className="flex-1 px-3 py-2 text-gray-400 text-sm hover:text-gray-200 transition-colors"
-                      >
-                        Try Again
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Example Prompts */}
-                {vibeGeneratedSounds.length === 0 && !isVibeGenerating && (
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-gray-300">
-                      Example Prompts
-                    </label>
-                    <div className="space-y-2">
-                      {[
-                        "A gentle notification chime",
-                        "Three short beeps increasing in pitch", 
-                        "Quick, punchy interface clicks",
-                        "A bright success ding",
-                        "A deep, smooth swoosh sound"
-                      ].map((example, i) => (
-                        <button
-                          key={i}
-                          onClick={() => {
-                            setVibePrompt(example)
-                            setTimeout(() => handleVibeGenerate(), 100)
-                          }}
-                          className="block w-full text-left text-sm px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors"
-                        >
-                          "{example}"
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+              // Regenerate the audio buffer with new parameters
+              try {
+                const { SoundGenerator } = require('@/hooks/useSoundGeneration')
+                const tempGenerator = new SoundGenerator()
+                await tempGenerator.renderSound(updatedSound)
+                setPreviewSound(updatedSound)
+              } catch (error) {
+                console.error('Error regenerating sound:', error)
+              }
+            }}
+          />
+          
+          {/* Resize Handle */}
+          <div 
+            className="absolute top-0 right-0 w-1 h-full cursor-ew-resize hover:bg-blue-500/30 transition-colors z-20"
+            onMouseDown={(e) => {
+              e.preventDefault()
+              setIsResizing(true)
+              const startX = e.clientX
+              const startWidth = codeEditorWidth
+              
+              const handleMouseMove = (e: MouseEvent) => {
+                const deltaX = e.clientX - startX
+                const newWidth = Math.max(300, Math.min(600, startWidth + deltaX))
+                setCodeEditorWidth(newWidth)
+              }
+              
+              const handleMouseUp = () => {
+                setIsResizing(false)
+                document.removeEventListener('mousemove', handleMouseMove)
+                document.removeEventListener('mouseup', handleMouseUp)
+              }
+              
+              document.addEventListener('mousemove', handleMouseMove)
+              document.addEventListener('mouseup', handleMouseUp)
+            }}
+          />
         </div>
 
         {/* Center Panel - Main Canvas */}
@@ -2310,15 +2241,6 @@ export default function Studio() {
           {/* Canvas Header */}
           <div className="flex items-center justify-between px-6 py-3 bg-gray-900 border-b border-gray-800">
             <div className="flex items-center gap-4">
-              {!showVibePanel && (
-                <button 
-                  onClick={() => setShowVibePanel(true)}
-                  className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
-                >
-                  <Sparkles size={16} />
-                  Vibe Designer
-                </button>
-              )}
               <div className="text-sm text-gray-400">
                 {currentSound ? `Editing: ${currentSound.type} sound` : 'Ready to create your perfect sound'}
               </div>
@@ -2907,51 +2829,257 @@ export default function Studio() {
           </div>
         </div>
 
-        {/* Right Panel - Parameters */}
+        {/* Right Panel - Parameters + AI Designer */}
         <div className={`bg-gray-900 border-l border-gray-800 transition-all duration-300 ${
-          showParametersPanel ? 'w-80' : 'w-0'
+          showParametersPanel ? 'w-96' : 'w-0'
         } overflow-hidden`}>
           {showParametersPanel && (
             <div className="h-full flex flex-col">
-              {/* Panel Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
-                <div className="flex items-center gap-2">
-                  <Settings size={16} className="text-primary-400" />
-                  <span className="font-medium">Parameters</span>
-                  {editMode && (
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
-                        ? 'bg-yellow-600 text-white'
-                        : 'bg-blue-600 text-white'
-                    }`}>
-                      {currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
-                        ? 'Full Edit Only'
-                        : 'Regional Edit'
-                      }
-                    </span>
-                  )}
-                  {insertMode && (
-                    <span className="text-xs px-2 py-1 rounded bg-purple-600 text-white">
-                      Insert Mode
-                    </span>
-                  )}
-                  {insertMode && selectedTrackId && (
-                    <span className="text-xs px-2 py-1 rounded bg-gray-700 text-gray-300">
-                      → {tracks.find(t => t.id === selectedTrackId)?.name || 'Track'}
-                    </span>
-                  )}
+              {/* Panel Header with Tabs */}
+              <div className="border-b border-gray-800">
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-100">Studio Tools</span>
+                    {editMode && (
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
+                          ? 'bg-yellow-600 text-white'
+                          : 'bg-blue-600 text-white'
+                      }`}>
+                        {currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
+                          ? 'Full Edit Only'
+                          : 'Regional Edit'
+                        }
+                      </span>
+                    )}
+                    {insertMode && (
+                      <span className="text-xs px-2 py-1 rounded bg-purple-600 text-white">
+                        Insert Mode
+                      </span>
+                    )}
+                  </div>
+                  <button 
+                    onClick={() => setShowParametersPanel(false)}
+                    className="text-gray-400 hover:text-gray-100 transition-colors"
+                  >
+                    ×
+                  </button>
                 </div>
-                <button 
-                  onClick={() => setShowParametersPanel(false)}
-                  className="text-gray-400 hover:text-gray-100 transition-colors"
-                >
-                  ×
-                </button>
+                
+                {/* Tab Navigation */}
+                <div className="flex bg-gray-950">
+                  <button
+                    onClick={() => setShowVibePanel(false)}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors relative ${
+                      !showVibePanel
+                        ? 'text-blue-400 bg-gray-900'
+                        : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                    }`}
+                  >
+                    <Settings size={14} />
+                    Parameters
+                    {!showVibePanel && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setShowVibePanel(true)}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors relative ${
+                      showVibePanel
+                        ? 'text-purple-400 bg-gray-900'
+                        : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                    }`}
+                  >
+                    <Sparkles size={14} />
+                    AI Design
+                    {showVibePanel && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400" />
+                    )}
+                  </button>
+                </div>
               </div>
               
               {/* Panel Content */}
-              <div className="flex-1 p-4 space-y-6 overflow-y-auto">
-                {insertMode ? (
+              <div className="flex-1 overflow-y-auto">
+                {showVibePanel ? (
+                  // AI Design Tab Content
+                  <div className="p-4 space-y-4">
+                    {/* Welcome message for empty state */}
+                    {vibePrompt.length === 0 && vibeGeneratedSounds.length === 0 && (
+                      <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-700/30 rounded-lg p-4 mb-4">
+                        <p className="text-sm text-gray-300 leading-relaxed">
+                          Describe sounds in plain English and let AI bring them to life. 
+                          Try describing timing, pitch, or the feeling you want.
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Input Section */}
+                    <div className="space-y-3">
+                      <label className="block text-sm font-medium text-gray-300">
+                        Describe your sound
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={vibePrompt}
+                          onChange={(e) => setVibePrompt(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleVibeGenerate()}
+                          placeholder="Try: 'a short high beep' or '3 quick clicks'"
+                          className="w-full px-3 py-2 pr-10 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <button 
+                          onClick={handleVibeGenerate}
+                          disabled={!vibePrompt.trim() || isVibeGenerating}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-purple-500 text-white rounded hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <Wand2 size={14} />
+                        </button>
+                      </div>
+
+                      {/* Suggestions */}
+                      {vibeSuggestions.length > 0 && (vibePrompt.length === 0 || vibePrompt.length < 20) && (
+                        <div className="space-y-1">
+                          <p className="text-xs text-gray-400 mb-2">
+                            {vibePrompt.length === 0 ? 'Try one of these:' : 'Suggestions:'}
+                          </p>
+                          {vibeSuggestions.slice(0, 4).map((suggestion, i) => (
+                            <button
+                              key={i}
+                              onClick={() => {
+                                setVibePrompt(suggestion)
+                                setTimeout(() => handleVibeGenerate(), 100)
+                              }}
+                              className="block w-full text-left px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors group"
+                            >
+                              <span className="group-hover:text-purple-400 transition-colors">{suggestion}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Loading State */}
+                    {isVibeGenerating && (
+                      <div className="text-center py-6">
+                        <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                        <p className="text-sm text-gray-400">Generating from your vibe...</p>
+                      </div>
+                    )}
+
+                    {/* Generated Sounds */}
+                    {vibeGeneratedSounds.length > 0 && !isVibeGenerating && (
+                      <div className="space-y-3">
+                        <h3 className="text-sm font-medium text-gray-300">
+                          Generated Sound
+                        </h3>
+                        <div className="space-y-2">
+                          {vibeGeneratedSounds.map((sound) => (
+                            <div
+                              key={sound.id}
+                              className="p-3 bg-gray-800 rounded-lg border border-gray-700"
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-medium text-purple-400">
+                                    "{vibePrompt}"
+                                  </span>
+                                </div>
+                                <button
+                                  onClick={() => handleVibePlaySound(sound)}
+                                  className="px-2 py-1 bg-purple-500 text-white text-xs rounded hover:bg-purple-600 transition-colors"
+                                >
+                                  ▶ Test
+                                </button>
+                              </div>
+                              
+                              <div className="text-xs text-gray-400 mb-3">
+                                {sound.type} • {sound.duration}ms • {sound.frequency}Hz
+                              </div>
+
+                              {currentSound ? (
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => handleVibeAddAsTrack(sound)}
+                                    className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all flex items-center justify-center gap-1"
+                                    title="Add this sound as a new track in your current composition"
+                                  >
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                                      <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                    </svg>
+                                    Add as Track
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      if (confirm('This will replace your current sound. Continue?')) {
+                                        handleVibeLoadToStudio(sound)
+                                      }
+                                    }}
+                                    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-all"
+                                    title="Replace current sound"
+                                  >
+                                    Replace
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => handleVibeLoadToStudio(sound)}
+                                  className="w-full px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                                >
+                                  Load to Studio
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                          <button
+                            onClick={() => {
+                              setVibeGeneratedSounds([])
+                              setVibePrompt('')
+                            }}
+                            className="flex-1 px-3 py-2 text-gray-400 text-sm hover:text-gray-200 transition-colors"
+                          >
+                            Try Again
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Example Prompts */}
+                    {vibeGeneratedSounds.length === 0 && !isVibeGenerating && (
+                      <div className="space-y-3">
+                        <label className="block text-sm font-medium text-gray-300">
+                          Example Prompts
+                        </label>
+                        <div className="space-y-2">
+                          {[
+                            "A gentle notification chime",
+                            "Three short beeps increasing in pitch", 
+                            "Quick, punchy interface clicks",
+                            "A bright success ding",
+                            "A deep, smooth swoosh sound"
+                          ].map((example, i) => (
+                            <button
+                              key={i}
+                              onClick={() => {
+                                setVibePrompt(example)
+                                setTimeout(() => handleVibeGenerate(), 100)
+                              }}
+                              className="block w-full text-left text-sm px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors"
+                            >
+                              "{example}"
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // Parameters Tab Content
+                  <div className="p-4 space-y-6">
+                    {insertMode ? (
                   // Insert Mode UI
                   <div className="space-y-6">
                     {/* Quick Insert Presets */}
@@ -3384,6 +3512,8 @@ export default function Studio() {
                 ) : (
                   <div className="text-center text-gray-400 text-sm">
                     Select or create a sound to see parameters
+                  </div>
+                )}
                   </div>
                 )}
               </div>

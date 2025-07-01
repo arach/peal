@@ -139,6 +139,147 @@ export function play${sound.name.replace(/\s+/g, '')}(volume = 0.4) {
 
   const code = generateSoundCode()
 
+  // Syntax highlighting function
+  const highlightJavaScript = (code: string) => {
+    // Dark terminal-friendly color scheme
+    const TOKEN_TYPES = {
+      STRING: 'text-emerald-400',      // Bright green for strings
+      KEYWORD: 'text-sky-400',         // Bright blue for keywords
+      BOOLEAN: 'text-violet-400',      // Purple for booleans
+      NUMBER: 'text-amber-400',        // Gold for numbers
+      FUNCTION: 'text-yellow-300',     // Bright yellow for functions
+      PROPERTY: 'text-orange-400',     // Orange for properties
+      COMMENT: 'text-gray-500',        // Muted gray for comments
+      EXPORT: 'text-rose-400',         // Rose for export statements
+      VARIABLE: 'text-cyan-300',       // Cyan for variables
+      OBJECT: 'text-indigo-300',       // Light indigo for objects
+      PUNCTUATION: 'text-gray-300'     // Light gray for all punctuation
+    }
+    
+    const decodeHtml = (str: string) => {
+      return str
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#039;/g, "'")
+    }
+    
+    const escapeHtml = (str: string) => {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+    }
+    
+    const cleanCode = decodeHtml(code)
+    const tokens: Array<{type: string, value: string}> = []
+    let remaining = cleanCode
+    
+    while (remaining.length > 0) {
+      let matched = false
+      
+      // Check for comments first
+      if (remaining.match(/^\/\/.*/)) {
+        const match = remaining.match(/^\/\/.*/)![0]
+        tokens.push({ type: 'COMMENT', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for strings
+      else if (remaining.match(/^(['"`])(?:[^\\]|\\.)*?\1/)) {
+        const match = remaining.match(/^(['"`])(?:[^\\]|\\.)*?\1/)![0]
+        tokens.push({ type: 'STRING', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for punctuation (parentheses, brackets, braces, operators)
+      else if (remaining.match(/^[(){}[\];,.=+\-*/<>!&|:]/)) {
+        const match = remaining.match(/^[(){}[\];,.=+\-*/<>!&|:]/)![0]
+        tokens.push({ type: 'PUNCTUATION', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for export keyword
+      else if (remaining.match(/^export\b/)) {
+        const match = remaining.match(/^export\b/)![0]
+        tokens.push({ type: 'EXPORT', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for keywords
+      else if (remaining.match(/^(import|from|const|let|var|function|async|await|try|catch|throw|if|else|return|new|default|class|extends|constructor|static)\b/)) {
+        const match = remaining.match(/^(import|from|const|let|var|function|async|await|try|catch|throw|if|else|return|new|default|class|extends|constructor|static)\b/)![0]
+        tokens.push({ type: 'KEYWORD', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for boolean/null
+      else if (remaining.match(/^(true|false|null|undefined)\b/)) {
+        const match = remaining.match(/^(true|false|null|undefined)\b/)![0]
+        tokens.push({ type: 'BOOLEAN', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for numbers
+      else if (remaining.match(/^\d+(?:\.\d+)?/)) {
+        const match = remaining.match(/^\d+(?:\.\d+)?/)![0]
+        tokens.push({ type: 'NUMBER', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for function calls
+      else if (remaining.match(/^[a-zA-Z_$][\w$]*(?=\s*\()/)) {
+        const match = remaining.match(/^[a-zA-Z_$][\w$]*/)![0]
+        tokens.push({ type: 'FUNCTION', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for method calls on objects
+      else if (remaining.match(/^\.[a-zA-Z_$][\w$]*(?=\s*\()/)) {
+        const match = remaining.match(/^\.[a-zA-Z_$][\w$]*/)![0]
+        tokens.push({ type: 'FUNCTION', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for property access
+      else if (remaining.match(/^\.[a-zA-Z_$][\w$]*/)) {
+        const match = remaining.match(/^\.[a-zA-Z_$][\w$]*/)![0]
+        tokens.push({ type: 'PROPERTY', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for identifiers (including variables like 'freq', 'i', etc.)
+      else if (remaining.match(/^[a-zA-Z_$][\w$]*/)) {
+        const match = remaining.match(/^[a-zA-Z_$][\w$]*/)![0]
+        // Check if it's followed by a dot (likely an object)
+        if (remaining.slice(match.length).match(/^\s*\./)) {
+          tokens.push({ type: 'OBJECT', value: match })
+        } else {
+          tokens.push({ type: 'VARIABLE', value: match })
+        }
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      
+      if (!matched) {
+        tokens.push({ type: 'PLAIN', value: remaining[0] })
+        remaining = remaining.slice(1)
+      }
+    }
+    
+    return tokens.map(token => {
+      const escaped = escapeHtml(token.value)
+      if (token.type === 'PLAIN') {
+        return escaped
+      }
+      const className = TOKEN_TYPES[token.type as keyof typeof TOKEN_TYPES]
+      return className ? `<span class="${className}">${escaped}</span>` : escaped
+    }).join('')
+  }
+
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(code)
@@ -168,60 +309,82 @@ export function play${sound.name.replace(/\s+/g, '')}(volume = 0.4) {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
-          className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden"
+          className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 max-w-4xl w-full max-h-[90vh] overflow-hidden"
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
             <div className="flex items-center gap-3">
-              <Code2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                {sound.name}
-              </h2>
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <Code2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  {sound.name}
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
+                  {sound.type} sound
+                </p>
+              </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
             >
               <X size={20} />
             </button>
           </div>
 
           {/* Tabs */}
-          <div className="flex border-b border-gray-200 dark:border-gray-800">
+          <div className="flex border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
             <button
               onClick={() => setTab('preview')}
-              className={`px-6 py-3 font-medium transition-colors ${
+              className={`px-6 py-3 text-sm font-medium transition-colors relative ${
                 tab === 'preview'
-                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                  ? 'text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-900'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
               Preview
+              {tab === 'preview' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
+              )}
             </button>
             <button
               onClick={() => setTab('code')}
-              className={`px-6 py-3 font-medium transition-colors ${
+              className={`px-6 py-3 text-sm font-medium transition-colors relative ${
                 tab === 'code'
-                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                  ? 'text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-900'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
               Code
+              {tab === 'code' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
+              )}
             </button>
           </div>
 
           {/* Content */}
           <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
             {tab === 'preview' ? (
-              <div className="space-y-6">
-                <div className="bg-gray-50 dark:bg-gray-950 rounded-lg p-8 text-center">
+              <div className="space-y-8">
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-8 text-center border border-blue-100 dark:border-gray-700">
                   <button
                     onClick={() => {
-                      const playFunction = new Function('return ' + code)()
-                      playFunction()
+                      // Extract just the function body without export statement
+                      const functionBody = code.replace(/export function play\w+\([^)]*\)\s*{/, '').replace(/}$/, '')
+                      try {
+                        const playFunction = new Function('volume', functionBody)
+                        playFunction(0.3)
+                      } catch (error) {
+                        console.error('Error playing sound:', error)
+                      }
                     }}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-xl transition-all transform hover:scale-105 shadow-lg"
                   >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                    </svg>
                     Play Sound
                   </button>
                   <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
@@ -229,36 +392,45 @@ export function play${sound.name.replace(/\s+/g, '')}(volume = 0.4) {
                   </p>
                 </div>
 
-                <div className="prose dark:prose-invert max-w-none">
-                  <h3>About this sound</h3>
-                  <p>
-                    This is a lightweight, dependency-free implementation using the Web Audio API.
-                    The code is optimized for performance and works in all modern browsers.
-                  </p>
-                  <h3>Features</h3>
-                  <ul>
-                    <li>Zero dependencies</li>
-                    <li>Tiny footprint (~1KB)</li>
-                    <li>Customizable volume</li>
-                    <li>Works offline</li>
-                    <li>TypeScript ready</li>
-                  </ul>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">About this sound</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                      This is a lightweight, dependency-free implementation using the Web Audio API.
+                      The code is optimized for performance and works in all modern browsers.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Features</h3>
+                    <div className="space-y-2">
+                      {['Zero dependencies', 'Tiny footprint (~1KB)', 'Customizable volume', 'Works offline', 'TypeScript ready'].map((feature) => (
+                        <div key={feature} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                          {feature}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Copy this code into your project
-                  </p>
-                  <div className="flex items-center gap-2">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Implementation Code</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Copy this code into your project
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
                     <button
                       onClick={copyToClipboard}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                     >
                       {copied ? (
                         <>
-                          <Check size={16} className="text-green-600" />
+                          <Check size={16} />
                           Copied!
                         </>
                       ) : (
@@ -270,7 +442,7 @@ export function play${sound.name.replace(/\s+/g, '')}(volume = 0.4) {
                     </button>
                     <button
                       onClick={downloadFile}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
                     >
                       <Download size={16} />
                       Download
@@ -278,25 +450,51 @@ export function play${sound.name.replace(/\s+/g, '')}(volume = 0.4) {
                   </div>
                 </div>
 
-                <pre className="bg-gray-950 text-gray-100 p-6 rounded-lg overflow-x-auto">
-                  <code className="text-sm font-mono">{code}</code>
-                </pre>
+                <div className="bg-gray-900 rounded-xl overflow-hidden border border-gray-700">
+                  <div className="bg-gray-800 px-4 py-3 border-b border-gray-700 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
+                      </div>
+                      <span className="text-xs text-gray-400 font-mono">{sound.id}.js</span>
+                    </div>
+                  </div>
+                  <pre className="p-6 overflow-x-auto">
+                    <code 
+                      className="text-xs font-mono leading-5"
+                      dangerouslySetInnerHTML={{ __html: highlightJavaScript(code) }}
+                    />
+                  </pre>
+                </div>
               </div>
             )}
           </div>
 
           {/* Footer */}
           <div className="p-6 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
-            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-              Customize this sound in the{' '}
-              <a href="/studio" className="text-blue-600 dark:text-blue-400 hover:underline">
-                Studio
-              </a>{' '}
-              or browse more in the{' '}
-              <a href="/library" className="text-blue-600 dark:text-blue-400 hover:underline">
-                Library
+            <div className="flex items-center justify-center gap-6 text-sm">
+              <a 
+                href={`/studio?sound=${sound.id}&type=${sound.type}`} 
+                className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Customize in Studio
               </a>
-            </p>
+              <span className="text-gray-300 dark:text-gray-700">•</span>
+              <a 
+                href="/library" 
+                className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                Browse Library
+              </a>
+            </div>
           </div>
         </motion.div>
       </div>

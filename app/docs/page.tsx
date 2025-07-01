@@ -15,7 +15,9 @@ import {
   Terminal,
   Package,
   Volume2,
-  CheckCircle
+  CheckCircle,
+  Copy,
+  Check
 } from 'lucide-react'
 
 const quickStartContent = isStaticBuild ? `# Quick Start
@@ -385,18 +387,38 @@ peal.load('click', '/peal/click.wav');
 ]
 
 function CodeBlock({ children, language = 'javascript' }: { children: string, language?: string }) {
+  const [copied, setCopied] = useState(false)
   const isTerminal = language === 'bash' || language === 'shell'
+  
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(children)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy text: ', err)
+    }
+  }
   
   if (isTerminal) {
     return (
-      <div className="bg-gray-950 rounded-md overflow-hidden border border-gray-800 my-2">
-        <div className="bg-gray-900 px-3 py-1.5 border-b border-gray-800 flex items-center gap-2">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-red-500/40"></div>
-            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40"></div>
-            <div className="w-2.5 h-2.5 rounded-full bg-green-500/40"></div>
+      <div className="bg-gray-950 rounded-md overflow-hidden border border-gray-800 my-2 relative group">
+        <div className="bg-gray-900 px-3 py-1.5 border-b border-gray-800 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500/40"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500/40"></div>
+            </div>
+            <span className="text-xs text-gray-500 font-mono">terminal</span>
           </div>
-          <span className="text-xs text-gray-500 font-mono">terminal</span>
+          <button
+            onClick={copyToClipboard}
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-800 rounded text-gray-400 hover:text-gray-200"
+            title="Copy to clipboard"
+          >
+            {copied ? <Check size={14} /> : <Copy size={14} />}
+          </button>
         </div>
         <pre className="p-3 overflow-x-auto">
           <code className="text-xs font-mono text-gray-300 leading-5">{children}</code>
@@ -526,12 +548,21 @@ function CodeBlock({ children, language = 'javascript' }: { children: string, la
   }
   
   return (
-    <pre className="bg-gray-50 dark:bg-gray-950/50 border border-gray-200 dark:border-gray-800 p-3 rounded-md text-xs overflow-x-auto my-2">
-      <code 
-        className="font-mono leading-5 block"
-        dangerouslySetInnerHTML={{ __html: highlightJavaScript(children) }}
-      />
-    </pre>
+    <div className="bg-gray-50 dark:bg-gray-950/50 border border-gray-200 dark:border-gray-800 rounded-md text-xs my-2 relative group">
+      <button
+        onClick={copyToClipboard}
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 z-10"
+        title="Copy to clipboard"
+      >
+        {copied ? <Check size={14} /> : <Copy size={14} />}
+      </button>
+      <pre className="p-3 overflow-x-auto">
+        <code 
+          className="font-mono leading-5 block"
+          dangerouslySetInnerHTML={{ __html: highlightJavaScript(children) }}
+        />
+      </pre>
+    </div>
   )
 }
 

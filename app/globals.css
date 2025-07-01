@@ -19,6 +19,7 @@
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -31,6 +32,35 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-primary-400;
+}
+
+/* Code Editor scrollbar with more visibility */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  @apply bg-gray-800 rounded;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  @apply bg-gray-600 rounded hover:bg-gray-500;
+}
+
+.scrollbar-custom::-webkit-scrollbar-corner {
+  @apply bg-gray-800;
+}
+
+/* Code editor overlay styles */
+.code-editor-textarea {
+  color: transparent !important;
+  caret-color: #d1d5db !important;
+  -webkit-text-fill-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
 }
 
 /* Smooth transitions for theme changes */

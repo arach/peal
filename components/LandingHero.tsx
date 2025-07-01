@@ -162,9 +162,9 @@ export default function LandingHero() {
               </pre>
               
               <p className="text-center text-xs text-gray-500 dark:text-gray-400">
-                Copy individual sounds or generate custom ones.{' '}
+                Professional UI sounds with a{' '}
                 <span className="text-blue-600 dark:text-blue-400">
-                  No npm packages, no dependencies.
+                  lightweight library that just works.
                 </span>
               </p>
             </div>
