@@ -16,7 +16,12 @@ const nextConfig = {
   },
   
   // Allow serving static assets from the assets directory
+  // Note: rewrites don't work with static export, sounds will be in public folder
   async rewrites() {
+    // Only apply rewrites for non-static builds
+    if (process.env.BUILD_STATIC === 'true') {
+      return [];
+    }
     return [
       {
         source: '/sounds/:path*',
