@@ -405,11 +405,71 @@ function CodeBlock({ children, language = 'javascript' }: { children: string, la
     )
   }
   
+  // Tokenize and highlight JavaScript/TypeScript code
+  const highlightJavaScript = (code: string) => {
+    // Split code into lines for better processing
+    const lines = code.split('\n')
+    
+    return lines.map((line, lineIndex) => {
+      // Process each line
+      let processedLine = line
+      
+      // Order matters: strings first, then other patterns
+      // 1. Comments
+      processedLine = processedLine.replace(/(\/\/.*$)/g, '<span class="text-gray-500">$1</span>')
+      
+      // 2. Strings (handle single, double, and template literals)
+      processedLine = processedLine.replace(
+        /('([^'\\]|\\.)*'|"([^"\\]|\\.)*"|`([^`\\]|\\.)*`)/g,
+        '<span class="text-green-600 dark:text-green-400">$1</span>'
+      )
+      
+      // 3. Keywords
+      processedLine = processedLine.replace(
+        /\b(import|export|from|const|let|var|function|async|await|try|catch|throw|if|else|return|new|default|class|extends|constructor|static)\b/g,
+        '<span class="text-blue-600 dark:text-blue-400">$1</span>'
+      )
+      
+      // 4. Boolean/null/undefined
+      processedLine = processedLine.replace(
+        /\b(true|false|null|undefined)\b/g,
+        '<span class="text-purple-600 dark:text-purple-400">$1</span>'
+      )
+      
+      // 5. Numbers
+      processedLine = processedLine.replace(
+        /\b(\d+(?:\.\d+)?)\b/g,
+        '<span class="text-purple-600 dark:text-purple-400">$1</span>'
+      )
+      
+      // 6. Function calls and methods
+      processedLine = processedLine.replace(
+        /\b([a-zA-Z_$][\w$]*)\s*(?=\()/g,
+        '<span class="text-yellow-600 dark:text-yellow-400">$1</span>'
+      )
+      
+      // 7. Object properties (before colons)
+      processedLine = processedLine.replace(
+        /\b([a-zA-Z_$][\w$]*)\s*(?=:)/g,
+        '<span class="text-red-500 dark:text-red-400">$1</span>'
+      )
+      
+      // 8. Peal-specific methods
+      processedLine = processedLine.replace(
+        /\b(peal|play|stop|pause|volume|mute|click|success|error|notification)\b/g,
+        '<span class="text-orange-600 dark:text-orange-400">$1</span>'
+      )
+      
+      return processedLine
+    }).join('\n')
+  }
+  
   return (
     <pre className="bg-gray-50 dark:bg-gray-950/50 border border-gray-200 dark:border-gray-800 p-3 rounded-md text-xs overflow-x-auto my-2">
-      <code className="font-mono leading-5 text-gray-800 dark:text-gray-200">
-        {children}
-      </code>
+      <code 
+        className="font-mono leading-5 block"
+        dangerouslySetInnerHTML={{ __html: highlightJavaScript(children) }}
+      />
     </pre>
   )
 }
