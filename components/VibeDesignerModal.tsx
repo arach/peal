@@ -60,7 +60,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
         // Create a composite sound that plays all the individual sounds
         const compositeSound: Sound = {
           id: `vibe-${Date.now()}`,
-          type: 'sequence',
+          type: 'tone' as const,
           frequency: paramsList[0].frequency || 440,
           duration: Math.round(totalDuration * 1000),
           parameters: {

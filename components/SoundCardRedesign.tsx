@@ -65,6 +65,9 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
     const animate = () => {
       ctx.clearRect(0, 0, width, height)
       
+      // Skip if no waveform data
+      if (!sound.waveformData) return
+      
       // Draw waveform bars
       const barCount = 40
       const barWidth = width / barCount
