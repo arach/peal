@@ -6,6 +6,7 @@ import { Zap, Trash2, X, Library, Sparkles, Crown, Menu, Book } from 'lucide-rea
 import ThemeToggle from './ThemeToggle'
 import DynamicPealLogo from './DynamicPealLogo'
 import { useBasePath } from './BaseLink'
+import { isStaticBuild } from '@/utils/build'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -36,27 +37,31 @@ export default function Header() {
             >
               Home
             </button>
-            <button
-              onClick={() => push('/library')}
-              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
-            >
-              <Library size={16} />
-              Library
-            </button>
-            <button
-              onClick={() => push('/studio')}
-              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
-            >
-              <Sparkles size={16} />
-              Studio
-            </button>
-            <button
-              onClick={() => push('/presets')}
-              className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
-            >
-              <Crown size={16} />
-              Presets
-            </button>
+            {!isStaticBuild && (
+              <>
+                <button
+                  onClick={() => push('/library')}
+                  className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                >
+                  <Library size={16} />
+                  Library
+                </button>
+                <button
+                  onClick={() => push('/studio')}
+                  className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                >
+                  <Sparkles size={16} />
+                  Studio
+                </button>
+                <button
+                  onClick={() => push('/presets')}
+                  className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                >
+                  <Crown size={16} />
+                  Presets
+                </button>
+              </>
+            )}
             <button
               onClick={() => push('/docs')}
               className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
@@ -123,36 +128,40 @@ export default function Header() {
             >
               Home
             </button>
-            <button
-              onClick={() => {
-                push('/library')
-                setMobileMenuOpen(false)
-              }}
-              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Library size={16} />
-              Library
-            </button>
-            <button
-              onClick={() => {
-                push('/studio')
-                setMobileMenuOpen(false)
-              }}
-              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Sparkles size={16} />
-              Studio
-            </button>
-            <button
-              onClick={() => {
-                push('/presets')
-                setMobileMenuOpen(false)
-              }}
-              className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Crown size={16} />
-              Presets
-            </button>
+            {!isStaticBuild && (
+              <>
+                <button
+                  onClick={() => {
+                    push('/library')
+                    setMobileMenuOpen(false)
+                  }}
+                  className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <Library size={16} />
+                  Library
+                </button>
+                <button
+                  onClick={() => {
+                    push('/studio')
+                    setMobileMenuOpen(false)
+                  }}
+                  className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <Sparkles size={16} />
+                  Studio
+                </button>
+                <button
+                  onClick={() => {
+                    push('/presets')
+                    setMobileMenuOpen(false)
+                  }}
+                  className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <Crown size={16} />
+                  Presets
+                </button>
+              </>
+            )}
             <button
               onClick={() => {
                 push('/docs')

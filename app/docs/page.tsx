@@ -18,20 +18,17 @@ import {
   CheckCircle
 } from 'lucide-react'
 
-const quickStartContent = isStaticBuild ? `
-# Quick Start
+const quickStartContent = isStaticBuild ? `# Quick Start
 
 Peal will be available soon! We're putting the finishing touches on our sound library.
 
 ## What's Coming
 
 1. **Professional UI Sounds** - Carefully crafted sounds for modern web apps
-2. **Easy Integration** - Simple API that works with any framework
+2. **Easy Integration** - Simple API that works with any framework  
 3. **Lightweight** - Tiny footprint, big impact
 
-Stay tuned for the official launch!
-` : `
-# Quick Start
+Stay tuned for the official launch!` : `# Quick Start
 
 Get Peal sounds working in your app in under 2 minutes.
 
@@ -388,9 +385,64 @@ peal.load('click', '/peal/click.wav');
 ]
 
 function CodeBlock({ children, language = 'javascript' }: { children: string, language?: string }) {
+  // Enhanced syntax highlighting
+  const highlightCode = (code: string) => {
+    // Preserve HTML entities
+    let highlighted = code
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+    
+    // Comments (must come first)
+    highlighted = highlighted.replace(/(\/\/.*$)/gm, '<span class="text-gray-500">$1</span>')
+    
+    // Strings
+    highlighted = highlighted.replace(/(['"`])(?:(?=(\\?))\2[\s\S])*?\1/g, '<span class="text-green-600 dark:text-green-400">$&</span>')
+    
+    // Keywords
+    highlighted = highlighted.replace(/\b(import|from|const|let|var|function|async|await|try|catch|if|else|return|new|export|default|class|extends|constructor|throw|finally)\b/g, '<span class="text-blue-600 dark:text-blue-400">$1</span>')
+    
+    // Boolean and null
+    highlighted = highlighted.replace(/\b(true|false|null|undefined)\b/g, '<span class="text-purple-600 dark:text-purple-400">$1</span>')
+    
+    // Numbers
+    highlighted = highlighted.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="text-purple-600 dark:text-purple-400">$1</span>')
+    
+    // Functions
+    highlighted = highlighted.replace(/(\w+)(?=\s*\()/g, '<span class="text-yellow-600 dark:text-yellow-400">$1</span>')
+    
+    // Peal methods
+    highlighted = highlighted.replace(/\b(peal|play|stop|pause|volume|mute|click|success|error|notification)\b/g, '<span class="text-orange-600 dark:text-orange-400">$1</span>')
+    
+    return highlighted
+  }
+  
+  const isTerminal = language === 'bash' || language === 'shell'
+  
+  if (isTerminal) {
+    return (
+      <div className="bg-gray-950 rounded-md overflow-hidden border border-gray-800 my-2">
+        <div className="bg-gray-900 px-3 py-1.5 border-b border-gray-800 flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-red-500/40"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-green-500/40"></div>
+          </div>
+          <span className="text-xs text-gray-500 font-mono">terminal</span>
+        </div>
+        <pre className="p-3 overflow-x-auto">
+          <code className="text-xs font-mono text-gray-300 leading-5">{children}</code>
+        </pre>
+      </div>
+    )
+  }
+  
   return (
-    <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-      <code className={`language-${language}`}>{children}</code>
+    <pre className="bg-gray-50 dark:bg-gray-950/50 border border-gray-200 dark:border-gray-800 p-3 rounded-md text-xs overflow-x-auto my-2">
+      <code 
+        className="font-mono leading-5"
+        dangerouslySetInnerHTML={{ __html: highlightCode(children) }}
+      />
     </pre>
   )
 }
@@ -407,25 +459,25 @@ function MarkdownContent({ content }: { content: string }) {
     // Headers
     if (line.startsWith('# ')) {
       elements.push(
-        <h1 key={i} className="text-3xl font-bold mb-4 mt-8">
+        <h1 key={i} className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 mt-8">
           {line.substring(2)}
         </h1>
       )
     } else if (line.startsWith('## ')) {
       elements.push(
-        <h2 key={i} className="text-2xl font-semibold mb-3 mt-6">
+        <h2 key={i} className="text-xl font-medium text-gray-900 dark:text-white mb-3 mt-6">
           {line.substring(3)}
         </h2>
       )
     } else if (line.startsWith('### ')) {
       elements.push(
-        <h3 key={i} className="text-xl font-semibold mb-2 mt-4">
+        <h3 key={i} className="text-lg font-medium text-gray-900 dark:text-white mb-2 mt-4">
           {line.substring(4)}
         </h3>
       )
     } else if (line.startsWith('#### ')) {
       elements.push(
-        <h4 key={i} className="text-lg font-semibold mb-2 mt-3">
+        <h4 key={i} className="text-base font-medium text-gray-800 dark:text-gray-200 mb-2 mt-3">
           {line.substring(5)}
         </h4>
       )
@@ -454,14 +506,14 @@ function MarkdownContent({ content }: { content: string }) {
           lineElements.push(part)
         } else {
           lineElements.push(
-            <code key={`inline-${i}-${idx}`} className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm">
+            <code key={`inline-${i}-${idx}`} className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
               {part}
             </code>
           )
         }
       })
       elements.push(
-        <p key={i} className="mb-4">
+        <p key={i} className="mb-3 text-sm leading-relaxed">
           {lineElements}
         </p>
       )
@@ -475,14 +527,14 @@ function MarkdownContent({ content }: { content: string }) {
           lineElements.push(part)
         } else {
           lineElements.push(
-            <strong key={`bold-${i}-${idx}`}>
+            <strong key={`bold-${i}-${idx}`} className="font-medium text-gray-900 dark:text-white">
               {part}
             </strong>
           )
         }
       })
       elements.push(
-        <p key={i} className="mb-4">
+        <p key={i} className="mb-3 text-sm leading-relaxed">
           {lineElements}
         </p>
       )
@@ -490,7 +542,7 @@ function MarkdownContent({ content }: { content: string }) {
     // Regular paragraphs
     else if (line.trim()) {
       elements.push(
-        <p key={i} className="mb-4 text-gray-600 dark:text-gray-400">
+        <p key={i} className="mb-3 text-sm leading-relaxed">
           {line}
         </p>
       )
@@ -499,7 +551,7 @@ function MarkdownContent({ content }: { content: string }) {
     i++
   }
   
-  return <div className="prose prose-lg dark:prose-invert max-w-none">{elements}</div>
+  return <div className="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">{elements}</div>
 }
 
 export default function DocsPage() {
@@ -513,10 +565,10 @@ export default function DocsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
               Documentation
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
+            <p className="text-base text-gray-600 dark:text-gray-400">
               Everything you need to add professional sounds to your web app
             </p>
           </div>
@@ -531,7 +583,7 @@ export default function DocsPage() {
               >
                 <Package className="w-8 h-8 text-blue-600 mb-3" />
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-1">npm Package</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-gray-600 dark:text-gray-400">
                   @peal-sounds/peal
                 </p>
                 <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
@@ -544,7 +596,7 @@ export default function DocsPage() {
               >
                 <FileCode className="w-8 h-8 text-blue-600 mb-3" />
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-1">GitHub</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-gray-600 dark:text-gray-400">
                   Source code & issues
                 </p>
                 <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
@@ -556,7 +608,7 @@ export default function DocsPage() {
               >
                 <Zap className="w-8 h-8 text-blue-600 mb-3" />
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Quick Start</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-gray-600 dark:text-gray-400">
                   Get started in 2 minutes
                 </p>
                 <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
@@ -575,14 +627,14 @@ export default function DocsPage() {
                     <button
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-left ${
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-left ${
                         activeSection === section.id
                           ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                          : 'hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-300'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-600 dark:text-gray-400'
                       }`}
                     >
-                      <Icon className="w-5 h-5 flex-shrink-0" />
-                      <span className="font-medium">{section.title}</span>
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-sm">{section.title}</span>
                     </button>
                   )
                 })}
@@ -591,49 +643,49 @@ export default function DocsPage() {
 
             {/* Content Area */}
             <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-8">
+              <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 lg:p-8">
                 {activeContent && <MarkdownContent content={activeContent.content} />}
               </div>
 
               {/* Features */}
               {activeSection === 'quick-start' && (
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6">
-                    <Terminal className="w-8 h-8 text-blue-600 mb-3" />
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                    <Terminal className="w-6 h-6 text-blue-600 mb-2" />
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                       CLI Manages Sounds
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       Add and remove sounds from our curated collection with simple commands
                     </p>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6">
-                    <Volume2 className="w-8 h-8 text-blue-600 mb-3" />
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                    <Volume2 className="w-6 h-6 text-blue-600 mb-2" />
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                       Library Plays Them
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       Thin wrapper around Howler.js with zero configuration needed
                     </p>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6">
-                    <CheckCircle className="w-8 h-8 text-blue-600 mb-3" />
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                    <CheckCircle className="w-6 h-6 text-blue-600 mb-2" />
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                       TypeScript Ready
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       Full TypeScript support with generated types for your sounds
                     </p>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6">
-                    <Wrench className="w-8 h-8 text-blue-600 mb-3" />
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                    <Wrench className="w-6 h-6 text-blue-600 mb-2" />
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                       Framework Agnostic
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       Works with React, Vue, Svelte, or vanilla JavaScript
                     </p>
                   </div>
