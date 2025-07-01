@@ -382,7 +382,7 @@ function CodeBlock({ children, language = 'javascript' }: { children: string, la
 function MarkdownContent({ content }: { content: string }) {
   // Simple markdown parser for our docs
   const lines = content.trim().split('\n')
-  const elements = []
+  const elements: React.ReactNode[] = []
   let i = 0
   
   while (i < lines.length) {
@@ -432,7 +432,7 @@ function MarkdownContent({ content }: { content: string }) {
     // Inline code
     else if (line.includes('`')) {
       const parts = line.split('`')
-      const lineElements = []
+      const lineElements: React.ReactNode[] = []
       parts.forEach((part, idx) => {
         if (idx % 2 === 0) {
           lineElements.push(part)
@@ -453,7 +453,7 @@ function MarkdownContent({ content }: { content: string }) {
     // Bold text
     else if (line.includes('**')) {
       const parts = line.split('**')
-      const lineElements = []
+      const lineElements: React.ReactNode[] = []
       parts.forEach((part, idx) => {
         if (idx % 2 === 0) {
           lineElements.push(part)
