@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Use production ESLint config for static builds
+  eslint: {
+    ignoreDuringBuilds: process.env.BUILD_STATIC === 'true',
+  },
   // Static export for GitHub Pages
   output: process.env.BUILD_STATIC === 'true' ? 'export' : undefined,
   

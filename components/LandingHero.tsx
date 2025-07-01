@@ -123,16 +123,16 @@ export default function LandingHero() {
               
               <pre className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-3 rounded-lg text-xs text-left overflow-x-auto">
                 <code className="font-mono">
-                  <span className="text-gray-500 dark:text-gray-400">// Use in your app</span>
+                  <span className="text-gray-500 dark:text-gray-400">{`// Use in your app`}</span>
                   {'\n'}
                   <span className="text-blue-600 dark:text-blue-400">import</span> {'{ '}<span className="text-orange-600 dark:text-orange-400">play</span>, <span className="text-orange-600 dark:text-orange-400">pause</span>, <span className="text-orange-600 dark:text-orange-400">stop</span>{' }'} <span className="text-blue-600 dark:text-blue-400">from</span> <span className="text-green-600 dark:text-green-400">'@/peal'</span>
                   {'\n\n'}
-                  <span className="text-gray-500 dark:text-gray-400">// Play sounds with built-in volume control</span>
+                  <span className="text-gray-500 dark:text-gray-400">{`// Play sounds with built-in volume control`}</span>
                   {'\n'}<span className="text-orange-600 dark:text-orange-400">play</span>(<span className="text-green-600 dark:text-green-400">'success'</span>)             
                   {'\n'}<span className="text-orange-600 dark:text-orange-400">play</span>(<span className="text-green-600 dark:text-green-400">'notification'</span>, <span className="text-green-600 dark:text-green-400">'loud'</span>)  
                   {'\n'}<span className="text-orange-600 dark:text-orange-400">play</span>(<span className="text-green-600 dark:text-green-400">'error'</span>, <span className="text-green-600 dark:text-green-400">'quiet'</span>)    
                   {'\n\n'}
-                  <span className="text-gray-500 dark:text-gray-400">// Or use namespaced if you need 'play' elsewhere</span>
+                  <span className="text-gray-500 dark:text-gray-400">{`// Or use namespaced if you need 'play' elsewhere`}</span>
                   {'\n'}<span className="text-blue-600 dark:text-blue-400">import</span> <span className="text-orange-600 dark:text-orange-400">peal</span> <span className="text-blue-600 dark:text-blue-400">from</span> <span className="text-green-600 dark:text-green-400">'@/peal'</span>
                   {'\n'}<span className="text-orange-600 dark:text-orange-400">peal</span>.<span className="text-blue-600 dark:text-blue-400">play</span>(<span className="text-green-600 dark:text-green-400">'success'</span>)
                 </code>
