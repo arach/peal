@@ -385,34 +385,6 @@ peal.load('click', '/peal/click.wav');
 ]
 
 function CodeBlock({ children, language = 'javascript' }: { children: string, language?: string }) {
-  // Enhanced syntax highlighting
-  const highlightCode = (code: string) => {
-    let highlighted = code
-    
-    // Comments (must come first to avoid conflicts)
-    highlighted = highlighted.replace(/(\/\/.*$)/gm, '<span class="text-gray-500">$1</span>')
-    
-    // Strings (improved to handle escaped quotes)
-    highlighted = highlighted.replace(/(['"`])(?:[^\\]|\\.)*?\1/g, '<span class="text-green-600 dark:text-green-400">$&</span>')
-    
-    // Keywords
-    highlighted = highlighted.replace(/\b(import|from|const|let|var|function|async|await|try|catch|if|else|return|new|export|default|class|extends|constructor|throw|finally)\b/g, '<span class="text-blue-600 dark:text-blue-400">$1</span>')
-    
-    // Boolean and null
-    highlighted = highlighted.replace(/\b(true|false|null|undefined)\b/g, '<span class="text-purple-600 dark:text-purple-400">$1</span>')
-    
-    // Numbers
-    highlighted = highlighted.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="text-purple-600 dark:text-purple-400">$1</span>')
-    
-    // Functions
-    highlighted = highlighted.replace(/(\w+)(?=\s*\()/g, '<span class="text-yellow-600 dark:text-yellow-400">$1</span>')
-    
-    // Peal methods
-    highlighted = highlighted.replace(/\b(peal|play|stop|pause|volume|mute|click|success|error|notification)\b/g, '<span class="text-orange-600 dark:text-orange-400">$1</span>')
-    
-    return highlighted
-  }
-  
   const isTerminal = language === 'bash' || language === 'shell'
   
   if (isTerminal) {
@@ -435,10 +407,8 @@ function CodeBlock({ children, language = 'javascript' }: { children: string, la
   
   return (
     <pre className="bg-gray-50 dark:bg-gray-950/50 border border-gray-200 dark:border-gray-800 p-3 rounded-md text-xs overflow-x-auto my-2">
-      <code className="font-mono leading-5">
-        {isTerminal ? children : (
-          <span dangerouslySetInnerHTML={{ __html: highlightCode(children) }} />
-        )}
+      <code className="font-mono leading-5 text-gray-800 dark:text-gray-200">
+        {children}
       </code>
     </pre>
   )
@@ -559,7 +529,7 @@ export default function DocsPage() {
     <>
       <Header />
       <main className="min-h-screen bg-white dark:bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="container mx-auto py-12">
           {/* Hero Section */}
           <div className="text-center mb-12">
             <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
@@ -640,7 +610,7 @@ export default function DocsPage() {
 
             {/* Content Area */}
             <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 lg:p-8">
+              <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6">
                 {activeContent && <MarkdownContent content={activeContent.content} />}
               </div>
 
