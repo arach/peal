@@ -407,61 +407,122 @@ function CodeBlock({ children, language = 'javascript' }: { children: string, la
   
   // Tokenize and highlight JavaScript/TypeScript code
   const highlightJavaScript = (code: string) => {
-    // Split code into lines for better processing
-    const lines = code.split('\n')
+    // Token types for syntax highlighting
+    const TOKEN_TYPES = {
+      STRING: 'text-green-600 dark:text-green-400',
+      KEYWORD: 'text-blue-600 dark:text-blue-400',
+      BOOLEAN: 'text-purple-600 dark:text-purple-400',
+      NUMBER: 'text-purple-600 dark:text-purple-400',
+      FUNCTION: 'text-yellow-600 dark:text-yellow-400',
+      PROPERTY: 'text-red-500 dark:text-red-400',
+      PEAL: 'text-orange-600 dark:text-orange-400',
+      COMMENT: 'text-gray-500'
+    }
     
-    return lines.map((line, lineIndex) => {
-      // Process each line
-      let processedLine = line
+    // First decode any existing HTML entities
+    const decodeHtml = (str: string) => {
+      return str
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#039;/g, "'")
+    }
+    
+    // Then escape HTML to prevent XSS
+    const escapeHtml = (str: string) => {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+    }
+    
+    // Decode first to get clean code
+    const cleanCode = decodeHtml(code)
+    
+    // Tokenize the code to identify different parts
+    const tokens: Array<{type: string, value: string}> = []
+    let remaining = cleanCode
+    let position = 0
+    
+    while (remaining.length > 0) {
+      let matched = false
       
-      // Order matters: strings first, then other patterns
-      // 1. Comments
-      processedLine = processedLine.replace(/(\/\/.*$)/g, '<span class="text-gray-500">$1</span>')
+      // Check for comments first
+      if (remaining.match(/^\/\/.*/)) {
+        const match = remaining.match(/^\/\/.*/)![0]
+        tokens.push({ type: 'COMMENT', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for strings
+      else if (remaining.match(/^(['"`])(?:[^\\]|\\.)*?\1/)) {
+        const match = remaining.match(/^(['"`])(?:[^\\]|\\.)*?\1/)![0]
+        tokens.push({ type: 'STRING', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for keywords
+      else if (remaining.match(/^(import|export|from|const|let|var|function|async|await|try|catch|throw|if|else|return|new|default|class|extends|constructor|static)\b/)) {
+        const match = remaining.match(/^(import|export|from|const|let|var|function|async|await|try|catch|throw|if|else|return|new|default|class|extends|constructor|static)\b/)![0]
+        tokens.push({ type: 'KEYWORD', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for boolean/null
+      else if (remaining.match(/^(true|false|null|undefined)\b/)) {
+        const match = remaining.match(/^(true|false|null|undefined)\b/)![0]
+        tokens.push({ type: 'BOOLEAN', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for numbers
+      else if (remaining.match(/^\d+(?:\.\d+)?/)) {
+        const match = remaining.match(/^\d+(?:\.\d+)?/)![0]
+        tokens.push({ type: 'NUMBER', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for Peal methods
+      else if (remaining.match(/^(peal|play|stop|pause|volume|mute|click|success|error|notification)\b/)) {
+        const match = remaining.match(/^(peal|play|stop|pause|volume|mute|click|success|error|notification)\b/)![0]
+        tokens.push({ type: 'PEAL', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for function calls
+      else if (remaining.match(/^[a-zA-Z_$][\w$]*(?=\s*\()/)) {
+        const match = remaining.match(/^[a-zA-Z_$][\w$]*/)![0]
+        tokens.push({ type: 'FUNCTION', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
+      // Check for properties
+      else if (remaining.match(/^[a-zA-Z_$][\w$]*(?=\s*:)/)) {
+        const match = remaining.match(/^[a-zA-Z_$][\w$]*/)![0]
+        tokens.push({ type: 'PROPERTY', value: match })
+        remaining = remaining.slice(match.length)
+        matched = true
+      }
       
-      // 2. Strings (handle single, double, and template literals)
-      processedLine = processedLine.replace(
-        /('([^'\\]|\\.)*'|"([^"\\]|\\.)*"|`([^`\\]|\\.)*`)/g,
-        '<span class="text-green-600 dark:text-green-400">$1</span>'
-      )
-      
-      // 3. Keywords
-      processedLine = processedLine.replace(
-        /\b(import|export|from|const|let|var|function|async|await|try|catch|throw|if|else|return|new|default|class|extends|constructor|static)\b/g,
-        '<span class="text-blue-600 dark:text-blue-400">$1</span>'
-      )
-      
-      // 4. Boolean/null/undefined
-      processedLine = processedLine.replace(
-        /\b(true|false|null|undefined)\b/g,
-        '<span class="text-purple-600 dark:text-purple-400">$1</span>'
-      )
-      
-      // 5. Numbers
-      processedLine = processedLine.replace(
-        /\b(\d+(?:\.\d+)?)\b/g,
-        '<span class="text-purple-600 dark:text-purple-400">$1</span>'
-      )
-      
-      // 6. Function calls and methods
-      processedLine = processedLine.replace(
-        /\b([a-zA-Z_$][\w$]*)\s*(?=\()/g,
-        '<span class="text-yellow-600 dark:text-yellow-400">$1</span>'
-      )
-      
-      // 7. Object properties (before colons)
-      processedLine = processedLine.replace(
-        /\b([a-zA-Z_$][\w$]*)\s*(?=:)/g,
-        '<span class="text-red-500 dark:text-red-400">$1</span>'
-      )
-      
-      // 8. Peal-specific methods
-      processedLine = processedLine.replace(
-        /\b(peal|play|stop|pause|volume|mute|click|success|error|notification)\b/g,
-        '<span class="text-orange-600 dark:text-orange-400">$1</span>'
-      )
-      
-      return processedLine
-    }).join('\n')
+      // If nothing matched, just take the next character as plain text
+      if (!matched) {
+        tokens.push({ type: 'PLAIN', value: remaining[0] })
+        remaining = remaining.slice(1)
+      }
+    }
+    
+    // Convert tokens to HTML
+    return tokens.map(token => {
+      const escaped = escapeHtml(token.value)
+      if (token.type === 'PLAIN') {
+        return escaped
+      }
+      const className = TOKEN_TYPES[token.type as keyof typeof TOKEN_TYPES]
+      return className ? `<span class="${className}">${escaped}</span>` : escaped
+    }).join('')
   }
   
   return (
