@@ -2,22 +2,22 @@
 
 import { useState } from 'react'
 import { useSoundStore } from '@/store/soundStore'
-import { useRouter } from 'next/navigation'
 import { Zap, Trash2, X, Library, Sparkles, Crown, Menu, Book } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import DynamicPealLogo from './DynamicPealLogo'
+import { useBasePath } from './BaseLink'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { selectedSounds, removeSelectedSounds, clearSelection } = useSoundStore()
-  const router = useRouter()
+  const { push } = useBasePath()
 
   return (
     <header className="bg-surface/90 dark:bg-gray-900/90 border-b border-border dark:border-gray-800 backdrop-blur-md section-padding-sm">
       <div className="container flex justify-between items-center">
         <div className="flex items-center gap-6">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => push('/')}
             className="focus:outline-none"
           >
             <DynamicPealLogo 
@@ -31,41 +31,41 @@ export default function Header() {
           
           <nav className="hidden md:flex items-center gap-4">
             <button
-              onClick={() => router.push('/')}
+              onClick={() => push('/')}
               className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors"
             >
               Home
             </button>
             <button
-              onClick={() => router.push('/library')}
+              onClick={() => push('/library')}
               className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
             >
               <Library size={16} />
               Library
             </button>
             <button
-              onClick={() => router.push('/studio')}
+              onClick={() => push('/studio')}
               className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
             >
               <Sparkles size={16} />
               Studio
             </button>
             <button
-              onClick={() => router.push('/presets')}
+              onClick={() => push('/presets')}
               className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
             >
               <Crown size={16} />
               Presets
             </button>
             <button
-              onClick={() => router.push('/docs')}
+              onClick={() => push('/docs')}
               className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
             >
               <Book size={16} />
               Docs
             </button>
             <button
-              onClick={() => router.push('/about')}
+              onClick={() => push('/about')}
               className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors"
             >
               About
@@ -116,7 +116,7 @@ export default function Header() {
           <nav className="container py-4 space-y-2">
             <button
               onClick={() => {
-                router.push('/')
+                push('/')
                 setMobileMenuOpen(false)
               }}
               className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors"
@@ -125,7 +125,7 @@ export default function Header() {
             </button>
             <button
               onClick={() => {
-                router.push('/library')
+                push('/library')
                 setMobileMenuOpen(false)
               }}
               className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
@@ -135,7 +135,7 @@ export default function Header() {
             </button>
             <button
               onClick={() => {
-                router.push('/studio')
+                push('/studio')
                 setMobileMenuOpen(false)
               }}
               className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
@@ -145,7 +145,7 @@ export default function Header() {
             </button>
             <button
               onClick={() => {
-                router.push('/presets')
+                push('/presets')
                 setMobileMenuOpen(false)
               }}
               className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
@@ -155,7 +155,7 @@ export default function Header() {
             </button>
             <button
               onClick={() => {
-                router.push('/docs')
+                push('/docs')
                 setMobileMenuOpen(false)
               }}
               className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
@@ -165,7 +165,7 @@ export default function Header() {
             </button>
             <button
               onClick={() => {
-                router.push('/about')
+                push('/about')
                 setMobileMenuOpen(false)
               }}
               className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors"

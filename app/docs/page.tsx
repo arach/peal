@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Link from 'next/link'
 import { useState } from 'react'
 import { isStaticBuild } from '@/utils/build'
+import { getPublicUrl } from '@/utils/url'
 import { 
   FileCode, 
   Zap, 

@@ -4,6 +4,7 @@ import { Code, Sparkles, Zap, ChevronDown, Volume2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import HeroSoundGrid from './HeroSoundGrid'
 import { isStaticBuild } from '@/utils/build'
+import { getPublicUrl } from '@/utils/url'
 
 export default function LandingHero() {
 
@@ -48,14 +49,14 @@ export default function LandingHero() {
             {isStaticBuild ? (
               <>
                 <a
-                  href="/docs"
+                  href={getPublicUrl('/docs')}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-lg transition-colors touch-manipulation"
                 >
                   <Code size={20} />
                   Read the Docs
                 </a>
                 <a
-                  href="/about"
+                  href={getPublicUrl('/about')}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
                 >
                   <Sparkles size={20} />
