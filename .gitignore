@@ -42,3 +42,6 @@ test-package/
 
 # Static build artifacts
 public/sounds/
+
+# Audio cache files (can be large)
+audio-cache/
