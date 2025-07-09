@@ -1,6 +1,6 @@
 'use client'
 
-import { Code, Sparkles, Zap, ChevronDown, Volume2 } from 'lucide-react'
+import { Code, Sparkles, Zap, ChevronDown, Volume2, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import HeroSoundGrid from './HeroSoundGrid'
 import { isStaticBuild } from '@/utils/build'
@@ -172,52 +172,128 @@ export default function LandingHero() {
         </motion.div>
 
         {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 mt-20">
+        <div className="grid md:grid-cols-3 gap-4 mt-16 max-w-4xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
-            className="text-center"
+            className="group relative"
           >
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-5 border border-gray-100 dark:border-gray-800">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 rounded-md bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-4 h-4 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-[13px] font-medium text-gray-900 dark:text-gray-100 leading-none">Drop-in ready</h3>
+                  <p className="text-[12px] text-gray-500 dark:text-gray-400 leading-[1.5]">
+                    Single file. No build step. Works everywhere.
+                  </p>
+                </div>
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Copy & Paste</h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              No packages to install. Just copy the code you need.
-            </p>
           </motion.div>
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 }}
-            className="text-center"
+            className="group relative"
           >
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-5 border border-gray-100 dark:border-gray-800">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 rounded-md bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-[13px] font-medium text-gray-900 dark:text-gray-100 leading-none">Brand-tailored</h3>
+                  <p className="text-[12px] text-gray-500 dark:text-gray-400 leading-[1.5]">
+                    Fine-tune every parameter to match your aesthetic.
+                  </p>
+                </div>
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Customizable</h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Tweak any sound to match your brand perfectly.
-            </p>
           </motion.div>
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
-            className="text-center"
+            className="group relative"
           >
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Code className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-5 border border-gray-100 dark:border-gray-800">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 rounded-md bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/30 dark:to-green-900/20 flex items-center justify-center flex-shrink-0">
+                  <Code className="w-4 h-4 text-green-600 dark:text-green-400" strokeWidth={1.5} />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-[13px] font-medium text-gray-900 dark:text-gray-100 leading-none">Native performance</h3>
+                  <p className="text-[12px] text-gray-500 dark:text-gray-400 leading-[1.5]">
+                    Pure Web Audio API. Zero dependencies.
+                  </p>
+                </div>
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Zero Dependencies</h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Pure Web Audio API. Works everywhere, owns nothing.
-            </p>
           </motion.div>
         </div>
+
+        {/* CTA Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.9 }}
+          className="relative mt-24 overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-cyan-600/5 dark:from-blue-600/10 dark:via-purple-600/10 dark:to-cyan-600/10 rounded-2xl" />
+          <div className="relative bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-gray-800 p-12 text-center">
+            <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4 tracking-tight">
+              Ready to ship better audio?
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 max-w-lg mx-auto leading-relaxed">
+              Join developers building the next generation of interface design with thoughtful sound.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+              {isStaticBuild ? (
+                <>
+                  <a
+                    href={getPublicUrl('/docs')}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 active:bg-gray-700 dark:active:bg-gray-200 text-white dark:text-gray-900 font-medium rounded-lg text-sm transition-colors touch-manipulation"
+                  >
+                    Get Started
+                    <ArrowRight size={16} />
+                  </a>
+                  <a
+                    href={getPublicUrl('/about')}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg text-sm border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
+                  >
+                    <Code size={16} />
+                    View Examples
+                  </a>
+                </>
+              ) : (
+                <>
+                  <a
+                    href="/library"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 active:bg-gray-700 dark:active:bg-gray-200 text-white dark:text-gray-900 font-medium rounded-lg text-sm transition-colors touch-manipulation"
+                  >
+                    Browse Library
+                    <ArrowRight size={16} />
+                  </a>
+                  <a
+                    href="/studio"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg text-sm border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
+                  >
+                    <Sparkles size={16} />
+                    Open Studio
+                  </a>
+                </>
+              )}
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

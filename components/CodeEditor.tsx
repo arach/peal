@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Copy, Check, Code2, Play, RefreshCw } from 'lucide-react'
+import { Copy, Check, Code2, Play, RefreshCw, AlertCircle, GitBranch } from 'lucide-react'
 import { Sound } from '@/store/soundStore'
 import Editor from '@monaco-editor/react'
 
@@ -17,6 +17,14 @@ interface CodeEditorProps {
   }>
 }
 
+interface CodeVersion {
+  timestamp: number
+  code: string
+  source: 'user' | 'studio'
+  soundId: string
+  description?: string
+}
+
 export default function CodeEditor({ currentSound, onSoundChange, tracks }: CodeEditorProps) {
   const [copied, setCopied] = useState(false)
   const [forceRefresh, setForceRefresh] = useState(0)
@@ -24,9 +32,17 @@ export default function CodeEditor({ currentSound, onSoundChange, tracks }: Code
   const [editorValue, setEditorValue] = useState('')
   const [isUserEditing, setIsUserEditing] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [studioHasChanged, setStudioHasChanged] = useState(false)
+  const [showVersionControl, setShowVersionControl] = useState(false)
+  
+  // Version control state
+  const [versions, setVersions] = useState<CodeVersion[]>([])
+  const [currentVersionIndex, setCurrentVersionIndex] = useState(-1)
+  
   const audioContextRef = useRef<AudioContext | null>(null)
   const editorRef = useRef<any>(null)
-  const lastGeneratedCode = useRef<string>('')
+  const lastStudioCode = useRef<string>('')
+  const lastUserCode = useRef<string>('')
 
   const generateMultiTrackCode = (mainSound: Sound, tracks: any[]) => {
     const soloTracks = tracks.filter(t => t.solo)
@@ -176,21 +192,121 @@ function makeDistortionCurve(amount) {
 
   const code = currentSound ? generateSoundCode(currentSound) : ''
 
-  // Update editor when code changes - but only if user isn't editing
-  useEffect(() => {
-    if (!isUserEditing) {
-      setEditorValue(code)
-      lastGeneratedCode.current = code
-      setHasUnsavedChanges(false)
+  // Add version when code changes from studio
+  const addVersion = (newCode: string, source: 'user' | 'studio', description?: string) => {
+    if (!currentSound) return
+    
+    const newVersion: CodeVersion = {
+      timestamp: Date.now(),
+      code: newCode,
+      source,
+      soundId: currentSound.id,
+      description
     }
-  }, [code, forceRefresh, isUserEditing])
+    
+    setVersions(prev => [...prev, newVersion])
+    setCurrentVersionIndex(prev => prev + 1)
+  }
+
+  // Track studio changes
+  useEffect(() => {
+    if (!isUserEditing && code !== lastStudioCode.current) {
+      const oldCode = lastStudioCode.current
+      lastStudioCode.current = code
+      
+      // Check if this is a significant change
+      const isSignificantChange = 
+        oldCode && (
+          // Track count changed
+          (oldCode.match(/Track \d+:/g) || []).length !== (code.match(/Track \d+:/g) || []).length ||
+          // Frequency changed significantly
+          Math.abs((parseFloat(oldCode.match(/frequency\.setValueAtTime\((\d+)/)?.[1] || '0')) - 
+                   (parseFloat(code.match(/frequency\.setValueAtTime\((\d+)/)?.[1] || '0'))) > 50 ||
+          // Waveform changed
+          oldCode.match(/type = '(\w+)'/)?.[1] !== code.match(/type = '(\w+)'/)?.[1]
+        )
+      
+      // If user has made changes, notify them of studio updates
+      if (hasUnsavedChanges) {
+        setStudioHasChanged(true)
+      } else {
+        // Auto-update if no user changes
+        setEditorValue(code)
+        // Only add version for significant changes
+        if (isSignificantChange) {
+          addVersion(code, 'studio', 'Studio parameters updated')
+        }
+      }
+    }
+  }, [code, isUserEditing, hasUnsavedChanges])
 
   // Handle editor changes
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
       setEditorValue(value)
       setIsUserEditing(true)
-      setHasUnsavedChanges(value !== lastGeneratedCode.current)
+      const hasChanges = value !== lastStudioCode.current
+      setHasUnsavedChanges(hasChanges)
+      
+      if (hasChanges && value !== lastUserCode.current) {
+        lastUserCode.current = value
+        // Only create version after significant edits (debounced to 5 seconds)
+        if (versions.length === 0 || Date.now() - versions[versions.length - 1].timestamp > 5000) {
+          // Check if the change is significant enough
+          const significantEdit = 
+            Math.abs(value.length - lastStudioCode.current.length) > 50 || // Major length change
+            value.split('\n').length !== lastStudioCode.current.split('\n').length // Line count changed
+          
+          if (significantEdit) {
+            addVersion(value, 'user', 'Code edited')
+          }
+        }
+      }
+    }
+  }
+
+  const mergeWithStudioChanges = () => {
+    // In a real implementation, this could do a 3-way merge
+    // For now, we'll let user choose
+    const userChoice = confirm('Studio has changed. Keep your edits (OK) or use studio version (Cancel)?')
+    
+    if (userChoice) {
+      // Keep user edits
+      setStudioHasChanged(false)
+    } else {
+      // Use studio version
+      setEditorValue(code)
+      setHasUnsavedChanges(false)
+      setIsUserEditing(false)
+      setStudioHasChanged(false)
+      lastStudioCode.current = code
+      addVersion(code, 'studio', 'Reverted to studio version')
+    }
+  }
+
+  const switchToVersion = (index: number) => {
+    const version = versions[index]
+    if (version && currentSound && onSoundChange) {
+      setEditorValue(version.code)
+      setCurrentVersionIndex(index)
+      setHasUnsavedChanges(version.code !== lastStudioCode.current)
+      lastUserCode.current = version.code
+      
+      // Extract parameters from the version and trigger regeneration
+      const versionParams = extractSoundParams(version.code)
+      const updatedSound: Sound = {
+        ...currentSound,
+        parameters: {
+          ...currentSound.parameters,
+          ...versionParams
+        },
+        frequency: versionParams.frequency || currentSound.frequency,
+        duration: versionParams.duration ? Math.round(versionParams.duration * 1000) : currentSound.duration
+      }
+      
+      // Trigger full regeneration for this version
+      onSoundChange(updatedSound)
+      console.log('Switched to version', index, '- triggering full regeneration:', updatedSound)
     }
   }
 
@@ -208,7 +324,7 @@ function makeDistortionCurve(amount) {
   const extractSoundParams = (code: string): Partial<Sound['parameters']> => {
     const params: any = {}
     
-    // Extract frequency values
+    // Extract frequency values - look for the first oscillator frequency
     const freqMatches = code.matchAll(/frequency\.setValueAtTime\((\d+(?:\.\d+)?)/g)
     const frequencies = Array.from(freqMatches).map(m => parseFloat(m[1]))
     if (frequencies.length > 0) {
@@ -216,21 +332,66 @@ function makeDistortionCurve(amount) {
     }
     
     // Extract duration
-    const durationMatch = code.match(/duration = ([\d.]+)/)
+    const durationMatch = code.match(/const duration = ([\d.]+)/)
     if (durationMatch) {
       params.duration = parseFloat(durationMatch[1])
     }
     
-    // Extract waveform type
-    const waveformMatch = code.match(/type = '(sine|square|sawtooth|triangle)'/)
+    // Extract waveform type - look for oscillator.type
+    const waveformMatch = code.match(/oscillator\.type = '(sine|square|sawtooth|triangle)'/)
     if (waveformMatch) {
       params.waveform = waveformMatch[1] as any
     }
     
-    // Extract volume
+    // Extract volume from function parameter
     const volumeMatch = code.match(/volume = ([\d.]+)/)
     if (volumeMatch) {
       params.volume = parseFloat(volumeMatch[1])
+    }
+    
+    // Extract envelope parameters
+    const attackMatch = code.match(/const attack = ([\d.]+)/)
+    if (attackMatch) params.attack = parseFloat(attackMatch[1])
+    
+    const decayMatch = code.match(/const decay = ([\d.]+)/)
+    if (decayMatch) params.decay = parseFloat(decayMatch[1])
+    
+    const sustainMatch = code.match(/const sustain = ([\d.]+)/)
+    if (sustainMatch) params.sustain = parseFloat(sustainMatch[1])
+    
+    const releaseMatch = code.match(/const release = ([\d.]+)/)
+    if (releaseMatch) params.release = parseFloat(releaseMatch[1])
+    
+    // Extract effects parameters
+    const filterMatch = code.match(/filter\.frequency\.setValueAtTime\((\d+(?:\.\d+)?)/)
+    if (filterMatch) {
+      params.filterFrequency = parseFloat(filterMatch[1])
+      if (!params.effects) params.effects = {}
+      params.effects.filter = true
+    }
+    
+    const filterQMatch = code.match(/filter\.Q\.setValueAtTime\((\d+(?:\.\d+)?)/)
+    if (filterQMatch) {
+      params.filterQ = parseFloat(filterQMatch[1])
+    }
+    
+    const delayTimeMatch = code.match(/delay\.delayTime\.setValueAtTime\(([\d.]+)/)
+    if (delayTimeMatch) {
+      params.delayTime = parseFloat(delayTimeMatch[1])
+      if (!params.effects) params.effects = {}
+      params.effects.delay = true
+    }
+    
+    const delayFeedbackMatch = code.match(/delayGain\.gain\.setValueAtTime\(([\d.]+)/)
+    if (delayFeedbackMatch) {
+      params.delayFeedback = parseFloat(delayFeedbackMatch[1])
+    }
+    
+    const distortionMatch = code.match(/makeDistortionCurve\((\d+(?:\.\d+)?)/)
+    if (distortionMatch) {
+      params.distortionAmount = parseFloat(distortionMatch[1])
+      if (!params.effects) params.effects = {}
+      params.effects.distortion = true
     }
     
     return params
@@ -261,40 +422,15 @@ function makeDistortionCurve(amount) {
         duration: newParams.duration ? Math.round(newParams.duration * 1000) : currentSound.duration
       }
       
-      // Notify parent component
+      // Notify parent component to trigger full regeneration
       onSoundChange(updatedSound)
       setIsUserEditing(false) // Exit editing mode after applying changes
-      lastGeneratedCode.current = currentCode
+      lastStudioCode.current = currentCode
       setHasUnsavedChanges(false)
+      setStudioHasChanged(false)
+      addVersion(currentCode, 'user', 'Applied code changes')
       
-      // Play the sound to preview
-      try {
-        // Check if it's a multi-track composition
-        const isMultiTrack = currentCode.includes('playComposition')
-        
-        if (isMultiTrack) {
-          // Extract the function body for multi-track composition
-          const functionBody = currentCode
-            .replace(/export function playComposition\([^)]*\)\s*{/, '')
-            .replace(/}$/, '')
-          
-          // Create function with masterVolume parameter
-          const playFunction = new Function('masterVolume', functionBody)
-          playFunction(0.3)
-        } else {
-          // Single sound - extract function body
-          const functionBody = currentCode
-            .replace(/export function play\w+\([^)]*\)\s*{/, '')
-            .replace(/}$/, '')
-          
-          // Create function with volume parameter
-          const playFunction = new Function('volume', functionBody)
-          playFunction(0.3)
-        }
-      } catch (error) {
-        console.error('Error playing sound:', error)
-        alert(`Error playing sound: ${error.message}`)
-      }
+      console.log('Code changes applied to Studio - triggering full regeneration:', updatedSound)
     } catch (error) {
       console.error('Error applying code changes:', error)
       alert('Error applying code changes. Check the console for details.')
@@ -309,12 +445,10 @@ function makeDistortionCurve(amount) {
       handleRunCode()
     })
     
-    // Track when user starts/stops editing
+    // Track when user starts editing
     editor.onDidFocusEditorText(() => {
       setIsUserEditing(true)
     })
-    
-    // Don't automatically exit edit mode on blur - let user decide
   }
 
   return (
@@ -332,44 +466,104 @@ function makeDistortionCurve(amount) {
         </div>
         
         {currentSound && (
-          <div className="flex items-center gap-2">
-            {hasUnsavedChanges && (
-              <span className="text-xs text-yellow-400">• Unsaved changes</span>
+          <div className="flex items-center gap-1">
+            {/* Status indicators */}
+            {(studioHasChanged || hasUnsavedChanges) && (
+              <div className="flex items-center gap-2 mr-2">
+                {studioHasChanged && (
+                  <button
+                    onClick={mergeWithStudioChanges}
+                    className="p-1.5 bg-yellow-600 hover:bg-yellow-700 text-white rounded transition-colors animate-pulse"
+                    title="Studio parameters have changed - click to manage"
+                  >
+                    <AlertCircle size={14} />
+                  </button>
+                )}
+                {hasUnsavedChanges && (
+                  <span className="text-xs text-yellow-400">•</span>
+                )}
+              </div>
             )}
-            <button
-              onClick={() => {
-                console.log('Refresh clicked. Current sound:', currentSound)
-                console.log('Current params:', currentSound?.parameters)
-                console.log('Tracks:', tracks)
-                setIsRefreshing(true)
-                setIsUserEditing(false) // Stop editing mode
-                setForceRefresh(prev => prev + 1)
-                setTimeout(() => setIsRefreshing(false), 500)
-              }}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors"
-              title="Force refresh code from current Studio state"
-            >
-              <RefreshCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
-              {isRefreshing ? 'Refreshing...' : 'Refresh'}
-            </button>
+            
+            {/* Compact button group */}
+            <div className="flex items-center bg-gray-700 rounded-lg">
+              <button
+                onClick={() => setShowVersionControl(!showVersionControl)}
+                className={`p-1.5 ${showVersionControl ? 'bg-purple-600' : 'hover:bg-gray-600'} text-white rounded-l-lg transition-colors`}
+                title={`Version history (${versions.length})`}
+              >
+                <GitBranch size={14} />
+              </button>
+              <div className="w-px h-6 bg-gray-600" />
+              <button
+                onClick={() => {
+                  console.log('Refresh clicked. Current sound:', currentSound)
+                  console.log('Current params:', currentSound?.parameters)
+                  console.log('Tracks:', tracks)
+                  setIsRefreshing(true)
+                  setIsUserEditing(false) // Stop editing mode
+                  setForceRefresh(prev => prev + 1)
+                  setEditorValue(code)
+                  setHasUnsavedChanges(false)
+                  setStudioHasChanged(false)
+                  lastStudioCode.current = code
+                  // Don't add version for refresh
+                  setTimeout(() => setIsRefreshing(false), 500)
+                }}
+                className="p-1.5 hover:bg-gray-600 text-white transition-colors"
+                title="Sync with Studio state"
+              >
+                <RefreshCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
+              </button>
+              <div className="w-px h-6 bg-gray-600" />
+              <button
+                onClick={copyToClipboard}
+                className="p-1.5 hover:bg-gray-600 text-white rounded-r-lg transition-colors"
+                title="Copy code"
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+              </button>
+            </div>
+            
+            {/* Primary action */}
             <button
               onClick={handleRunCode}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-              title="Run code and apply changes (⌘+Enter)"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors ml-2"
+              title="Apply code changes to Studio (⌘+Enter)"
             >
-              <Play size={14} />
-              Run
-            </button>
-            <button
-              onClick={copyToClipboard}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-            >
-              {copied ? <Check size={14} /> : <Copy size={14} />}
-              {copied ? 'Copied!' : 'Copy'}
+              <Check size={14} />
+              Apply
             </button>
           </div>
         )}
       </div>
+
+      {/* Version Control Panel */}
+      {showVersionControl && versions.length > 0 && (
+        <div className="bg-gray-800 border-b border-gray-700 p-3 max-h-48 overflow-y-auto">
+          <div className="space-y-1">
+            {versions.map((version, index) => (
+              <div
+                key={version.timestamp}
+                className={`flex items-center justify-between p-2 rounded cursor-pointer transition-colors ${
+                  index === currentVersionIndex ? 'bg-gray-700' : 'hover:bg-gray-700/50'
+                }`}
+                onClick={() => switchToVersion(index)}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${version.source === 'user' ? 'bg-blue-400' : 'bg-green-400'}`} />
+                  <span className="text-xs text-gray-300">
+                    {version.description || `${version.source} change`}
+                  </span>
+                </div>
+                <span className="text-xs text-gray-500">
+                  {new Date(version.timestamp).toLocaleTimeString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Code Content */}
       <div className="flex-1 overflow-hidden">
@@ -385,7 +579,7 @@ function makeDistortionCurve(amount) {
                 <span className="text-xs text-gray-400 font-mono">{currentSound.type}-sound.js</span>
               </div>
               <span className="text-xs text-gray-500">
-                {currentSound.frequency}Hz • {currentSound.duration}ms • Rev: {forceRefresh} • Tracks: {tracks?.length || 0}
+                {currentSound.frequency}Hz • {currentSound.duration}ms • Tracks: {tracks?.length || 0}
               </span>
             </div>
             <div className="h-full">
@@ -400,7 +594,7 @@ function makeDistortionCurve(amount) {
                   minimap: { enabled: false },
                   fontSize: 12,
                   fontFamily: 'ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, Menlo, monospace',
-                  wordWrap: 'on',
+                  wordWrap: 'off',
                   lineNumbers: 'on',
                   scrollBeyondLastLine: false,
                   automaticLayout: true,
@@ -415,6 +609,12 @@ function makeDistortionCurve(amount) {
                   renderWhitespace: 'none',
                   quickSuggestions: true,
                   suggestOnTriggerCharacters: true,
+                  scrollbar: {
+                    horizontal: 'auto',
+                    vertical: 'auto',
+                    horizontalScrollbarSize: 10,
+                    verticalScrollbarSize: 10
+                  }
                 }}
               />
             </div>

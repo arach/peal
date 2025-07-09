@@ -90,6 +90,7 @@ export default function Studio() {
   // Modal states
   const [showVibeModal, setShowVibeModal] = useState(false)
   const [showLibraryModal, setShowLibraryModal] = useState(false)
+
   
   const waveformCanvasRef = useRef<HTMLCanvasElement>(null)
   const timelineCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -275,6 +276,42 @@ export default function Studio() {
       ctx.fillStyle = gradient
       ctx.fillRect(editStartX, 0, editEndX - editStartX, height)
       
+      // Show the proposed sound length overlay
+      if (editedParams && editedParams.duration && currentSound) {
+        const insertDuration = editedParams.duration
+        const totalDuration = currentSound.duration / 1000 // Convert to seconds
+        const insertWidthRatio = insertDuration / totalDuration
+        const insertWidth = insertWidthRatio * width
+        
+        // Draw proposed sound length indicator
+        const centerX = (editStartX + editEndX) / 2
+        const proposedStartX = centerX - insertWidth / 2
+        const proposedEndX = centerX + insertWidth / 2
+        
+        // Draw proposed sound region with visual indication
+        ctx.fillStyle = 'rgba(168, 85, 247, 0.3)' // Purple with more opacity
+        const actualStartX = Math.max(editStartX, proposedStartX)
+        const actualEndX = Math.min(editEndX, proposedEndX)
+        ctx.fillRect(actualStartX, 0, actualEndX - actualStartX, height)
+        
+        // Draw proposed sound waveform preview outline
+        ctx.strokeStyle = '#a855f7'
+        ctx.lineWidth = 2
+        ctx.setLineDash([4, 4])
+        ctx.strokeRect(actualStartX, height * 0.2, actualEndX - actualStartX, height * 0.6)
+        ctx.setLineDash([])
+        
+        // Show duration text
+        ctx.fillStyle = '#ffffff'
+        ctx.font = 'bold 14px Inter'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
+        ctx.shadowBlur = 4
+        ctx.fillText(`${Math.round(insertDuration * 1000)}ms`, centerX, height / 2)
+        ctx.shadowBlur = 0
+      }
+      
       // Draw insert boundaries with glow
       ctx.strokeStyle = '#9333ea'
       ctx.lineWidth = 2
@@ -293,9 +330,9 @@ export default function Studio() {
       
       ctx.shadowBlur = 0
       
-      // Add "+" icon in the center of the region
+      // Add "+" icon if there's space and no duration overlay
       const regionWidth = editEndX - editStartX
-      if (regionWidth > 30) {
+      if (regionWidth > 30 && (!editedParams || !editedParams.duration)) {
         ctx.fillStyle = '#9333ea'
         ctx.font = 'bold 16px Inter'
         ctx.textAlign = 'center'
@@ -530,6 +567,45 @@ export default function Studio() {
       ctx.fillStyle = 'rgba(147, 51, 234, 0.2)'
       ctx.fillRect(editStartX, 0, editEndX - editStartX, height)
       
+      // Show the proposed sound length overlay on timeline
+      if (editedParams && editedParams.duration && currentSound) {
+        const insertDuration = editedParams.duration
+        const totalDuration = currentSound.duration / 1000 // Convert to seconds
+        const insertWidthRatio = insertDuration / totalDuration
+        const insertWidth = insertWidthRatio * drawWidth
+        
+        // Draw proposed sound length indicator
+        const centerX = (editStartX + editEndX) / 2
+        const proposedStartX = centerX - insertWidth / 2
+        const proposedEndX = centerX + insertWidth / 2
+        
+        // Draw proposed sound region
+        ctx.fillStyle = 'rgba(168, 85, 247, 0.4)' // Purple with more opacity
+        const actualStartX = Math.max(editStartX, proposedStartX)
+        const actualEndX = Math.min(editEndX, proposedEndX)
+        ctx.fillRect(actualStartX, height * 0.2, actualEndX - actualStartX, height * 0.6)
+        
+        // Draw duration indicator line
+        ctx.strokeStyle = '#a855f7'
+        ctx.lineWidth = 1.5
+        ctx.setLineDash([3, 3])
+        ctx.strokeRect(actualStartX, height * 0.2, actualEndX - actualStartX, height * 0.6)
+        ctx.setLineDash([])
+        
+        // Duration label with background
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
+        const labelText = `${Math.round(insertDuration * 1000)}ms`
+        ctx.font = 'bold 10px Inter'
+        const textMetrics = ctx.measureText(labelText)
+        const labelX = Math.min(Math.max(centerX, editStartX + textMetrics.width/2 + 5), editEndX - textMetrics.width/2 - 5)
+        ctx.fillRect(labelX - textMetrics.width/2 - 3, height/2 - 7, textMetrics.width + 6, 14)
+        
+        ctx.fillStyle = '#ffffff'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(labelText, labelX, height/2)
+      }
+      
       // Focus area border
       ctx.strokeStyle = '#9333ea'
       ctx.lineWidth = 2
@@ -549,22 +625,24 @@ export default function Studio() {
       ctx.fillStyle = '#ffffff'
       ctx.fillRect(editEndX - 2, height/4, 4, height/2)
       
-      // Add plus icon in center to indicate insertion
-      const centerX = (editStartX + editEndX) / 2
-      ctx.strokeStyle = '#ffffff'
-      ctx.lineWidth = 2
-      
-      // Draw plus sign
-      const plusSize = 8
-      ctx.beginPath()
-      ctx.moveTo(centerX - plusSize/2, height/2)
-      ctx.lineTo(centerX + plusSize/2, height/2)
-      ctx.stroke()
-      
-      ctx.beginPath()
-      ctx.moveTo(centerX, height/2 - plusSize/2)
-      ctx.lineTo(centerX, height/2 + plusSize/2)
-      ctx.stroke()
+      // Add plus icon if no duration overlay
+      if (!editedParams || !editedParams.duration) {
+        const centerX = (editStartX + editEndX) / 2
+        ctx.strokeStyle = '#ffffff'
+        ctx.lineWidth = 2
+        
+        // Draw plus sign
+        const plusSize = 8
+        ctx.beginPath()
+        ctx.moveTo(centerX - plusSize/2, height/2)
+        ctx.lineTo(centerX + plusSize/2, height/2)
+        ctx.stroke()
+        
+        ctx.beginPath()
+        ctx.moveTo(centerX, height/2 - plusSize/2)
+        ctx.lineTo(centerX, height/2 + plusSize/2)
+        ctx.stroke()
+      }
     }
     
     // Draw time markers
@@ -666,7 +744,7 @@ export default function Studio() {
     }
     
     drawMainWaveform()
-  }, [currentSound?.waveformData, previewSound?.waveformData, editMode, insertMode, editStart, editEnd, playbackPosition, selectedTrackId, tracks, trackSelection])
+  }, [currentSound?.waveformData, previewSound?.waveformData, editMode, insertMode, editStart, editEnd, playbackPosition, selectedTrackId, tracks, trackSelection, editedParams])
 
   // Draw timeline when sound, selection values, or mode changes
   useEffect(() => {
@@ -674,7 +752,7 @@ export default function Studio() {
     if (soundToDisplay?.waveformData) {
       drawTimeline(timelineCanvasRef.current, soundToDisplay.waveformData)
     }
-  }, [currentSound?.waveformData, previewSound?.waveformData, trimStart, trimEnd, editStart, editEnd, editMode, insertMode, trimMode, playbackPosition, moveMode, movePreview, trackSelection])
+  }, [currentSound?.waveformData, previewSound?.waveformData, trimStart, trimEnd, editStart, editEnd, editMode, insertMode, trimMode, playbackPosition, moveMode, movePreview, trackSelection, editedParams])
 
   
   // Update playback position during playback
@@ -2055,6 +2133,7 @@ export default function Studio() {
     }, 100)
   }
 
+
   const handleVibePlaySound = async (sound: Sound) => {
     try {
       await generator.playSound(sound)
@@ -2138,8 +2217,20 @@ export default function Studio() {
           </div>
         </div>
 
-        {/* Center - Empty for now */}
-        <div></div>
+        {/* Center - Tab Navigation */}
+        <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+          <button
+            className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-gray-700 text-white"
+          >
+            Sound Designer
+          </button>
+          <button
+            onClick={() => router.push('/audiolab')}
+            className="px-4 py-2 rounded-md text-sm font-medium transition-colors text-gray-400 hover:text-gray-200"
+          >
+            Audio Lab
+          </button>
+        </div>
 
         {/* Right - Project Actions */}
         <div className="flex items-center gap-2">
@@ -3641,7 +3732,7 @@ export default function Studio() {
             setMovePreview(null)
           }}
         >
-          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm">
+          <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]">
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 px-4 py-2 rounded-lg shadow-xl">
               <p className="text-sm text-gray-300">Click to place selection • Right-click to cancel</p>
             </div>
@@ -3653,7 +3744,7 @@ export default function Studio() {
       {showHelpModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40 backdrop-blur-[3px]"
             onClick={() => setShowHelpModal(false)}
           />
           <div className="relative bg-gray-900 rounded-xl shadow-2xl border border-gray-800 p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
@@ -3737,6 +3828,8 @@ export default function Studio() {
           </div>
         </div>
       )}
+        </div>
+      </div>
       
       {/* Modals */}
       <VibeDesignerModal
