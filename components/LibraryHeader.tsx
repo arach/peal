@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Library, Sparkles, Menu } from 'lucide-react'
+import { Library, Sparkles, Menu, Mic } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import DynamicPealLogo from './DynamicPealLogo'
 
@@ -45,12 +45,21 @@ export default function LibraryHeader() {
                 Studio
               </button>
               {isDev && (
-                <button
-                  onClick={() => router.push('/presets')}
-                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
-                >
-                  Presets (Dev)
-                </button>
+                <>
+                  <button
+                    onClick={() => router.push('/presets')}
+                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                  >
+                    Presets (Dev)
+                  </button>
+                  <button
+                    onClick={() => router.push('/tts')}
+                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                  >
+                    <Mic size={16} />
+                    Voice Lab
+                  </button>
+                </>
               )}
             </nav>
           </div>
@@ -94,15 +103,27 @@ export default function LibraryHeader() {
               Studio
             </button>
             {isDev && (
-              <button
-                onClick={() => {
-                  router.push('/presets')
-                  setMobileMenuOpen(false)
-                }}
-                className="block w-full text-left px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
-              >
-                Presets (Dev)
-              </button>
+              <>
+                <button
+                  onClick={() => {
+                    router.push('/presets')
+                    setMobileMenuOpen(false)
+                  }}
+                  className="block w-full text-left px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  Presets (Dev)
+                </button>
+                <button
+                  onClick={() => {
+                    router.push('/tts')
+                    setMobileMenuOpen(false)
+                  }}
+                  className="block w-full text-left px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <Mic size={16} />
+                  Voice Lab
+                </button>
+              </>
             )}
           </nav>
         </div>

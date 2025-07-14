@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useSoundStore } from '@/store/soundStore'
-import { Zap, Trash2, X, Library, Sparkles, Crown, Menu, Book } from 'lucide-react'
+import { Zap, Trash2, X, Library, Sparkles, Crown, Menu, Book, Mic } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import DynamicPealLogo from './DynamicPealLogo'
 import { useBasePath } from './BaseLink'
@@ -59,6 +59,13 @@ export default function Header() {
                 >
                   <Crown size={16} />
                   Presets
+                </button>
+                <button
+                  onClick={() => push('/tts')}
+                  className="text-sm text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                >
+                  <Mic size={16} />
+                  Voice Lab
                 </button>
               </>
             )}
@@ -159,6 +166,16 @@ export default function Header() {
                 >
                   <Crown size={16} />
                   Presets
+                </button>
+                <button
+                  onClick={() => {
+                    push('/tts')
+                    setMobileMenuOpen(false)
+                  }}
+                  className="block w-full text-left px-4 py-2 text-text-secondary dark:text-gray-400 hover:text-text-primary dark:hover:text-gray-100 hover:bg-background dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <Mic size={16} />
+                  Voice Lab
                 </button>
               </>
             )}
