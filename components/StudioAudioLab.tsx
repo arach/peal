@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { ArrowLeft, Play, Pause, Square, Volume2 } from 'lucide-react'
+import { Play, Pause, Square, Volume2, Save } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import StudioHeader from './StudioHeader'
 
 interface Track {
   id: string
@@ -30,11 +31,19 @@ export default function StudioAudioLab() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [audioAnalysis, setAudioAnalysis] = useState<any>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [storedAnalyses, setStoredAnalyses] = useState<any[]>([])
+  const [showStoredAnalyses, setShowStoredAnalyses] = useState(false)
+  const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null)
+  
+  // Playhead state
+  const [playheadPosition, setPlayheadPosition] = useState(0) // 0-1 normalized position
+  const playheadIntervalRef = useRef<NodeJS.Timeout | null>(null)
   
   // Audio playback state
   const audioContextRef = useRef<AudioContext | null>(null)
   const currentSourcesRef = useRef<AudioBufferSourceNode[]>([])
   const playbackStartTime = useRef<number>(0)
+  const maxDuration = useRef<number>(0) // Track the longest audio duration
 
   // Audio generation functions
   const generateAudioBuffer = (frequency: number, duration: number, type: 'sine' | 'sawtooth' | 'square' = 'sine'): AudioBuffer => {
@@ -153,8 +162,16 @@ export default function StudioAudioLab() {
             setTracks(newTracks)
             console.log('Successfully loaded', newTracks.length, 'separated audio tracks')
             
-            // Perform advanced analysis on the first track (original)
-            if (result.tracks.length > 0) {
+            // Update stored analyses list
+            await loadStoredAnalyses()
+            
+            // Set current analysis ID if provided
+            if (result.analysisId) {
+              setCurrentAnalysisId(result.analysisId)
+            }
+            
+            // Perform advanced analysis on the first track (original) if not from storage
+            if (result.tracks.length > 0 && !result.fromStorage) {
               await performAdvancedAnalysis(result.tracks[0].audioData)
             }
             
@@ -301,6 +318,10 @@ export default function StudioAudioLab() {
       
       // Set up end callback for the longest track
       const longestDuration = Math.max(...activeTracks.map(t => t.audioBuffer?.duration || 0))
+      
+      // Start playhead tracking
+      startPlayheadTracking(longestDuration)
+      
       setTimeout(() => {
         if (currentSourcesRef.current === sources) {
           handleStop()
@@ -328,6 +349,33 @@ export default function StudioAudioLab() {
     })
     currentSourcesRef.current = []
     setIsPlaying(false)
+    
+    // Stop playhead tracking
+    if (playheadIntervalRef.current) {
+      clearInterval(playheadIntervalRef.current)
+      playheadIntervalRef.current = null
+    }
+    setPlayheadPosition(0)
+  }
+
+  // Start playhead tracking
+  const startPlayheadTracking = (duration: number) => {
+    maxDuration.current = duration
+    playbackStartTime.current = audioContextRef.current?.currentTime || 0
+    
+    // Update playhead position every 50ms for smooth animation
+    playheadIntervalRef.current = setInterval(() => {
+      if (audioContextRef.current && playbackStartTime.current > 0) {
+        const elapsed = audioContextRef.current.currentTime - playbackStartTime.current
+        const progress = Math.min(elapsed / duration, 1)
+        setPlayheadPosition(progress)
+        
+        // Stop tracking when playback is complete
+        if (progress >= 1) {
+          handleStop()
+        }
+      }
+    }, 50)
   }
 
   // Play individual track
@@ -358,8 +406,10 @@ export default function StudioAudioLab() {
       currentSourcesRef.current = [source]
       setIsPlaying(true)
       
-      // Set up end callback
+      // Set up end callback and start playhead tracking
       const duration = track.audioBuffer.duration
+      startPlayheadTracking(duration)
+      
       setTimeout(() => {
         if (currentSourcesRef.current.includes(source)) {
           handleStop()
@@ -565,6 +615,90 @@ export default function StudioAudioLab() {
     }
   }
 
+  // Load stored analyses on component mount
+  useEffect(() => {
+    loadStoredAnalyses()
+  }, [])
+
+  // Force canvas redraw when playhead position changes
+  useEffect(() => {
+    // Trigger a re-render of all canvases when playhead moves
+    // This is handled by the canvas ref callback function
+  }, [playheadPosition, isPlaying])
+
+  // Load stored analyses from API
+  const loadStoredAnalyses = async () => {
+    try {
+      const response = await fetch('/api/stored-analyses')
+      if (response.ok) {
+        const data = await response.json()
+        setStoredAnalyses(data.analyses || [])
+      } else {
+        console.warn('Failed to load stored analyses, using empty array')
+        setStoredAnalyses([])
+      }
+    } catch (error) {
+      console.error('Error loading stored analyses:', error)
+      setStoredAnalyses([]) // Fallback to empty array
+    }
+  }
+
+  // Load a specific stored analysis
+  const loadStoredAnalysis = async (analysisId: string) => {
+    try {
+      const response = await fetch(`/api/stored-analyses?id=${analysisId}`)
+      if (response.ok) {
+        const storedAnalysis = await response.json()
+        
+        // Convert tracks data back to proper format
+        const newTracks: Track[] = storedAnalysis.tracks.map((trackData: any) => {
+          const audioBuffer = null // Will be loaded when needed
+          return {
+            id: trackData.id,
+            name: trackData.name,
+            audioBuffer,
+            waveformData: null, // Will be generated when audio is loaded
+            muted: false,
+            solo: false,
+            volume: 1,
+            color: trackData.color
+          }
+        })
+        
+        setTracks(newTracks)
+        setAudioUrl(storedAnalysis.url)
+        setCurrentAnalysisId(analysisId)
+        setShowStoredAnalyses(false)
+        
+        // Set the analysis data if available
+        if (storedAnalysis.analysis) {
+          setAudioAnalysis(storedAnalysis.analysis)
+        }
+        
+        console.log('Loaded stored analysis:', storedAnalysis.id)
+      }
+    } catch (error) {
+      console.error('Error loading stored analysis:', error)
+    }
+  }
+
+  // Delete a stored analysis
+  const deleteStoredAnalysis = async (analysisId: string) => {
+    try {
+      const response = await fetch(`/api/stored-analyses?id=${analysisId}`, {
+        method: 'DELETE'
+      })
+      if (response.ok) {
+        await loadStoredAnalyses() // Refresh the list
+        console.log('Analysis deleted successfully')
+      } else {
+        console.warn('Failed to delete analysis')
+      }
+    } catch (error) {
+      console.error('Error deleting stored analysis:', error)
+    }
+  }
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -575,64 +709,23 @@ export default function StudioAudioLab() {
     }
   }, [])
 
+  const audioActions = (
+    <>
+      <button className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800/50 rounded-lg transition-colors">
+        <Save size={16} />
+        <span className="text-sm">Save</span>
+      </button>
+    </>
+  )
+
   return (
     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
-      {/* Top Toolbar */}
-      <div className="flex items-center justify-between px-6 py-3 bg-gray-900 border-b border-gray-800">
-        {/* Left - Navigation & Project */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push('/library')}
-            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            <ArrowLeft size={18} />
-            Back to Library
-          </button>
-          
-          <div className="w-px h-6 bg-gray-700"></div>
-          
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-              <Volume2 size={16} className="text-white" />
-            </div>
-            <div>
-              <h1 className="font-semibold text-lg">Sound Studio</h1>
-              <p className="text-xs text-gray-400">Audio Lab</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Center - Tab Navigation */}
-        <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
-          <button
-            onClick={() => setActiveTab('designer')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === 'designer'
-                ? 'bg-gray-700 text-white'
-                : 'text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            Sound Designer
-          </button>
-          <button
-            onClick={() => setActiveTab('audiolab')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === 'audiolab'
-                ? 'bg-gray-700 text-white'
-                : 'text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            Audio Lab
-          </button>
-        </div>
-
-        {/* Right - Actions */}
-        <div className="flex items-center gap-2">
-          <button className="px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors">
-            Save
-          </button>
-        </div>
-      </div>
+      <StudioHeader 
+        currentTool="audio"
+        title="Audio Lab"
+        subtitle="Process & compose audio"
+        actions={audioActions}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex">
@@ -650,7 +743,49 @@ export default function StudioAudioLab() {
             <div className="w-80 bg-gray-900 border-r border-gray-800 p-6 space-y-6">
               {/* URL Processor */}
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wider">URL Processor</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wider">URL Processor</h3>
+                  <button
+                    onClick={() => setShowStoredAnalyses(!showStoredAnalyses)}
+                    className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                  >
+                    {showStoredAnalyses ? 'Hide' : 'Recent'} ({storedAnalyses.length})
+                  </button>
+                </div>
+                
+                {showStoredAnalyses && (
+                  <div className="max-h-40 overflow-y-auto space-y-2 mb-3">
+                    {storedAnalyses.length > 0 ? (
+                      storedAnalyses.map((analysis) => (
+                        <div key={analysis.id} className="flex items-center gap-2 p-2 bg-gray-800 rounded-lg">
+                          <div className="flex-1">
+                            <div className="text-xs text-gray-300">{analysis.metadata.title}</div>
+                            <div className="text-xs text-gray-500">
+                              {new Date(analysis.timestamp).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => loadStoredAnalysis(analysis.id)}
+                            className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded"
+                          >
+                            Load
+                          </button>
+                          <button
+                            onClick={() => deleteStoredAnalysis(analysis.id)}
+                            className="text-xs bg-red-600 hover:bg-red-500 text-white px-2 py-1 rounded"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-xs text-gray-500 text-center py-2">
+                        No stored analyses yet
+                      </div>
+                    )}
+                  </div>
+                )}
+                
                 <div className="space-y-2">
                   <input
                     type="text"
@@ -839,6 +974,18 @@ export default function StudioAudioLab() {
                       Active: {tracks.filter(t => !t.muted).length} | 
                       Solo: {tracks.filter(t => t.solo).length}
                     </div>
+                    {/* Progress bar */}
+                    <div className="flex-1 max-w-xs mx-4">
+                      <div className="w-full bg-gray-800 rounded-full h-2">
+                        <div 
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-75"
+                          style={{ width: `${playheadPosition * 100}%` }}
+                        />
+                      </div>
+                      <div className="text-xs text-gray-500 text-center mt-1">
+                        {isPlaying ? `${Math.round(playheadPosition * 100)}%` : 'Ready'}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Track Display */}
@@ -929,6 +1076,19 @@ export default function StudioAudioLab() {
                                   })
                                   
                                   ctx.stroke()
+                                  
+                                  // Draw playhead line if playing
+                                  if (isPlaying && playheadPosition > 0) {
+                                    const playheadX = playheadPosition * canvas.width
+                                    ctx.strokeStyle = '#ffffff'
+                                    ctx.lineWidth = 2
+                                    ctx.setLineDash([5, 3]) // Dashed line
+                                    ctx.beginPath()
+                                    ctx.moveTo(playheadX, 0)
+                                    ctx.lineTo(playheadX, canvas.height)
+                                    ctx.stroke()
+                                    ctx.setLineDash([]) // Reset line dash
+                                  }
                                 }
                               }
                             }}

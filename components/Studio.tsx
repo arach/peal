@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ArrowLeft, Play, Pause, Square, Save, FolderOpen, Settings, Sparkles, Volume2, SkipBack, ChevronLeft, ChevronRight, Scissors, Edit3, Wand2, HelpCircle } from 'lucide-react'
+import { Play, Pause, Square, Save, FolderOpen, Settings, Sparkles, Volume2, SkipBack, ChevronLeft, ChevronRight, Scissors, Edit3, Wand2, HelpCircle } from 'lucide-react'
 import { useSoundStore, Sound } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { VibeParser } from '@/lib/vibeParser'
 import VibeDesignerModal from './VibeDesignerModal'
 import SoundLibraryModal from './SoundLibraryModal'
 import CodeEditor from './CodeEditor'
+import StudioHeader from './StudioHeader'
 
 export default function Studio() {
   const router = useRouter()
@@ -2190,88 +2191,41 @@ export default function Studio() {
     setShowLibraryModal(false)
   }
 
+  // Main render  
+  const studioActions = (
+    <>
+      <button 
+        onClick={handleLoadProject}
+        className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800/50 rounded-lg transition-colors"
+        title="Open a saved project"
+      >
+        <FolderOpen size={16} />
+        <span className="text-sm">Open</span>
+      </button>
+      <button 
+        onClick={handleSaveProject}
+        disabled={!currentSound}
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+          currentSound 
+            ? 'bg-blue-500 hover:bg-blue-400 text-white' 
+            : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+        }`}
+        title="Save current project"
+      >
+        <Save size={16} />
+        <span className="text-sm">Save</span>
+      </button>
+    </>
+  )
+
   return (
-    <div className={`h-screen flex flex-col bg-gray-950 text-gray-100 ${isResizing ? 'cursor-ew-resize select-none' : ''}`}>
-      {/* Top Toolbar */}
-      <div className="flex items-center justify-between px-6 py-3 bg-gray-900 border-b border-gray-800">
-        {/* Left - Navigation & Project */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push('/library')}
-            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            <ArrowLeft size={18} />
-            Back to Library
-          </button>
-          
-          <div className="w-px h-6 bg-gray-700"></div>
-          
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-              <Volume2 size={16} className="text-white" />
-            </div>
-            <div>
-              <h1 className="font-semibold text-lg">Sound Studio</h1>
-              <p className="text-xs text-gray-400">Untitled Project</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Center - Tab Navigation */}
-        <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
-          <button
-            className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-gray-700 text-white"
-          >
-            Sound Designer
-          </button>
-          <button
-            onClick={() => router.push('/audiolab')}
-            className="px-4 py-2 rounded-md text-sm font-medium transition-colors text-gray-400 hover:text-gray-200"
-          >
-            Audio Lab
-          </button>
-        </div>
-
-        {/* Right - Project Actions */}
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={handleLoadProject}
-            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
-            title="Open a saved project"
-          >
-            <FolderOpen size={16} />
-            Open
-          </button>
-          <button 
-            onClick={handleSaveProject}
-            disabled={!currentSound}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-              currentSound 
-                ? 'bg-primary-500 hover:bg-primary-400 text-white' 
-                : 'bg-gray-700 text-gray-400 cursor-not-allowed'
-            }`}
-            title="Save current project"
-          >
-            <Save size={16} />
-            Save
-          </button>
-          <button 
-            onClick={() => setShowHelpModal(true)}
-            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
-            title="Keyboard shortcuts (press ?)"
-          >
-            <HelpCircle size={16} />
-          </button>
-          <button 
-            onClick={() => setShowParametersPanel(!showParametersPanel)}
-            className={`flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
-              showParametersPanel ? 'bg-gray-700 text-gray-100' : 'bg-gray-800 text-gray-400 hover:text-gray-100'
-            }`}
-          >
-            <Settings size={16} />
-          </button>
-        </div>
-      </div>
+    <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+      <StudioHeader 
+        currentTool="sfx"
+        title="SFX Studio"
+        subtitle="Untitled Project"
+        actions={studioActions}
+      />
 
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
@@ -3828,8 +3782,6 @@ export default function Studio() {
           </div>
         </div>
       )}
-        </div>
-      </div>
       
       {/* Modals */}
       <VibeDesignerModal
