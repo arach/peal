@@ -23,15 +23,15 @@ export function StarBorder<T extends ElementType = "button">({
   return (
     <Component 
       className={cn(
-        "relative inline-block py-[1px] overflow-hidden rounded-[20px]",
+        "relative inline-block py-[1px] overflow-hidden rounded-[20px] group",
         className
       )} 
       {...props}
     >
       <div
         className={cn(
-          "absolute w-[300%] h-[50%] bottom-[-11px] right-[-250%] rounded-full animate-star-movement-bottom z-0",
-          "opacity-20 dark:opacity-70" 
+          "absolute w-[300%] h-[50%] bottom-[-11px] right-[-250%] rounded-full group-hover:animate-star-movement-bottom z-0",
+          "opacity-0 group-hover:opacity-20 dark:group-hover:opacity-70 transition-opacity duration-300" 
         )}
         style={{
           background: `radial-gradient(circle, ${defaultColor}, transparent 10%)`,
@@ -40,8 +40,8 @@ export function StarBorder<T extends ElementType = "button">({
       />
       <div
         className={cn(
-          "absolute w-[300%] h-[50%] top-[-10px] left-[-250%] rounded-full animate-star-movement-top z-0",
-          "opacity-20 dark:opacity-70"
+          "absolute w-[300%] h-[50%] top-[-10px] left-[-250%] rounded-full group-hover:animate-star-movement-top z-0",
+          "opacity-0 group-hover:opacity-20 dark:group-hover:opacity-70 transition-opacity duration-300"
         )}
         style={{
           background: `radial-gradient(circle, ${defaultColor}, transparent 10%)`,
