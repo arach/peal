@@ -221,7 +221,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
             e.stopPropagation()
             isPlaying ? onStop() : onPlay()
           }}
-          className={`p-2 rounded-xl transition-colors ${
+          className={`p-2 rounded transition-colors ${
             isPlaying 
               ? 'bg-blue-600 text-white' 
               : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
@@ -235,7 +235,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
             e.stopPropagation()
             onShowCode()
           }}
-          className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl transition-colors flex items-center gap-1"
+          className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded transition-colors flex items-center gap-1"
         >
           <Code2 size={16} />
           <span className="text-xs">Code</span>
