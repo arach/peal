@@ -9,7 +9,7 @@ import { getPublicUrl } from '@/utils/url'
 export default function LandingHero() {
 
   return (
-    <section className="relative bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-20 px-4 overflow-hidden">
+    <section className="relative bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-3 overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 dark:bg-blue-900 rounded-full blur-3xl opacity-20" />
@@ -17,12 +17,12 @@ export default function LandingHero() {
       </div>
 
       <div className="relative max-w-7xl mx-auto">
-        <div className="text-center mb-16">
+        <div className="text-center mb-6">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6"
+            className="text-3xl md:text-5xl lg:text-6xl font-medium text-gray-900 dark:text-white mb-6"
           >
             Lightweight sound effects
             <br />
@@ -33,7 +33,7 @@ export default function LandingHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8"
+            className="text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-6"
           >
             Beautiful, responsive UI sounds that work everywhere. 
             Elevate your brand with bespoke audio that makes your app feel futuristic.
@@ -44,22 +44,22 @@ export default function LandingHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+            className="flex flex-col sm:flex-row gap-2 justify-center mb-4"
           >
             {isStaticBuild ? (
               <>
                 <a
                   href={getPublicUrl('/docs')}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-lg transition-colors touch-manipulation"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-medium rounded-lg transition-colors touch-manipulation"
                 >
-                  <Code size={20} />
+                  <Code size={14} />
                   Read the Docs
                 </a>
                 <a
                   href={getPublicUrl('/about')}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white text-xs font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
                 >
-                  <Sparkles size={20} />
+                  <Sparkles size={14} />
                   Learn More
                 </a>
               </>
@@ -67,16 +67,16 @@ export default function LandingHero() {
               <>
                 <a
                   href="/library"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-lg transition-colors touch-manipulation"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-medium rounded-lg transition-colors touch-manipulation"
                 >
-                  <Volume2 size={20} />
+                  <Volume2 size={14} />
                   Explore Library
                 </a>
                 <a
                   href="/studio"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white text-xs font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
                 >
-                  <Sparkles size={20} />
+                  <Sparkles size={14} />
                   Open Studio
                 </a>
               </>
@@ -90,7 +90,7 @@ export default function LandingHero() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex justify-center"
           >
-            <ChevronDown className="w-6 h-6 text-gray-400 animate-bounce" />
+            <ChevronDown className="w-4 h-4 text-gray-400 animate-bounce" />
           </motion.div>
         </div>
 
@@ -101,7 +101,7 @@ export default function LandingHero() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mb-16"
         >
-          <h3 className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 mb-8 uppercase tracking-wide">
+          <h3 className="text-center text-sm md:text-base font-medium text-gray-500 dark:text-gray-400 mb-6 uppercase tracking-wider">
             Try our signature sounds
           </h3>
           <HeroSoundGrid />
@@ -112,27 +112,27 @@ export default function LandingHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="relative overflow-hidden"
+          className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-gray-800 p-6 max-w-2xl mx-auto overflow-hidden"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl" />
-          <div className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-gray-100 dark:border-gray-800 p-8 max-w-3xl mx-auto">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <Code className="text-blue-600 dark:text-blue-400" size={20} />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl opacity-20" />
+          <div className="relative">
+            <div className="flex items-center justify-center gap-1.5 mb-3">
+              <Code className="text-blue-600 dark:text-blue-400" size={14} />
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
                 Seamless integration
               </h3>
             </div>
             
             <div className="space-y-3">
-              <div className="bg-gray-950 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800">
+              <div className="bg-gray-950 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800">
                 {/* Terminal command */}
-                <div className="bg-gray-900 dark:bg-black p-3 border-b border-gray-800">
+                <div className="bg-gray-900 dark:bg-black px-4 py-3 border-b border-gray-800">
                   <code className="font-mono text-xs">
                     <span className="text-gray-500">&gt;</span> <span className="text-purple-400">npx peal</span> <span className="text-gray-100">add success notification error</span>
                   </code>
                 </div>
                 {/* Terminal output */}
-                <div className="p-3">
+                <div className="px-4 py-3">
                   <code className="font-mono text-xs text-gray-300">
                     <div className="text-gray-400">🎧 Added 3 sounds:</div>
                     <div className="mt-1 space-y-0.5 ml-2">
@@ -144,7 +144,7 @@ export default function LandingHero() {
                 </div>
               </div>
               
-              <pre className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-3 rounded-lg text-xs text-left overflow-x-auto">
+              <pre className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 px-4 py-3 rounded-xl text-xs text-left overflow-x-auto">
                 <code className="font-mono">
                   <span className="text-gray-500 dark:text-gray-400">{`// Use in your app`}</span>
                   {'\n'}
@@ -172,7 +172,7 @@ export default function LandingHero() {
         </motion.div>
 
         {/* Features */}
-        <div className="grid md:grid-cols-3 gap-4 mt-16 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-3 mt-8 max-w-4xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -180,14 +180,14 @@ export default function LandingHero() {
             className="group relative"
           >
             <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-5 border border-gray-100 dark:border-gray-800">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-md bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 flex items-center justify-center flex-shrink-0">
-                  <Zap className="w-4 h-4 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />
+            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800">
+              <div className="flex items-start space-x-2">
+                <div className="w-6 h-6 rounded bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-3 h-3 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-[13px] font-medium text-gray-900 dark:text-gray-100 leading-none">Drop-in ready</h3>
-                  <p className="text-[12px] text-gray-500 dark:text-gray-400 leading-[1.5]">
+                  <h3 className="text-2xs font-medium text-gray-900 dark:text-gray-100 leading-none">Drop-in ready</h3>
+                  <p className="text-2xs text-gray-500 dark:text-gray-400 leading-[1.4]">
                     Single file. No build step. Works everywhere.
                   </p>
                 </div>
@@ -202,14 +202,14 @@ export default function LandingHero() {
             className="group relative"
           >
             <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-5 border border-gray-100 dark:border-gray-800">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-md bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20 flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />
+            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800">
+              <div className="flex items-start space-x-2">
+                <div className="w-6 h-6 rounded bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-3 h-3 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-[13px] font-medium text-gray-900 dark:text-gray-100 leading-none">Brand-tailored</h3>
-                  <p className="text-[12px] text-gray-500 dark:text-gray-400 leading-[1.5]">
+                  <h3 className="text-2xs font-medium text-gray-900 dark:text-gray-100 leading-none">Brand-tailored</h3>
+                  <p className="text-2xs text-gray-500 dark:text-gray-400 leading-[1.4]">
                     Fine-tune every parameter to match your aesthetic.
                   </p>
                 </div>
@@ -224,14 +224,14 @@ export default function LandingHero() {
             className="group relative"
           >
             <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-5 border border-gray-100 dark:border-gray-800">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-md bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/30 dark:to-green-900/20 flex items-center justify-center flex-shrink-0">
-                  <Code className="w-4 h-4 text-green-600 dark:text-green-400" strokeWidth={1.5} />
+            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800">
+              <div className="flex items-start space-x-2">
+                <div className="w-6 h-6 rounded bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/30 dark:to-green-900/20 flex items-center justify-center flex-shrink-0">
+                  <Code className="w-3 h-3 text-green-600 dark:text-green-400" strokeWidth={1.5} />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-[13px] font-medium text-gray-900 dark:text-gray-100 leading-none">Native performance</h3>
-                  <p className="text-[12px] text-gray-500 dark:text-gray-400 leading-[1.5]">
+                  <h3 className="text-2xs font-medium text-gray-900 dark:text-gray-100 leading-none">Native performance</h3>
+                  <p className="text-2xs text-gray-500 dark:text-gray-400 leading-[1.4]">
                     Pure Web Audio API. Zero dependencies.
                   </p>
                 </div>

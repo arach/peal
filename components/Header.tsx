@@ -48,20 +48,20 @@ export default function Header({
   const renderMinimalHeader = () => (
     <header className="bg-white/90 dark:bg-gray-900/90 border-b border-gray-200 dark:border-gray-800 backdrop-blur-md">
       <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-12">
           <button
             onClick={() => handleNavigation('/')}
             className="focus:outline-none"
           >
             <DynamicPealLogo 
-              width={100} 
-              height={32}
+              width={80} 
+              height={24}
               preset="layered"
               animated={false}
               className="text-gray-900 dark:text-gray-100"
             />
           </button>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {rightContent}
             <ThemeToggle />
           </div>
@@ -72,29 +72,29 @@ export default function Header({
 
   const renderStudioHeader = () => (
     <header className="bg-gray-950 border-b border-gray-800">
-      <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => handleNavigation(backUrl || '/library')}
-              className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
             >
-              <ArrowLeft size={18} />
+              <ArrowLeft size={14} />
               {backLabel}
             </button>
             {title && (
               <>
-                <div className="w-px h-6 bg-gray-700"></div>
+                <div className="w-px h-4 bg-gray-700"></div>
                 <div>
-                  <h1 className="text-xl font-semibold text-gray-100">{title}</h1>
+                  <h1 className="text-sm font-medium text-gray-100">{title}</h1>
                   {subtitle && (
-                    <p className="text-sm text-gray-400 mt-1">{subtitle}</p>
+                    <p className="text-2xs text-gray-400 mt-0.5">{subtitle}</p>
                   )}
                 </div>
               </>
             )}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {rightContent}
             <ThemeToggle />
           </div>
@@ -105,26 +105,26 @@ export default function Header({
 
   const renderStandaloneHeader = () => (
     <header className="border-b border-gray-800/50">
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => handleNavigation(backUrl || '/')}
-              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
-              <ArrowLeft className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-400">{backLabel}</span>
+              <ArrowLeft className="w-3 h-3 text-gray-400" />
+              <span className="text-2xs text-gray-400">{backLabel}</span>
             </button>
             {title && (
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-sm flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-white" />
+                <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-sm flex items-center justify-center">
+                  <Sparkles className="w-3 h-3 text-white" />
                 </div>
-                <h1 className="text-lg font-light text-white tracking-wide">{title}</h1>
+                <h1 className="text-sm font-light text-white tracking-wide">{title}</h1>
               </div>
             )}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {rightContent}
             <ThemeToggle />
           </div>
@@ -136,73 +136,73 @@ export default function Header({
   const renderAppHeader = () => (
     <header className="bg-white/90 dark:bg-gray-900/90 border-b border-gray-200 dark:border-gray-800 backdrop-blur-md sticky top-0 z-40">
       <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center gap-8">
+        <div className="flex justify-between items-center h-12">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => handleNavigation('/')}
               className="focus:outline-none"
             >
               <DynamicPealLogo 
-                width={100} 
-                height={32}
+                width={70} 
+                height={20}
                 preset="layered"
                 animated={false}
                 className="text-gray-900 dark:text-gray-100"
               />
             </button>
             
-            <nav className="hidden md:flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-3">
               <button
                 onClick={() => handleNavigation('/library')}
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-0.5"
               >
-                <Library size={16} />
+                <Library size={12} />
                 Library
               </button>
               {!isStaticBuild && (
                 <>
                   <button
                     onClick={() => handleNavigation('/studio')}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                    className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-0.5"
                   >
-                    <Sparkles size={16} />
+                    <Sparkles size={12} />
                     Studio
                   </button>
                   {isDev && (
                     <button
                       onClick={() => handleNavigation('/presets')}
-                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                      className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-0.5"
                     >
-                      <Crown size={16} />
+                      <Crown size={12} />
                       Presets
                     </button>
                   )}
                   <button
                     onClick={() => handleNavigation('/voice')}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                    className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-0.5"
                   >
-                    <Mic size={16} />
+                    <Mic size={12} />
                     Voice
                   </button>
                 </>
               )}
               <button
                 onClick={() => handleNavigation('/docs')}
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
+                className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-0.5"
               >
-                <Book size={16} />
+                <Book size={12} />
                 Docs
               </button>
               <button
                 onClick={() => handleNavigation('/about')}
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
               >
                 About
               </button>
             </nav>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {rightContent}
             <ThemeToggle />
             
@@ -211,7 +211,7 @@ export default function Header({
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
             >
-              <Menu size={24} />
+              <Menu size={18} />
             </button>
           </div>
         </div>

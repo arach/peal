@@ -1,9 +1,19 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Figtree, IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
 import ThemeProvider from '@/components/ThemeProvider'
 
-const inter = Inter({ subsets: ['latin'] })
+// Load fonts but only use CSS variables
+const figtree = Figtree({ 
+  subsets: ['latin'],
+  variable: '--font-figtree'
+})
+
+const ibmPlexMono = IBM_Plex_Mono({ 
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-ibm-plex-mono'
+})
 
 export const metadata: Metadata = {
   title: 'Peal - Tech Sound Designer',
@@ -16,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-background dark:bg-gray-950 text-text-primary dark:text-gray-100 transition-colors`}>
+    <html lang="en" className={`${figtree.variable} ${ibmPlexMono.variable}`}>
+      <body className="bg-background dark:bg-gray-950 text-text-primary dark:text-gray-100 transition-colors">
         <ThemeProvider>
           {children}
         </ThemeProvider>

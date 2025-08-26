@@ -179,7 +179,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-900/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:border-blue-400 dark:hover:border-gray-700 transition-all group shadow-sm hover:shadow-md cursor-pointer"
+      className="bg-white dark:bg-gray-900/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl p-4 hover:border-blue-400 dark:hover:border-gray-700 transition-all group shadow-sm hover:shadow-md cursor-pointer"
       onClick={onShowCode}
     >
       {/* Waveform */}
@@ -207,7 +207,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
         {sound.tags.map(tag => (
           <span
             key={tag}
-            className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-xs"
+            className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs"
           >
             {tag}
           </span>
@@ -221,7 +221,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
             e.stopPropagation()
             isPlaying ? onStop() : onPlay()
           }}
-          className={`p-2 rounded transition-colors ${
+          className={`p-2 rounded-xl transition-colors ${
             isPlaying 
               ? 'bg-blue-600 text-white' 
               : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
@@ -235,7 +235,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
             e.stopPropagation()
             onShowCode()
           }}
-          className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded transition-colors flex items-center gap-1"
+          className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl transition-colors flex items-center gap-1"
         >
           <Code2 size={16} />
           <span className="text-xs">Code</span>
