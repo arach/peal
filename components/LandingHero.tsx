@@ -50,34 +50,38 @@ export default function LandingHero() {
               <>
                 <a
                   href={getPublicUrl('/docs')}
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-medium rounded-lg transition-colors touch-manipulation"
+                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-base font-medium rounded-2xl transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl hover:shadow-blue-600/25"
                 >
-                  <Code size={14} />
-                  Read the Docs
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <Code size={20} className="relative" />
+                  <span className="relative">Read the Docs</span>
                 </a>
                 <a
                   href={getPublicUrl('/about')}
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white text-xs font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
+                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white text-base font-medium rounded-2xl border border-gray-300 dark:border-gray-600 transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl"
                 >
-                  <Sparkles size={14} />
-                  Learn More
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-gray-100/50 dark:via-white/10 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <Sparkles size={20} className="relative" />
+                  <span className="relative">Learn More</span>
                 </a>
               </>
             ) : (
               <>
                 <a
                   href="/library"
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-medium rounded-lg transition-colors touch-manipulation"
+                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-base font-medium rounded-2xl transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl hover:shadow-blue-600/25"
                 >
-                  <Volume2 size={14} />
-                  Explore Library
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <Volume2 size={20} className="relative" />
+                  <span className="relative">Explore Library</span>
                 </a>
                 <a
                   href="/studio"
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white text-xs font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors touch-manipulation"
+                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white text-base font-medium rounded-2xl border border-gray-300 dark:border-gray-600 transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl"
                 >
-                  <Sparkles size={14} />
-                  Open Studio
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-gray-100/50 dark:via-white/10 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <Sparkles size={20} className="relative" />
+                  <span className="relative">Open Studio</span>
                 </a>
               </>
             )}
