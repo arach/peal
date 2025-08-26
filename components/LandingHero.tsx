@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import HeroSoundGrid from './HeroSoundGrid'
 import { isStaticBuild } from '@/utils/build'
 import { getPublicUrl } from '@/utils/url'
-import { StarBorder } from '@/components/ui/star-border'
 
 export default function LandingHero() {
 
@@ -68,18 +67,19 @@ export default function LandingHero() {
               </>
             ) : (
               <>
-                <StarBorder
-                  as="a"
+                <a
                   href="/library"
-                  color="#3b82f6"
-                  speed="1s"
-                  className="touch-manipulation"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 touch-manipulation relative overflow-hidden group"
                 >
-                  <div className="inline-flex items-center justify-center gap-2 relative">
-                    <Volume2 size={20} />
-                    <span className="font-medium">Explore Library</span>
+                  {/* Glass shine effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300">
+                    <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500">
+                      <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-white to-transparent skew-x-[-20deg]" />
+                    </div>
                   </div>
-                </StarBorder>
+                  <Volume2 size={20} className="relative z-10" />
+                  <span className="relative z-10">Explore Library</span>
+                </a>
                 <a
                   href="/studio"
                   className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-white/10 hover:bg-white/15 active:bg-white/20 text-white font-medium rounded-lg border border-white/20 backdrop-blur-sm transition-all duration-200 touch-manipulation relative overflow-hidden group"
