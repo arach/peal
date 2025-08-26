@@ -182,12 +182,12 @@ export default function LandingHero() {
             <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800">
               <div className="flex items-start space-x-2">
-                <div className="w-6 h-6 rounded bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 flex items-center justify-center flex-shrink-0">
-                  <Zap className="w-3 h-3 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-4 h-4 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-2xs font-medium text-gray-900 dark:text-gray-100 leading-none">Drop-in ready</h3>
-                  <p className="text-2xs text-gray-500 dark:text-gray-400 leading-[1.4]">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-none">Drop-in ready</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-[1.5]">
                     Single file. No build step. Works everywhere.
                   </p>
                 </div>
@@ -204,12 +204,12 @@ export default function LandingHero() {
             <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800">
               <div className="flex items-start space-x-2">
-                <div className="w-6 h-6 rounded bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20 flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-3 h-3 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-2xs font-medium text-gray-900 dark:text-gray-100 leading-none">Brand-tailored</h3>
-                  <p className="text-2xs text-gray-500 dark:text-gray-400 leading-[1.4]">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-none">Brand-tailored</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-[1.5]">
                     Fine-tune every parameter to match your aesthetic.
                   </p>
                 </div>
@@ -226,12 +226,12 @@ export default function LandingHero() {
             <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800">
               <div className="flex items-start space-x-2">
-                <div className="w-6 h-6 rounded bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/30 dark:to-green-900/20 flex items-center justify-center flex-shrink-0">
-                  <Code className="w-3 h-3 text-green-600 dark:text-green-400" strokeWidth={1.5} />
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/30 dark:to-green-900/20 flex items-center justify-center flex-shrink-0">
+                  <Code className="w-4 h-4 text-green-600 dark:text-green-400" strokeWidth={1.5} />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-2xs font-medium text-gray-900 dark:text-gray-100 leading-none">Native performance</h3>
-                  <p className="text-2xs text-gray-500 dark:text-gray-400 leading-[1.4]">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-none">Native performance</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-[1.5]">
                     Pure Web Audio API. Zero dependencies.
                   </p>
                 </div>
