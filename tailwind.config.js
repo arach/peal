@@ -86,8 +86,13 @@ module.exports = {
   				'sans-serif'
   			],
   			mono: [
-  				'var(--font-mono)',
   				'ui-monospace',
+  				'SFMono-Regular',
+  				'Menlo',
+  				'Monaco',
+  				'Consolas',
+  				'"Liberation Mono"',
+  				'"Courier New"',
   				'monospace'
   			]
   		},

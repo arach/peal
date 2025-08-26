@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Figtree, IBM_Plex_Mono } from 'next/font/google'
+import { Figtree } from 'next/font/google'
 import './globals.css'
 import ThemeProvider from '@/components/ThemeProvider'
 
@@ -7,12 +7,6 @@ import ThemeProvider from '@/components/ThemeProvider'
 const figtree = Figtree({ 
   subsets: ['latin'],
   variable: '--font-figtree'
-})
-
-const ibmPlexMono = IBM_Plex_Mono({ 
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--font-ibm-plex-mono'
 })
 
 export const metadata: Metadata = {
@@ -26,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${figtree.variable} ${ibmPlexMono.variable}`}>
+    <html lang="en" className={figtree.variable}>
       <body className="bg-background dark:bg-gray-950 text-text-primary dark:text-gray-100 transition-colors">
         <ThemeProvider>
           {children}
