@@ -17,6 +17,8 @@ export default function Studio() {
   const { playSound } = useSoundGeneration()
   
   const [currentSound, setCurrentSound] = useState<Sound | null>(null)
+  const [leftPanelWidth, setLeftPanelWidth] = useState(400)
+  const [isResizing, setIsResizing] = useState(false)
   const [editedParams, setEditedParams] = useState<any>({
     frequency: 440,
     duration: 0.5,
@@ -102,7 +104,12 @@ export default function Studio() {
   // Modal states
   const [showVibeModal, setShowVibeModal] = useState(false)
   const [showLibraryModal, setShowLibraryModal] = useState(false)
-
+  
+  // Resize handlers
+  const startResizing = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsResizing(true)
+  }, [])
   
   const waveformCanvasRef = useRef<HTMLCanvasElement>(null)
   const timelineCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -116,6 +123,37 @@ export default function Studio() {
     const { SoundGenerator } = require('@/hooks/useSoundGeneration')
     return new SoundGenerator()
   })
+  
+  // Handle resize mouse events
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return
+      
+      const newWidth = e.clientX
+      // Constrain width between 300px and 600px
+      if (newWidth >= 300 && newWidth <= 600) {
+        setLeftPanelWidth(newWidth)
+      }
+    }
+    
+    const handleMouseUp = () => {
+      setIsResizing(false)
+    }
+    
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+      document.body.style.cursor = 'col-resize'
+      document.body.style.userSelect = 'none'
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+  }, [isResizing])
 
   // Handle URL parameters for direct sound loading
   useEffect(() => {
@@ -2234,7 +2272,10 @@ export default function Studio() {
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Code Editor */}
-        <div className="w-80 bg-gray-900 border-r border-gray-800">
+        <div 
+          className="bg-gray-900 border-r border-gray-800 relative flex-shrink-0"
+          style={{ width: `${leftPanelWidth}px` }}
+        >
           <CodeEditor 
             currentSound={currentSound}
             tracks={tracks}
@@ -2255,6 +2296,13 @@ export default function Studio() {
             }}
           />
           
+          {/* Resize handle */}
+          <div
+            className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-blue-500/50 transition-colors group"
+            onMouseDown={startResizing}
+          >
+            <div className="absolute inset-y-0 -left-1 -right-1 group-hover:bg-blue-500/20" />
+          </div>
         </div>
 
         {/* Center Panel - Main Canvas */}
