@@ -622,9 +622,6 @@ function makeDistortionCurve(amount) {
         ) : (
           <div className="h-full flex items-center justify-center p-8">
             <div className="text-center space-y-4 max-w-sm">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto">
-                <Code2 size={24} className="text-white" />
-              </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-100 mb-2">
                   Code Editor
