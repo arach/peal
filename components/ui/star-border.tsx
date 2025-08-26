@@ -49,9 +49,9 @@ export function StarBorder<T extends ElementType = "button">({
         }}
       />
       <div className={cn(
-        "relative z-1 border text-foreground text-center text-base py-4 px-6 rounded-[20px]",
-        "bg-gradient-to-b from-background/90 to-muted/90 border-border/40",
-        "dark:from-background dark:to-muted dark:border-border"
+        "relative z-1 border text-white text-center text-base py-4 px-6 rounded-[20px]",
+        "bg-gradient-to-b from-blue-600 to-blue-700 border-blue-500/40",
+        "dark:from-blue-600 dark:to-blue-700 dark:border-blue-500/40"
       )}>
         {children}
       </div>
