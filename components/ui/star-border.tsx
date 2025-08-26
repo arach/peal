@@ -23,7 +23,7 @@ export function StarBorder<T extends ElementType = "button">({
   return (
     <Component 
       className={cn(
-        "relative inline-block py-[1px] overflow-hidden rounded-[20px] group",
+        "relative inline-block py-[1px] overflow-hidden rounded-lg group",
         className
       )} 
       {...props}
@@ -49,7 +49,7 @@ export function StarBorder<T extends ElementType = "button">({
         }}
       />
       <div className={cn(
-        "relative z-1 border text-white text-center text-base py-4 px-6 rounded-[20px]",
+        "relative z-1 border text-white text-center text-base py-2.5 px-6 rounded-lg",
         "bg-gradient-to-b from-blue-600 to-blue-700 border-blue-500/40",
         "dark:from-blue-600 dark:to-blue-700 dark:border-blue-500/40"
       )}>

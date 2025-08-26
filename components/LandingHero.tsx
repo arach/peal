@@ -82,7 +82,7 @@ export default function LandingHero() {
                 </StarBorder>
                 <a
                   href="/studio"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/15 active:bg-white/20 text-white font-medium rounded-lg border border-white/20 backdrop-blur-sm transition-all duration-200 touch-manipulation relative overflow-hidden group"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-white/10 hover:bg-white/15 active:bg-white/20 text-white font-medium rounded-lg border border-white/20 backdrop-blur-sm transition-all duration-200 touch-manipulation relative overflow-hidden group"
                 >
                   {/* Glass shine effect */}
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300">
