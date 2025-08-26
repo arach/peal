@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -33,8 +33,30 @@ export default function TTSStudio() {
   const [generatedAudios, setGeneratedAudios] = useState<GeneratedAudio[]>([])
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null)
   const [projectName, setProjectName] = useState("peal-tts-project")
+  const [isMac, setIsMac] = useState(false)
 
   const audioRef = useRef<HTMLAudioElement>(null)
+
+  // Detect platform
+  useEffect(() => {
+    setIsMac(typeof window !== 'undefined' && navigator.platform.includes('Mac'))
+  }, [])
+
+  // Add keyboard shortcut for Cmd+Enter / Ctrl+Enter
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault()
+        if (!isGenerating && script.trim()) {
+          handleGenerate()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [script, isGenerating, selectedModel, selectedVoice, speed]) // Dependencies for the effect
 
   const models = [
     { id: "tts-1", name: "OpenAI TTS-1", provider: "OpenAI", tier: "Standard" },
@@ -289,7 +311,12 @@ export default function TTSStudio() {
                       Generating...
                     </div>
                   ) : (
-                    "Generate Audio"
+                    <div className="flex items-center gap-2">
+                      <span>Generate Audio</span>
+                      <kbd className="text-xs bg-gray-800/50 px-1.5 py-0.5 rounded border border-gray-700">
+                        {isMac ? '⌘' : 'Ctrl'}+Enter
+                      </kbd>
+                    </div>
                   )}
                 </Button>
               </div>
@@ -310,15 +337,15 @@ export default function TTSStudio() {
               <div>
                 <Label className="text-xs text-gray-400 uppercase tracking-widest font-light">Model</Label>
                 <Select value={selectedModel} onValueChange={setSelectedModel}>
-                  <SelectTrigger className="mt-3 bg-black/40 border-gray-700/50 text-white font-mono text-sm font-extralight h-10 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20">
+                  <SelectTrigger className="mt-3 bg-black/40 border-gray-700/50 text-white font-mono text-sm font-extralight h-12 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700/50 rounded-sm">
+                  <SelectContent className="bg-gray-900 border-gray-700/50 rounded-sm min-w-[350px] max-h-[400px]">
                     {models.map((model) => (
                       <SelectItem
                         key={model.id}
                         value={model.id}
-                        className="text-white font-mono text-sm font-extralight focus:bg-gray-800"
+                        className="text-white font-mono text-sm font-extralight focus:bg-gray-800 py-3"
                       >
                         <div className="flex flex-col items-start">
                           <span>{model.name}</span>
