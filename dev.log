@@ -1,0 +1,1936 @@
+
+> @peal-sounds/peal@0.2.1 predev /Users/arach/dev/peal
+> node scripts/setup-directories.js
+
+Setting up required directories...
+✓ audio-cache directory exists
+✓ analysis-cache directory exists
+Directory setup complete!
+
+> @peal-sounds/peal@0.2.1 dev /Users/arach/dev/peal
+> next dev --port 3001
+
+   ▲ Next.js 15.3.4
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.18.14:3001
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1547ms
+ ○ Compiling / ...
+ ✓ Compiled / in 3.8s (1599 modules)
+ HEAD / 200 in 4078ms
+ ✓ Compiled in 551ms (753 modules)
+ ○ Compiling /library ...
+ ✓ Compiled /library in 1082ms (1760 modules)
+ GET /library 200 in 1383ms
+ GET /library 200 in 97ms
+ GET /library 200 in 44ms
+ ✓ Compiled in 755ms (1775 modules)
+ GET /library 200 in 126ms
+ ✓ Compiled in 627ms (1777 modules)
+ GET /library 200 in 42ms
+ ✓ Compiled in 477ms (1777 modules)
+ GET /library 200 in 34ms
+ GET /library 200 in 100ms
+ ○ Compiling /tts ...
+ ✓ Compiled /tts in 2.3s (1990 modules)
+ GET /tts 200 in 2478ms
+ ✓ Compiled / in 142ms (1112 modules)
+ GET / 200 in 197ms
+ ○ Compiling /studio ...
+ ✓ Compiled /studio in 1714ms (2083 modules)
+ GET /studio 200 in 1874ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 901ms (948 modules)
+ GET /studio 200 in 43ms
+ ✓ Compiled in 360ms (948 modules)
+ GET /studio 200 in 31ms
+ ✓ Compiled in 1501ms (2093 modules)
+ GET /studio 200 in 66ms
+ ✓ Compiled in 737ms (2084 modules)
+ GET /studio 200 in 40ms
+ ✓ Compiled in 700ms (2084 modules)
+ GET /studio 200 in 43ms
+ ✓ Compiled in 561ms (2086 modules)
+ GET /studio 200 in 70ms
+ ✓ Compiled in 415ms (953 modules)
+ GET /studio 200 in 56ms
+ ✓ Compiled in 254ms (953 modules)
+ GET /studio 200 in 12ms
+ ⨯ ./app/tts/page.tsx
+Module parse failed: Identifier 'Badge' has already been declared (11:60)
+| import { Slider } from "@/components/ui/slider";
+| import { Badge } from "@/components/ui/badge";
+> import { Download, Copy, Trash2, FileAudio, Zap, ArrowLeft, Badge } from "__barrel_optimize__?names=ArrowLeft,Badge,Copy,Download,FileAudio,Trash2,Zap!=!lucide-react";
+| import { Waveform } from "@/components/waveform";
+| import { AudioControls } from "@/components/audio-controls";
+
+Import trace for requested module:
+./app/tts/page.tsx
+ ✓ Compiled in 1089ms (2086 modules)
+ GET /studio 200 in 62ms
+ ✓ Compiled in 1033ms (2085 modules)
+ GET /studio 200 in 62ms
+ ⨯ ./app/tts/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/tts/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <>
+     : [35;1m     ^[0m
+ [2m159[0m |       <Header 
+ [2m160[0m |         variant="standalone" 
+ [2m161[0m |         title="Peal Voice Lab" 
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/tts/page.tsx[0m:165:1]
+ [2m162[0m |         backLabel="Back to Peal"
+ [2m163[0m |         rightContent={rightContent}
+ [2m164[0m |       />
+ [2m165[0m |       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m166[0m |         <div className="max-w-7xl mx-auto px-6 py-8">
+ [2m167[0m | 
+ [2m168[0m |         <div className="grid lg:grid-cols-12 gap-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/tts/page.tsx
+ ○ Compiling /_error ...
+ ⨯ ./app/tts/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/tts/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <>
+     : [35;1m     ^[0m
+ [2m159[0m |       <Header 
+ [2m160[0m |         variant="standalone" 
+ [2m161[0m |         title="Peal Voice Lab" 
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/tts/page.tsx[0m:165:1]
+ [2m162[0m |         backLabel="Back to Peal"
+ [2m163[0m |         rightContent={rightContent}
+ [2m164[0m |       />
+ [2m165[0m |       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m166[0m |         <div className="max-w-7xl mx-auto px-6 py-8">
+ [2m167[0m | 
+ [2m168[0m |         <div className="grid lg:grid-cols-12 gap-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/tts/page.tsx
+ GET /studio 500 in 3290ms
+ GET /studio 500 in 6ms
+ GET /studio 500 in 6ms
+ GET /studio 500 in 9ms
+ ✓ Compiled /_not-found in 1631ms (2523 modules)
+ ✓ Compiled (2508 modules)
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 404 in 1660ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /studio 200 in 140ms
+ ✓ Compiled in 1246ms (1207 modules)
+ GET /studio 200 in 34ms
+ ✓ Compiled in 391ms (1207 modules)
+ GET /studio 200 in 15ms
+ ✓ Compiled in 581ms (1203 modules)
+ GET /studio 200 in 33ms
+ ✓ Compiled in 1380ms (2238 modules)
+ GET /studio 200 in 1201ms
+ GET /studio 200 in 8ms
+ GET /studio 200 in 9ms
+ ✓ Compiled in 2.3s (2238 modules)
+ GET /studio 200 in 53ms
+ ✓ Compiled in 814ms (2238 modules)
+ GET /studio 200 in 83ms
+ ○ Compiling /voice-lab ...
+ ✓ Compiled /voice-lab in 1325ms (2414 modules)
+ HEAD /voice-lab 200 in 1506ms
+ ✓ Compiled in 712ms (1203 modules)
+ GET /studio 200 in 66ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1079ms (2324 modules)
+ GET /studio 404 in 1196ms
+ GET /_next/static/css/app/layout.css?v=1752515252429 404 in 29ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 76ms
+ GET /_next/static/chunks/main-app.js?v=1752515252429 404 in 78ms
+ GET /_next/static/chunks/app/layout.js 404 in 77ms
+ ✓ Compiled in 3.5s (2238 modules)
+ ✓ Compiled in 4.4s (2238 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/arach/dev/peal/.next/cache/webpack/server-development/1.pack.gz_' -> '/Users/arach/dev/peal/.next/cache/webpack/server-development/1.pack.gz'
+ ✓ Compiled in 1436ms (2238 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/arach/dev/peal/.next/cache/webpack/client-development/2.pack.gz_' -> '/Users/arach/dev/peal/.next/cache/webpack/client-development/2.pack.gz'
+ ✓ Compiled in 9.6s (2238 modules)
+ ⨯ ./components/Studio.tsx
+Error:   [31mx[0m Expression expected
+      ,-[[36;1;4m/Users/arach/dev/peal/components/Studio.tsx[0m:2255:1]
+ [2m2252[0m |   )
+ [2m2253[0m | 
+ [2m2254[0m |   return (
+ [2m2255[0m |     <>
+      : [35;1m     ^[0m
+ [2m2256[0m |       <Header 
+ [2m2257[0m |         variant="studio" 
+ [2m2258[0m |         title="Sound Studio" 
+      `----
+  [31mx[0m Expected ',', got 'className'
+      ,-[[36;1;4m/Users/arach/dev/peal/components/Studio.tsx[0m:2264:1]
+ [2m2261[0m |         backLabel="Back to Library"
+ [2m2262[0m |         rightContent={rightContent}
+ [2m2263[0m |       />
+ [2m2264[0m |       <div className="flex-1 flex flex-col bg-gray-950 text-gray-100">
+      : [35;1m           ^^^^^^^^^[0m
+ [2m2265[0m | 
+ [2m2266[0m |       {/* Main Workspace */}
+ [2m2267[0m |       <div className="flex-1 flex overflow-hidden">
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/Studio.tsx
+./app/studio/page.tsx
+ ✓ Compiled in 1233ms (2238 modules)
+ ✓ Compiled in 823ms (2238 modules)
+ ✓ Compiled in 649ms (1106 modules)
+ ✓ Compiled in 807ms (1106 modules)
+ HEAD /studio 200 in 380ms
+ ○ Compiling /audio ...
+ ✓ Compiled /audio in 1592ms (2233 modules)
+ HEAD /audio 200 in 1718ms
+ ○ Compiling /voice ...
+ ✓ Compiled /voice in 2s (2424 modules)
+ HEAD /voice 200 in 2226ms
+ GET /studio 200 in 183ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1154ms (1152 modules)
+ ⨯ [TypeError: Cannot read properties of undefined (reading 'clientModules')] {
+  page: '/'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 592ms (2433 modules)
+ ⨯ [Error: Cannot find module '/Users/arach/dev/peal/.next/server/pages/_document.js'
+Require stack:
+- /Users/arach/dev/peal/node_modules/.pnpm/next@15.3.4_@opentelemetry+api@1.9.0_@playwright+test@1.54.1_react-dom@19.0.0-rc.1_react@19.0.0-rc.1__react@19.0.0-rc.1/node_modules/next/dist/server/require.js
+- /Users/arach/dev/peal/node_modules/.pnpm/next@15.3.4_@opentelemetry+api@1.9.0_@playwright+test@1.54.1_react-dom@19.0.0-rc.1_react@19.0.0-rc.1__react@19.0.0-rc.1/node_modules/next/dist/server/load-components.js
+- /Users/arach/dev/peal/node_modules/.pnpm/next@15.3.4_@opentelemetry+api@1.9.0_@playwright+test@1.54.1_react-dom@19.0.0-rc.1_react@19.0.0-rc.1__react@19.0.0-rc.1/node_modules/next/dist/build/utils.js
+- /Users/arach/dev/peal/node_modules/.pnpm/next@15.3.4_@opentelemetry+api@1.9.0_@playwright+test@1.54.1_react-dom@19.0.0-rc.1_react@19.0.0-rc.1__react@19.0.0-rc.1/node_modules/next/dist/build/swc/options.js
+- /Users/arach/dev/peal/node_modules/.pnpm/next@15.3.4_@opentelemetry+api@1.9.0_@playwright+test@1.54.1_react-dom@19.0.0-rc.1_react@19.0.0-rc.1__react@19.0.0-rc.1/node_modules/next/dist/build/swc/index.js
+- /Users/arach/dev/peal/node_modules/.pnpm/next@15.3.4_@opentelemetry+api@1.9.0_@playwright+test@1.54.1_react-dom@19.0.0-rc.1_react@19.0.0-rc.1__react@19.0.0-rc.1/node_modules/next/dist/build/analysis/parse-module.js
+- /Users/arach/dev/peal/node_modules/.pnpm/next@15.3.4_@opentelemetry+api@1.9.0_@playwright+test@1.54.1_react-dom@19.0.0-rc.1_react@19.0.0-rc.1__react@19.0.0-rc.1/node_modules/next/dist/build/analysis/get-page-static-info.js
+- /Users/arach/dev/peal/node_modules/.pnpm/next@15.3.4_@opentelemetry+api@1.9.0_@playwright+test@1.54.1_react-dom@19.0.0-rc.1_react@19.0.0-rc.1__react@19.0.0-rc.1/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/arach/dev/peal/node_modules/.pnpm/next@15.3.4_@opentelemetry+api@1.9.0_@playwright+test@1.54.1_react-dom@19.0.0-rc.1_react@19.0.0-rc.1__react@19.0.0-rc.1/node_modules/next/dist/server/lib/router-server.js
+- /Users/arach/dev/peal/node_modules/.pnpm/next@15.3.4_@opentelemetry+api@1.9.0_@playwright+test@1.54.1_react-dom@19.0.0-rc.1_react@19.0.0-rc.1__react@19.0.0-rc.1/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ GET / 500 in 2314ms
+ GET /studio 200 in 255ms
+ ✓ Compiled /audio in 170ms (1248 modules)
+ GET /audio 200 in 276ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 819ms (2444 modules)
+ GET /_next/static/chunks/app/audio/page.js 404 in 873ms
+ ○ Compiling /voice ...
+ ✓ Compiled /voice in 1121ms (1342 modules)
+ GET /voice 200 in 1316ms
+ GET /library 200 in 615ms
+ ✓ Compiled in 1569ms (1206 modules)
+ ✓ Compiled in 2.6s (2432 modules)
+ ✓ Compiled in 3.8s (2438 modules)
+ ✓ Compiled in 858ms (1209 modules)
+ ✓ Compiled in 419ms (1209 modules)
+ ✓ Compiled in 2s (2438 modules)
+ ✓ Compiled in 1153ms (2438 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/arach/dev/peal/.next/cache/webpack/server-development/10.pack.gz_' -> '/Users/arach/dev/peal/.next/cache/webpack/server-development/10.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/arach/dev/peal/.next/cache/webpack/client-development/0.pack.gz_' -> '/Users/arach/dev/peal/.next/cache/webpack/client-development/0.pack.gz'
+ GET /studio 200 in 385ms
+ ✓ Compiled /audio in 276ms (1236 modules)
+ GET /audio 200 in 371ms
+ ✓ Compiled /api/stored-analyses in 357ms (2451 modules)
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 431ms
+ GET /voice 200 in 173ms
+ ✓ Compiled in 2.1s (2446 modules)
+ ⨯ ./components/Studio.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+      ,-[[36;1;4m/Users/arach/dev/peal/components/Studio.tsx[0m:2222:1]
+ [2m2219[0m |   )
+ [2m2220[0m | 
+ [2m2221[0m |   return (
+ [2m2222[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+      : [35;1m     ^^^[0m
+ [2m2223[0m |       <StudioHeader 
+ [2m2224[0m |         currentTool="sfx"
+ [2m2225[0m |         title="SFX Studio"
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/Studio.tsx
+./app/studio/page.tsx
+ ⨯ ./components/Studio.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+      ,-[[36;1;4m/Users/arach/dev/peal/components/Studio.tsx[0m:2222:1]
+ [2m2219[0m |   )
+ [2m2220[0m | 
+ [2m2221[0m |   return (
+ [2m2222[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+      : [35;1m     ^^^[0m
+ [2m2223[0m |       <StudioHeader 
+ [2m2224[0m |         currentTool="sfx"
+ [2m2225[0m |         title="SFX Studio"
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/Studio.tsx
+./app/studio/page.tsx
+ ✓ Compiled in 1769ms (2446 modules)
+ ⨯ ./components/StudioAudioLab.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/components/StudioAudioLab.tsx[0m:722:1]
+ [2m719[0m |   )
+ [2m720[0m | 
+ [2m721[0m |   return (
+ [2m722[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m     ^^^[0m
+ [2m723[0m |       <StudioHeader 
+ [2m724[0m |         currentTool="audio"
+ [2m725[0m |         title="Audio Lab"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/StudioAudioLab.tsx
+./app/audio/page.tsx
+ ✓ Compiled in 2.2s (2446 modules)
+ GET /studio 200 in 1513ms
+ GET /audio 200 in 215ms
+ ○ Compiling /api/stored-analyses ...
+ ✓ Compiled /api/stored-analyses in 1852ms (1256 modules)
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 1989ms
+ GET /voice 200 in 249ms
+ GET /studio 200 in 246ms
+ GET /audio 200 in 108ms
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 22ms
+ GET /voice 200 in 322ms
+ ○ Compiling /api/generate-tts ...
+ ✓ Compiled /api/generate-tts in 2.3s (2449 modules)
+ POST /api/generate-tts 200 in 4932ms
+ GET /audio 200 in 107ms
+ ✓ Compiled /api/stored-analyses in 392ms (1258 modules)
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 419ms
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 3ms
+ GET /voice 200 in 63ms
+ GET /audio 200 in 19ms
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 5ms
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 10ms
+ GET /studio 200 in 453ms
+ GET /audio 200 in 74ms
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 18ms
+ GET /voice 200 in 138ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <>
+     : [35;1m     ^[0m
+ [2m159[0m |       <StudioHeader 
+ [2m160[0m |         currentTool="voice"
+ [2m161[0m |         title="Voice Lab"
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:165:1]
+ [2m162[0m |         subtitle="Text-to-speech generation"
+ [2m163[0m |         actions={voiceActions}
+ [2m164[0m |       />
+ [2m165[0m |       <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m166[0m |         {/* Main Content */}
+ [2m167[0m |         <div className="flex-1 flex">
+ [2m168[0m |           <div className="max-w-7xl mx-auto w-full px-6 py-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ○ Compiling /_error ...
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <>
+     : [35;1m     ^[0m
+ [2m159[0m |       <StudioHeader 
+ [2m160[0m |         currentTool="voice"
+ [2m161[0m |         title="Voice Lab"
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:165:1]
+ [2m162[0m |         subtitle="Text-to-speech generation"
+ [2m163[0m |         actions={voiceActions}
+ [2m164[0m |       />
+ [2m165[0m |       <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m166[0m |         {/* Main Content */}
+ [2m167[0m |         <div className="flex-1 flex">
+ [2m168[0m |           <div className="max-w-7xl mx-auto w-full px-6 py-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /studio 500 in 1199ms
+ GET /audio 500 in 1203ms
+ GET /voice 500 in 1203ms
+ GET /studio 500 in 331ms
+ GET /studio 500 in 285ms
+ GET /audio 500 in 293ms
+ GET /audio 500 in 288ms
+ GET /voice 500 in 290ms
+ GET /audio 500 in 208ms
+ GET /studio 500 in 312ms
+ GET /audio 500 in 215ms
+ GET /audio 500 in 94ms
+ ✓ Compiled /_not-found in 2.9s (2525 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 404 in 3124ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 404 in 171ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /voice 200 in 220ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 404 in 256ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /audio 200 in 207ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 404 in 252ms
+ GET /studio 200 in 286ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 404 in 106ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /studio 200 in 138ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 404 in 119ms
+ GET /audio 200 in 126ms
+ GET /audio 200 in 90ms
+ ○ Compiling /api/stored-analyses ...
+ ✓ Compiled /api/stored-analyses in 662ms (1346 modules)
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 913ms
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 4ms
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 3ms
+ ✓ Compiled in 11.1s (2560 modules)
+ GET /audio 200 in 261ms
+ GET /voice 200 in 212ms
+ GET /studio 200 in 247ms
+ GET /audio 200 in 193ms
+ GET /studio 200 in 218ms
+ GET /audio 200 in 157ms
+ ✓ Compiled in 1798ms (2560 modules)
+ GET /voice 200 in 182ms
+ GET /audio 200 in 190ms
+ GET /studio 200 in 200ms
+ GET /audio 200 in 105ms
+ GET /studio 200 in 114ms
+ GET /audio 200 in 57ms
+ ✓ Compiled in 2.7s (2446 modules)
+ GET /audio 200 in 179ms
+ GET /studio 200 in 201ms
+ GET /voice 200 in 242ms
+ GET /audio 200 in 199ms
+ GET /studio 200 in 192ms
+ GET /audio 200 in 67ms
+ ✓ Compiled in 1171ms (2446 modules)
+ GET /voice 200 in 164ms
+ GET /audio 200 in 191ms
+ GET /studio 200 in 266ms
+ GET /audio 200 in 214ms
+ GET /studio 200 in 244ms
+ GET /audio 200 in 111ms
+ ✓ Compiled in 3.8s (2446 modules)
+ GET /voice 200 in 161ms
+ GET /studio 200 in 184ms
+ GET /studio 200 in 203ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 562ms (2435 modules)
+ GET /audio 404 in 733ms
+ GET /audio 200 in 31ms
+ GET /audio 200 in 152ms
+ GET /audio 200 in 146ms
+ ○ Compiling /api/stored-analyses ...
+ ✓ Compiled /api/stored-analyses in 1153ms (1257 modules)
+Analysis storage directory exists: /Users/arach/dev/peal/analysis-cache
+No analysis index found, returning empty array
+ GET /api/stored-analyses 200 in 1299ms
+ ✓ Compiled in 2.4s (1210 modules)
+ GET /voice 200 in 280ms
+ GET /studio 200 in 289ms
+ GET /audio 200 in 300ms
+ GET /studio 200 in 177ms
+ GET /audio 200 in 153ms
+ GET /audio 200 in 41ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 4.1s (2446 modules)
+ ✓ Compiled in 1ms (1236 modules)
+ ✓ Compiled in 0ms (1236 modules)
+ ✓ Compiled in 0ms (1236 modules)
+ ⨯ ReferenceError: StudioHeader is not defined
+    at TTSStudio (app/voice/page.tsx:159:7)
+  157 |   return (
+  158 |     <>
+> 159 |       <StudioHeader 
+      |       ^
+  160 |         currentTool="voice"
+  161 |         title="Voice Lab"
+  162 |         subtitle="Text-to-speech generation" {
+  digest: '2535678187'
+}
+ GET /voice 500 in 4105ms
+ GET /audio 200 in 2456ms
+ GET /studio 200 in 2483ms
+ GET /audio 200 in 267ms
+ GET /studio 200 in 280ms
+ GET /audio 200 in 139ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ○ Compiling /_error ...
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /studio 500 in 2249ms
+ GET /voice 500 in 2255ms
+ GET /audio 500 in 2256ms
+ GET /studio 500 in 842ms
+ GET /studio 500 in 781ms
+ GET /audio 500 in 843ms
+ GET /audio 500 in 782ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /audio 500 in 2411ms
+ GET /audio 500 in 2410ms
+ GET /studio 500 in 2412ms
+ GET /voice 500 in 225ms
+ GET /studio 500 in 225ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 1205ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 29ms
+ GET /studio 200 in 47ms
+ GET /audio 500 in 104ms
+ GET /audio 500 in 108ms
+ GET /studio 500 in 91ms
+ GET /audio 500 in 96ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 2093ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 49ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 7ms
+ GET /audio 500 in 180ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 20ms
+ GET /voice 500 in 43ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /studio 500 in 57ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 22ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 8ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /studio 500 in 30ms
+ GET /audio 500 in 54ms
+ GET /audio 500 in 23ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /audio 500 in 334ms
+ GET /studio 500 in 334ms
+ GET /voice 500 in 334ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 1146ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 8ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /studio 200 in 30ms
+ GET /audio 500 in 62ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 44ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /studio 500 in 36ms
+ GET /audio 500 in 46ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 1698ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 11ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 5ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /voice 500 in 14ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 10ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /studio 500 in 33ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 25ms
+ GET /audio 500 in 47ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 8ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /audio 500 in 50ms
+ GET /studio 500 in 51ms
+ GET /audio 500 in 48ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 2823ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 3ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 9ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /voice 500 in 17ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 11ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /studio 500 in 33ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 28ms
+ GET /audio 500 in 58ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 11ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /audio 500 in 45ms
+ GET /studio 500 in 56ms
+ GET /audio 500 in 54ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /studio 500 in 640ms
+ GET /voice 500 in 637ms
+ GET /audio 500 in 636ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 2081ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 17ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /audio 200 in 38ms
+ GET /studio 500 in 48ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 37ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /audio 200 in 56ms
+ GET /audio 500 in 37ms
+ GET /audio 500 in 35ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 1050ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 7ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 28ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /audio 200 in 25ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 42ms
+ GET /studio 500 in 79ms
+ GET /voice 500 in 70ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /audio 200 in 46ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /audio 500 in 43ms
+ GET /studio 500 in 55ms
+ GET /audio 500 in 52ms
+ GET /audio 500 in 28ms
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/arach/dev/peal/.next/cache/webpack/server-development/1.pack.gz_' -> '/Users/arach/dev/peal/.next/cache/webpack/server-development/1.pack.gz'
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 2831ms
+ GET /studio 500 in 430ms
+ GET /audio 500 in 428ms
+ GET /voice 500 in 430ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 10ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 26ms
+ GET /studio 500 in 65ms
+ GET /audio 500 in 63ms
+ GET /_next/static/webpack/25473ab5167db5e3.webpack.hot-update.json 500 in 31ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /audio 500 in 92ms
+ GET /studio 500 in 97ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 70ms
+ GET /_next/static/chunks/fallback/main.js 500 in 72ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 72ms
+ GET /audio 500 in 146ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 53ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 51ms
+ GET /_next/static/chunks/fallback/main.js 500 in 49ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 49ms
+ GET /studio 500 in 183ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 61ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 45ms
+ GET /_next/static/chunks/fallback/main.js 500 in 45ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 46ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 47ms
+ GET /audio 500 in 130ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 41ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 38ms
+ GET /_next/static/chunks/fallback/main.js 500 in 38ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 38ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 44ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 2300ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 2299ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 2291ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 2287ms
+ GET /_next/static/chunks/fallback/main.js 500 in 2293ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 16ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 19ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 20ms
+ GET /_next/static/chunks/fallback/main.js 500 in 15ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 20ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 4ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 6ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 6ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /studio 500 in 256ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 62ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 95ms
+ GET /_next/static/chunks/fallback/main.js 500 in 96ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 97ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 97ms
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:159:1]
+ [2m156[0m |   )
+ [2m157[0m | 
+ [2m158[0m |   return (
+ [2m159[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m160[0m |       tool="voice"
+ [2m161[0m |       title="Voice Lab"
+ [2m162[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:159:1]
+ [2m156[0m |   )
+ [2m157[0m | 
+ [2m158[0m |   return (
+ [2m159[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m160[0m |       tool="voice"
+ [2m161[0m |       title="Voice Lab"
+ [2m162[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:159:1]
+ [2m156[0m |   )
+ [2m157[0m | 
+ [2m158[0m |   return (
+ [2m159[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m     ^^^[0m
+ [2m160[0m |       <div className="flex gap-8 w-full">
+ [2m161[0m |           {/* Generation Panel */}
+ [2m162[0m |           <div className="flex-1 space-y-6">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:159:1]
+ [2m156[0m |   )
+ [2m157[0m | 
+ [2m158[0m |   return (
+ [2m159[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m     ^^^[0m
+ [2m160[0m |       <div className="flex gap-8 w-full">
+ [2m161[0m |           {/* Generation Panel */}
+ [2m162[0m |           <div className="flex-1 space-y-6">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:159:1]
+ [2m156[0m |   )
+ [2m157[0m | 
+ [2m158[0m |   return (
+ [2m159[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m     ^^^[0m
+ [2m160[0m |       <div className="flex gap-8 w-full">
+ [2m161[0m |           {/* Generation Panel */}
+ [2m162[0m |           <div className="flex-1 space-y-6">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:159:1]
+ [2m156[0m |   )
+ [2m157[0m | 
+ [2m158[0m |   return (
+ [2m159[0m |     <>
+     : [35;1m     ^[0m
+ [2m160[0m |       <StudioHeader 
+ [2m161[0m |         currentTool="voice"
+ [2m162[0m |         title="Voice Lab"
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:166:1]
+ [2m163[0m |         subtitle="Text-to-speech generation"
+ [2m164[0m |         actions={voiceActions}
+ [2m165[0m |       />
+ [2m166[0m |       <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m167[0m |         <div className="flex-1 flex">
+ [2m168[0m |           <div className="max-w-7xl mx-auto w-full px-6 py-8">
+ [2m169[0m |             <div className="flex gap-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:159:1]
+ [2m156[0m |   )
+ [2m157[0m | 
+ [2m158[0m |   return (
+ [2m159[0m |     <>
+     : [35;1m     ^[0m
+ [2m160[0m |       <StudioHeader 
+ [2m161[0m |         currentTool="voice"
+ [2m162[0m |         title="Voice Lab"
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:166:1]
+ [2m163[0m |         subtitle="Text-to-speech generation"
+ [2m164[0m |         actions={voiceActions}
+ [2m165[0m |       />
+ [2m166[0m |       <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m167[0m |         <div className="flex-1 flex">
+ [2m168[0m |           <div className="max-w-7xl mx-auto w-full px-6 py-8">
+ [2m169[0m |             <div className="flex gap-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./components/Studio.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+      ,-[[36;1;4m/Users/arach/dev/peal/components/Studio.tsx[0m:2223:1]
+ [2m2220[0m |   )
+ [2m2221[0m | 
+ [2m2222[0m |   return (
+ [2m2223[0m |     <StudioLayout
+      : [35;1m     ^^^^^^^^^^^^[0m
+ [2m2224[0m |       tool="sfx"
+ [2m2225[0m |       title="SFX Studio"
+ [2m2226[0m |       subtitle="Untitled Project"
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/Studio.tsx
+./app/studio/page.tsx
+ ✓ Compiled /_error in 1732ms (2448 modules)
+ ✓ Compiled in 1154ms (2448 modules)
+ ✓ Compiled in 358ms (2448 modules)
+ ✓ Compiled in 657ms (2448 modules)
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ✓ Compiled in 384ms (1114 modules)
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `StudioLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <StudioLayout
+     : [35;1m     ^^^^^^^^^^^^[0m
+ [2m159[0m |       tool="voice"
+ [2m160[0m |       title="Voice Lab"
+ [2m161[0m |       subtitle="Text-to-speech generation"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `TestLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <TestLayout>
+     : [35;1m     ^^^^^^^^^^[0m
+ [2m159[0m | 
+ [2m160[0m |         <div className="grid lg:grid-cols-12 gap-8">
+ [2m161[0m |           {/* Generation Panel */}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `TestLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <TestLayout>
+     : [35;1m     ^^^^^^^^^^[0m
+ [2m159[0m | 
+ [2m160[0m |         <div className="grid lg:grid-cols-12 gap-8">
+ [2m161[0m |           {/* Generation Panel */}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ○ Compiling /_not-found ...
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `TestLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <TestLayout>
+     : [35;1m     ^^^^^^^^^^[0m
+ [2m159[0m | 
+ [2m160[0m |         <div className="grid lg:grid-cols-12 gap-8">
+ [2m161[0m |           {/* Generation Panel */}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `TestLayout`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <TestLayout>
+     : [35;1m     ^^^^^^^^^^[0m
+ [2m159[0m | 
+ [2m160[0m |         <div className="grid lg:grid-cols-12 gap-8">
+ [2m161[0m |           {/* Generation Panel */}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ GET /tts 500 in 1904ms
+ GET /.well-known/appspecific/com.chrome.devtools.json 500 in 19ms
+ GET /_next/static/chunks/fallback/main.js 500 in 19ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 17ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 8ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 4ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 5ms
+ ✓ Compiled /_error in 2.3s (2542 modules)
+ ✓ Compiled in 669ms (1215 modules)
+ ⨯ ./components/StudioLayout.tsx
+Error: Failed to read source code from /Users/arach/dev/peal/components/StudioLayout.tsx
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./components/StudioLayout.tsx
+./components/StudioAudioLab.tsx
+ ⨯ ./components/StudioLayout.tsx
+Error: Failed to read source code from /Users/arach/dev/peal/components/StudioLayout.tsx
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./components/StudioLayout.tsx
+./components/StudioAudioLab.tsx
+ ⨯ ./components/StudioLayout.tsx
+Error: Failed to read source code from /Users/arach/dev/peal/components/StudioLayout.tsx
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./components/StudioLayout.tsx
+./components/StudioAudioLab.tsx
+ ⨯ ./components/StudioLayout.tsx
+Error: Failed to read source code from /Users/arach/dev/peal/components/StudioLayout.tsx
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./components/StudioLayout.tsx
+./components/StudioAudioLab.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <>
+     : [35;1m     ^[0m
+ [2m159[0m |       <StudioHeader 
+ [2m160[0m |         currentTool="voice"
+ [2m161[0m |         title="Voice Lab"
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:165:1]
+ [2m162[0m |         subtitle="Text-to-speech generation"
+ [2m163[0m |         actions={voiceActions}
+ [2m164[0m |       />
+ [2m165[0m |       <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m166[0m |         {/* Main Content */}
+ [2m167[0m |         <div className="flex-1 flex">
+ [2m168[0m |           <div className="max-w-7xl mx-auto w-full flex px-6 py-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m     ^^^[0m
+ [2m159[0m |       <StudioHeader 
+ [2m160[0m |         currentTool="voice"
+ [2m161[0m |         title="Voice Lab"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m     ^^^[0m
+ [2m159[0m |       <StudioHeader 
+ [2m160[0m |         currentTool="voice"
+ [2m161[0m |         title="Voice Lab"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ✓ Compiled in 1268ms (2431 modules)
+ ✓ Compiled in 2.3s (2446 modules)
+ ✓ Compiled in 1018ms (2446 modules)
+ ⨯ ./components/StudioAudioLab.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/components/StudioAudioLab.tsx[0m:722:1]
+ [2m719[0m |   )
+ [2m720[0m | 
+ [2m721[0m |   return (
+ [2m722[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m     ^^^[0m
+ [2m723[0m |       <StudioHeader 
+ [2m724[0m |         currentTool="audio"
+ [2m725[0m |         title="Audio Lab"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/StudioAudioLab.tsx
+./app/audio/page.tsx
+ ⨯ ./components/StudioAudioLab.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/components/StudioAudioLab.tsx[0m:722:1]
+ [2m719[0m |   )
+ [2m720[0m | 
+ [2m721[0m |   return (
+ [2m722[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m     ^^^[0m
+ [2m723[0m |       <StudioHeader 
+ [2m724[0m |         currentTool="audio"
+ [2m725[0m |         title="Audio Lab"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/StudioAudioLab.tsx
+./app/audio/page.tsx
+ ✓ Compiled in 2.3s (2446 modules)
+ ✓ Compiled in 1658ms (2446 modules)
+ ✓ Compiled in 1566ms (2446 modules)
+ ✓ Compiled in 939ms (2446 modules)
+ ✓ Compiled in 1057ms (2446 modules)
+ ✓ Compiled in 716ms (2446 modules)
+ ✓ Compiled in 1083ms (2446 modules)
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <>
+     : [35;1m     ^[0m
+ [2m159[0m |       <StudioHeader 
+ [2m160[0m |         currentTool="voice"
+ [2m161[0m |         title="Voice Lab"
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:165:1]
+ [2m162[0m |         subtitle="Text-to-speech generation"
+ [2m163[0m |         actions={voiceActions}
+ [2m164[0m |       />
+ [2m165[0m |       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m166[0m |         <div className="w-full px-6 py-8">
+ [2m167[0m | 
+ [2m168[0m |         <div className="flex gap-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <>
+     : [35;1m     ^[0m
+ [2m159[0m |       <StudioHeader 
+ [2m160[0m |         currentTool="voice"
+ [2m161[0m |         title="Voice Lab"
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:165:1]
+ [2m162[0m |         subtitle="Text-to-speech generation"
+ [2m163[0m |         actions={voiceActions}
+ [2m164[0m |       />
+ [2m165[0m |       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m166[0m |         <div className="w-full px-6 py-8">
+ [2m167[0m | 
+ [2m168[0m |         <div className="flex gap-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <>
+     : [35;1m     ^[0m
+ [2m159[0m |       <StudioHeader 
+ [2m160[0m |         currentTool="voice"
+ [2m161[0m |         title="Voice Lab"
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:165:1]
+ [2m162[0m |         subtitle="Text-to-speech generation"
+ [2m163[0m |         actions={voiceActions}
+ [2m164[0m |       />
+ [2m165[0m |       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m166[0m |         <div className="w-full px-6 py-8">
+ [2m167[0m | 
+ [2m168[0m |         <div className="flex gap-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <>
+     : [35;1m     ^[0m
+ [2m159[0m |       <StudioHeader 
+ [2m160[0m |         currentTool="voice"
+ [2m161[0m |         title="Voice Lab"
+     `----
+  [31mx[0m Expected ',', got 'className'
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:165:1]
+ [2m162[0m |         subtitle="Text-to-speech generation"
+ [2m163[0m |         actions={voiceActions}
+ [2m164[0m |       />
+ [2m165[0m |       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
+     : [35;1m           ^^^^^^^^^[0m
+ [2m166[0m |         <div className="w-full px-6 py-8">
+ [2m167[0m | 
+ [2m168[0m |         <div className="flex gap-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:158:1]
+ [2m155[0m |   )
+ [2m156[0m | 
+ [2m157[0m |   return (
+ [2m158[0m |     <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+     : [35;1m     ^^^[0m
+ [2m159[0m |       <StudioHeader 
+ [2m160[0m |         currentTool="voice"
+ [2m161[0m |         title="Voice Lab"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ✓ Compiled in 7.3s (2431 modules)
+ ✓ Compiled in 738ms (2446 modules)
+ ✓ Compiled in 1021ms (2446 modules)
+ ✓ Compiled in 890ms (2446 modules)
+ ✓ Compiled in 9.6s (2446 modules)
+ ✓ Compiled in 1302ms (1210 modules)
+ ✓ Compiled in 1824ms (2446 modules)
+ ✓ Compiled in 1369ms (2446 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/arach/dev/peal/.next/cache/webpack/server-development/1.pack.gz_' -> '/Users/arach/dev/peal/.next/cache/webpack/server-development/1.pack.gz'
+ ✓ Compiled in 1852ms (1210 modules)
+ ✓ Compiled in 2.4s (2451 modules)
+ ⨯ ./app/voice/page.tsx
+Error:   [31mx[0m Return statement is not allowed here
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:143:1]
+ [2m140[0m |         </>
+ [2m141[0m |       )
+ [2m142[0m |     
+ [2m143[0m | [35;1m,[0m[35;1m-[0m[35;1m>[0m   return (
+ [2m144[0m | [35;1m|[0m       <>
+ [2m145[0m | [35;1m|[0m         <StudioHeader 
+ [2m146[0m | [35;1m|[0m           currentTool="voice"
+ [2m147[0m | [35;1m|[0m           title="Voice Lab"
+ [2m148[0m | [35;1m|[0m           subtitle="Text-to-speech generation"
+ [2m149[0m | [35;1m|[0m           actions={voiceActions}
+ [2m150[0m | [35;1m|[0m         />
+ [2m151[0m | [35;1m|[0m         <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
+ [2m152[0m | [35;1m|[0m           <div className="w-full px-6 py-8">
+ [2m153[0m | [35;1m|[0m   
+ [2m154[0m | [35;1m|[0m           <div className="flex gap-8">
+ [2m155[0m | [35;1m|[0m             {/* Generation Panel */}
+ [2m156[0m | [35;1m|[0m             <div className="flex-1 space-y-6">
+ [2m157[0m | [35;1m|[0m               {/* Project Configuration */}
+ [2m158[0m | [35;1m|[0m               <div className="space-y-4">
+ [2m159[0m | [35;1m|[0m                 <h2 className="text-sm font-light text-gray-300 tracking-wide">PROJECT</h2>
+ [2m160[0m | [35;1m|[0m                 <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
+ [2m161[0m | [35;1m|[0m                   <div className="p-6">
+ [2m162[0m | [35;1m|[0m                     <Label htmlFor="project-name" className="text-xs text-gray-400 uppercase tracking-widest font-light">
+ [2m163[0m | [35;1m|[0m                       Project Name
+ [2m164[0m | [35;1m|[0m                     </Label>
+ [2m165[0m | [35;1m|[0m                     <Input
+ [2m166[0m | [35;1m|[0m                       id="project-name"
+ [2m167[0m | [35;1m|[0m                       value={projectName}
+ [2m168[0m | [35;1m|[0m                       onChange={(e) => setProjectName(e.target.value)}
+ [2m169[0m | [35;1m|[0m                       className="mt-3 bg-black/40 border-gray-700/50 text-white font-mono text-sm font-extralight focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
+ [2m170[0m | [35;1m|[0m                       placeholder="peal-tts-project"
+ [2m171[0m | [35;1m|[0m                     />
+ [2m172[0m | [35;1m|[0m                   </div>
+ [2m173[0m | [35;1m|[0m                 </div>
+ [2m174[0m | [35;1m|[0m               </div>
+ [2m175[0m | [35;1m|[0m   
+ [2m176[0m | [35;1m|[0m               {/* Script Input */}
+ [2m177[0m | [35;1m|[0m               <div className="space-y-4">
+ [2m178[0m | [35;1m|[0m                 <h2 className="text-sm font-light text-gray-300 tracking-wide">SCRIPT</h2>
+ [2m179[0m | [35;1m|[0m                 <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
+ [2m180[0m | [35;1m|[0m                   <div className="p-6">
+ [2m181[0m | [35;1m|[0m                     <Textarea
+ [2m182[0m | [35;1m|[0m                       value={script}
+ [2m183[0m | [35;1m|[0m                       onChange={(e) => setScript(e.target.value)}
+ [2m184[0m | [35;1m|[0m                       placeholder="Enter your script here..."
+ [2m185[0m | [35;1m|[0m                       className="min-h-40 bg-black/40 border-gray-700/50 text-white font-mono text-sm font-extralight resize-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
+ [2m186[0m | [35;1m|[0m                       rows={10}
+ [2m187[0m | [35;1m|[0m                     />
+ [2m188[0m | [35;1m|[0m                   </div>
+ [2m189[0m | [35;1m|[0m                   {isGenerating && (
+ [2m190[0m | [35;1m|[0m                     <div className="border-t border-gray-800/50 p-6 bg-black/10">
+ [2m191[0m | [35;1m|[0m                       <div className="flex items-center gap-4 mb-4">
+ [2m192[0m | [35;1m|[0m                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+ [2m193[0m | [35;1m|[0m                         <span className="text-xs text-gray-400 font-mono uppercase tracking-widest">
+ [2m194[0m | [35;1m|[0m                           Generating Audio
+ [2m195[0m | [35;1m|[0m                         </span>
+ [2m196[0m | [35;1m|[0m                       </div>
+ [2m197[0m | [35;1m|[0m                       <Waveform isGenerating={true} className="h-16" />
+ [2m198[0m | [35;1m|[0m                     </div>
+ [2m199[0m | [35;1m|[0m                   )}
+ [2m200[0m | [35;1m|[0m                   <div className="border-t border-gray-800/50 px-6 py-3 bg-black/20">
+ [2m201[0m | [35;1m|[0m                     <div className="flex justify-between items-center text-xs text-gray-500 font-mono">
+ [2m202[0m | [35;1m|[0m                       <span>{script.length} characters</span>
+ [2m203[0m | [35;1m|[0m                       <span>~{Math.ceil(script.length / 200)}s estimated</span>
+ [2m204[0m | [35;1m|[0m                     </div>
+ [2m205[0m | [35;1m|[0m                   </div>
+ [2m206[0m | [35;1m|[0m                 </div>
+ [2m207[0m | [35;1m|[0m               </div>
+ [2m208[0m | [35;1m|[0m   
+ [2m209[0m | [35;1m|[0m               {/* Model Configuration */}
+ [2m210[0m | [35;1m|[0m               <div className="space-y-4">
+ [2m211[0m | [35;1m|[0m                 <h2 className="text-sm font-light text-gray-300 tracking-wide">CONFIGURATION</h2>
+ [2m212[0m | [35;1m|[0m                 <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
+ [2m213[0m | [35;1m|[0m                   <div className="p-6 space-y-6">
+ [2m214[0m | [35;1m|[0m                     <div className="grid grid-cols-2 gap-6">
+ [2m215[0m | [35;1m|[0m                       <div>
+ [2m216[0m | [35;1m|[0m                         <Label className="text-xs text-gray-400 uppercase tracking-widest font-light">Model</Label>
+ [2m217[0m | [35;1m|[0m                         <Select value={selectedModel} onValueChange={setSelectedModel}>
+ [2m218[0m | [35;1m|[0m                           <SelectTrigger className="mt-3 bg-black/40 border-gray-700/50 text-white font-mono text-sm font-extralight h-10 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20">
+ [2m219[0m | [35;1m|[0m                             <SelectValue />
+ [2m220[0m | [35;1m|[0m                           </SelectTrigger>
+ [2m221[0m | [35;1m|[0m                           <SelectContent className="bg-gray-900 border-gray-700/50 rounded-sm">
+ [2m222[0m | [35;1m|[0m                             {models.map((model) => (
+ [2m223[0m | [35;1m|[0m                               <SelectItem
+ [2m224[0m | [35;1m|[0m                                 key={model.id}
+ [2m225[0m | [35;1m|[0m                                 value={model.id}
+ [2m226[0m | [35;1m|[0m                                 className="text-white font-mono text-sm font-extralight focus:bg-gray-800"
+ [2m227[0m | [35;1m|[0m                               >
+ [2m228[0m | [35;1m|[0m                                 <div className="flex flex-col items-start">
+ [2m229[0m | [35;1m|[0m                                   <span>{model.name}</span>
+ [2m230[0m | [35;1m|[0m                                   <div className="flex items-center gap-2 mt-1">
+ [2m231[0m | [35;1m|[0m                                     <span className="text-xs text-gray-400">{model.provider}</span>
+ [2m232[0m | [35;1m|[0m                                     <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-xs font-light px-1.5 py-0">
+ [2m233[0m | [35;1m|[0m                                       {model.tier}
+ [2m234[0m | [35;1m|[0m                                     </Badge>
+ [2m235[0m | [35;1m|[0m                                   </div>
+ [2m236[0m | [35;1m|[0m                                 </div>
+ [2m237[0m | [35;1m|[0m                               </SelectItem>
+ [2m238[0m | [35;1m|[0m                             ))}
+ [2m239[0m | [35;1m|[0m                           </SelectContent>
+ [2m240[0m | [35;1m|[0m                         </Select>
+ [2m241[0m | [35;1m|[0m                       </div>
+ [2m242[0m | [35;1m|[0m   
+ [2m243[0m | [35;1m|[0m                       <div>
+ [2m244[0m | [35;1m|[0m                         <Label className="text-xs text-gray-400 uppercase tracking-widest font-light">Voice</Label>
+ [2m245[0m | [35;1m|[0m                         <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+ [2m246[0m | [35;1m|[0m                           <SelectTrigger className="mt-3 bg-black/40 border-gray-700/50 text-white font-mono text-sm font-extralight h-10 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20">
+ [2m247[0m | [35;1m|[0m                             <SelectValue />
+ [2m248[0m | [35;1m|[0m                           </SelectTrigger>
+ [2m249[0m | [35;1m|[0m                           <SelectContent className="bg-gray-900 border-gray-700/50 rounded-sm">
+ [2m250[0m | [35;1m|[0m                             {voices[selectedModel as keyof typeof voices]?.map((voice) => (
+ [2m251[0m | [35;1m|[0m                               <SelectItem
+ [2m252[0m | [35;1m|[0m                                 key={voice}
+ [2m253[0m | [35;1m|[0m                                 value={voice}
+ [2m254[0m | [35;1m|[0m                                 className="text-white font-mono text-sm font-extralight focus:bg-gray-800"
+ [2m255[0m | [35;1m|[0m                               >
+ [2m256[0m | [35;1m|[0m                                 {voice}
+ [2m257[0m | [35;1m|[0m                               </SelectItem>
+ [2m258[0m | [35;1m|[0m                             ))}
+ [2m259[0m | [35;1m|[0m                           </SelectContent>
+ [2m260[0m | [35;1m|[0m                         </Select>
+ [2m261[0m | [35;1m|[0m                       </div>
+ [2m262[0m | [35;1m|[0m                     </div>
+ [2m263[0m | [35;1m|[0m   
+ [2m264[0m | [35;1m|[0m                     <div>
+ [2m265[0m | [35;1m|[0m                       <Label className="text-xs text-gray-400 uppercase tracking-widest font-light">
+ [2m266[0m | [35;1m|[0m                         Speed: {speed[0]}x
+ [2m267[0m | [35;1m|[0m                       </Label>
+ [2m268[0m | [35;1m|[0m                       <div className="mt-4">
+ [2m269[0m | [35;1m|[0m                         <Slider value={speed} onValueChange={setSpeed} max={2} min={0.25} step={0.25} />
+ [2m270[0m | [35;1m|[0m                       </div>
+ [2m271[0m | [35;1m|[0m                     </div>
+ [2m272[0m | [35;1m|[0m                   </div>
+ [2m273[0m | [35;1m|[0m                   <div className="border-t border-gray-800/50 p-6">
+ [2m274[0m | [35;1m|[0m                     <Button
+ [2m275[0m | [35;1m|[0m                       onClick={handleGenerate}
+ [2m276[0m | [35;1m|[0m                       disabled={!script.trim() || isGenerating}
+ [2m277[0m | [35;1m|[0m                       className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-light h-11 rounded-sm shadow-lg shadow-blue-500/20 transition-all duration-200"
+ [2m278[0m | [35;1m|[0m                     >
+ [2m279[0m | [35;1m|[0m                       {isGenerating ? (
+ [2m280[0m | [35;1m|[0m                         <div className="flex items-center gap-2">
+ [2m281[0m | [35;1m|[0m                           <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+ [2m282[0m | [35;1m|[0m                           Generating...
+ [2m283[0m | [35;1m|[0m                         </div>
+ [2m284[0m | [35;1m|[0m                       ) : (
+ [2m285[0m | [35;1m|[0m                         "Generate Audio"
+ [2m286[0m | [35;1m|[0m                       )}
+ [2m287[0m | [35;1m|[0m                     </Button>
+ [2m288[0m | [35;1m|[0m                   </div>
+ [2m289[0m | [35;1m|[0m                 </div>
+ [2m290[0m | [35;1m|[0m               </div>
+ [2m291[0m | [35;1m|[0m             </div>
+ [2m292[0m | [35;1m|[0m   
+ [2m293[0m | [35;1m|[0m             {/* Generated Audio List */}
+ [2m294[0m | [35;1m|[0m             <div className="w-80 space-y-4">
+ [2m295[0m | [35;1m|[0m               <h2 className="text-sm font-light text-gray-300 tracking-wide">GENERATED FILES</h2>
+ [2m296[0m | [35;1m|[0m               <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
+ [2m297[0m | [35;1m|[0m                 {generatedAudios.length === 0 ? (
+ [2m298[0m | [35;1m|[0m                   <div className="p-12 text-center">
+ [2m299[0m | [35;1m|[0m                     <FileAudio className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+ [2m300[0m | [35;1m|[0m                     <p className="text-sm text-gray-500 font-light">No files generated</p>
+ [2m301[0m | [35;1m|[0m                   </div>
+ [2m302[0m | [35;1m|[0m                 ) : (
+ [2m303[0m | [35;1m|[0m                   <div className="divide-y divide-gray-800/50 max-h-96 overflow-y-auto">
+ [2m304[0m | [35;1m|[0m                     {generatedAudios.map((audio) => (
+ [2m305[0m | [35;1m|[0m                       <div key={audio.id} className="p-5 hover:bg-black/20 transition-colors duration-200">
+ [2m306[0m | [35;1m|[0m                         <div className="flex items-start justify-between mb-3">
+ [2m307[0m | [35;1m|[0m                           <div className="flex-1 min-w-0">
+ [2m308[0m | [35;1m|[0m                             <p className="text-xs font-mono text-blue-400 truncate font-extralight">{audio.filename}</p>
+ [2m309[0m | [35;1m|[0m                             <div className="flex items-center gap-2 mt-2">
+ [2m310[0m | [35;1m|[0m                               <span className="text-xs text-gray-400 font-mono">{audio.model}</span>
+ [2m311[0m | [35;1m|[0m                               <span className="text-xs text-gray-600">•</span>
+ [2m312[0m | [35;1m|[0m                               <span className="text-xs text-gray-400 font-mono">{audio.voice}</span>
+ [2m313[0m | [35;1m|[0m                               <span className="text-xs text-gray-600">•</span>
+ [2m314[0m | [35;1m|[0m                               <span className="text-xs text-gray-400 font-mono">{audio.duration}</span>
+ [2m315[0m | [35;1m|[0m                             </div>
+ [2m316[0m | [35;1m|[0m                           </div>
+ [2m317[0m | [35;1m|[0m                         </div>
+ [2m318[0m | [35;1m|[0m   
+ [2m319[0m | [35;1m|[0m                         <div className="mb-4">
+ [2m320[0m | [35;1m|[0m                           <p className="text-xs text-gray-300 line-clamp-2 mb-3 font-light leading-relaxed">
+ [2m321[0m | [35;1m|[0m                             {audio.script}
+ [2m322[0m | [35;1m|[0m                           </p>
+ [2m323[0m | [35;1m|[0m                           <Waveform isPlaying={currentlyPlaying === audio.id} audioUrl={audio.audioUrl} className="h-8" />
+ [2m324[0m | [35;1m|[0m                         </div>
+ [2m325[0m | [35;1m|[0m   
+ [2m326[0m | [35;1m|[0m                         <div className="space-y-3">
+ [2m327[0m | [35;1m|[0m                           <div className="flex items-center justify-between">
+ [2m328[0m | [35;1m|[0m                             <span className="text-xs text-gray-500 font-mono">{audio.createdAt}</span>
+ [2m329[0m | [35;1m|[0m                             <div className="flex gap-1">
+ [2m330[0m | [35;1m|[0m                               <Button
+ [2m331[0m | [35;1m|[0m                                 size="sm"
+ [2m332[0m | [35;1m|[0m                                 variant="ghost"
+ [2m333[0m | [35;1m|[0m                                 onClick={() => handleDownload(audio)}
+ [2m334[0m | [35;1m|[0m                                 className="h-7 w-7 p-0 hover:bg-blue-500/10 text-gray-400 hover:text-blue-400 rounded-sm"
+ [2m335[0m | [35;1m|[0m                               >
+ [2m336[0m | [35;1m|[0m                                 <Download className="w-3.5 h-3.5" />
+ [2m337[0m | [35;1m|[0m                               </Button>
+ [2m338[0m | [35;1m|[0m                               <Button
+ [2m339[0m | [35;1m|[0m                                 size="sm"
+ [2m340[0m | [35;1m|[0m                                 variant="ghost"
+ [2m341[0m | [35;1m|[0m                                 onClick={() => copyToClipboard(audio.filename)}
+ [2m342[0m | [35;1m|[0m                                 className="h-7 w-7 p-0 hover:bg-blue-500/10 text-gray-400 hover:text-blue-400 rounded-sm"
+ [2m343[0m | [35;1m|[0m                               >
+ [2m344[0m | [35;1m|[0m                                 <Copy className="w-3.5 h-3.5" />
+ [2m345[0m | [35;1m|[0m                               </Button>
+ [2m346[0m | [35;1m|[0m                               <Button
+ [2m347[0m | [35;1m|[0m                                 size="sm"
+ [2m348[0m | [35;1m|[0m                                 variant="ghost"
+ [2m349[0m | [35;1m|[0m                                 onClick={() => deleteAudio(audio.id)}
+ [2m350[0m | [35;1m|[0m                                 className="h-7 w-7 p-0 hover:bg-red-500/10 text-gray-400 hover:text-red-400 rounded-sm"
+ [2m351[0m | [35;1m|[0m                               >
+ [2m352[0m | [35;1m|[0m                                 <Trash2 className="w-3.5 h-3.5" />
+ [2m353[0m | [35;1m|[0m                               </Button>
+ [2m354[0m | [35;1m|[0m                             </div>
+ [2m355[0m | [35;1m|[0m                           </div>
+ [2m356[0m | [35;1m|[0m   
+ [2m357[0m | [35;1m|[0m                           <AudioControls
+ [2m358[0m | [35;1m|[0m                             audioUrl={audio.audioUrl}
+ [2m359[0m | [35;1m|[0m                             isPlaying={currentlyPlaying === audio.id}
+ [2m360[0m | [35;1m|[0m                             onPlayPause={() => handlePlay(audio.audioUrl, audio.id)}
+ [2m361[0m | [35;1m|[0m                           />
+ [2m362[0m | [35;1m|[0m                         </div>
+ [2m363[0m | [35;1m|[0m                       </div>
+ [2m364[0m | [35;1m|[0m                     ))}
+ [2m365[0m | [35;1m|[0m                   </div>
+ [2m366[0m | [35;1m|[0m                 )}
+ [2m367[0m | [35;1m|[0m               </div>
+ [2m368[0m | [35;1m|[0m             </div>
+ [2m369[0m | [35;1m|[0m           </div>
+ [2m370[0m | [35;1m|[0m   
+ [2m371[0m | [35;1m|[0m           {/* Hidden audio element for playback */}
+ [2m372[0m | [35;1m|[0m           <audio ref={audioRef} onEnded={() => setCurrentlyPlaying(null)} className="hidden" />
+ [2m373[0m | [35;1m|[0m           </div>
+ [2m374[0m | [35;1m|[0m         </div>
+ [2m375[0m | [35;1m|[0m       </>
+ [2m376[0m | [35;1m`[0m[35;1m-[0m[35;1m>[0m   )
+ [2m377[0m |     }
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/arach/dev/peal/app/voice/page.tsx[0m:377:1]
+ [2m374[0m |       </div>
+ [2m375[0m |     </>
+ [2m376[0m |   )
+ [2m377[0m | }
+     : [35;1m^[0m
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/voice/page.tsx
+ ✓ Compiled in 1368ms (2436 modules)
+ ✓ Compiled in 3.8s (2437 modules)
+ ✓ Compiled in 4.2s (2452 modules)
+ ✓ Compiled in 1523ms (2452 modules)
+ ✓ Compiled in 1219ms (2452 modules)
+ ✓ Compiled in 1631ms (2452 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/arach/dev/peal/.next/cache/webpack/server-development/1.pack.gz_' -> '/Users/arach/dev/peal/.next/cache/webpack/server-development/1.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/arach/dev/peal/.next/cache/webpack/client-development/1.pack.gz_' -> '/Users/arach/dev/peal/.next/cache/webpack/client-development/1.pack.gz'
+ ✓ Compiled in 1171ms (1214 modules)
+ ✓ Compiled in 4.7s (2452 modules)
+ ⨯ ./components/TTSStudio.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/arach/dev/peal/components/TTSStudio.tsx[0m:148:1]
+ [2m145[0m |   }
+ [2m146[0m | 
+ [2m147[0m |   return (
+ [2m148[0m |     <div className="flex-1 flex bg-gray-950">
+     : [35;1m     ^^^[0m
+ [2m149[0m |       {/* Main Content Area */}
+ [2m150[0m |       <div className="flex-1 p-6">
+ [2m151[0m |         <div className="space-y-6">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/TTSStudio.tsx
+./components/UnifiedStudio.tsx
+./app/studio/page.tsx

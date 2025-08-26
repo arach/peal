@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Play, Download, Sparkles, Copy, Volume2 } from 'lucide-react'
+import Header from '@/components/Header'
 import { modernAppPresets, soundCategories, getPresetsByCategory, type SoundPreset } from '@/lib/presets/modernAppSounds'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { useSoundStore } from '@/store/soundStore'
@@ -158,38 +159,26 @@ export default function PresetsPage() {
     }
   }
 
+  const rightContent = (
+    <button
+      onClick={() => router.push('/studio')}
+      className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-400 text-white rounded-lg transition-colors"
+    >
+      <Sparkles size={16} />
+      Create Custom
+    </button>
+  )
+
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
-      {/* Header */}
-      <div className="border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push('/')}
-                className="flex items-center gap-2 text-gray-400 hover:text-gray-100 transition-colors"
-              >
-                <ArrowLeft size={18} />
-                Back
-              </button>
-              <div className="w-px h-6 bg-gray-700"></div>
-              <div>
-                <h1 className="text-2xl font-bold">Modern App Sounds</h1>
-                <p className="text-sm text-gray-400 mt-1">
-                  Polished, intentional sound effects for futuristic applications
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => router.push('/studio')}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-400 text-white rounded-lg transition-colors"
-            >
-              <Sparkles size={16} />
-              Create Custom
-            </button>
-          </div>
-        </div>
-      </div>
+    <>
+      <Header 
+        variant="studio" 
+        title="Modern App Sounds"
+        subtitle="Polished, intentional sound effects for futuristic applications"
+        backLabel="Back"
+        rightContent={rightContent}
+      />
+      <div className="min-h-screen bg-gray-950 text-gray-100">
 
       {/* Category Tabs */}
       <div className="border-b border-gray-800 sticky top-0 bg-gray-950 z-10">
@@ -352,6 +341,7 @@ export default function PresetsPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

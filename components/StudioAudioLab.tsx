@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Play, Pause, Square, Volume2, Save } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import StudioHeader from './StudioHeader'
 
 interface Track {
   id: string
@@ -719,28 +718,9 @@ export default function StudioAudioLab() {
   )
 
   return (
-    <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
-      <StudioHeader 
-        currentTool="audio"
-        title="Audio Lab"
-        subtitle="Process & compose audio"
-        actions={audioActions}
-      />
-
-      {/* Main Content */}
-      <div className="flex-1 flex">
-        {/* Audio Lab Content */}
-        <div className="flex-1 flex flex-col">
-          {/* Audio Lab Header */}
-          <div className="px-6 py-4 bg-gray-900 border-b border-gray-800">
-            <h2 className="text-lg font-semibold text-gray-100">Audio Lab</h2>
-            <p className="text-sm text-gray-400">Process URLs, separate tracks, generate speech, and compose</p>
-          </div>
-
-          {/* Audio Lab Content */}
-          <div className="flex-1 flex">
-            {/* Left Panel - Tools */}
-            <div className="w-80 bg-gray-900 border-r border-gray-800 p-6 space-y-6">
+    <div className="flex-1 flex bg-gray-950">
+      {/* Left Sidebar - Tools */}
+      <div className="w-80 bg-gray-900 border-r border-gray-800 p-6 space-y-6">
               {/* URL Processor */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -936,10 +916,10 @@ export default function StudioAudioLab() {
                   )}
                 </div>
               )}
-            </div>
+      </div>
 
-            {/* Right Panel - Waveform Display */}
-            <div className="flex-1 flex flex-col bg-gray-950">
+      {/* Main Content Area - Waveform Display */}
+      <div className="flex-1 flex flex-col bg-gray-950">
               {tracks.length > 0 ? (
                 <>
                   {/* Playback Controls */}
@@ -1116,9 +1096,6 @@ export default function StudioAudioLab() {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )

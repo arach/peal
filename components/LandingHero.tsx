@@ -51,7 +51,7 @@ export default function LandingHero() {
               <>
                 <a
                   href={getPublicUrl('/docs')}
-                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-base font-medium rounded-2xl transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl hover:shadow-blue-600/25"
+                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-base font-medium rounded-xl transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl hover:shadow-blue-600/25"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                   <Code size={20} className="relative" />
@@ -59,7 +59,7 @@ export default function LandingHero() {
                 </a>
                 <a
                   href={getPublicUrl('/about')}
-                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white text-base font-medium rounded-2xl border border-gray-300 dark:border-gray-600 transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl"
+                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white text-base font-medium rounded-xl border border-gray-300 dark:border-gray-600 transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-gray-100/50 dark:via-white/10 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                   <Sparkles size={20} className="relative" />
@@ -71,20 +71,33 @@ export default function LandingHero() {
                 <StarBorder
                   as="a"
                   href="/library"
-                  className="group inline-flex items-center justify-center gap-2 text-white hover:scale-105 transition-transform"
                   color="#3b82f6"
-                  speed="4s"
+                  speed="1s"
+                  className="touch-manipulation"
                 >
-                  <Volume2 size={20} />
-                  <span>Explore Library</span>
+                  <div className="inline-flex items-center justify-center gap-2 px-6 py-3 text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg transition-all duration-200 relative overflow-hidden group">
+                    {/* Glass shine effect */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300">
+                      <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500">
+                        <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-white to-transparent skew-x-[-20deg]" />
+                      </div>
+                    </div>
+                    <Volume2 size={20} className="relative z-10" />
+                    <span className="font-medium relative z-10">Explore Library</span>
+                  </div>
                 </StarBorder>
                 <a
                   href="/studio"
-                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white text-base font-medium rounded-2xl border border-gray-300 dark:border-gray-600 transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/15 active:bg-white/20 text-white font-medium rounded-lg border border-white/20 backdrop-blur-sm transition-all duration-200 touch-manipulation relative overflow-hidden group"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-gray-100/50 dark:via-white/10 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                  <Sparkles size={20} className="relative" />
-                  <span className="relative">Open Studio</span>
+                  {/* Glass shine effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300">
+                    <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500">
+                      <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-white to-transparent skew-x-[-20deg]" />
+                    </div>
+                  </div>
+                  <Sparkles size={20} className="relative z-10" />
+                  <span className="relative z-10">Open Studio</span>
                 </a>
               </>
             )}

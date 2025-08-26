@@ -13,23 +13,24 @@ interface StudioHeaderProps {
   subtitle?: string
   actions?: React.ReactNode
   onBack?: () => void
+  onToolChange?: (tool: StudioTool) => void
 }
 
 const toolConfig = {
   voice: {
-    label: 'Voice Lab',
+    label: 'Voice',
     icon: Mic,
     path: '/voice',
     description: 'Text-to-speech generation'
   },
   audio: {
-    label: 'Audio Lab', 
+    label: 'Audio', 
     icon: Layers,
     path: '/audio',
     description: 'Audio processing & composition'
   },
   sfx: {
-    label: 'SFX Studio',
+    label: 'SFX',
     icon: Volume2, 
     path: '/studio',
     description: 'Sound effects creation'
@@ -41,7 +42,8 @@ export default function StudioHeader({
   title,
   subtitle,
   actions,
-  onBack 
+  onBack,
+  onToolChange
 }: StudioHeaderProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -56,7 +58,11 @@ export default function StudioHeader({
 
   const handleToolSwitch = (tool: StudioTool) => {
     if (tool !== currentTool) {
-      router.push(toolConfig[tool].path)
+      if (onToolChange) {
+        onToolChange(tool)
+      } else {
+        router.push(toolConfig[tool].path)
+      }
     }
   }
 
@@ -64,8 +70,8 @@ export default function StudioHeader({
   const CurrentIcon = currentConfig.icon
 
   return (
-    <header className="bg-gray-950 border-b border-gray-800/60 relative">
-      <div className="max-w-none mx-auto px-6 py-4">
+    <header className="bg-gray-950 border-b border-gray-800 relative">
+      <div className="w-full px-6 py-4">
         <div className="flex items-center justify-between">
           
           {/* Left - Navigation & Branding */}
@@ -97,7 +103,7 @@ export default function StudioHeader({
           </div>
 
           {/* Center - Tool Navigation */}
-          <div className="flex items-center gap-1 bg-gray-900/60 rounded-lg p-1 border border-gray-800/40">
+          <div className="flex items-center gap-1 bg-gray-900/60 rounded-lg p-1 border border-gray-800">
             {Object.entries(toolConfig).map(([key, config]) => {
               const isActive = key === currentTool
               const Icon = config.icon

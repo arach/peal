@@ -31,6 +31,13 @@ pnpm lint
 node assets/sounds/generate-sounds.cjs
 ```
 
+
+*** IMPORTANT ***
+
+1. You must never add Claude as co-author, messes up our contributor pages on Github
+2. You must never kill our next server, we run the server on port 3001 and it always autocompiles. If there's an issue, ask for assistance
+
+
 ## Architecture & Structure
 
 ### Build Configuration
