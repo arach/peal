@@ -34,6 +34,8 @@ export default function TTSStudio() {
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null)
   const [projectName, setProjectName] = useState("peal-tts-project")
   const [isMac, setIsMac] = useState(false)
+  const [selectedAudioId, setSelectedAudioId] = useState<string | null>(null)
+  const [audioTracks, setAudioTracks] = useState<GeneratedAudio[]>([])
 
   const audioRef = useRef<HTMLAudioElement>(null)
 
@@ -169,7 +171,7 @@ export default function TTSStudio() {
   return (
     <div className="flex-1 flex bg-gray-950">
       {/* Left Sidebar - Generated Files */}
-      <div className="w-80 bg-gray-900 border-r border-gray-800 p-6">
+      <div className="w-96 bg-gray-900 border-r border-gray-800 p-6">
         <div className="space-y-4">
           <h2 className="text-sm font-light text-gray-300 tracking-wide">GENERATED FILES</h2>
           <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
@@ -181,7 +183,19 @@ export default function TTSStudio() {
             ) : (
               <div className="divide-y divide-gray-800/50 max-h-96 overflow-y-auto">
                 {generatedAudios.map((audio) => (
-                  <div key={audio.id} className="p-5 hover:bg-black/20 transition-colors duration-200">
+                  <div 
+                    key={audio.id} 
+                    className={`p-5 hover:bg-black/20 transition-colors duration-200 cursor-pointer ${
+                      selectedAudioId === audio.id ? 'bg-blue-900/20 border-l-2 border-blue-500' : ''
+                    }`}
+                    onClick={() => {
+                      setSelectedAudioId(audio.id)
+                      // Add to tracks if not already present
+                      if (!audioTracks.find(t => t.id === audio.id)) {
+                        setAudioTracks([...audioTracks, audio])
+                      }
+                    }}
+                  >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-mono text-blue-400 truncate font-extralight">{audio.filename}</p>
@@ -322,6 +336,70 @@ export default function TTSStudio() {
               </div>
             </div>
           </div>
+
+          {/* Audio Tracks Section */}
+          {audioTracks.length > 0 && (
+            <div className="space-y-4 mt-6">
+              <h2 className="text-sm font-light text-gray-300 tracking-wide">AUDIO TRACKS</h2>
+              <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
+                <div className="p-4 space-y-2">
+                  {audioTracks.map((track, index) => (
+                    <div 
+                      key={track.id}
+                      className="flex items-center gap-3 p-3 bg-black/20 rounded border border-gray-800/50 hover:border-gray-700/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500 font-mono">Track {index + 1}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-blue-400 font-mono truncate">{track.filename}</p>
+                        <p className="text-xs text-gray-500 mt-1 truncate">{track.script}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => togglePlayPause(track.id, track.audioUrl)}
+                          className="h-7 w-7 p-0 hover:bg-blue-500/10 text-gray-400 hover:text-blue-400"
+                        >
+                          {currentlyPlaying === track.id ? "⏸" : "▶"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setAudioTracks(audioTracks.filter(t => t.id !== track.id))}
+                          className="h-7 w-7 p-0 hover:bg-red-500/10 text-gray-400 hover:text-red-400"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="border-t border-gray-800/50 p-4">
+                  <Button
+                    onClick={() => {
+                      // Play all tracks sequentially
+                      let currentIndex = 0
+                      const playNext = () => {
+                        if (currentIndex < audioTracks.length) {
+                          const track = audioTracks[currentIndex]
+                          togglePlayPause(track.id, track.audioUrl)
+                          currentIndex++
+                          // Wait for track to finish before playing next
+                          setTimeout(playNext, 3000) // Adjust timing as needed
+                        }
+                      }
+                      playNext()
+                    }}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm"
+                  >
+                    Play All Tracks
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Hidden audio element for playback */}
@@ -329,7 +407,7 @@ export default function TTSStudio() {
       </div>
 
       {/* Right Sidebar - Configuration */}
-      <div className="w-80 bg-gray-900 border-l border-gray-800 p-6">
+      <div className="w-96 bg-gray-900 border-l border-gray-800 p-6">
         <div className="space-y-4">
           <h2 className="text-sm font-light text-gray-300 tracking-wide">CONFIGURATION</h2>
           <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
