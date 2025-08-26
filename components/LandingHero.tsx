@@ -126,14 +126,14 @@ export default function LandingHero() {
             <div className="space-y-3">
               <div className="bg-gray-950 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800">
                 {/* Terminal command */}
-                <div className="bg-gray-900 dark:bg-black px-4 py-3 border-b border-gray-800">
-                  <code className="font-mono text-xs">
+                <div className="bg-gray-900 dark:bg-black px-4 py-3 border-b border-gray-800 font-mono">
+                  <code className="font-mono text-xs block">
                     <span className="text-gray-500">&gt;</span> <span className="text-purple-400">npx peal</span> <span className="text-gray-100">add success notification error</span>
                   </code>
                 </div>
                 {/* Terminal output */}
-                <div className="px-4 py-3">
-                  <code className="font-mono text-xs text-gray-300">
+                <div className="px-4 py-3 font-mono">
+                  <code className="font-mono text-xs text-gray-300 block">
                     <div className="text-gray-400">🎧 Added 3 sounds:</div>
                     <div className="mt-1 space-y-0.5 ml-2">
                       <div><span className="text-green-400">✓</span> success</div>
@@ -144,8 +144,8 @@ export default function LandingHero() {
                 </div>
               </div>
               
-              <pre className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 px-4 py-3 rounded-xl text-xs text-left overflow-x-auto">
-                <code className="font-mono">
+              <pre className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 px-4 py-3 rounded-xl text-xs text-left overflow-x-auto font-mono">
+                <code className="font-mono block">
                   <span className="text-gray-500 dark:text-gray-400">{`// Use in your app`}</span>
                   {'\n'}
                   <span className="text-blue-600 dark:text-blue-400">import</span> {'{ '}<span className="text-orange-600 dark:text-orange-400">play</span>, <span className="text-orange-600 dark:text-orange-400">pause</span>, <span className="text-orange-600 dark:text-orange-400">stop</span>{' }'} <span className="text-blue-600 dark:text-blue-400">from</span> <span className="text-green-600 dark:text-green-400">'@/peal'</span>

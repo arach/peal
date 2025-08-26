@@ -54,6 +54,11 @@
   code, pre, .font-mono, .font-code {
     font-family: var(--font-mono) !important;
   }
+  
+  /* Ensure all children of font-mono use mono font */
+  .font-mono * {
+    font-family: var(--font-mono) !important;
+  }
 }
 
 /* Semantic Typography System */
