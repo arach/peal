@@ -1,6 +1,6 @@
 'use client'
 
-import { Sparkles, ChevronDown, Volume2, ArrowRight } from 'lucide-react'
+import { Code, Sparkles, ChevronDown, Volume2, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import HeroSoundGrid from './HeroSoundGrid'
 import { isStaticBuild } from '@/utils/build'
