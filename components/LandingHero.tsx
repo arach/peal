@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import HeroSoundGrid from './HeroSoundGrid'
 import { isStaticBuild } from '@/utils/build'
 import { getPublicUrl } from '@/utils/url'
+import { StarBorder } from '@/components/ui/star-border'
 
 export default function LandingHero() {
 
@@ -67,14 +68,16 @@ export default function LandingHero() {
               </>
             ) : (
               <>
-                <a
+                <StarBorder
+                  as="a"
                   href="/library"
-                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-base font-medium rounded-2xl transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl hover:shadow-blue-600/25"
+                  className="group inline-flex items-center justify-center gap-2 text-white hover:scale-105 transition-transform"
+                  color="#3b82f6"
+                  speed="4s"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                  <Volume2 size={20} className="relative" />
-                  <span className="relative">Explore Library</span>
-                </a>
+                  <Volume2 size={20} />
+                  <span>Explore Library</span>
+                </StarBorder>
                 <a
                   href="/studio"
                   className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-900 text-gray-900 dark:text-white text-base font-medium rounded-2xl border border-gray-300 dark:border-gray-600 transition-all transform hover:scale-105 touch-manipulation overflow-hidden hover:shadow-xl"
