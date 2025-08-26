@@ -1,6 +1,6 @@
 'use client'
 
-import { Code, Sparkles, Zap, ChevronDown, Volume2, ArrowRight } from 'lucide-react'
+import { Sparkles, ChevronDown, Volume2, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import HeroSoundGrid from './HeroSoundGrid'
 import { isStaticBuild } from '@/utils/build'
@@ -191,21 +191,13 @@ export default function LandingHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
-            className="group relative"
+            className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg p-4 border border-gray-200/30 dark:border-gray-800/30 hover:border-gray-300/50 dark:hover:border-gray-700/50 transition-colors"
           >
-            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800">
-              <div className="flex items-start space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 flex items-center justify-center flex-shrink-0">
-                  <Zap className="w-4 h-4 text-blue-600 dark:text-blue-400" strokeWidth={1.5} />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-none">Drop-in ready</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-[1.5]">
-                    Single file. No build step. Works everywhere.
-                  </p>
-                </div>
-              </div>
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Drop-in ready</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                Single file. No build step. Works everywhere.
+              </p>
             </div>
           </motion.div>
 
@@ -213,21 +205,13 @@ export default function LandingHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 }}
-            className="group relative"
+            className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg p-4 border border-gray-200/30 dark:border-gray-800/30 hover:border-gray-300/50 dark:hover:border-gray-700/50 transition-colors"
           >
-            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800">
-              <div className="flex items-start space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20 flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-none">Brand-tailored</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-[1.5]">
-                    Fine-tune every parameter to match your aesthetic.
-                  </p>
-                </div>
-              </div>
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Brand-tailored</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                Fine-tune every parameter to match your aesthetic.
+              </p>
             </div>
           </motion.div>
 
@@ -235,21 +219,13 @@ export default function LandingHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
-            className="group relative"
+            className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg p-4 border border-gray-200/30 dark:border-gray-800/30 hover:border-gray-300/50 dark:hover:border-gray-700/50 transition-colors"
           >
-            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-b from-gray-200/50 to-transparent dark:from-gray-700/50 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800">
-              <div className="flex items-start space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/30 dark:to-green-900/20 flex items-center justify-center flex-shrink-0">
-                  <Code className="w-4 h-4 text-green-600 dark:text-green-400" strokeWidth={1.5} />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-none">Native performance</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-[1.5]">
-                    Pure Web Audio API. Zero dependencies.
-                  </p>
-                </div>
-              </div>
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Native performance</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                Pure Web Audio API. Zero dependencies.
+              </p>
             </div>
           </motion.div>
         </div>
