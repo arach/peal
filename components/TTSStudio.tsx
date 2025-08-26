@@ -168,6 +168,7 @@ export default function TTSStudio() {
     }
   }
 
+
   return (
     <div className="flex-1 flex bg-gray-950">
       {/* Left Sidebar - Generated Files */}
@@ -359,7 +360,7 @@ export default function TTSStudio() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => togglePlayPause(track.id, track.audioUrl)}
+                          onClick={() => handlePlay(track.audioUrl, track.id)}
                           className="h-7 w-7 p-0 hover:bg-blue-500/10 text-gray-400 hover:text-blue-400"
                         >
                           {currentlyPlaying === track.id ? "⏸" : "▶"}
@@ -384,7 +385,7 @@ export default function TTSStudio() {
                       const playNext = () => {
                         if (currentIndex < audioTracks.length) {
                           const track = audioTracks[currentIndex]
-                          togglePlayPause(track.id, track.audioUrl)
+                          handlePlay(track.audioUrl, track.id)
                           currentIndex++
                           // Wait for track to finish before playing next
                           setTimeout(playNext, 3000) // Adjust timing as needed
