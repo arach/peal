@@ -151,58 +151,62 @@ export default function Header({
               />
             </button>
             
-            <nav className="hidden md:flex items-center gap-3">
+            <nav className="hidden md:flex items-center gap-4">
               <button
                 onClick={() => handleNavigation('/library')}
-                className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-0.5"
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
               >
-                <Library size={12} />
+                <Library size={14} />
                 Library
               </button>
               {!isStaticBuild && (
                 <>
                   <button
                     onClick={() => handleNavigation('/studio')}
-                    className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-0.5"
+                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
                   >
-                    <Sparkles size={12} />
+                    <Sparkles size={14} />
                     Studio
                   </button>
                   {isDev && (
                     <button
                       onClick={() => handleNavigation('/presets')}
-                      className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-0.5"
+                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
                     >
-                      <Crown size={12} />
+                      <Crown size={14} />
                       Presets
                     </button>
                   )}
                   <button
                     onClick={() => handleNavigation('/voice')}
-                    className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-0.5"
+                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
                   >
-                    <Mic size={12} />
+                    <Mic size={14} />
                     Voice
                   </button>
                 </>
               )}
+            </nav>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            {/* Docs and About on the right */}
+            <nav className="hidden md:flex items-center gap-4">
               <button
                 onClick={() => handleNavigation('/docs')}
-                className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-0.5"
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
               >
-                <Book size={12} />
+                <Book size={14} />
                 Docs
               </button>
               <button
                 onClick={() => handleNavigation('/about')}
-                className="text-2xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
               >
                 About
               </button>
             </nav>
-          </div>
-          
-          <div className="flex items-center gap-3">
+            
             {rightContent}
             <ThemeToggle />
             
