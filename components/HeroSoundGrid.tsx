@@ -256,7 +256,14 @@ export default function HeroSoundGrid() {
     heroSounds.forEach(sound => {
       loadedSounds[sound.id] = new Howl({
         src: [sound.file],
-        onend: () => setPlaying(null)
+        html5: true, // Force HTML5 Audio for better compatibility
+        onend: () => setPlaying(null),
+        onloaderror: (id, error) => {
+          console.error(`Failed to load sound ${sound.id}:`, error)
+        },
+        onplayerror: (id, error) => {
+          console.error(`Failed to play sound ${sound.id}:`, error)
+        }
       })
     })
     setSounds(loadedSounds)
@@ -268,6 +275,8 @@ export default function HeroSoundGrid() {
   }, [])
 
   const playSound = (soundId: string) => {
+    console.log('Attempting to play sound:', soundId)
+    
     // Stop any currently playing sound
     if (playing && sounds[playing]) {
       sounds[playing].stop()
@@ -275,8 +284,11 @@ export default function HeroSoundGrid() {
     
     // Play new sound
     if (sounds[soundId]) {
+      console.log('Sound object found, playing:', soundId)
       sounds[soundId].play()
       setPlaying(soundId)
+    } else {
+      console.error('Sound not found:', soundId)
     }
   }
 
