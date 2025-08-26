@@ -2815,15 +2815,12 @@ export default function Studio() {
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center p-8">
-                <div className="text-center space-y-4 max-w-md">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto">
-                    <Volume2 size={32} className="text-white" />
-                  </div>
+                <div className="text-center space-y-6 max-w-md">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-100 mb-2">
+                    <h2 className="text-xl font-semibold text-gray-100 mb-3">
                       Welcome to Sound Studio
                     </h2>
-                    <p className="text-gray-400 leading-relaxed">
+                    <p className="text-sm text-gray-400 leading-relaxed">
                       Create custom sounds with AI or browse our curated library.
                       Start with a description of what you need, or pick from professional presets.
                     </p>
@@ -2831,14 +2828,14 @@ export default function Studio() {
                   <div className="flex gap-3 justify-center">
                     <button 
                       onClick={() => setShowVibeModal(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                     >
                       <Sparkles size={16} />
                       Design your first sound
                     </button>
                     <button 
                       onClick={() => setShowLibraryModal(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700"
                     >
                       <FolderOpen size={16} />
                       Browse Library
@@ -2927,7 +2924,7 @@ export default function Studio() {
                   <div className="p-4 space-y-4">
                     {/* Welcome message for empty state */}
                     {vibePrompt.length === 0 && vibeGeneratedSounds.length === 0 && (
-                      <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-700/30 rounded-lg p-4 mb-4">
+                      <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 mb-4">
                         <p className="text-sm text-gray-300 leading-relaxed">
                           Describe sounds in plain English and let AI bring them to life. 
                           Try describing timing, pitch, or the feeling you want.
@@ -3022,7 +3019,7 @@ export default function Studio() {
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => handleVibeAddAsTrack(sound)}
-                                    className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all flex items-center justify-center gap-1"
+                                    className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors flex items-center justify-center gap-1"
                                     title="Add this sound as a new track in your current composition"
                                   >
                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
@@ -3045,7 +3042,7 @@ export default function Studio() {
                               ) : (
                                 <button
                                   onClick={() => handleVibeLoadToStudio(sound)}
-                                  className="w-full px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                                  className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
                                 >
                                   Load to Studio
                                 </button>
@@ -3320,7 +3317,7 @@ export default function Studio() {
                           isGenerating 
                             ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                             : hasUnappliedChanges
-                              ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg transform hover:scale-[1.02]'
+                              ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg transform hover:scale-[1.02]'
                               : 'bg-gray-800 text-gray-500 cursor-not-allowed'
                         }`}
                       >
@@ -3354,7 +3351,7 @@ export default function Studio() {
                           className={`w-full px-4 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
                             isGenerating 
                               ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                              : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg'
+                              : 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
                           }`}
                         >
                           {isGenerating ? (
