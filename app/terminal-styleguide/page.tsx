@@ -206,7 +206,7 @@ export default function TerminalStyleGuidePage() {
                       </div>
                       <div className="text-[9px] text-gray-500 uppercase mb-1">{spec.type}</div>
                       <div className="space-y-1 text-[10px]">
-                        {Object.entries(spec.details).slice(0, 3).map(([key, value]) => (
+                        {spec.details && Object.entries(spec.details).slice(0, 3).map(([key, value]) => (
                           <div key={key} className="flex justify-between">
                             <span className="text-gray-600">{key}</span>
                             <span className="text-gray-400 truncate ml-2" style={{ maxWidth: '150px' }}>{value}</span>
@@ -252,7 +252,7 @@ export default function TerminalStyleGuidePage() {
                 <p className="text-xs text-sky-400 font-medium">{hoveredSpec.name}</p>
                 <span className="text-[9px] text-gray-500 uppercase">{hoveredSpec.type}</span>
               </div>
-              {Object.entries(hoveredSpec.details).map(([key, value]) => (
+              {hoveredSpec.details && Object.entries(hoveredSpec.details).map(([key, value]) => (
                 <div key={key} className="flex justify-between">
                   <span className="text-[10px] text-gray-500 uppercase">{key}</span>
                   <span className="text-[11px] text-sky-400">{value}</span>
