@@ -48,3 +48,6 @@ audio-cache/
 
 # Analysis cache files
 analysis-cache/
+
+# Archived scripts (not needed in repo)
+.archived-scripts/
