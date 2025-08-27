@@ -127,7 +127,20 @@ export default function TerminalStyleGuidePage() {
         className={`hover:bg-gray-900/30 -mx-2 px-2 py-2 rounded transition-colors cursor-pointer ${className}`}
         onMouseEnter={() => setHoveredSpec(spec)}
         onMouseLeave={() => setHoveredSpec(null)}
-        onClick={() => handleClick(spec)}
+        onMouseDown={() => {
+          console.log('MouseDown on:', spec.name)
+        }}
+        onMouseUp={(e) => {
+          console.log('MouseUp on:', spec.name)
+          // Use mouseUp instead of onClick to avoid event conflicts
+          const target = e.target as HTMLElement
+          // Skip if clicking on actual interactive buttons
+          if (target.tagName === 'BUTTON' || target.closest('button')) {
+            console.log('Skipping - clicked on button')
+            return
+          }
+          handleClick(spec)
+        }}
       >
         {children}
       </div>
@@ -135,6 +148,7 @@ export default function TerminalStyleGuidePage() {
   }
 
   const handleClick = (spec: StyleSpec) => {
+    console.log('Clicked:', spec.name) // Debug log
     const existingIndex = pinnedSpecs.findIndex(s => s.name === spec.name)
     if (existingIndex > -1) {
       // Remove if already pinned
@@ -316,7 +330,7 @@ export default function TerminalStyleGuidePage() {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-sky-500/5 to-transparent animate-scan pointer-events-none" />
           <div className="border border-gray-800 p-6 bg-gray-950/80 backdrop-blur-sm">
             <h1 className="text-3xl font-light tracking-tight text-gray-100 mb-2">PEAL // TERMINAL INTERFACE</h1>
-            <p className={ts.typography.bodyMono}>Defense-grade audio synthesis platform</p>
+            <p className={ts.typography.bodyMono}>Platform Style Guide</p>
             <div className="flex items-center gap-2 mt-4">
               <span className={ts.components.status.online} />
               <span className={ts.typography.bodySmallMono}>SYSTEM OPERATIONAL</span>
@@ -663,7 +677,10 @@ export default function TerminalStyleGuidePage() {
                         <Button 
                           variant="default" 
                           className="w-full"
-                          onClick={() => handleButtonClick('Primary', 'Execute')}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleButtonClick('Primary', 'Execute')
+                          }}
                         >
                           EXECUTE
                         </Button>
@@ -680,7 +697,10 @@ export default function TerminalStyleGuidePage() {
                         <Button 
                           variant="secondary" 
                           className="w-full"
-                          onClick={() => handleButtonClick('Secondary', 'Configure')}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleButtonClick('Secondary', 'Configure')
+                          }}
                         >
                           CONFIGURE
                         </Button>
@@ -691,7 +711,10 @@ export default function TerminalStyleGuidePage() {
                       <Button 
                         variant="outline" 
                         className="w-full"
-                        onClick={() => handleButtonClick('Outline', 'Options')}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleButtonClick('Outline', 'Options')
+                        }}
                       >
                         OPTIONS
                       </Button>
@@ -707,7 +730,10 @@ export default function TerminalStyleGuidePage() {
                         <Button 
                           variant="ghost" 
                           className="w-full"
-                          onClick={() => handleButtonClick('Ghost', 'Cancel')}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleButtonClick('Ghost', 'Cancel')
+                          }}
                         >
                           CANCEL
                         </Button>
@@ -724,7 +750,10 @@ export default function TerminalStyleGuidePage() {
                         <Button 
                           variant="destructive" 
                           className="w-full"
-                          onClick={() => handleButtonClick('Destructive', 'Terminate')}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleButtonClick('Destructive', 'Terminate')
+                          }}
                         >
                           TERMINATE
                         </Button>
@@ -741,7 +770,10 @@ export default function TerminalStyleGuidePage() {
                         <Button 
                           variant="success" 
                           className="w-full"
-                          onClick={() => handleButtonClick('Success', 'Confirm')}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleButtonClick('Success', 'Confirm')
+                          }}
                         >
                           CONFIRM
                         </Button>
@@ -758,7 +790,10 @@ export default function TerminalStyleGuidePage() {
                         <Button 
                           variant="warning" 
                           className="w-full"
-                          onClick={() => handleButtonClick('Warning', 'Warning')}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleButtonClick('Warning', 'Warning')
+                          }}
                         >
                           WARNING
                         </Button>
@@ -769,7 +804,10 @@ export default function TerminalStyleGuidePage() {
                       <Button 
                         variant="link" 
                         className="w-full"
-                        onClick={() => handleButtonClick('Link', 'Learn More')}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleButtonClick('Link', 'Learn More')
+                        }}
                       >
                         LEARN MORE
                       </Button>
