@@ -45,3 +45,6 @@ public/sounds/
 
 # Audio cache files (can be large)
 audio-cache/
+
+# Analysis cache files
+analysis-cache/

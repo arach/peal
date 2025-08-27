@@ -179,7 +179,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-900/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:border-blue-400 dark:hover:border-gray-700 transition-all group shadow-sm hover:shadow-md cursor-pointer"
+      className="bg-white dark:bg-gray-900/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl p-4 hover:border-blue-400 dark:hover:border-gray-700 transition-all group shadow-sm hover:shadow-md cursor-pointer"
       onClick={onShowCode}
     >
       {/* Waveform */}
@@ -207,7 +207,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
         {sound.tags.map(tag => (
           <span
             key={tag}
-            className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-xs"
+            className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs"
           >
             {tag}
           </span>
@@ -256,7 +256,14 @@ export default function HeroSoundGrid() {
     heroSounds.forEach(sound => {
       loadedSounds[sound.id] = new Howl({
         src: [sound.file],
-        onend: () => setPlaying(null)
+        html5: true, // Force HTML5 Audio for better compatibility
+        onend: () => setPlaying(null),
+        onloaderror: (id, error) => {
+          console.error(`Failed to load sound ${sound.id}:`, error)
+        },
+        onplayerror: (id, error) => {
+          console.error(`Failed to play sound ${sound.id}:`, error)
+        }
       })
     })
     setSounds(loadedSounds)
@@ -268,6 +275,8 @@ export default function HeroSoundGrid() {
   }, [])
 
   const playSound = (soundId: string) => {
+    console.log('Attempting to play sound:', soundId)
+    
     // Stop any currently playing sound
     if (playing && sounds[playing]) {
       sounds[playing].stop()
@@ -275,8 +284,11 @@ export default function HeroSoundGrid() {
     
     // Play new sound
     if (sounds[soundId]) {
+      console.log('Sound object found, playing:', soundId)
       sounds[soundId].play()
       setPlaying(soundId)
+    } else {
+      console.error('Sound not found:', soundId)
     }
   }
 

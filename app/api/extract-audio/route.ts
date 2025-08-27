@@ -5,6 +5,7 @@ import { tmpdir } from 'os'
 import ffmpeg from 'fluent-ffmpeg'
 import { exec } from 'child_process'
 import { promisify } from 'util'
+import { saveAnalysis, findAnalysisByUrl, type StoredAnalysis } from '@/lib/audioAnalysisStorage'
 
 const execAsync = promisify(exec)
 
@@ -17,6 +18,19 @@ export async function POST(request: NextRequest) {
     
     if (!url) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 })
+    }
+
+    // Check if we have a stored analysis for this URL
+    const existingAnalysis = await findAnalysisByUrl(url)
+    if (existingAnalysis) {
+      console.log('Using stored analysis for:', url)
+      return NextResponse.json({
+        success: true,
+        tracks: existingAnalysis.tracks,
+        duration: existingAnalysis.metadata.duration,
+        fromStorage: true,
+        analysisId: existingAnalysis.id
+      })
     }
 
     // Create temporary directory for processing
@@ -40,13 +54,45 @@ export async function POST(request: NextRequest) {
         audioData: (await fs.readFile(track.path)).toString('base64')
       })))
 
+      // Save analysis to storage (with error handling)
+      const analysisId = `analysis-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      const videoId = extractVideoId(url)
+      
+      const storedAnalysis: StoredAnalysis = {
+        id: analysisId,
+        url,
+        videoId,
+        timestamp: Date.now(),
+        analysis: null, // Will be populated later by client analysis
+        tracks: tracksData.map(track => ({
+          id: track.id,
+          name: track.name,
+          color: track.color,
+          duration: 30 // All tracks are 30 seconds
+        })),
+        metadata: {
+          duration: 30,
+          title: `Audio from ${videoId}`,
+          description: 'Extracted and separated audio tracks'
+        }
+      }
+      
+      try {
+        await saveAnalysis(storedAnalysis)
+        console.log('Analysis saved to storage successfully')
+      } catch (storageError) {
+        console.error('Failed to save analysis to storage:', storageError)
+        // Continue without storage - don't fail the entire request
+      }
+
       // Cleanup temp directory
       await fs.rm(tempDir, { recursive: true, force: true })
 
       return NextResponse.json({
         success: true,
         tracks: tracksData,
-        duration: 30 // seconds
+        duration: 30, // seconds
+        analysisId: analysisId
       })
 
     } catch (extractError) {

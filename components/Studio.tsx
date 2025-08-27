@@ -9,7 +9,7 @@ import { VibeParser } from '@/lib/vibeParser'
 import VibeDesignerModal from './VibeDesignerModal'
 import SoundLibraryModal from './SoundLibraryModal'
 import CodeEditor from './CodeEditor'
-import StudioHeader from './StudioHeader'
+import ResizableSidebar from './ResizableSidebar'
 
 export default function Studio() {
   const router = useRouter()
@@ -18,7 +18,24 @@ export default function Studio() {
   const { playSound } = useSoundGeneration()
   
   const [currentSound, setCurrentSound] = useState<Sound | null>(null)
-  const [editedParams, setEditedParams] = useState<any>(null)
+  const [leftPanelWidth, setLeftPanelWidth] = useState(400)
+  const [isResizing, setIsResizing] = useState(false)
+  const [editedParams, setEditedParams] = useState<any>({
+    frequency: 440,
+    duration: 0.5,
+    waveform: 'sine',
+    attack: 0.01,
+    decay: 0.05,
+    sustain: 0.5,
+    release: 0.1,
+    effects: {
+      reverb: false,
+      delay: false,
+      filter: false,
+      distortion: false,
+      compression: false
+    }
+  })
   const [previewSound, setPreviewSound] = useState<Sound | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -37,9 +54,6 @@ export default function Studio() {
   const [dragOffset, setDragOffset] = useState(0)
   const [hasUnappliedChanges, setHasUnappliedChanges] = useState(false)
   
-  // Code editor panel width state
-  const [codeEditorWidth, setCodeEditorWidth] = useState(400)
-  const [isResizing, setIsResizing] = useState(false)
   
   // Track system state
   interface Track {
@@ -91,7 +105,12 @@ export default function Studio() {
   // Modal states
   const [showVibeModal, setShowVibeModal] = useState(false)
   const [showLibraryModal, setShowLibraryModal] = useState(false)
-
+  
+  // Resize handlers
+  const startResizing = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsResizing(true)
+  }, [])
   
   const waveformCanvasRef = useRef<HTMLCanvasElement>(null)
   const timelineCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -105,6 +124,37 @@ export default function Studio() {
     const { SoundGenerator } = require('@/hooks/useSoundGeneration')
     return new SoundGenerator()
   })
+  
+  // Handle resize mouse events
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return
+      
+      const newWidth = e.clientX
+      // Constrain width between 300px and 600px
+      if (newWidth >= 300 && newWidth <= 600) {
+        setLeftPanelWidth(newWidth)
+      }
+    }
+    
+    const handleMouseUp = () => {
+      setIsResizing(false)
+    }
+    
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+      document.body.style.cursor = 'col-resize'
+      document.body.style.userSelect = 'none'
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+  }, [isResizing])
 
   // Handle URL parameters for direct sound loading
   useEffect(() => {
@@ -2219,21 +2269,11 @@ export default function Studio() {
   )
 
   return (
-    <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
-      <StudioHeader 
-        currentTool="sfx"
-        title="SFX Studio"
-        subtitle="Untitled Project"
-        actions={studioActions}
-      />
-
+    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Code Editor */}
-        <div 
-          className="relative"
-          style={{ width: `${codeEditorWidth}px`, minWidth: '300px', maxWidth: '600px' }}
-        >
+        <ResizableSidebar side="left" defaultWidth={400} minWidth={300} maxWidth={600}>
           <CodeEditor 
             currentSound={currentSound}
             tracks={tracks}
@@ -2253,33 +2293,7 @@ export default function Studio() {
               }
             }}
           />
-          
-          {/* Resize Handle */}
-          <div 
-            className="absolute top-0 right-0 w-1 h-full cursor-ew-resize hover:bg-blue-500/30 transition-colors z-20"
-            onMouseDown={(e) => {
-              e.preventDefault()
-              setIsResizing(true)
-              const startX = e.clientX
-              const startWidth = codeEditorWidth
-              
-              const handleMouseMove = (e: MouseEvent) => {
-                const deltaX = e.clientX - startX
-                const newWidth = Math.max(300, Math.min(600, startWidth + deltaX))
-                setCodeEditorWidth(newWidth)
-              }
-              
-              const handleMouseUp = () => {
-                setIsResizing(false)
-                document.removeEventListener('mousemove', handleMouseMove)
-                document.removeEventListener('mouseup', handleMouseUp)
-              }
-              
-              document.addEventListener('mousemove', handleMouseMove)
-              document.addEventListener('mouseup', handleMouseUp)
-            }}
-          />
-        </div>
+        </ResizableSidebar>
 
         {/* Center Panel - Main Canvas */}
         <div className="flex-1 flex flex-col bg-gray-950">
@@ -2839,15 +2853,12 @@ export default function Studio() {
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center p-8">
-                <div className="text-center space-y-4 max-w-md">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto">
-                    <Volume2 size={32} className="text-white" />
-                  </div>
+                <div className="text-center space-y-6 max-w-md">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-100 mb-2">
+                    <h2 className="text-xl font-semibold text-gray-100 mb-3">
                       Welcome to Sound Studio
                     </h2>
-                    <p className="text-gray-400 leading-relaxed">
+                    <p className="text-sm text-gray-400 leading-relaxed">
                       Create custom sounds with AI or browse our curated library.
                       Start with a description of what you need, or pick from professional presets.
                     </p>
@@ -2855,14 +2866,14 @@ export default function Studio() {
                   <div className="flex gap-3 justify-center">
                     <button 
                       onClick={() => setShowVibeModal(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                     >
                       <Sparkles size={16} />
                       Design your first sound
                     </button>
                     <button 
                       onClick={() => setShowLibraryModal(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700"
                     >
                       <FolderOpen size={16} />
                       Browse Library
@@ -2875,10 +2886,8 @@ export default function Studio() {
         </div>
 
         {/* Right Panel - Parameters + AI Designer */}
-        <div className={`bg-gray-900 border-l border-gray-800 transition-all duration-300 ${
-          showParametersPanel ? 'w-96' : 'w-0'
-        } overflow-hidden`}>
-          {showParametersPanel && (
+        {showParametersPanel && (
+          <ResizableSidebar side="right" defaultWidth={320} minWidth={280} maxWidth={500}>
             <div className="h-full flex flex-col">
               {/* Panel Header with Tabs */}
               <div className="border-b border-gray-800">
@@ -2951,7 +2960,7 @@ export default function Studio() {
                   <div className="p-4 space-y-4">
                     {/* Welcome message for empty state */}
                     {vibePrompt.length === 0 && vibeGeneratedSounds.length === 0 && (
-                      <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-700/30 rounded-lg p-4 mb-4">
+                      <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 mb-4">
                         <p className="text-sm text-gray-300 leading-relaxed">
                           Describe sounds in plain English and let AI bring them to life. 
                           Try describing timing, pitch, or the feeling you want.
@@ -3046,7 +3055,7 @@ export default function Studio() {
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => handleVibeAddAsTrack(sound)}
-                                    className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all flex items-center justify-center gap-1"
+                                    className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors flex items-center justify-center gap-1"
                                     title="Add this sound as a new track in your current composition"
                                   >
                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
@@ -3069,7 +3078,7 @@ export default function Studio() {
                               ) : (
                                 <button
                                   onClick={() => handleVibeLoadToStudio(sound)}
-                                  className="w-full px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+                                  className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
                                 >
                                   Load to Studio
                                 </button>
@@ -3238,7 +3247,7 @@ export default function Studio() {
                             key={waveform}
                             onClick={() => updateParam('waveform', waveform)}
                             className={`px-2 py-1.5 rounded text-xs font-medium transition-colors ${
-                              editedParams.waveform === waveform
+                              (editedParams?.waveform || 'sine') === waveform
                                 ? 'bg-primary-500 text-white'
                                 : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
                             }`}
@@ -3257,7 +3266,7 @@ export default function Studio() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <label className="text-xs text-gray-400">Pitch</label>
-                          <span className="text-xs text-gray-500">{Math.round(editedParams.frequency)}Hz</span>
+                          <span className="text-xs text-gray-500">{Math.round(editedParams?.frequency || 440)}Hz</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-gray-500">Low</span>
@@ -3265,7 +3274,7 @@ export default function Studio() {
                             type="range"
                             min="100"
                             max="2000"
-                            value={editedParams.frequency}
+                            value={editedParams?.frequency || 440}
                             onChange={(e) => updateParam('frequency', Number(e.target.value))}
                             className="flex-1 accent-primary-500"
                           />
@@ -3277,7 +3286,7 @@ export default function Studio() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <label className="text-xs text-gray-400">Length</label>
-                          <span className="text-xs text-gray-500">{Math.round(editedParams.duration * 1000)}ms</span>
+                          <span className="text-xs text-gray-500">{Math.round((editedParams?.duration || 0.5) * 1000)}ms</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-gray-500">Short</span>
@@ -3286,7 +3295,7 @@ export default function Studio() {
                             min="0.01"
                             max="0.5"
                             step="0.01"
-                            value={editedParams.duration}
+                            value={editedParams?.duration || 0.5}
                             onChange={(e) => updateParam('duration', Number(e.target.value))}
                             className="flex-1 accent-primary-500"
                           />
@@ -3298,7 +3307,7 @@ export default function Studio() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <label className="text-xs text-gray-400">Attack</label>
-                          <span className="text-xs text-gray-500">{(editedParams.attack * 1000).toFixed(0)}ms</span>
+                          <span className="text-xs text-gray-500">{((editedParams?.attack || 0.01) * 1000).toFixed(0)}ms</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-gray-500">Soft</span>
@@ -3307,7 +3316,7 @@ export default function Studio() {
                             min="0.001"
                             max="0.1"
                             step="0.001"
-                            value={editedParams.attack}
+                            value={editedParams?.attack || 0.01}
                             onChange={(e) => updateParam('attack', Number(e.target.value))}
                             className="flex-1 accent-primary-500"
                           />
@@ -3344,7 +3353,7 @@ export default function Studio() {
                           isGenerating 
                             ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                             : hasUnappliedChanges
-                              ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg transform hover:scale-[1.02]'
+                              ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg transform hover:scale-[1.02]'
                               : 'bg-gray-800 text-gray-500 cursor-not-allowed'
                         }`}
                       >
@@ -3378,7 +3387,7 @@ export default function Studio() {
                           className={`w-full px-4 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
                             isGenerating 
                               ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                              : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg'
+                              : 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
                           }`}
                         >
                           {isGenerating ? (
@@ -3407,8 +3416,8 @@ export default function Studio() {
                       <div className="space-y-3">
                         <div>
                           <label className="block text-xs text-gray-400 mb-2">
-                            Frequency: {Math.round(editedParams.frequency)}Hz
-                            {hasUnappliedChanges && currentSound && editedParams.frequency !== currentSound.parameters.frequency && (
+                            Frequency: {Math.round(editedParams?.frequency || 440)}Hz
+                            {hasUnappliedChanges && currentSound && (editedParams?.frequency || 440) !== currentSound.parameters.frequency && (
                               <span className="ml-2 text-green-400 text-xs">(modified)</span>
                             )}
                           </label>
@@ -3416,10 +3425,10 @@ export default function Studio() {
                             type="range"
                             min="100"
                             max="2000"
-                            value={editedParams.frequency}
+                            value={editedParams?.frequency || 440}
                             onChange={(e) => updateParam('frequency', Number(e.target.value))}
                             className={`w-full accent-primary-500 ${
-                              hasUnappliedChanges && currentSound && editedParams.frequency !== currentSound.parameters.frequency
+                              hasUnappliedChanges && currentSound && (editedParams?.frequency || 440) !== currentSound.parameters.frequency
                                 ? 'accent-green-500'
                                 : ''
                             }`}
@@ -3428,8 +3437,8 @@ export default function Studio() {
                         
                         <div>
                           <label className="block text-xs text-gray-400 mb-2">
-                            Duration: {Math.round(editedParams.duration * 1000)}ms
-                            {hasUnappliedChanges && currentSound && editedParams.duration !== currentSound.parameters.duration && (
+                            Duration: {Math.round((editedParams?.duration || 0.5) * 1000)}ms
+                            {hasUnappliedChanges && currentSound && (editedParams?.duration || 0.5) !== currentSound.parameters.duration && (
                               <span className="ml-2 text-green-400 text-xs">(modified)</span>
                             )}
                           </label>
@@ -3438,10 +3447,10 @@ export default function Studio() {
                             min="0.1"
                             max="2"
                             step="0.01"
-                            value={editedParams.duration}
+                            value={editedParams?.duration || 0.5}
                             onChange={(e) => updateParam('duration', Number(e.target.value))}
                             className={`w-full accent-primary-500 ${
-                              hasUnappliedChanges && currentSound && editedParams.duration !== currentSound.parameters.duration
+                              hasUnappliedChanges && currentSound && (editedParams?.duration || 0.5) !== currentSound.parameters.duration
                                 ? 'accent-green-500'
                                 : ''
                             }`}
@@ -3452,7 +3461,7 @@ export default function Studio() {
                           <div>
                             <label className="block text-xs text-gray-400 mb-2">Waveform</label>
                             <select
-                              value={editedParams.waveform}
+                              value={editedParams?.waveform || 'sine'}
                               onChange={(e) => updateParam('waveform', e.target.value)}
                               className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-100 text-sm"
                             >
@@ -3474,7 +3483,7 @@ export default function Studio() {
                         <div className="space-y-3">
                           <div>
                             <label className="block text-xs text-gray-400 mb-2">
-                              Attack: {(editedParams.attack * 1000).toFixed(0)}ms
+                              Attack: {((editedParams?.attack || 0.01) * 1000).toFixed(0)}ms
                             </label>
                             <input
                               type="range"
@@ -3489,7 +3498,7 @@ export default function Studio() {
                           
                           <div>
                             <label className="block text-xs text-gray-400 mb-2">
-                              Decay: {(editedParams.decay * 1000).toFixed(0)}ms
+                              Decay: {((editedParams?.decay || 0.05) * 1000).toFixed(0)}ms
                             </label>
                             <input
                               type="range"
@@ -3504,7 +3513,7 @@ export default function Studio() {
                           
                           <div>
                             <label className="block text-xs text-gray-400 mb-2">
-                              Sustain: {(editedParams.sustain * 100).toFixed(0)}%
+                              Sustain: {((editedParams?.sustain || 0.5) * 100).toFixed(0)}%
                             </label>
                             <input
                               type="range"
@@ -3519,7 +3528,7 @@ export default function Studio() {
                           
                           <div>
                             <label className="block text-xs text-gray-400 mb-2">
-                              Release: {(editedParams.release * 1000).toFixed(0)}ms
+                              Release: {((editedParams?.release || 0.1) * 1000).toFixed(0)}ms
                             </label>
                             <input
                               type="range"
@@ -3563,8 +3572,8 @@ export default function Studio() {
                 )}
               </div>
             </div>
-          )}
-        </div>
+          </ResizableSidebar>
+        )}
       </div>
       
       {/* Context Menu */}

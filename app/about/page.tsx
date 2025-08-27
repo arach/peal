@@ -1,10 +1,13 @@
 import Link from 'next/link'
 import { Github, Mail, ExternalLink } from 'lucide-react'
 import { isStaticBuild } from '@/utils/build'
+import Header from '@/components/Header'
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background dark:bg-gray-950 py-20 px-4">
+    <>
+      <Header variant="minimal" />
+      <div className="min-h-screen bg-background dark:bg-gray-950 py-20 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">About Peal</h1>
         
@@ -117,6 +120,7 @@ sound.play()`}</code>
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

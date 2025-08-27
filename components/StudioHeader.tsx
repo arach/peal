@@ -13,35 +13,45 @@ interface StudioHeaderProps {
   subtitle?: string
   actions?: React.ReactNode
   onBack?: () => void
+  onToolChange?: (tool: StudioTool) => void
 }
 
-const toolConfig = {
-  voice: {
-    label: 'Voice Lab',
-    icon: Mic,
-    path: '/voice',
-    description: 'Text-to-speech generation'
+const toolConfig: Record<StudioTool, {
+  label: string
+  icon: typeof Volume2
+  path: string
+  description: string
+}> = {
+  sfx: {
+    label: 'SFX',
+    icon: Volume2, 
+    path: '/studio',
+    description: 'Sound effects creation'
   },
   audio: {
-    label: 'Audio Lab', 
+    label: 'Audio', 
     icon: Layers,
     path: '/audio',
     description: 'Audio processing & composition'
   },
-  sfx: {
-    label: 'SFX Studio',
-    icon: Volume2, 
-    path: '/studio',
-    description: 'Sound effects creation'
+  voice: {
+    label: 'Voice',
+    icon: Mic,
+    path: '/voice',
+    description: 'Text-to-speech generation'
   }
 }
+
+// Define the order explicitly
+const toolOrder: StudioTool[] = ['sfx', 'audio', 'voice']
 
 export default function StudioHeader({ 
   currentTool, 
   title,
   subtitle,
   actions,
-  onBack 
+  onBack,
+  onToolChange
 }: StudioHeaderProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -56,7 +66,11 @@ export default function StudioHeader({
 
   const handleToolSwitch = (tool: StudioTool) => {
     if (tool !== currentTool) {
-      router.push(toolConfig[tool].path)
+      if (onToolChange) {
+        onToolChange(tool)
+      } else {
+        router.push(toolConfig[tool].path)
+      }
     }
   }
 
@@ -64,21 +78,21 @@ export default function StudioHeader({
   const CurrentIcon = currentConfig.icon
 
   return (
-    <header className="bg-gray-950 border-b border-gray-800/60 relative">
-      <div className="max-w-none mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
+    <header className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 relative transition-colors">
+      <div className="w-full px-6 py-4">
+        <div className="flex items-center justify-between relative">
           
           {/* Left - Navigation & Branding */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 flex-1">
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800/50 rounded-lg transition-all group"
+              className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded-lg transition-all group"
             >
               <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
               <span className="text-sm font-medium">Back to Peal</span>
             </button>
             
-            <div className="w-px h-6 bg-gray-700/50"></div>
+            <div className="w-px h-6 bg-gray-300 dark:bg-gray-700/50"></div>
             
             {/* Studio Branding */}
             <div className="flex items-center gap-3">
@@ -86,31 +100,32 @@ export default function StudioHeader({
                 <CurrentIcon size={16} className="text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-gray-100">
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   {title || currentConfig.label}
                 </h1>
                 {subtitle && (
-                  <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{subtitle}</p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Center - Tool Navigation */}
-          <div className="flex items-center gap-1 bg-gray-900/60 rounded-lg p-1 border border-gray-800/40">
-            {Object.entries(toolConfig).map(([key, config]) => {
+          {/* Center - Tool Navigation (absolutely positioned) */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-1 bg-gray-100 dark:bg-gray-900/60 rounded-lg p-1 border border-gray-200 dark:border-gray-800">
+            {toolOrder.map((key) => {
+              const config = toolConfig[key]
               const isActive = key === currentTool
               const Icon = config.icon
               
               return (
                 <button
                   key={key}
-                  onClick={() => handleToolSwitch(key as StudioTool)}
+                  onClick={() => handleToolSwitch(key)}
                   className={`
                     flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium transition-all relative
                     ${isActive 
-                      ? 'bg-gray-700/80 text-white shadow-sm' 
-                      : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
+                      ? 'bg-white dark:bg-gray-700/80 text-gray-900 dark:text-white shadow-sm' 
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800/50'
                     }
                   `}
                   title={config.description}
@@ -126,27 +141,27 @@ export default function StudioHeader({
           </div>
 
           {/* Right - Actions & Settings */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-1 justify-end">
             {/* Tool-specific actions */}
             {actions && (
               <>
                 <div className="flex items-center gap-2">
                   {actions}
                 </div>
-                <div className="w-px h-6 bg-gray-700/50"></div>
+                <div className="w-px h-6 bg-gray-300 dark:bg-gray-700/50"></div>
               </>
             )}
             
             {/* Global actions */}
             <button 
-              className="flex items-center justify-center w-9 h-9 text-gray-400 hover:text-gray-100 hover:bg-gray-800/50 rounded-lg transition-all"
+              className="flex items-center justify-center w-9 h-9 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded-lg transition-all"
               title="Help & shortcuts"
             >
               <HelpCircle size={16} />
             </button>
             
             <button 
-              className="flex items-center justify-center w-9 h-9 text-gray-400 hover:text-gray-100 hover:bg-gray-800/50 rounded-lg transition-all"
+              className="flex items-center justify-center w-9 h-9 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded-lg transition-all"
               title="Settings"
             >
               <Settings size={16} />
