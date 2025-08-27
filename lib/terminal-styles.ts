@@ -94,17 +94,21 @@ export const terminalStyles = {
       code: 'w-full bg-gray-950 border border-gray-800 text-gray-100 font-mono text-sm rounded-sm px-3 py-2 placeholder-gray-600 resize-none focus:border-gray-600 focus:outline-none transition-colors',
     },
     
-    // Buttons - Stark, purposeful
+    // Buttons - Defense-grade with depth and tactical feedback
     button: {
-      primary: 'px-4 py-2 bg-gray-100 text-gray-950 font-mono text-xs uppercase tracking-wider rounded-sm hover:bg-white transition-colors',
+      primary: 'relative inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-b from-sky-500 to-sky-600 text-white font-mono text-xs uppercase tracking-wider rounded-sm shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2)] hover:from-sky-400 hover:to-sky-500 active:from-sky-600 active:to-sky-700 active:shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.2)] transition-all duration-150 transform hover:-translate-y-[1px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none',
       
-      secondary: 'px-4 py-2 bg-transparent border border-gray-700 text-gray-300 font-mono text-xs uppercase tracking-wider rounded-sm hover:border-gray-500 hover:text-gray-100 transition-colors',
+      secondary: 'relative inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700 text-gray-200 font-mono text-xs uppercase tracking-wider rounded-sm shadow-[0_2px_4px_rgba(0,0,0,0.3),inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:from-gray-750 hover:to-gray-850 hover:border-gray-600 hover:text-gray-100 active:shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.3)] transition-all duration-150 transform hover:-translate-y-[1px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none',
       
-      ghost: 'px-4 py-2 text-gray-400 font-mono text-xs uppercase tracking-wider rounded-sm hover:text-gray-200 hover:bg-gray-900/50 transition-colors',
+      ghost: 'relative inline-flex items-center justify-center px-6 py-2.5 text-gray-400 font-mono text-xs uppercase tracking-wider rounded-sm hover:text-gray-200 hover:bg-gray-800/30 hover:shadow-[0_0_0_1px_rgba(107,114,128,0.3)] active:bg-gray-900/50 active:shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.2)] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed',
       
-      danger: 'px-4 py-2 bg-transparent border border-red-500/50 text-red-500/90 font-mono text-xs uppercase tracking-wider rounded-sm hover:bg-red-500/10 hover:border-red-500 hover:text-red-400 transition-colors',
+      danger: 'relative inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-b from-red-900/20 to-red-950/30 border border-red-500/50 text-red-400 font-mono text-xs uppercase tracking-wider rounded-sm shadow-[inset_0_1px_0_0_rgba(239,68,68,0.1)] hover:from-red-900/30 hover:to-red-950/40 hover:border-red-500 hover:text-red-300 hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] active:shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.2)] transition-all duration-150 transform hover:-translate-y-[1px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none',
       
-      success: 'px-4 py-2 bg-transparent border border-emerald-500/50 text-emerald-500/90 font-mono text-xs uppercase tracking-wider rounded-sm hover:bg-emerald-500/10 hover:border-emerald-500 hover:text-emerald-400 transition-colors',
+      success: 'relative inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-b from-emerald-900/20 to-emerald-950/30 border border-emerald-500/50 text-emerald-400 font-mono text-xs uppercase tracking-wider rounded-sm shadow-[inset_0_1px_0_0_rgba(16,185,129,0.1)] hover:from-emerald-900/30 hover:to-emerald-950/40 hover:border-emerald-500 hover:text-emerald-300 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] active:shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.2)] transition-all duration-150 transform hover:-translate-y-[1px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none',
+      
+      icon: 'relative inline-flex items-center justify-center p-2 bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700 text-gray-400 rounded-sm shadow-[0_2px_4px_rgba(0,0,0,0.3),inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:from-gray-750 hover:to-gray-850 hover:border-gray-600 hover:text-gray-200 active:shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.3)] transition-all duration-150 transform hover:-translate-y-[1px] active:translate-y-0',
+      
+      warning: 'relative inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-b from-amber-900/20 to-amber-950/30 border border-amber-500/50 text-amber-400 font-mono text-xs uppercase tracking-wider rounded-sm shadow-[inset_0_1px_0_0_rgba(251,146,60,0.1)] hover:from-amber-900/30 hover:to-amber-950/40 hover:border-amber-500 hover:text-amber-300 hover:shadow-[0_0_20px_rgba(251,146,60,0.15)] active:shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.2)] transition-all duration-150 transform hover:-translate-y-[1px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none',
     },
     
     // Cards - Subtle depth

@@ -1,12 +1,61 @@
 'use client'
 
+import { useState } from 'react'
 import { terminalStyles as ts, cx } from '@/lib/terminal-styles'
 
+interface FontSpec {
+  family: string
+  size: string
+  weight: string
+  tracking?: string
+  extras?: string
+}
+
 export default function TerminalStyleGuidePage() {
+  const [hoveredSpec, setHoveredSpec] = useState<FontSpec | null>(null)
+
   return (
     <div className="min-h-screen bg-black text-gray-100 p-8 font-mono">
       {/* Grid background effect */}
       <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
+      
+      {/* Fixed Font Spec Display */}
+      <div className="fixed top-8 right-8 z-50">
+        <div className={cx(
+          ts.components.card.elevated,
+          'p-4 min-w-[280px] transition-all duration-300',
+          hoveredSpec ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
+        )}>
+          <h4 className={ts.typography.subsectionTitle + ' mb-3'}>FONT SPECIFICATION</h4>
+          {hoveredSpec && (
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-[10px] text-gray-500 uppercase">Family</span>
+                <span className="text-[11px] text-sky-400">{hoveredSpec.family}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[10px] text-gray-500 uppercase">Size</span>
+                <span className="text-[11px] text-sky-400">{hoveredSpec.size}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[10px] text-gray-500 uppercase">Weight</span>
+                <span className="text-[11px] text-sky-400">{hoveredSpec.weight}</span>
+              </div>
+              {hoveredSpec.tracking && (
+                <div className="flex justify-between">
+                  <span className="text-[10px] text-gray-500 uppercase">Tracking</span>
+                  <span className="text-[11px] text-sky-400">{hoveredSpec.tracking}</span>
+                </div>
+              )}
+              {hoveredSpec.extras && (
+                <div className="pt-2 border-t border-gray-800">
+                  <span className="text-[10px] text-amber-500">{hoveredSpec.extras}</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
       
       <div className="relative max-w-7xl mx-auto space-y-12">
         {/* Header with scanline effect */}
@@ -26,47 +75,188 @@ export default function TerminalStyleGuidePage() {
         <section className="space-y-6">
           <h2 className={ts.typography.sectionTitle}>TYPOGRAPHY SYSTEM</h2>
           
-          <div className={ts.components.card.default + ' p-6 space-y-4'}>
-            <div className="space-y-2 border-b border-gray-900 pb-4">
-              <h1 className={ts.typography.h1 + ' group relative'}>
-                H1: Primary Header
-                <span className="absolute left-0 -bottom-6 text-[10px] text-sky-500 opacity-0 group-hover:opacity-100 transition-opacity font-mono">
-                  text-2xl font-light tracking-tight
-                </span>
-              </h1>
-              <h2 className={ts.typography.h2 + ' group relative'}>
-                H2: Section Header
-                <span className="absolute left-0 -bottom-6 text-[10px] text-sky-500 opacity-0 group-hover:opacity-100 transition-opacity font-mono">
-                  text-xl font-light tracking-tight
-                </span>
-              </h2>
-              <h3 className={ts.typography.h3 + ' group relative'}>
-                H3: Subsection Header
-                <span className="absolute left-0 -bottom-6 text-[10px] text-sky-500 opacity-0 group-hover:opacity-100 transition-opacity font-mono">
-                  text-lg font-normal
-                </span>
-              </h3>
-              <h4 className={ts.typography.h4 + ' group relative'}>
-                H4: Component Header
-                <span className="absolute left-0 -bottom-6 text-[10px] text-sky-500 opacity-0 group-hover:opacity-100 transition-opacity font-mono">
-                  text-base font-normal
-                </span>
-              </h4>
+          <div className={ts.components.card.default + ' p-6'}>
+            {/* Headers Section */}
+            <div className="border-b border-gray-900 pb-6 mb-6">
+              <h3 className={ts.typography.subsectionTitle + ' mb-4'}>HEADERS</h3>
+              <div className="space-y-4">
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Inter',
+                    size: '32px / 40px',
+                    weight: 'Light (300)',
+                    tracking: '-0.025em'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <h1 className={ts.typography.h1}>H1: Primary Header</h1>
+                </div>
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Inter',
+                    size: '20px / 28px',
+                    weight: 'Light (300)',
+                    tracking: '-0.025em'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <h2 className={ts.typography.h2}>H2: Section Header</h2>
+                </div>
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Inter',
+                    size: '18px / 26px',
+                    weight: 'Regular (400)',
+                    tracking: 'Normal'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <h3 className={ts.typography.h3}>H3: Subsection Header</h3>
+                </div>
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Inter',
+                    size: '16px / 24px',
+                    weight: 'Regular (400)',
+                    tracking: 'Normal'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <h4 className={ts.typography.h4}>H4: Component Header</h4>
+                </div>
+              </div>
             </div>
             
-            <div className="space-y-2 border-b border-gray-900 pb-4">
-              <p className={ts.typography.sectionTitle}>SECTION TITLE</p>
-              <p className={ts.typography.subsectionTitle}>SUBSECTION TITLE</p>
-              <label className={ts.typography.label}>INPUT LABEL</label>
-              <label className={ts.typography.labelRequired}>REQUIRED FIELD</label>
+            {/* Titles & Labels Section */}
+            <div className="border-b border-gray-900 pb-6 mb-6">
+              <h3 className={ts.typography.subsectionTitle + ' mb-4'}>TITLES & LABELS</h3>
+              <div className="space-y-3">
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Monospace',
+                    size: '11px / 16px',
+                    weight: 'Medium (500)',
+                    tracking: '0.1em',
+                    extras: 'Uppercase'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <p className={ts.typography.sectionTitle}>SECTION TITLE</p>
+                </div>
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Monospace',
+                    size: '10px / 16px',
+                    weight: 'Regular (400)',
+                    tracking: '0.15em',
+                    extras: 'Uppercase'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <p className={ts.typography.subsectionTitle}>SUBSECTION TITLE</p>
+                </div>
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Monospace',
+                    size: '12px / 18px',
+                    weight: 'Regular (400)',
+                    tracking: '0.05em',
+                    extras: 'Uppercase'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <label className={ts.typography.label}>INPUT LABEL</label>
+                </div>
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Monospace',
+                    size: '12px / 18px',
+                    weight: 'Regular (400)',
+                    tracking: '0.05em',
+                    extras: 'Uppercase + Required Asterisk'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <label className={ts.typography.labelRequired}>REQUIRED FIELD</label>
+                </div>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <p className={ts.typography.body}>Standard body text for general content</p>
-              <p className={ts.typography.bodyMono}>Monospace body text for technical content</p>
-              <p className={ts.typography.bodySmall}>Small text for secondary information</p>
-              <p className={ts.typography.bodySmallMono}>Small monospace for metadata</p>
-              <code className={ts.typography.code}>inline.code()</code>
+            {/* Body Text Section */}
+            <div>
+              <h3 className={ts.typography.subsectionTitle + ' mb-4'}>BODY TEXT</h3>
+              <div className="space-y-3">
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Inter',
+                    size: '14px / 20px',
+                    weight: 'Light (300)',
+                    tracking: 'Normal'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <p className={ts.typography.body}>Standard body text for general content</p>
+                </div>
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Monospace',
+                    size: '14px / 20px',
+                    weight: 'Regular (400)',
+                    tracking: 'Normal'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <p className={ts.typography.bodyMono}>Monospace body text for technical content</p>
+                </div>
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Inter',
+                    size: '12px / 18px',
+                    weight: 'Regular (400)',
+                    tracking: 'Normal'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <p className={ts.typography.bodySmall}>Small text for secondary information</p>
+                </div>
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Monospace',
+                    size: '12px / 18px',
+                    weight: 'Regular (400)',
+                    tracking: 'Normal'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <p className={ts.typography.bodySmallMono}>Small monospace for metadata</p>
+                </div>
+                <div 
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  onMouseEnter={() => setHoveredSpec({
+                    family: 'Monospace',
+                    size: '14px / 20px',
+                    weight: 'Regular (400)',
+                    extras: 'Background + Padding + Border Radius'
+                  })}
+                  onMouseLeave={() => setHoveredSpec(null)}
+                >
+                  <div>
+                    <code className={ts.typography.code}>inline.code()</code>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -157,12 +347,39 @@ export default function TerminalStyleGuidePage() {
             <div className={ts.components.card.default + ' p-6 space-y-4'}>
               <h3 className={ts.typography.subsectionTitle}>ACTION BUTTONS</h3>
               
-              <div className="space-y-3">
-                <button className={ts.components.button.primary}>EXECUTE</button>
-                <button className={ts.components.button.secondary}>CONFIGURE</button>
-                <button className={ts.components.button.ghost}>CANCEL</button>
-                <button className={ts.components.button.danger}>TERMINATE</button>
-                <button className={ts.components.button.success}>CONFIRM</button>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <button className={ts.components.button.primary}>EXECUTE</button>
+                  <span className={ts.typography.bodySmallMono}>Primary action with high contrast</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button className={ts.components.button.secondary}>CONFIGURE</button>
+                  <span className={ts.typography.bodySmallMono}>Secondary action with depth</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button className={ts.components.button.ghost}>CANCEL</button>
+                  <span className={ts.typography.bodySmallMono}>Tertiary action, minimal style</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button className={ts.components.button.danger}>TERMINATE</button>
+                  <span className={ts.typography.bodySmallMono}>Destructive action with warning</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button className={ts.components.button.success}>CONFIRM</button>
+                  <span className={ts.typography.bodySmallMono}>Success state confirmation</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button className={ts.components.button.warning}>WARNING</button>
+                  <span className={ts.typography.bodySmallMono}>Alert or caution state</span>
+                </div>
+                <div className="pt-2 border-t border-gray-900 mt-4">
+                  <p className={ts.typography.bodySmallMono + ' text-gray-600 mb-3'}>DISABLED STATES</p>
+                  <div className="flex items-center gap-3">
+                    <button className={ts.components.button.primary} disabled>DISABLED</button>
+                    <button className={ts.components.button.secondary} disabled>DISABLED</button>
+                    <button className={ts.components.button.danger} disabled>DISABLED</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
