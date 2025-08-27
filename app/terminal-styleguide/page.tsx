@@ -9,6 +9,7 @@ import { Toaster } from '@/components/ui/toaster'
 interface StyleSpec {
   name: string
   type: 'typography' | 'color' | 'input' | 'button' | 'card' | 'badge' | 'status' | 'effect'
+  style: string  // The actual style definition string
   details: Record<string, string>
   extras?: string
 }
@@ -17,6 +18,7 @@ export default function TerminalStyleGuidePage() {
   const [hoveredSpec, setHoveredSpec] = useState<StyleSpec | null>(null)
   const [pinnedSpecs, setPinnedSpecs] = useState<StyleSpec[]>([])
   const [currentPinnedIndex, setCurrentPinnedIndex] = useState(0)
+  const [viewMode, setViewMode] = useState<'raw' | 'computed'>('computed')
   const { toast } = useToast()
 
   // Parse the actual style definition from terminalStyles
@@ -115,6 +117,7 @@ export default function TerminalStyleGuidePage() {
     const spec: StyleSpec = {
       name: name,
       type: category || 'typography',
+      style: styleValue,
       details: parseStyleDefinition(styleValue),
       extras: stylePath
     }
@@ -173,7 +176,15 @@ export default function TerminalStyleGuidePage() {
         <div className={ts.components.card.elevated + ' p-3 w-[280px]'}>
           <div className="flex items-center justify-between mb-3">
             <h4 className={ts.typography.subsectionTitle + ' text-amber-500'}>PINNED STYLES</h4>
-            <span className="text-[10px] text-gray-500">{pinnedSpecs.length}/5</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setViewMode(viewMode === 'raw' ? 'computed' : 'raw')}
+                className="text-[9px] px-2 py-0.5 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-600 transition-colors"
+              >
+                {viewMode === 'raw' ? 'RAW CSS' : 'COMPUTED'}
+              </button>
+              <span className="text-[10px] text-gray-500">{pinnedSpecs.length}/5</span>
+            </div>
           </div>
           
           {/* Carousel Container */}
@@ -206,12 +217,22 @@ export default function TerminalStyleGuidePage() {
                       </div>
                       <div className="text-[9px] text-gray-500 uppercase mb-1">{spec.type}</div>
                       <div className="space-y-1 text-[10px]">
-                        {spec.details && Object.entries(spec.details).slice(0, 3).map(([key, value]) => (
-                          <div key={key} className="flex justify-between">
-                            <span className="text-gray-600">{key}</span>
-                            <span className="text-gray-400 truncate ml-2" style={{ maxWidth: '150px' }}>{value}</span>
+                        <div className="flex justify-between mb-1">
+                          <span className="text-gray-600">style:</span>
+                          <span className="text-sky-400">{spec.name}</span>
+                        </div>
+                        {viewMode === 'raw' ? (
+                          <div className="text-[9px] text-gray-400 font-mono bg-gray-950 p-1 rounded border border-gray-800 max-h-20 overflow-auto">
+                            {spec.style.slice(0, 150)}{spec.style.length > 150 ? '...' : ''}
                           </div>
-                        ))}
+                        ) : (
+                          spec.details && Object.entries(spec.details).slice(0, 3).map(([key, value]) => (
+                            <div key={key} className="flex justify-between">
+                              <span className="text-gray-600">{key}</span>
+                              <span className="text-gray-400 truncate ml-2" style={{ maxWidth: '150px' }}>{value}</span>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
                   </div>
@@ -252,19 +273,37 @@ export default function TerminalStyleGuidePage() {
                 <p className="text-xs text-sky-400 font-medium">{hoveredSpec.name}</p>
                 <span className="text-[9px] text-gray-500 uppercase">{hoveredSpec.type}</span>
               </div>
-              {hoveredSpec.details && Object.entries(hoveredSpec.details).map(([key, value]) => (
-                <div key={key} className="flex justify-between">
-                  <span className="text-[10px] text-gray-500 uppercase">{key}</span>
-                  <span className="text-[11px] text-sky-400">{value}</span>
+              <div className="mb-2">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-[10px] text-gray-500 uppercase">style:</span>
+                  <span className="text-[10px] text-sky-400">{hoveredSpec.name}</span>
                 </div>
-              ))}
+              </div>
+              {viewMode === 'raw' ? (
+                <div className="text-[9px] text-gray-300 font-mono bg-gray-950 p-2 rounded border border-gray-800 max-h-32 overflow-auto">
+                  {hoveredSpec.style}
+                </div>
+              ) : (
+                hoveredSpec.details && Object.entries(hoveredSpec.details).map(([key, value]) => (
+                  <div key={key} className="flex justify-between">
+                    <span className="text-[10px] text-gray-500 uppercase">{key}</span>
+                    <span className="text-[11px] text-sky-400">{value}</span>
+                  </div>
+                ))
+              )}
               {hoveredSpec.extras && (
                 <div className="pt-2 border-t border-gray-800">
                   <span className="text-[10px] text-amber-500">{hoveredSpec.extras}</span>
                 </div>
               )}
-              <div className="pt-2 border-t border-gray-800">
+              <div className="pt-2 border-t border-gray-800 flex items-center justify-between">
                 <span className="text-[10px] text-gray-600">Click to pin</span>
+                <button
+                  onClick={() => setViewMode(viewMode === 'raw' ? 'computed' : 'raw')}
+                  className="text-[9px] px-2 py-0.5 rounded border border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-600"
+                >
+                  {viewMode === 'raw' ? 'VIEW COMPUTED' : 'VIEW RAW'}
+                </button>
               </div>
             </div>
           )}
@@ -332,58 +371,37 @@ export default function TerminalStyleGuidePage() {
             <div className="border-b border-gray-900 pb-6 mb-6">
               <h3 className={ts.typography.subsectionTitle + ' mb-4'}>TITLES & LABELS</h3>
               <div className="space-y-3">
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Monospace',
-                    size: '11px / 16px',
-                    weight: 'Medium (500)',
-                    tracking: '0.1em',
-                    extras: 'Uppercase'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                <StyleElement
+                  stylePath="typography.sectionTitle"
+                  styleValue={ts.typography.sectionTitle}
+                  displayName="SECTION TITLE"
                 >
                   <p className={ts.typography.sectionTitle}>SECTION TITLE</p>
-                </div>
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Monospace',
-                    size: '10px / 16px',
-                    weight: 'Regular (400)',
-                    tracking: '0.15em',
-                    extras: 'Uppercase'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="typography.subsectionTitle"
+                  styleValue={ts.typography.subsectionTitle}
+                  displayName="SUBSECTION TITLE"
                 >
                   <p className={ts.typography.subsectionTitle}>SUBSECTION TITLE</p>
-                </div>
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Monospace',
-                    size: '12px / 18px',
-                    weight: 'Regular (400)',
-                    tracking: '0.05em',
-                    extras: 'Uppercase'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="typography.label"
+                  styleValue={ts.typography.label}
+                  displayName="INPUT LABEL"
                 >
                   <label className={ts.typography.label}>INPUT LABEL</label>
-                </div>
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Monospace',
-                    size: '12px / 18px',
-                    weight: 'Regular (400)',
-                    tracking: '0.05em',
-                    extras: 'Uppercase + Required Asterisk'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="typography.labelRequired"
+                  styleValue={ts.typography.labelRequired}
+                  displayName="REQUIRED FIELD"
                 >
                   <label className={ts.typography.labelRequired}>REQUIRED FIELD</label>
-                </div>
+                </StyleElement>
               </div>
             </div>
             
@@ -391,68 +409,47 @@ export default function TerminalStyleGuidePage() {
             <div>
               <h3 className={ts.typography.subsectionTitle + ' mb-4'}>BODY TEXT</h3>
               <div className="space-y-3">
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Inter',
-                    size: '14px / 20px',
-                    weight: 'Light (300)',
-                    tracking: 'Normal'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                <StyleElement
+                  stylePath="typography.body"
+                  styleValue={ts.typography.body}
+                  displayName="Standard body text"
                 >
                   <p className={ts.typography.body}>Standard body text for general content</p>
-                </div>
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Monospace',
-                    size: '14px / 20px',
-                    weight: 'Regular (400)',
-                    tracking: 'Normal'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="typography.bodyMono"
+                  styleValue={ts.typography.bodyMono}
+                  displayName="Monospace body text"
                 >
                   <p className={ts.typography.bodyMono}>Monospace body text for technical content</p>
-                </div>
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Inter',
-                    size: '12px / 18px',
-                    weight: 'Regular (400)',
-                    tracking: 'Normal'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="typography.bodySmall"
+                  styleValue={ts.typography.bodySmall}
+                  displayName="Small text"
                 >
                   <p className={ts.typography.bodySmall}>Small text for secondary information</p>
-                </div>
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Monospace',
-                    size: '12px / 18px',
-                    weight: 'Regular (400)',
-                    tracking: 'Normal'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="typography.bodySmallMono"
+                  styleValue={ts.typography.bodySmallMono}
+                  displayName="Small monospace"
                 >
                   <p className={ts.typography.bodySmallMono}>Small monospace for metadata</p>
-                </div>
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Monospace',
-                    size: '14px / 20px',
-                    weight: 'Regular (400)',
-                    extras: 'Background + Padding + Border Radius'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="typography.code"
+                  styleValue={ts.typography.code}
+                  displayName="Inline code"
                 >
                   <div>
                     <code className={ts.typography.code}>inline.code()</code>
                   </div>
-                </div>
+                </StyleElement>
               </div>
             </div>
           </div>
@@ -467,21 +464,60 @@ export default function TerminalStyleGuidePage() {
             <div className={ts.components.card.default + ' p-6'}>
               <h3 className={ts.typography.subsectionTitle}>GRAYSCALE FOUNDATION</h3>
               <div className="grid grid-cols-5 gap-1 mt-4">
-                <div className="h-16 bg-gray-950 border border-gray-800 flex items-center justify-center">
-                  <span className="text-[10px] text-gray-500">950</span>
-                </div>
-                <div className="h-16 bg-gray-900 border border-gray-800 flex items-center justify-center">
-                  <span className="text-[10px] text-gray-500">900</span>
-                </div>
-                <div className="h-16 bg-gray-800 border border-gray-700 flex items-center justify-center">
-                  <span className="text-[10px] text-gray-400">800</span>
-                </div>
-                <div className="h-16 bg-gray-700 border border-gray-600 flex items-center justify-center">
-                  <span className="text-[10px] text-gray-300">700</span>
-                </div>
-                <div className="h-16 bg-gray-600 border border-gray-500 flex items-center justify-center">
-                  <span className="text-[10px] text-gray-200">600</span>
-                </div>
+                <StyleElement
+                  stylePath="colors.gray.950"
+                  styleValue={ts.colors.gray[950]}
+                  displayName="Gray 950"
+                  className="h-16"
+                >
+                  <div className="h-full bg-gray-950 border border-gray-800 flex items-center justify-center">
+                    <span className="text-[10px] text-gray-500">950</span>
+                  </div>
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="colors.gray.900"
+                  styleValue={ts.colors.gray[900]}
+                  displayName="Gray 900"
+                  className="h-16"
+                >
+                  <div className="h-full bg-gray-900 border border-gray-800 flex items-center justify-center">
+                    <span className="text-[10px] text-gray-500">900</span>
+                  </div>
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="colors.gray.800"
+                  styleValue={ts.colors.gray[800]}
+                  displayName="Gray 800"
+                  className="h-16"
+                >
+                  <div className="h-full bg-gray-800 border border-gray-700 flex items-center justify-center">
+                    <span className="text-[10px] text-gray-400">800</span>
+                  </div>
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="colors.gray.700"
+                  styleValue={ts.colors.gray[700]}
+                  displayName="Gray 700"
+                  className="h-16"
+                >
+                  <div className="h-full bg-gray-700 border border-gray-600 flex items-center justify-center">
+                    <span className="text-[10px] text-gray-300">700</span>
+                  </div>
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="colors.gray.600"
+                  styleValue={ts.colors.gray[600]}
+                  displayName="Gray 600"
+                  className="h-16"
+                >
+                  <div className="h-full bg-gray-600 border border-gray-500 flex items-center justify-center">
+                    <span className="text-[10px] text-gray-200">600</span>
+                  </div>
+                </StyleElement>
               </div>
             </div>
             
@@ -489,22 +525,49 @@ export default function TerminalStyleGuidePage() {
             <div className={ts.components.card.default + ' p-6'}>
               <h3 className={ts.typography.subsectionTitle}>CRITICAL STATE INDICATORS</h3>
               <div className="space-y-2 mt-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-8 bg-sky-500/20 border border-sky-500/50 rounded-sm" />
-                  <span className="text-xs text-sky-500">PRIMARY ACTION</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-8 bg-emerald-500/20 border border-emerald-500/50 rounded-sm" />
-                  <span className="text-xs text-emerald-500">SUCCESS STATE</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-8 bg-amber-500/20 border border-amber-500/50 rounded-sm" />
-                  <span className="text-xs text-amber-500">WARNING STATE</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-8 bg-red-500/20 border border-red-500/50 rounded-sm" />
-                  <span className="text-xs text-red-500">ERROR STATE</span>
-                </div>
+                <StyleElement
+                  stylePath="colors.accent.primary"
+                  styleValue={ts.colors.accent.primary}
+                  displayName="Primary Action"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-8 bg-sky-500/20 border border-sky-500/50 rounded-sm" />
+                    <span className="text-xs text-sky-500">PRIMARY ACTION</span>
+                  </div>
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="colors.accent.success"
+                  styleValue={ts.colors.accent.success}
+                  displayName="Success State"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-8 bg-emerald-500/20 border border-emerald-500/50 rounded-sm" />
+                    <span className="text-xs text-emerald-500">SUCCESS STATE</span>
+                  </div>
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="colors.accent.warning"
+                  styleValue={ts.colors.accent.warning}
+                  displayName="Warning State"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-8 bg-amber-500/20 border border-amber-500/50 rounded-sm" />
+                    <span className="text-xs text-amber-500">WARNING STATE</span>
+                  </div>
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="colors.accent.error"
+                  styleValue={ts.colors.accent.error}
+                  displayName="Error State"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-8 bg-red-500/20 border border-red-500/50 rounded-sm" />
+                    <span className="text-xs text-red-500">ERROR STATE</span>
+                  </div>
+                </StyleElement>
               </div>
             </div>
           </div>
@@ -519,25 +582,49 @@ export default function TerminalStyleGuidePage() {
             <div className={ts.components.card.default + ' p-6 space-y-4'}>
               <h3 className={ts.typography.subsectionTitle}>INPUT FIELDS</h3>
               
-              <div>
-                <label className={ts.typography.label}>DEFAULT INPUT</label>
-                <input className={ts.components.input.default} placeholder="Enter command..." />
-              </div>
+              <StyleElement
+                stylePath="components.input.default"
+                styleValue={ts.components.input.default}
+                displayName="Default Input"
+              >
+                <div>
+                  <label className={ts.typography.label}>DEFAULT INPUT</label>
+                  <input className={ts.components.input.default} placeholder="Enter command..." />
+                </div>
+              </StyleElement>
               
-              <div>
-                <label className={ts.typography.label}>ACTIVE INPUT</label>
-                <input className={ts.components.input.active} placeholder="Active state..." />
-              </div>
+              <StyleElement
+                stylePath="components.input.active"
+                styleValue={ts.components.input.active}
+                displayName="Active Input"
+              >
+                <div>
+                  <label className={ts.typography.label}>ACTIVE INPUT</label>
+                  <input className={ts.components.input.active} placeholder="Active state..." />
+                </div>
+              </StyleElement>
               
-              <div>
-                <label className={ts.typography.label}>ERROR INPUT</label>
-                <input className={ts.components.input.error} placeholder="Error state..." />
-              </div>
+              <StyleElement
+                stylePath="components.input.error"
+                styleValue={ts.components.input.error}
+                displayName="Error Input"
+              >
+                <div>
+                  <label className={ts.typography.label}>ERROR INPUT</label>
+                  <input className={ts.components.input.error} placeholder="Error state..." />
+                </div>
+              </StyleElement>
               
-              <div>
-                <label className={ts.typography.label}>MINIMAL INPUT</label>
-                <input className={ts.components.input.minimal} placeholder="Minimal style..." />
-              </div>
+              <StyleElement
+                stylePath="components.input.minimal"
+                styleValue={ts.components.input.minimal}
+                displayName="Minimal Input"
+              >
+                <div>
+                  <label className={ts.typography.label}>MINIMAL INPUT</label>
+                  <input className={ts.components.input.minimal} placeholder="Minimal style..." />
+                </div>
+              </StyleElement>
             </div>
             
             {/* Buttons */}
@@ -550,36 +637,56 @@ export default function TerminalStyleGuidePage() {
                 <div className="space-y-3">
                   <p className={ts.typography.label}>INTERACTIVE STATES</p>
                   <p className="text-[11px] text-gray-500 mb-3">Hover and click buttons to see state transitions</p>
-                  <div className="flex items-start gap-3">
-                    <Button variant="default">DEFAULT</Button>
-                    <Button variant="default" disabled>DISABLED</Button>
-                  </div>
+                  <StyleElement
+                    stylePath="components.button.primary"
+                    styleValue={ts.components.button.primary}
+                    displayName="Primary Button States"
+                  >
+                    <div className="flex items-start gap-3">
+                      <Button variant="default">DEFAULT</Button>
+                      <Button variant="default" disabled>DISABLED</Button>
+                    </div>
+                  </StyleElement>
                 </div>
 
                 {/* Button Variants */}
                 <div className="space-y-3 pt-4 border-t border-gray-900">
                   <p className={ts.typography.label}>BUTTON VARIANTS</p>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Button 
-                        variant="default" 
-                        className="w-full"
-                        onClick={() => handleButtonClick('Primary', 'Execute')}
-                      >
-                        EXECUTE
-                      </Button>
-                      <p className="text-[10px] text-gray-500">Primary action - High emphasis</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Button 
-                        variant="secondary" 
-                        className="w-full"
-                        onClick={() => handleButtonClick('Secondary', 'Configure')}
-                      >
-                        CONFIGURE
-                      </Button>
-                      <p className="text-[10px] text-gray-500">Secondary - Standard action</p>
-                    </div>
+                    <StyleElement
+                      stylePath="components.button.primary"
+                      styleValue={ts.components.button.primary}
+                      displayName="Primary Button"
+                      className="space-y-2"
+                    >
+                      <div className="space-y-2">
+                        <Button 
+                          variant="default" 
+                          className="w-full"
+                          onClick={() => handleButtonClick('Primary', 'Execute')}
+                        >
+                          EXECUTE
+                        </Button>
+                        <p className="text-[10px] text-gray-500">Primary action - High emphasis</p>
+                      </div>
+                    </StyleElement>
+                    <StyleElement
+                      stylePath="components.button.secondary"
+                      styleValue={ts.components.button.secondary}
+                      displayName="Secondary Button"
+                      className="space-y-2"
+                    >
+                      <div className="space-y-2">
+                        <Button 
+                          variant="secondary" 
+                          className="w-full"
+                          onClick={() => handleButtonClick('Secondary', 'Configure')}
+                        >
+                          CONFIGURE
+                        </Button>
+                        <p className="text-[10px] text-gray-500">Secondary - Standard action</p>
+                      </div>
+                    </StyleElement>
                     <div className="space-y-2">
                       <Button 
                         variant="outline" 
@@ -590,46 +697,74 @@ export default function TerminalStyleGuidePage() {
                       </Button>
                       <p className="text-[10px] text-gray-500">Outline - Alternative action</p>
                     </div>
-                    <div className="space-y-2">
-                      <Button 
-                        variant="ghost" 
-                        className="w-full"
-                        onClick={() => handleButtonClick('Ghost', 'Cancel')}
-                      >
-                        CANCEL
-                      </Button>
-                      <p className="text-[10px] text-gray-500">Ghost - Minimal emphasis</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Button 
-                        variant="destructive" 
-                        className="w-full"
-                        onClick={() => handleButtonClick('Destructive', 'Terminate')}
-                      >
-                        TERMINATE
-                      </Button>
-                      <p className="text-[10px] text-gray-500">Destructive - Dangerous action</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Button 
-                        variant="success" 
-                        className="w-full"
-                        onClick={() => handleButtonClick('Success', 'Confirm')}
-                      >
-                        CONFIRM
-                      </Button>
-                      <p className="text-[10px] text-gray-500">Success - Positive action</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Button 
-                        variant="warning" 
-                        className="w-full"
-                        onClick={() => handleButtonClick('Warning', 'Warning')}
-                      >
-                        WARNING
-                      </Button>
-                      <p className="text-[10px] text-gray-500">Warning - Caution required</p>
-                    </div>
+                    <StyleElement
+                      stylePath="components.button.ghost"
+                      styleValue={ts.components.button.ghost}
+                      displayName="Ghost Button"
+                      className="space-y-2"
+                    >
+                      <div className="space-y-2">
+                        <Button 
+                          variant="ghost" 
+                          className="w-full"
+                          onClick={() => handleButtonClick('Ghost', 'Cancel')}
+                        >
+                          CANCEL
+                        </Button>
+                        <p className="text-[10px] text-gray-500">Ghost - Minimal emphasis</p>
+                      </div>
+                    </StyleElement>
+                    <StyleElement
+                      stylePath="components.button.danger"
+                      styleValue={ts.components.button.danger}
+                      displayName="Destructive Button"
+                      className="space-y-2"
+                    >
+                      <div className="space-y-2">
+                        <Button 
+                          variant="destructive" 
+                          className="w-full"
+                          onClick={() => handleButtonClick('Destructive', 'Terminate')}
+                        >
+                          TERMINATE
+                        </Button>
+                        <p className="text-[10px] text-gray-500">Destructive - Dangerous action</p>
+                      </div>
+                    </StyleElement>
+                    <StyleElement
+                      stylePath="components.button.success"
+                      styleValue={ts.components.button.success}
+                      displayName="Success Button"
+                      className="space-y-2"
+                    >
+                      <div className="space-y-2">
+                        <Button 
+                          variant="success" 
+                          className="w-full"
+                          onClick={() => handleButtonClick('Success', 'Confirm')}
+                        >
+                          CONFIRM
+                        </Button>
+                        <p className="text-[10px] text-gray-500">Success - Positive action</p>
+                      </div>
+                    </StyleElement>
+                    <StyleElement
+                      stylePath="components.button.warning"
+                      styleValue={ts.components.button.warning}
+                      displayName="Warning Button"
+                      className="space-y-2"
+                    >
+                      <div className="space-y-2">
+                        <Button 
+                          variant="warning" 
+                          className="w-full"
+                          onClick={() => handleButtonClick('Warning', 'Warning')}
+                        >
+                          WARNING
+                        </Button>
+                        <p className="text-[10px] text-gray-500">Warning - Caution required</p>
+                      </div>
+                    </StyleElement>
                     <div className="space-y-2">
                       <Button 
                         variant="link" 
@@ -658,10 +793,44 @@ export default function TerminalStyleGuidePage() {
                 <div className="pt-4 border-t border-gray-900">
                   <p className={ts.typography.label + ' mb-3'}>COMBINED USAGE</p>
                   <div className="flex gap-2">
-                    <Button variant="default">SAVE</Button>
-                    <Button variant="secondary">PREVIEW</Button>
-                    <Button variant="outline">EXPORT</Button>
-                    <Button variant="ghost">CANCEL</Button>
+                    <Button 
+                      variant="default"
+                      onClick={() => toast({
+                        title: 'SAVE OPERATION',
+                        description: 'Configuration saved successfully',
+                        variant: 'success' as any,
+                      })}
+                    >
+                      SAVE
+                    </Button>
+                    <Button 
+                      variant="secondary"
+                      onClick={() => toast({
+                        title: 'PREVIEW MODE',
+                        description: 'Rendering preview...',
+                      })}
+                    >
+                      PREVIEW
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => toast({
+                        title: 'EXPORT INITIATED',
+                        description: 'Preparing files for export',
+                      })}
+                    >
+                      EXPORT
+                    </Button>
+                    <Button 
+                      variant="ghost"
+                      onClick={() => toast({
+                        title: 'OPERATION CANCELLED',
+                        description: 'All changes discarded',
+                        variant: 'warning' as any,
+                      })}
+                    >
+                      CANCEL
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -674,20 +843,38 @@ export default function TerminalStyleGuidePage() {
           <h2 className={ts.typography.sectionTitle}>CONTAINER TYPES</h2>
           
           <div className="grid md:grid-cols-3 gap-4">
-            <div className={cx(ts.components.card.default, 'p-4')}>
-              <h3 className={ts.typography.subsectionTitle}>DEFAULT CARD</h3>
-              <p className={ts.typography.bodySmallMono}>Standard container with border</p>
-            </div>
+            <StyleElement
+              stylePath="components.card.default"
+              styleValue={ts.components.card.default}
+              displayName="Default Card"
+            >
+              <div className={cx(ts.components.card.default, 'p-4')}>
+                <h3 className={ts.typography.subsectionTitle}>DEFAULT CARD</h3>
+                <p className={ts.typography.bodySmallMono}>Standard container with border</p>
+              </div>
+            </StyleElement>
             
-            <div className={cx(ts.components.card.elevated, 'p-4')}>
-              <h3 className={ts.typography.subsectionTitle}>ELEVATED CARD</h3>
-              <p className={ts.typography.bodySmallMono}>Enhanced depth with shadow</p>
-            </div>
+            <StyleElement
+              stylePath="components.card.elevated"
+              styleValue={ts.components.card.elevated}
+              displayName="Elevated Card"
+            >
+              <div className={cx(ts.components.card.elevated, 'p-4')}>
+                <h3 className={ts.typography.subsectionTitle}>ELEVATED CARD</h3>
+                <p className={ts.typography.bodySmallMono}>Enhanced depth with shadow</p>
+              </div>
+            </StyleElement>
             
-            <div className={cx(ts.components.card.glass, 'p-4')}>
-              <h3 className={ts.typography.subsectionTitle}>GLASS CARD</h3>
-              <p className={ts.typography.bodySmallMono}>Transparent with backdrop blur</p>
-            </div>
+            <StyleElement
+              stylePath="components.card.glass"
+              styleValue={ts.components.card.glass}
+              displayName="Glass Card"
+            >
+              <div className={cx(ts.components.card.glass, 'p-4')}>
+                <h3 className={ts.typography.subsectionTitle}>GLASS CARD</h3>
+                <p className={ts.typography.bodySmallMono}>Transparent with backdrop blur</p>
+              </div>
+            </StyleElement>
           </div>
         </section>
 
@@ -697,11 +884,45 @@ export default function TerminalStyleGuidePage() {
           
           <div className={cx(ts.components.card.default, 'p-6')}>
             <div className="flex flex-wrap gap-3">
-              <span className={cx(ts.components.badge.default, ts.components.badge.neutral)}>NEUTRAL</span>
-              <span className={cx(ts.components.badge.default, ts.components.badge.primary)}>PRIMARY</span>
-              <span className={cx(ts.components.badge.default, ts.components.badge.success)}>SUCCESS</span>
-              <span className={cx(ts.components.badge.default, ts.components.badge.warning)}>WARNING</span>
-              <span className={cx(ts.components.badge.default, ts.components.badge.error)}>ERROR</span>
+              <StyleElement
+                stylePath="components.badge.neutral"
+                styleValue={`${ts.components.badge.default} ${ts.components.badge.neutral}`}
+                displayName="Neutral Badge"
+              >
+                <span className={cx(ts.components.badge.default, ts.components.badge.neutral)}>NEUTRAL</span>
+              </StyleElement>
+              
+              <StyleElement
+                stylePath="components.badge.primary"
+                styleValue={`${ts.components.badge.default} ${ts.components.badge.primary}`}
+                displayName="Primary Badge"
+              >
+                <span className={cx(ts.components.badge.default, ts.components.badge.primary)}>PRIMARY</span>
+              </StyleElement>
+              
+              <StyleElement
+                stylePath="components.badge.success"
+                styleValue={`${ts.components.badge.default} ${ts.components.badge.success}`}
+                displayName="Success Badge"
+              >
+                <span className={cx(ts.components.badge.default, ts.components.badge.success)}>SUCCESS</span>
+              </StyleElement>
+              
+              <StyleElement
+                stylePath="components.badge.warning"
+                styleValue={`${ts.components.badge.default} ${ts.components.badge.warning}`}
+                displayName="Warning Badge"
+              >
+                <span className={cx(ts.components.badge.default, ts.components.badge.warning)}>WARNING</span>
+              </StyleElement>
+              
+              <StyleElement
+                stylePath="components.badge.error"
+                styleValue={`${ts.components.badge.default} ${ts.components.badge.error}`}
+                displayName="Error Badge"
+              >
+                <span className={cx(ts.components.badge.default, ts.components.badge.error)}>ERROR</span>
+              </StyleElement>
             </div>
           </div>
         </section>
@@ -727,10 +948,16 @@ export default function TerminalStyleGuidePage() {
                   <td className={ts.components.table.cell}>ALPHA</td>
                   <td className={ts.components.table.cell}>440Hz</td>
                   <td className={ts.components.table.cell}>
-                    <div className="flex items-center gap-2">
-                      <span className={ts.components.status.online} />
-                      <span className="text-emerald-500">ACTIVE</span>
-                    </div>
+                    <StyleElement
+                      stylePath="components.status.online"
+                      styleValue={ts.components.status.online}
+                      displayName="Online Status"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={ts.components.status.online} />
+                        <span className="text-emerald-500">ACTIVE</span>
+                      </div>
+                    </StyleElement>
                   </td>
                   <td className={ts.components.table.cell}>
                     <button className="text-sky-500 hover:text-sky-400 text-xs">MODIFY</button>
@@ -741,10 +968,16 @@ export default function TerminalStyleGuidePage() {
                   <td className={ts.components.table.cell}>BETA</td>
                   <td className={ts.components.table.cell}>880Hz</td>
                   <td className={ts.components.table.cell}>
-                    <div className="flex items-center gap-2">
-                      <span className={ts.components.status.warning} />
-                      <span className="text-amber-500">PENDING</span>
-                    </div>
+                    <StyleElement
+                      stylePath="components.status.warning"
+                      styleValue={ts.components.status.warning}
+                      displayName="Warning Status"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={ts.components.status.warning} />
+                        <span className="text-amber-500">PENDING</span>
+                      </div>
+                    </StyleElement>
                   </td>
                   <td className={ts.components.table.cell}>
                     <button className="text-sky-500 hover:text-sky-400 text-xs">MODIFY</button>
@@ -755,10 +988,16 @@ export default function TerminalStyleGuidePage() {
                   <td className={ts.components.table.cell}>GAMMA</td>
                   <td className={ts.components.table.cell}>220Hz</td>
                   <td className={ts.components.table.cell}>
-                    <div className="flex items-center gap-2">
-                      <span className={ts.components.status.offline} />
-                      <span className="text-gray-500">OFFLINE</span>
-                    </div>
+                    <StyleElement
+                      stylePath="components.status.offline"
+                      styleValue={ts.components.status.offline}
+                      displayName="Offline Status"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={ts.components.status.offline} />
+                        <span className="text-gray-500">OFFLINE</span>
+                      </div>
+                    </StyleElement>
                   </td>
                   <td className={ts.components.table.cell}>
                     <button className="text-sky-500 hover:text-sky-400 text-xs">MODIFY</button>
@@ -775,14 +1014,31 @@ export default function TerminalStyleGuidePage() {
           
           <div className="grid md:grid-cols-3 gap-4">
             <div className={cx(ts.components.card.default, 'p-6 text-center')}>
-              <button className={cx(ts.components.button.primary, ts.effects.glowPrimary)}>
-                GLOW EFFECT
-              </button>
+              <StyleElement
+                stylePath="effects.glowPrimary"
+                styleValue={ts.effects.glowPrimary}
+                displayName="GLOW EFFECT"
+              >
+                <button className={cx(ts.components.button.primary, ts.effects.glowPrimary, 'relative')}>
+                  GLOW EFFECT
+                  <div className="absolute inset-0 rounded-sm bg-sky-500/20 blur-xl -z-10 animate-pulse" />
+                </button>
+              </StyleElement>
             </div>
             
             <div className={cx(ts.components.card.default, 'p-6 text-center relative overflow-hidden')}>
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-sky-500/5 to-transparent animate-scan pointer-events-none" />
-              <p className={ts.typography.bodyMono}>SCANLINE ANIMATION</p>
+              <StyleElement
+                stylePath="effects.scanline"
+                styleValue="animate-scan"
+                displayName="SCANLINE ANIMATION"
+              >
+                <div className="relative h-20">
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-sky-500/10 to-transparent animate-scan" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/10 to-transparent animate-scan" style={{ animationDelay: '2s' }} />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-500/10 to-transparent animate-scan" style={{ animationDelay: '4s' }} />
+                  <p className={ts.typography.bodyMono + ' relative z-10 leading-[80px]'}>SCANLINE ANIMATION</p>
+                </div>
+              </StyleElement>
             </div>
             
             <div className={cx(ts.components.card.default, ts.effects.grid, 'p-6 text-center')}>
