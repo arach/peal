@@ -6,31 +6,148 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { Toaster } from '@/components/ui/toaster'
 
-interface FontSpec {
+interface StyleSpec {
   name: string
-  family: string
-  size: string
-  weight: string
-  tracking?: string
+  type: 'typography' | 'color' | 'input' | 'button' | 'card' | 'badge' | 'status' | 'effect'
+  details: Record<string, string>
   extras?: string
 }
 
 export default function TerminalStyleGuidePage() {
-  const [hoveredSpec, setHoveredSpec] = useState<FontSpec | null>(null)
-  const [pinnedSpecs, setPinnedSpecs] = useState<FontSpec[]>([])
+  const [hoveredSpec, setHoveredSpec] = useState<StyleSpec | null>(null)
+  const [pinnedSpecs, setPinnedSpecs] = useState<StyleSpec[]>([])
+  const [currentPinnedIndex, setCurrentPinnedIndex] = useState(0)
   const { toast } = useToast()
 
-  const handleClick = (spec: FontSpec) => {
+  // Parse the actual style definition from terminalStyles
+  const parseStyleDefinition = (styleString: string): Record<string, string> => {
+    const details: Record<string, string> = {}
+    
+    // Parse Tailwind classes into readable properties
+    const classMap: Record<string, string> = {
+      // Typography
+      'font-mono': 'font: monospace',
+      'font-light': 'weight: 300',
+      'font-normal': 'weight: 400', 
+      'font-medium': 'weight: 500',
+      'text-xs': 'size: 12px',
+      'text-sm': 'size: 14px',
+      'text-base': 'size: 16px',
+      'text-lg': 'size: 18px',
+      'text-xl': 'size: 20px',
+      'text-2xl': 'size: 24px',
+      'text-3xl': 'size: 32px',
+      'tracking-tight': 'tracking: -0.025em',
+      'tracking-normal': 'tracking: normal',
+      'tracking-wide': 'tracking: 0.025em',
+      'tracking-wider': 'tracking: 0.05em',
+      'uppercase': 'transform: uppercase',
+      // Colors
+      'text-gray-100': 'color: gray-100',
+      'text-gray-200': 'color: gray-200',
+      'text-gray-300': 'color: gray-300',
+      'text-gray-400': 'color: gray-400',
+      'text-gray-500': 'color: gray-500',
+      'text-gray-600': 'color: gray-600',
+      'text-sky-400': 'color: sky-400',
+      'text-sky-500': 'color: sky-500',
+      'text-emerald-400': 'color: emerald-400',
+      'text-amber-500': 'color: amber-500',
+      'text-red-500': 'color: red-500',
+      // Backgrounds
+      'bg-gray-950': 'bg: gray-950',
+      'bg-gray-900': 'bg: gray-900',
+      'bg-gray-800': 'bg: gray-800',
+      'bg-transparent': 'bg: transparent',
+      // Borders
+      'border': 'border: 1px',
+      'border-gray-900': 'border-color: gray-900',
+      'border-gray-800': 'border-color: gray-800',
+      'border-gray-700': 'border-color: gray-700',
+      // Layout
+      'px-3': 'padding-x: 12px',
+      'py-2': 'padding-y: 8px',
+      'rounded-sm': 'radius: 2px',
+    }
+    
+    // Extract all matching classes
+    const classes = styleString.split(' ')
+    classes.forEach(cls => {
+      const trimmed = cls.trim()
+      if (classMap[trimmed]) {
+        const [key, value] = classMap[trimmed].split(': ')
+        details[key] = value
+      } else if (trimmed.includes('shadow-')) {
+        details['shadow'] = 'custom'
+      } else if (trimmed.includes('hover:')) {
+        details['hover'] = 'interactive'
+      } else if (trimmed.includes('after:')) {
+        details['pseudo'] = 'after element'
+      }
+    })
+    
+    // If no details found, show the raw classes
+    if (Object.keys(details).length === 0) {
+      details['classes'] = styleString.slice(0, 100) + (styleString.length > 100 ? '...' : '')
+    }
+    
+    return details
+  }
+
+  // Generic wrapper that shows style definition
+  const StyleElement = ({ 
+    stylePath,
+    styleValue, 
+    children, 
+    className = "",
+    displayName
+  }: { 
+    stylePath: string,
+    styleValue: string,
+    children: React.ReactNode,
+    className?: string,
+    displayName?: string
+  }) => {
+    const pathParts = stylePath.split('.')
+    const category = pathParts[0] as StyleSpec['type']
+    const name = displayName || pathParts[pathParts.length - 1]
+    
+    const spec: StyleSpec = {
+      name: name,
+      type: category || 'typography',
+      details: parseStyleDefinition(styleValue),
+      extras: stylePath
+    }
+
+    return (
+      <div
+        className={`hover:bg-gray-900/30 -mx-2 px-2 py-2 rounded transition-colors cursor-pointer ${className}`}
+        onMouseEnter={() => setHoveredSpec(spec)}
+        onMouseLeave={() => setHoveredSpec(null)}
+        onClick={() => handleClick(spec)}
+      >
+        {children}
+      </div>
+    )
+  }
+
+  const handleClick = (spec: StyleSpec) => {
     const existingIndex = pinnedSpecs.findIndex(s => s.name === spec.name)
     if (existingIndex > -1) {
       // Remove if already pinned
       setPinnedSpecs(pinnedSpecs.filter((_, i) => i !== existingIndex))
+      // Adjust current index if needed
+      if (currentPinnedIndex >= pinnedSpecs.length - 1) {
+        setCurrentPinnedIndex(Math.max(0, pinnedSpecs.length - 2))
+      }
     } else {
-      // Add to pinned stack (max 3)
-      if (pinnedSpecs.length >= 3) {
+      // Add to pinned stack (max 5 for more comparisons)
+      if (pinnedSpecs.length >= 5) {
         setPinnedSpecs([...pinnedSpecs.slice(1), spec])
+        setCurrentPinnedIndex(4)
       } else {
         setPinnedSpecs([...pinnedSpecs, spec])
+        setCurrentPinnedIndex(pinnedSpecs.length)
       }
     }
   }
@@ -48,56 +165,81 @@ export default function TerminalStyleGuidePage() {
       {/* Grid background effect */}
       <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
       
-      {/* Fixed Font Spec Display - In right margin */}
-      <div className="fixed top-[35%] right-8 transform -translate-y-1/2 z-50 xl:right-[calc((100vw-1280px)/2-320px)] space-y-3">
-        {/* Pinned Specs Stack */}
-        {pinnedSpecs.length > 0 && (
-          <div className="space-y-2">
+      {/* Fixed Pinned Specs Carousel - Top right */}
+      <div className={cx(
+        "fixed top-8 right-8 z-50 xl:right-[calc((100vw-1280px)/2-320px)] transition-all duration-300",
+        pinnedSpecs.length > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      )}>
+        <div className={ts.components.card.elevated + ' p-3 w-[280px]'}>
+          <div className="flex items-center justify-between mb-3">
             <h4 className={ts.typography.subsectionTitle + ' text-amber-500'}>PINNED STYLES</h4>
-            {pinnedSpecs.map((spec, index) => (
-              <div 
-                key={spec.name}
-                className={cx(
-                  ts.components.card.default,
-                  'p-3 w-[280px] border-amber-500/30 cursor-pointer hover:border-amber-500/50 transition-all'
-                )}
-                onClick={() => handleClick(spec)}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-amber-400 font-medium flex items-center gap-2">
-                    <span className="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
-                    {spec.name}
-                  </span>
-                  <button 
-                    className="text-[10px] text-gray-600 hover:text-gray-400"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setPinnedSpecs(pinnedSpecs.filter((_, i) => i !== index))
-                    }}
-                  >
-                    REMOVE
-                  </button>
-                </div>
-                <div className="space-y-1 text-[10px]">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Family</span>
-                    <span className="text-gray-400">{spec.family}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Size</span>
-                    <span className="text-gray-400">{spec.size}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Weight</span>
-                    <span className="text-gray-400">{spec.weight}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+            <span className="text-[10px] text-gray-500">{pinnedSpecs.length}/5</span>
           </div>
-        )}
-        
-        {/* Active Hover Spec */}
+          
+          {/* Carousel Container */}
+          <div className="relative">
+            <div className="overflow-hidden">
+              <div 
+                className="flex transition-transform duration-300 gap-2"
+                style={{ transform: `translateX(-${currentPinnedIndex * 100}%)` }}
+              >
+                {pinnedSpecs.map((spec, index) => (
+                  <div 
+                    key={spec.name}
+                    className="flex-shrink-0 w-full"
+                  >
+                    <div className="border border-amber-500/30 rounded p-2">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-amber-400 font-medium flex items-center gap-2">
+                          <span className="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
+                          {spec.name}
+                        </span>
+                        <button 
+                          className="text-[10px] text-gray-600 hover:text-gray-400"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setPinnedSpecs(pinnedSpecs.filter((_, i) => i !== index))
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <div className="text-[9px] text-gray-500 uppercase mb-1">{spec.type}</div>
+                      <div className="space-y-1 text-[10px]">
+                        {Object.entries(spec.details).slice(0, 3).map(([key, value]) => (
+                          <div key={key} className="flex justify-between">
+                            <span className="text-gray-600">{key}</span>
+                            <span className="text-gray-400 truncate ml-2" style={{ maxWidth: '150px' }}>{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Carousel Indicators */}
+            {pinnedSpecs.length > 1 && (
+              <div className="flex justify-center gap-1 mt-2">
+                {pinnedSpecs.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentPinnedIndex(index)}
+                    className={cx(
+                      "w-1 h-1 rounded-full transition-all",
+                      index === currentPinnedIndex ? 'w-3 bg-amber-500' : 'bg-gray-600 hover:bg-gray-500'
+                    )}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Fixed Active Preview - Middle right */}
+      <div className="fixed top-[40%] right-8 transform -translate-y-1/2 z-50 xl:right-[calc((100vw-1280px)/2-320px)]">
         <div className={cx(
           ts.components.card.elevated,
           'p-4 w-[280px] transition-all duration-300',
@@ -106,32 +248,23 @@ export default function TerminalStyleGuidePage() {
           <h4 className={ts.typography.subsectionTitle + ' mb-3'}>ACTIVE PREVIEW</h4>
           {hoveredSpec && (
             <div className="space-y-2">
-              <p className="text-xs text-sky-400 font-medium mb-2">{hoveredSpec.name}</p>
-              <div className="flex justify-between">
-                <span className="text-[10px] text-gray-500 uppercase">Family</span>
-                <span className="text-[11px] text-sky-400">{hoveredSpec.family}</span>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-sky-400 font-medium">{hoveredSpec.name}</p>
+                <span className="text-[9px] text-gray-500 uppercase">{hoveredSpec.type}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-[10px] text-gray-500 uppercase">Size</span>
-                <span className="text-[11px] text-sky-400">{hoveredSpec.size}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[10px] text-gray-500 uppercase">Weight</span>
-                <span className="text-[11px] text-sky-400">{hoveredSpec.weight}</span>
-              </div>
-              {hoveredSpec.tracking && (
-                <div className="flex justify-between">
-                  <span className="text-[10px] text-gray-500 uppercase">Tracking</span>
-                  <span className="text-[11px] text-sky-400">{hoveredSpec.tracking}</span>
+              {Object.entries(hoveredSpec.details).map(([key, value]) => (
+                <div key={key} className="flex justify-between">
+                  <span className="text-[10px] text-gray-500 uppercase">{key}</span>
+                  <span className="text-[11px] text-sky-400">{value}</span>
                 </div>
-              )}
+              ))}
               {hoveredSpec.extras && (
                 <div className="pt-2 border-t border-gray-800">
                   <span className="text-[10px] text-amber-500">{hoveredSpec.extras}</span>
                 </div>
               )}
               <div className="pt-2 border-t border-gray-800">
-                <span className="text-[10px] text-gray-600">Click to pin (max 3)</span>
+                <span className="text-[10px] text-gray-600">Click to pin</span>
               </div>
             </div>
           )}
@@ -161,62 +294,37 @@ export default function TerminalStyleGuidePage() {
             <div className="border-b border-gray-900 pb-6 mb-6">
               <h3 className={ts.typography.subsectionTitle + ' mb-4'}>HEADERS</h3>
               <div className="space-y-4">
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-pointer"
-                  onMouseEnter={() => setHoveredSpec({
-                    name: 'H1: Primary Header',
-                    family: 'Inter',
-                    size: '32px / 40px',
-                    weight: 'Light (300)',
-                    tracking: '-0.025em'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
-                  onClick={() => handleClick({
-                    name: 'H1: Primary Header',
-                    family: 'Inter',
-                    size: '32px / 40px',
-                    weight: 'Light (300)',
-                    tracking: '-0.025em'
-                  })}
+                <StyleElement 
+                  stylePath="typography.h1"
+                  styleValue={ts.typography.h1}
+                  displayName="H1: Primary Header"
                 >
                   <h1 className={ts.typography.h1}>H1: Primary Header</h1>
-                </div>
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Inter',
-                    size: '20px / 28px',
-                    weight: 'Light (300)',
-                    tracking: '-0.025em'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="typography.h2"
+                  styleValue={ts.typography.h2}
+                  displayName="H2: Section Header"
                 >
                   <h2 className={ts.typography.h2}>H2: Section Header</h2>
-                </div>
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Inter',
-                    size: '18px / 26px',
-                    weight: 'Regular (400)',
-                    tracking: 'Normal'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="typography.h3"
+                  styleValue={ts.typography.h3}
+                  displayName="H3: Subsection Header"
                 >
                   <h3 className={ts.typography.h3}>H3: Subsection Header</h3>
-                </div>
-                <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
-                  onMouseEnter={() => setHoveredSpec({
-                    family: 'Inter',
-                    size: '16px / 24px',
-                    weight: 'Regular (400)',
-                    tracking: 'Normal'
-                  })}
-                  onMouseLeave={() => setHoveredSpec(null)}
+                </StyleElement>
+                
+                <StyleElement
+                  stylePath="typography.h4"
+                  styleValue={ts.typography.h4}
+                  displayName="H4: Component Header"
                 >
                   <h4 className={ts.typography.h4}>H4: Component Header</h4>
-                </div>
+                </StyleElement>
               </div>
             </div>
             
