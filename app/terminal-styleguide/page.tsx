@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { terminalStyles as ts, cx } from '@/lib/terminal-styles'
+import { Button } from '@/components/ui/button'
 
 interface FontSpec {
   family: string
@@ -19,12 +20,12 @@ export default function TerminalStyleGuidePage() {
       {/* Grid background effect */}
       <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
       
-      {/* Fixed Font Spec Display */}
-      <div className="fixed top-8 right-8 z-50">
+      {/* Fixed Font Spec Display - Positioned closer to content */}
+      <div className="fixed top-24 right-[calc(50%-580px)] z-50">
         <div className={cx(
           ts.components.card.elevated,
-          'p-4 min-w-[280px] transition-all duration-300',
-          hoveredSpec ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
+          'p-4 min-w-[260px] transition-all duration-300',
+          hoveredSpec ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
         )}>
           <h4 className={ts.typography.subsectionTitle + ' mb-3'}>FONT SPECIFICATION</h4>
           {hoveredSpec && (
@@ -344,40 +345,79 @@ export default function TerminalStyleGuidePage() {
             </div>
             
             {/* Buttons */}
-            <div className={ts.components.card.default + ' p-6 space-y-4'}>
+            <div className={ts.components.card.default + ' p-6 space-y-6'}>
               <h3 className={ts.typography.subsectionTitle}>ACTION BUTTONS</h3>
               
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <button className={ts.components.button.primary}>EXECUTE</button>
-                  <span className={ts.typography.bodySmallMono}>Primary action with high contrast</span>
+              {/* Button States Demo */}
+              <div className="space-y-6">
+                {/* Interactive States */}
+                <div className="space-y-3">
+                  <p className={ts.typography.label}>INTERACTIVE STATES</p>
+                  <p className="text-[11px] text-gray-500 mb-3">Hover and click buttons to see state transitions</p>
+                  <div className="flex items-start gap-3">
+                    <Button variant="default">DEFAULT</Button>
+                    <Button variant="default" disabled>DISABLED</Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <button className={ts.components.button.secondary}>CONFIGURE</button>
-                  <span className={ts.typography.bodySmallMono}>Secondary action with depth</span>
+
+                {/* Button Variants */}
+                <div className="space-y-3 pt-4 border-t border-gray-900">
+                  <p className={ts.typography.label}>BUTTON VARIANTS</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Button variant="default" className="w-full">EXECUTE</Button>
+                      <p className="text-[10px] text-gray-500">Primary action - High emphasis</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Button variant="secondary" className="w-full">CONFIGURE</Button>
+                      <p className="text-[10px] text-gray-500">Secondary - Standard action</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Button variant="outline" className="w-full">OPTIONS</Button>
+                      <p className="text-[10px] text-gray-500">Outline - Alternative action</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Button variant="ghost" className="w-full">CANCEL</Button>
+                      <p className="text-[10px] text-gray-500">Ghost - Minimal emphasis</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Button variant="destructive" className="w-full">TERMINATE</Button>
+                      <p className="text-[10px] text-gray-500">Destructive - Dangerous action</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Button variant="success" className="w-full">CONFIRM</Button>
+                      <p className="text-[10px] text-gray-500">Success - Positive action</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Button variant="warning" className="w-full">WARNING</Button>
+                      <p className="text-[10px] text-gray-500">Warning - Caution required</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Button variant="link" className="w-full">LEARN MORE</Button>
+                      <p className="text-[10px] text-gray-500">Link - Navigation action</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <button className={ts.components.button.ghost}>CANCEL</button>
-                  <span className={ts.typography.bodySmallMono}>Tertiary action, minimal style</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <button className={ts.components.button.danger}>TERMINATE</button>
-                  <span className={ts.typography.bodySmallMono}>Destructive action with warning</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <button className={ts.components.button.success}>CONFIRM</button>
-                  <span className={ts.typography.bodySmallMono}>Success state confirmation</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <button className={ts.components.button.warning}>WARNING</button>
-                  <span className={ts.typography.bodySmallMono}>Alert or caution state</span>
-                </div>
-                <div className="pt-2 border-t border-gray-900 mt-4">
-                  <p className={ts.typography.bodySmallMono + ' text-gray-600 mb-3'}>DISABLED STATES</p>
+
+                {/* Button Sizes */}
+                <div className="pt-4 border-t border-gray-900">
+                  <p className={ts.typography.label + ' mb-3'}>BUTTON SIZES</p>
                   <div className="flex items-center gap-3">
-                    <button className={ts.components.button.primary} disabled>DISABLED</button>
-                    <button className={ts.components.button.secondary} disabled>DISABLED</button>
-                    <button className={ts.components.button.danger} disabled>DISABLED</button>
+                    <Button size="sm">SMALL</Button>
+                    <Button size="default">DEFAULT</Button>
+                    <Button size="lg">LARGE</Button>
+                    <Button size="icon" aria-label="Settings">⚙</Button>
+                  </div>
+                </div>
+
+                {/* Combined Examples */}
+                <div className="pt-4 border-t border-gray-900">
+                  <p className={ts.typography.label + ' mb-3'}>COMBINED USAGE</p>
+                  <div className="flex gap-2">
+                    <Button variant="default">SAVE</Button>
+                    <Button variant="secondary">PREVIEW</Button>
+                    <Button variant="outline">EXPORT</Button>
+                    <Button variant="ghost">CANCEL</Button>
                   </div>
                 </div>
               </div>
