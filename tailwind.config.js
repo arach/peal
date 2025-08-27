@@ -18,13 +18,24 @@ module.exports = {
   	},
   	extend: {
   		animation: {
-  			scan: 'scan 8s linear infinite',
+  			scan: 'scan 6s linear infinite',
   			pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+  			glow: 'glow 3s ease-in-out infinite',
   		},
   		keyframes: {
   			scan: {
-  				'0%': { transform: 'translateY(-100%)' },
-  				'100%': { transform: 'translateY(100%)' },
+  				'0%': { transform: 'translateY(-100vh)' },
+  				'100%': { transform: 'translateY(100vh)' },
+  			},
+  			glow: {
+  				'0%, 100%': { 
+  					opacity: '0.3',
+  					filter: 'blur(20px)',
+  				},
+  				'50%': { 
+  					opacity: '0.6',
+  					filter: 'blur(30px)',
+  				}
   			}
   		},
   		fontSize: {
@@ -91,6 +102,7 @@ module.exports = {
   		},
   		fontFamily: {
   			sans: [
+  				'var(--font-figtree)',
   				'var(--font-sans)',
   				'system-ui',
   				'sans-serif'

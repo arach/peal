@@ -55,9 +55,15 @@ export const terminalStyles = {
     h3: 'text-lg font-normal text-gray-300',
     h4: 'text-base font-normal text-gray-400',
     
-    // Section headers - Uppercase monospace
+    // Section headers - Uppercase monospace (technical/stark)
     sectionTitle: 'font-mono text-xs uppercase tracking-[0.2em] text-gray-500',
     subsectionTitle: 'font-mono text-[10px] uppercase tracking-[0.15em] text-gray-600',
+    
+    // UI headers - Softer, more readable for interface elements (uses Figtree)
+    uiTitle: 'font-sans text-sm font-medium text-gray-300 tracking-wide',
+    uiSubtitle: 'font-sans text-xs font-normal text-gray-400',
+    uiSectionHeader: 'font-sans text-xs font-medium text-gray-400 tracking-wide uppercase',
+    uiLabel: 'font-sans text-[11px] font-medium text-gray-500',
     
     // Body text
     body: 'text-sm text-gray-300 font-light',
