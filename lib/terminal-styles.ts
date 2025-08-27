@@ -159,10 +159,11 @@ export const terminalStyles = {
   
   // Special Effects
   effects: {
-    // Glow effects for important elements
-    glowPrimary: 'shadow-[0_0_10px_rgba(14,165,233,0.3)]',
-    glowSuccess: 'shadow-[0_0_10px_rgba(16,185,129,0.3)]',
-    glowError: 'shadow-[0_0_10px_rgba(239,68,68,0.3)]',
+    // Glow effects for important elements - enhanced with multiple layers
+    glowPrimary: 'shadow-[0_0_20px_rgba(14,165,233,0.6),0_0_40px_rgba(14,165,233,0.3),0_0_80px_rgba(14,165,233,0.1)] hover:shadow-[0_0_30px_rgba(14,165,233,0.8),0_0_60px_rgba(14,165,233,0.4),0_0_100px_rgba(14,165,233,0.2)]',
+    glowSuccess: 'shadow-[0_0_20px_rgba(16,185,129,0.6),0_0_40px_rgba(16,185,129,0.3),0_0_80px_rgba(16,185,129,0.1)] hover:shadow-[0_0_30px_rgba(16,185,129,0.8),0_0_60px_rgba(16,185,129,0.4),0_0_100px_rgba(16,185,129,0.2)]',
+    glowError: 'shadow-[0_0_20px_rgba(239,68,68,0.6),0_0_40px_rgba(239,68,68,0.3),0_0_80px_rgba(239,68,68,0.1)] hover:shadow-[0_0_30px_rgba(239,68,68,0.8),0_0_60px_rgba(239,68,68,0.4),0_0_100px_rgba(239,68,68,0.2)]',
+    glowWarning: 'shadow-[0_0_20px_rgba(251,146,60,0.6),0_0_40px_rgba(251,146,60,0.3),0_0_80px_rgba(251,146,60,0.1)] hover:shadow-[0_0_30px_rgba(251,146,60,0.8),0_0_60px_rgba(251,146,60,0.4),0_0_100px_rgba(251,146,60,0.2)]',
     
     // Scanline animation for that terminal feel
     scanline: 'relative after:absolute after:inset-0 after:bg-gradient-to-b after:from-transparent after:via-gray-100/5 after:to-transparent after:animate-scan',

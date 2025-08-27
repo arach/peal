@@ -3,8 +3,11 @@
 import { useState } from 'react'
 import { terminalStyles as ts, cx } from '@/lib/terminal-styles'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/hooks/use-toast'
+import { Toaster } from '@/components/ui/toaster'
 
 interface FontSpec {
+  name: string
   family: string
   size: string
   weight: string
@@ -14,22 +17,96 @@ interface FontSpec {
 
 export default function TerminalStyleGuidePage() {
   const [hoveredSpec, setHoveredSpec] = useState<FontSpec | null>(null)
+  const [pinnedSpecs, setPinnedSpecs] = useState<FontSpec[]>([])
+  const { toast } = useToast()
+
+  const handleClick = (spec: FontSpec) => {
+    const existingIndex = pinnedSpecs.findIndex(s => s.name === spec.name)
+    if (existingIndex > -1) {
+      // Remove if already pinned
+      setPinnedSpecs(pinnedSpecs.filter((_, i) => i !== existingIndex))
+    } else {
+      // Add to pinned stack (max 3)
+      if (pinnedSpecs.length >= 3) {
+        setPinnedSpecs([...pinnedSpecs.slice(1), spec])
+      } else {
+        setPinnedSpecs([...pinnedSpecs, spec])
+      }
+    }
+  }
+
+  const handleButtonClick = (variant: string, action: string) => {
+    toast({
+      title: `${action.toUpperCase()} INITIATED`,
+      description: `${variant} action has been triggered successfully`,
+      className: 'bg-gray-900 border-gray-700 text-gray-100 font-mono',
+    })
+  }
 
   return (
-    <div className="min-h-screen bg-black text-gray-100 p-8 font-mono">
+    <div className="min-h-screen bg-black text-gray-100 p-8 font-mono relative">
       {/* Grid background effect */}
       <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
       
-      {/* Fixed Font Spec Display - Positioned closer to content */}
-      <div className="fixed top-24 right-[calc(50%-580px)] z-50">
+      {/* Fixed Font Spec Display - In right margin */}
+      <div className="fixed top-[35%] right-8 transform -translate-y-1/2 z-50 xl:right-[calc((100vw-1280px)/2-320px)] space-y-3">
+        {/* Pinned Specs Stack */}
+        {pinnedSpecs.length > 0 && (
+          <div className="space-y-2">
+            <h4 className={ts.typography.subsectionTitle + ' text-amber-500'}>PINNED STYLES</h4>
+            {pinnedSpecs.map((spec, index) => (
+              <div 
+                key={spec.name}
+                className={cx(
+                  ts.components.card.default,
+                  'p-3 w-[280px] border-amber-500/30 cursor-pointer hover:border-amber-500/50 transition-all'
+                )}
+                onClick={() => handleClick(spec)}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-amber-400 font-medium flex items-center gap-2">
+                    <span className="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
+                    {spec.name}
+                  </span>
+                  <button 
+                    className="text-[10px] text-gray-600 hover:text-gray-400"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setPinnedSpecs(pinnedSpecs.filter((_, i) => i !== index))
+                    }}
+                  >
+                    REMOVE
+                  </button>
+                </div>
+                <div className="space-y-1 text-[10px]">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Family</span>
+                    <span className="text-gray-400">{spec.family}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Size</span>
+                    <span className="text-gray-400">{spec.size}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Weight</span>
+                    <span className="text-gray-400">{spec.weight}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* Active Hover Spec */}
         <div className={cx(
           ts.components.card.elevated,
-          'p-4 min-w-[260px] transition-all duration-300',
-          hoveredSpec ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+          'p-4 w-[280px] transition-all duration-300',
+          hoveredSpec ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
         )}>
-          <h4 className={ts.typography.subsectionTitle + ' mb-3'}>FONT SPECIFICATION</h4>
+          <h4 className={ts.typography.subsectionTitle + ' mb-3'}>ACTIVE PREVIEW</h4>
           {hoveredSpec && (
             <div className="space-y-2">
+              <p className="text-xs text-sky-400 font-medium mb-2">{hoveredSpec.name}</p>
               <div className="flex justify-between">
                 <span className="text-[10px] text-gray-500 uppercase">Family</span>
                 <span className="text-[11px] text-sky-400">{hoveredSpec.family}</span>
@@ -53,6 +130,9 @@ export default function TerminalStyleGuidePage() {
                   <span className="text-[10px] text-amber-500">{hoveredSpec.extras}</span>
                 </div>
               )}
+              <div className="pt-2 border-t border-gray-800">
+                <span className="text-[10px] text-gray-600">Click to pin (max 3)</span>
+              </div>
             </div>
           )}
         </div>
@@ -82,14 +162,22 @@ export default function TerminalStyleGuidePage() {
               <h3 className={ts.typography.subsectionTitle + ' mb-4'}>HEADERS</h3>
               <div className="space-y-4">
                 <div 
-                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-default"
+                  className="py-2 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors cursor-pointer"
                   onMouseEnter={() => setHoveredSpec({
+                    name: 'H1: Primary Header',
                     family: 'Inter',
                     size: '32px / 40px',
                     weight: 'Light (300)',
                     tracking: '-0.025em'
                   })}
                   onMouseLeave={() => setHoveredSpec(null)}
+                  onClick={() => handleClick({
+                    name: 'H1: Primary Header',
+                    family: 'Inter',
+                    size: '32px / 40px',
+                    weight: 'Light (300)',
+                    tracking: '-0.025em'
+                  })}
                 >
                   <h1 className={ts.typography.h1}>H1: Primary Header</h1>
                 </div>
@@ -365,35 +453,83 @@ export default function TerminalStyleGuidePage() {
                   <p className={ts.typography.label}>BUTTON VARIANTS</p>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Button variant="default" className="w-full">EXECUTE</Button>
+                      <Button 
+                        variant="default" 
+                        className="w-full"
+                        onClick={() => handleButtonClick('Primary', 'Execute')}
+                      >
+                        EXECUTE
+                      </Button>
                       <p className="text-[10px] text-gray-500">Primary action - High emphasis</p>
                     </div>
                     <div className="space-y-2">
-                      <Button variant="secondary" className="w-full">CONFIGURE</Button>
+                      <Button 
+                        variant="secondary" 
+                        className="w-full"
+                        onClick={() => handleButtonClick('Secondary', 'Configure')}
+                      >
+                        CONFIGURE
+                      </Button>
                       <p className="text-[10px] text-gray-500">Secondary - Standard action</p>
                     </div>
                     <div className="space-y-2">
-                      <Button variant="outline" className="w-full">OPTIONS</Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => handleButtonClick('Outline', 'Options')}
+                      >
+                        OPTIONS
+                      </Button>
                       <p className="text-[10px] text-gray-500">Outline - Alternative action</p>
                     </div>
                     <div className="space-y-2">
-                      <Button variant="ghost" className="w-full">CANCEL</Button>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full"
+                        onClick={() => handleButtonClick('Ghost', 'Cancel')}
+                      >
+                        CANCEL
+                      </Button>
                       <p className="text-[10px] text-gray-500">Ghost - Minimal emphasis</p>
                     </div>
                     <div className="space-y-2">
-                      <Button variant="destructive" className="w-full">TERMINATE</Button>
+                      <Button 
+                        variant="destructive" 
+                        className="w-full"
+                        onClick={() => handleButtonClick('Destructive', 'Terminate')}
+                      >
+                        TERMINATE
+                      </Button>
                       <p className="text-[10px] text-gray-500">Destructive - Dangerous action</p>
                     </div>
                     <div className="space-y-2">
-                      <Button variant="success" className="w-full">CONFIRM</Button>
+                      <Button 
+                        variant="success" 
+                        className="w-full"
+                        onClick={() => handleButtonClick('Success', 'Confirm')}
+                      >
+                        CONFIRM
+                      </Button>
                       <p className="text-[10px] text-gray-500">Success - Positive action</p>
                     </div>
                     <div className="space-y-2">
-                      <Button variant="warning" className="w-full">WARNING</Button>
+                      <Button 
+                        variant="warning" 
+                        className="w-full"
+                        onClick={() => handleButtonClick('Warning', 'Warning')}
+                      >
+                        WARNING
+                      </Button>
                       <p className="text-[10px] text-gray-500">Warning - Caution required</p>
                     </div>
                     <div className="space-y-2">
-                      <Button variant="link" className="w-full">LEARN MORE</Button>
+                      <Button 
+                        variant="link" 
+                        className="w-full"
+                        onClick={() => handleButtonClick('Link', 'Learn More')}
+                      >
+                        LEARN MORE
+                      </Button>
                       <p className="text-[10px] text-gray-500">Link - Navigation action</p>
                     </div>
                   </div>
@@ -554,6 +690,9 @@ export default function TerminalStyleGuidePage() {
           </p>
         </div>
       </div>
+      
+      {/* Toaster for notifications */}
+      <Toaster />
     </div>
   )
 }
