@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge"
 import { Download, Copy, Trash2, FileAudio } from "lucide-react"
 import { Waveform } from "@/components/waveform"
 import { AudioControls } from "@/components/audio-controls"
+import ResizableSidebar from "./ResizableSidebar"
+import { styles } from "@/lib/styles"
 
 interface GeneratedAudio {
   id: string
@@ -44,22 +46,6 @@ export default function TTSStudio() {
     setIsMac(typeof window !== 'undefined' && navigator.platform.includes('Mac'))
   }, [])
 
-  // Add keyboard shortcut for Cmd+Enter / Ctrl+Enter
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Check for Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
-      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-        e.preventDefault()
-        if (!isGenerating && script.trim()) {
-          handleGenerate()
-        }
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [script, isGenerating, selectedModel, selectedVoice, speed]) // Dependencies for the effect
-
   const models = [
     { id: "tts-1", name: "OpenAI TTS-1", provider: "OpenAI", tier: "Standard" },
     { id: "tts-1-hd", name: "OpenAI TTS-1 HD", provider: "OpenAI", tier: "Premium" },
@@ -83,7 +69,7 @@ export default function TTSStudio() {
     return `${projectName}_${model}_${voice}_${scriptHash}_${timestamp}.mp3`
   }
 
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     if (!script.trim()) return
 
     setIsGenerating(true)
@@ -134,7 +120,7 @@ export default function TTSStudio() {
     } finally {
       setIsGenerating(false)
     }
-  }
+  }, [script, selectedModel, selectedVoice, speed, projectName])
 
   const handlePlay = (audioUrl: string, id: string) => {
     if (currentlyPlaying === id) {
@@ -168,13 +154,28 @@ export default function TTSStudio() {
     }
   }
 
+  // Add keyboard shortcut for Cmd+Enter / Ctrl+Enter
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault()
+        if (!isGenerating && script.trim()) {
+          handleGenerate()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleGenerate, isGenerating, script])
 
   return (
-    <div className="flex-1 flex bg-gray-950">
+    <div className="h-full flex bg-gray-50 dark:bg-gray-950 transition-colors">
       {/* Left Sidebar - Generated Files */}
-      <div className="w-96 bg-gray-900 border-r border-gray-800 p-6">
+      <ResizableSidebar side="left" defaultWidth={384} className="p-6">
         <div className="space-y-4">
-          <h2 className="text-sm font-light text-gray-300 tracking-wide">GENERATED FILES</h2>
+          <h2 className={styles.studio.sectionTitle}>GENERATED FILES</h2>
           <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
             {generatedAudios.length === 0 ? (
               <div className="p-12 text-center">
@@ -260,17 +261,17 @@ export default function TTSStudio() {
             )}
           </div>
         </div>
-      </div>
+      </ResizableSidebar>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-6 overflow-auto">
         <div className="space-y-6">
           {/* Project Configuration */}
           <div className="space-y-4">
-            <h2 className="text-sm font-light text-gray-300 tracking-wide">PROJECT</h2>
+            <h2 className={styles.studio.sectionTitle}>PROJECT</h2>
             <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
               <div className="p-6">
-                <Label htmlFor="project-name" className="text-xs text-gray-400 uppercase tracking-widest font-light">
+                <Label htmlFor="project-name" className={styles.studio.inputLabel}>
                   Project Name
                 </Label>
                 <Input
@@ -286,7 +287,7 @@ export default function TTSStudio() {
 
           {/* Script Input */}
           <div className="space-y-4">
-            <h2 className="text-sm font-light text-gray-300 tracking-wide">SCRIPT</h2>
+            <h2 className={styles.studio.sectionTitle}>SCRIPT</h2>
             <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
               <div className="p-6">
                 <Textarea
@@ -341,7 +342,7 @@ export default function TTSStudio() {
           {/* Audio Tracks Section */}
           {audioTracks.length > 0 && (
             <div className="space-y-4 mt-6">
-              <h2 className="text-sm font-light text-gray-300 tracking-wide">AUDIO TRACKS</h2>
+              <h2 className={styles.studio.sectionTitle}>AUDIO TRACKS</h2>
               <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
                 <div className="p-4 space-y-2">
                   {audioTracks.map((track, index) => (
@@ -402,15 +403,15 @@ export default function TTSStudio() {
             </div>
           )}
         </div>
-
-        {/* Hidden audio element for playback */}
-        <audio ref={audioRef} onEnded={() => setCurrentlyPlaying(null)} className="hidden" />
       </div>
 
+      {/* Hidden audio element for playback */}
+      <audio ref={audioRef} onEnded={() => setCurrentlyPlaying(null)} className="hidden" />
+
       {/* Right Sidebar - Configuration */}
-      <div className="w-96 bg-gray-900 border-l border-gray-800 p-6">
+      <ResizableSidebar side="right" defaultWidth={384} className="p-6">
         <div className="space-y-4">
-          <h2 className="text-sm font-light text-gray-300 tracking-wide">CONFIGURATION</h2>
+          <h2 className={styles.studio.sectionTitle}>CONFIGURATION</h2>
           <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-800/50 rounded-sm backdrop-blur-sm">
             <div className="p-6 space-y-6">
               <div>
@@ -472,7 +473,7 @@ export default function TTSStudio() {
             </div>
           </div>
         </div>
-      </div>
+      </ResizableSidebar>
     </div>
   )
 }

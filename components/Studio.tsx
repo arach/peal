@@ -9,6 +9,7 @@ import { VibeParser } from '@/lib/vibeParser'
 import VibeDesignerModal from './VibeDesignerModal'
 import SoundLibraryModal from './SoundLibraryModal'
 import CodeEditor from './CodeEditor'
+import ResizableSidebar from './ResizableSidebar'
 
 export default function Studio() {
   const router = useRouter()
@@ -2268,14 +2269,11 @@ export default function Studio() {
   )
 
   return (
-    <div className="h-screen flex flex-col bg-gray-950 text-gray-100">
+    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Code Editor */}
-        <div 
-          className="bg-gray-900 border-r border-gray-800 relative flex-shrink-0"
-          style={{ width: `${leftPanelWidth}px` }}
-        >
+        <ResizableSidebar side="left" defaultWidth={400} minWidth={300} maxWidth={600}>
           <CodeEditor 
             currentSound={currentSound}
             tracks={tracks}
@@ -2295,15 +2293,7 @@ export default function Studio() {
               }
             }}
           />
-          
-          {/* Resize handle */}
-          <div
-            className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-blue-500/50 transition-colors group"
-            onMouseDown={startResizing}
-          >
-            <div className="absolute inset-y-0 -left-1 -right-1 group-hover:bg-blue-500/20" />
-          </div>
-        </div>
+        </ResizableSidebar>
 
         {/* Center Panel - Main Canvas */}
         <div className="flex-1 flex flex-col bg-gray-950">
@@ -2896,10 +2886,8 @@ export default function Studio() {
         </div>
 
         {/* Right Panel - Parameters + AI Designer */}
-        <div className={`bg-gray-900 border-l border-gray-800 transition-all duration-300 ${
-          showParametersPanel ? 'w-80' : 'w-0'
-        } overflow-hidden`}>
-          {showParametersPanel && (
+        {showParametersPanel && (
+          <ResizableSidebar side="right" defaultWidth={320} minWidth={280} maxWidth={500}>
             <div className="h-full flex flex-col">
               {/* Panel Header with Tabs */}
               <div className="border-b border-gray-800">
@@ -3584,8 +3572,8 @@ export default function Studio() {
                 )}
               </div>
             </div>
-          )}
-        </div>
+          </ResizableSidebar>
+        )}
       </div>
       
       {/* Context Menu */}

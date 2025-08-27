@@ -17,6 +17,16 @@ module.exports = {
   		}
   	},
   	extend: {
+  		animation: {
+  			scan: 'scan 8s linear infinite',
+  			pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+  		},
+  		keyframes: {
+  			scan: {
+  				'0%': { transform: 'translateY(-100%)' },
+  				'100%': { transform: 'translateY(100%)' },
+  			}
+  		},
   		fontSize: {
   			'2xs': [
   				'0.625rem',

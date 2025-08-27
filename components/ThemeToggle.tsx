@@ -24,11 +24,23 @@ export default function ThemeToggle() {
     }
   }
 
+  const getLabel = () => {
+    switch (theme) {
+      case 'light':
+        return 'Light mode'
+      case 'dark':
+        return 'Dark mode'
+      case 'system':
+        return 'System theme'
+    }
+  }
+
   return (
     <button
       onClick={cycleTheme}
-      className="flex items-center justify-center w-8 h-8 bg-surface dark:bg-gray-800 border border-border dark:border-gray-700 text-text-secondary dark:text-gray-400 rounded-lg transition-all hover:bg-background-tertiary dark:hover:bg-gray-700 hover:text-text-primary dark:hover:text-gray-100 hover:border-primary-400 focus-ring"
-      title={`Theme: ${theme} (click to change)`}
+      className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-200"
+      aria-label={getLabel()}
+      title={`${getLabel()} (click to change)`}
     >
       {getIcon()}
     </button>

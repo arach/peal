@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { Play, Pause, Square, Volume2, Save } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import ResizableSidebar from './ResizableSidebar'
+import { styles } from '@/lib/styles'
 
 interface Track {
   id: string
@@ -718,13 +720,14 @@ export default function StudioAudioLab() {
   )
 
   return (
-    <div className="flex-1 flex bg-gray-950">
+    <div className="h-full flex bg-gray-50 dark:bg-gray-950 transition-colors">
       {/* Left Sidebar - Tools */}
-      <div className="w-80 bg-gray-900 border-r border-gray-800 p-6 space-y-6">
+      <ResizableSidebar side="left" defaultWidth={320} className="p-6">
+        <div className="space-y-6">
               {/* URL Processor */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wider">URL Processor</h3>
+                  <h3 className={styles.studio.sectionTitle}>URL Processor</h3>
                   <button
                     onClick={() => setShowStoredAnalyses(!showStoredAnalyses)}
                     className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
@@ -793,7 +796,7 @@ export default function StudioAudioLab() {
 
               {/* TTS Generator */}
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wider">Text-to-Speech</h3>
+                <h3 className={styles.studio.sectionTitle}>Text-to-Speech</h3>
                 <div className="space-y-2">
                   <textarea
                     value={ttsText}
@@ -819,7 +822,7 @@ export default function StudioAudioLab() {
               {/* Track Summary */}
               {tracks.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wider">
+                  <h3 className={styles.studio.sectionTitle}>
                     Active Tracks ({tracks.length})
                   </h3>
                   <div className="space-y-2">
@@ -848,7 +851,7 @@ export default function StudioAudioLab() {
               {/* Audio Analysis Results */}
               {(audioAnalysis || isAnalyzing) && (
                 <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wider">
+                  <h3 className={styles.studio.sectionTitle}>
                     Audio Analysis
                   </h3>
                   {isAnalyzing ? (
@@ -916,10 +919,11 @@ export default function StudioAudioLab() {
                   )}
                 </div>
               )}
-      </div>
+        </div>
+      </ResizableSidebar>
 
       {/* Main Content Area - Waveform Display */}
-      <div className="flex-1 flex flex-col bg-gray-950">
+      <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors">
               {tracks.length > 0 ? (
                 <>
                   {/* Playback Controls */}
