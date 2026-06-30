@@ -106,3 +106,176 @@
   background-color: var(--library-surface-2) !important;
   border-color: var(--library-border-lit) !important;
 }
+
+/* ---- Library welcome (empty state) ------------------------------------- */
+
+.library-welcome {
+  max-width: 880px;
+  margin: 0 auto 40px;
+  padding: 8px 0 12px;
+}
+
+.library-welcome-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.library-welcome-kicker {
+  display: inline-flex;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--library-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-bottom: 10px;
+}
+
+.library-welcome-header h1 {
+  font-size: clamp(1.5rem, 3.2vw, 1.65rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin: 0 0 10px;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.library-welcome-lead {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--library-text-dim);
+  margin: 0 auto;
+  max-width: 36ch;
+}
+
+.library-welcome-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px 16px;
+}
+
+.library-welcome-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 22px 18px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--library-border);
+  background: var(--library-surface);
+  color: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.library-welcome-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, transparent 48%),
+    radial-gradient(ellipse 85% 70% at 50% -12%, rgba(255, 255, 255, 0.05), transparent 58%);
+}
+
+.library-welcome-card:hover {
+  border-color: var(--library-border-lit);
+  background: #1e1e20;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 32px -20px rgba(0, 0, 0, 0.65);
+}
+
+.library-welcome-card:hover::before {
+  opacity: 1;
+}
+
+.library-welcome-icon {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.72);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.library-welcome-card:hover .library-welcome-icon {
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.library-welcome-card h2 {
+  position: relative;
+  z-index: 1;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 0 0 6px;
+  color: var(--library-text);
+}
+
+.library-welcome-card p {
+  position: relative;
+  z-index: 1;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--library-text-dim);
+  margin: 0 0 16px;
+  max-width: 22ch;
+}
+
+.library-welcome-cta {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.15s ease, gap 0.15s ease;
+}
+
+.library-welcome-card:hover .library-welcome-cta {
+  color: rgba(255, 255, 255, 0.82);
+  gap: 6px;
+}
+
+@media (max-width: 768px) {
+  .library-welcome-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Card depth: match the landing/docs panel treatment ---------------- */
+
+/* Sound cards carry data-id; give them the Peal panel shadow (inset top
+   highlight + soft drop) so they read with the same depth as landing panels. */
+.library [data-id] {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 8px 22px -14px rgba(0, 0, 0, 0.5);
+}
+
