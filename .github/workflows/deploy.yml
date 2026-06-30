@@ -23,12 +23,6 @@ jobs:
         with:
           path: peal
 
-      - name: "Checkout Hudson (file deps)"
-        uses: actions/checkout@v4
-        with:
-          repository: arach/hudson
-          path: hudson
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -38,9 +32,6 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 9
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
 
       - name: Get pnpm store directory
         shell: bash
@@ -56,16 +47,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: "Build Hudson packages (linked file deps)"
-        working-directory: hudson
+      - name: Use published Hudson packages for CI
+        working-directory: peal
         run: |
-          bun install --frozen-lockfile
-          bun run --filter @hudsonkit/ai build
-          bun run --filter hudsonkit build
+          node <<'EOF'
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          pkg.dependencies.hudsonkit = '0.2.1';
+          pkg.dependencies['@hudsonkit/ai'] = '0.2.1';
+          fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          EOF
 
       - name: Install dependencies
         working-directory: peal
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build
         working-directory: peal
