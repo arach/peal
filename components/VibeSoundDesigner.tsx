@@ -228,12 +228,12 @@ export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundD
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-              <Sparkles className="text-white" size={20} />
+            <div className="w-10 h-10 bg-[#4a9eff]/15 border border-[#4a9eff]/30 rounded-lg flex items-center justify-center">
+              <Sparkles className="text-[#4a9eff]" size={20} />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                Vibe Sound Designer
+                AI Sound Designer
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Describe the sound you want in plain English
@@ -258,12 +258,12 @@ export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundD
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
               placeholder="Try: 'a short high beep' or '3 quick clicks'"
-              className="w-full px-4 py-3 pr-12 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-3 pr-12 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4a9eff]"
             />
             <button
               onClick={handleGenerate}
               disabled={!prompt.trim() || isGenerating}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-[#4a9eff] text-white rounded-lg hover:bg-[#6bb0ff] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               <Wand2 size={18} />
             </button>
@@ -292,8 +292,8 @@ export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundD
         {/* Loading State */}
         {isGenerating && (
           <div className="text-center py-8">
-            <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-500 dark:text-gray-400">Generating sounds from your vibe...</p>
+            <div className="w-8 h-8 border-2 border-[#4a9eff] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-500 dark:text-gray-400">Generating your sound...</p>
           </div>
         )}
 
@@ -315,18 +315,18 @@ export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundD
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-purple-500">
+                        <span className="text-sm font-medium text-[#4a9eff]">
                           {prompt}
                         </span>
                         {isComposite && (
-                          <span className="text-xs bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 px-2 py-1 rounded">
+                          <span className="text-xs bg-[#4a9eff]/10 text-[#4a9eff] px-2 py-1 rounded">
                             {compositeSounds.length} parts
                           </span>
                         )}
                       </div>
                       <button
                         onClick={() => playSound(sound)}
-                        className="px-4 py-2 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition-colors"
+                        className="px-4 py-2 bg-[#4a9eff] text-white text-sm rounded hover:bg-[#6bb0ff] transition-colors"
                       >
                         ▶ Play
                       </button>
@@ -335,7 +335,7 @@ export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundD
                     {isComposite ? (
                       <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
                         <div>Total duration: {sound.duration}ms</div>
-                        <div className="pl-3 border-l-2 border-purple-200 dark:border-purple-700">
+                        <div className="pl-3 border-l-2 border-[#4a9eff]/30">
                           {compositeSounds.map((subSound: any, i: number) => (
                             <div key={i} className="py-1">
                               {subSound.delay ? `${(subSound.delay * 1000).toFixed(0)}ms: ` : ''}
@@ -367,7 +367,7 @@ export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundD
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                className="px-4 py-2 bg-[#4a9eff] text-white rounded-lg hover:bg-[#6bb0ff] transition-colors"
               >
                 Save to Library
               </button>
@@ -377,8 +377,8 @@ export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundD
 
         {/* Examples */}
         {generatedSounds.length === 0 && !isGenerating && (
-          <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-            <h4 className="text-sm font-medium text-purple-900 dark:text-purple-300 mb-2">
+          <div className="mt-6 p-4 bg-[#4a9eff]/10 rounded-lg">
+            <h4 className="text-sm font-medium text-[#4a9eff] mb-2">
               Example prompts:
             </h4>
             <div className="space-y-1">
@@ -395,7 +395,7 @@ export default function VibeSoundDesigner({ onClose, initialPrompt }: VibeSoundD
                     setPrompt(example)
                     setTimeout(() => handleGenerate(), 100)
                   }}
-                  className="block w-full text-left text-sm text-purple-700 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-200 transition-colors"
+                  className="block w-full text-left text-sm text-[#4a9eff] hover:text-[#6bb0ff] transition-colors"
                 >
                   • "{example}"
                 </button>

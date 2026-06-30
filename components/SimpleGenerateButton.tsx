@@ -42,10 +42,10 @@ export default function SimpleGenerateButton() {
         
         <button
           onClick={() => setShowVibeDesigner(true)}
-          className="btn-base btn-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/30 focus-ring"
+          className="btn-base btn-lg bg-[#4a9eff] text-white hover:bg-[#6bb0ff] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#4a9eff]/30 focus-ring"
         >
           <Sparkles size={20} />
-          Vibe Designer
+          AI Sound Designer
         </button>
       </div>
 

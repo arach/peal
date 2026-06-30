@@ -178,7 +178,7 @@ export default function Header({
                     </button>
                   )}
                   <button
-                    onClick={() => handleNavigation('/voice')}
+                    onClick={() => handleNavigation('/studio?tool=voice')}
                     className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-1"
                   >
                     <Mic size={14} />
@@ -261,7 +261,7 @@ export default function Header({
                 )}
                 <button
                   onClick={() => {
-                    handleNavigation('/voice')
+                    handleNavigation('/studio?tool=voice')
                     setMobileMenuOpen(false)
                   }}
                   className="block w-full text-left px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2"

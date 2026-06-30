@@ -48,3 +48,5 @@ audio-cache/
 
 # Analysis cache files
 analysis-cache/
+# OpenScout local state
+.openscout/project.json

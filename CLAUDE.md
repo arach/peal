@@ -68,3 +68,33 @@ The library should expose a `Peal` class with these core methods:
 - **Environment**: Supports both browser (DOM) and Node.js environments
 - **Audio Library**: Howler.js v2.2.4 for audio playback
 - **Sound Format**: WAV files for high-quality audio
+
+## Website & Product
+
+Peal is both an npm library (`@peal-sounds/peal`) and a web app for designing UI sounds.
+
+### What Peal does
+- **Library** (`/library`) — browse, generate, and manage a personal sound collection
+- **Studio** (`/studio`) — dark IDE-style sound designer with live Web Audio API code, AI design, and parameter panels
+- **Presets** (`/presets`, `/premium`, `/mechanics`, `/keyboard`, `/brands`, `/signature`) — curated sound collections
+- **Voice** (`/voice`) — TTS studio for spoken UI feedback
+- **CLI** (`peal add`, `peal play`, `peal list`) — drop sounds into any project via Howler.js
+
+### Landing page (`/`)
+The homepage is the marketing entry point. It should match the product surfaces (Studio, Library), not feel like a separate marketing site.
+
+**Style reference:** `../lattices/apps/site` — dark shell, sticky nav, compact type, subtle borders, monospace install blocks, feature buckets. Peal uses **blue** (`#4a9eff`) as the accent instead of Lattices green.
+
+**Design tokens:** `styles/landing.css` (scoped under `.landing`)
+- Background: `#111113`, surface: `#1c1c1e`
+- Fonts: Space Grotesk (UI), JetBrains Mono (code/CLI)
+- Terminal-chic details also live in `lib/terminal-styles.ts` and `/terminal-styleguide`
+
+### Dev server
+- Runs on **port 3001** (`pnpm dev` → `next dev --port 3001`)
+- Do not kill the running Next server; ask the user if restart is needed
+
+### Hudson Studio (in progress)
+- Spec: `docs/hudson-studio-spec.md` — migrate `/studio` to a `HudsonApp` in `hudsonkit` `AppShell`
+- Reference: Atelier `AppShellView`, Hudson `stage-design` app, `../hudson/docs/building-apps.md`
+- Dispatched to Codex via Scout (`project-quill` / session `session-mqznurdp-csnl32`)

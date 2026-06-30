@@ -14,7 +14,7 @@ export default function GenerationHub() {
 
   return (
     <>
-      <div className="bg-gradient-to-br from-primary-50 to-purple-50 dark:from-gray-900 dark:to-purple-900/20 rounded-2xl p-8 shadow-sm border border-primary-100 dark:border-gray-800">
+      <div className="bg-gradient-to-br from-primary-50 to-blue-50 dark:from-gray-900 dark:to-[#4a9eff]/10 rounded-2xl p-8 shadow-sm border border-primary-100 dark:border-gray-800">
         <div className="text-center space-y-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -29,10 +29,10 @@ export default function GenerationHub() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
             <button
               onClick={() => setShowVibeDesigner(true)}
-              className="flex-1 btn-base btn-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/30 focus-ring group"
+              className="flex-1 btn-base btn-lg bg-[#4a9eff] text-white hover:bg-[#6bb0ff] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#4a9eff]/30 focus-ring group"
             >
               <Sparkles size={20} className="group-hover:animate-pulse" />
-              Vibe Designer
+              AI Sound Designer
             </button>
             
             <button

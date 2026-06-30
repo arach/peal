@@ -95,9 +95,10 @@ interface SoundCardProps {
   onPlay: () => void
   onStop: () => void
   onShowCode: () => void
+  variant?: 'default' | 'landing'
 }
 
-function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCardProps) {
+function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant = 'default' }: SoundCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)
   const progressRef = useRef(0)
@@ -175,6 +176,53 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
     }
   }, [isPlaying])
 
+  if (variant === 'landing') {
+    return (
+      <div
+        className={`landing-sound-card ${isPlaying ? 'is-playing' : ''}`}
+        onClick={onShowCode}
+      >
+        <div className="landing-sound-wave">
+          <canvas ref={canvasRef} className="w-full h-full" style={{ width: '100%', height: '100%' }} />
+        </div>
+        <div className="landing-sound-name">{sound.name}</div>
+        <div className="landing-sound-meta">
+          <span>{sound.duration}</span>
+          <span>code</span>
+        </div>
+        <div className="landing-sound-tags">
+          {sound.tags.map((tag) => (
+            <span key={tag} className="landing-sound-tag">{tag}</span>
+          ))}
+        </div>
+        <div className="landing-sound-actions">
+          <button
+            type="button"
+            className={`landing-sound-play ${isPlaying ? 'is-active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation()
+              isPlaying ? onStop() : onPlay()
+            }}
+            aria-label={isPlaying ? 'Stop sound' : 'Play sound'}
+          >
+            {isPlaying ? <Pause size={14} /> : <Play size={14} />}
+          </button>
+          <button
+            type="button"
+            className="landing-link"
+            style={{ padding: '4px 8px', fontSize: 11 }}
+            onClick={(e) => {
+              e.stopPropagation()
+              onShowCode()
+            }}
+          >
+            <Code2 size={12} /> View code
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -182,7 +230,6 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
       className="bg-white dark:bg-gray-900/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl p-4 hover:border-blue-400 dark:hover:border-gray-700 transition-all group shadow-sm hover:shadow-md cursor-pointer"
       onClick={onShowCode}
     >
-      {/* Waveform */}
       <div className="h-16 mb-3 relative">
         <canvas 
           ref={canvasRef}
@@ -191,10 +238,8 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
         />
       </div>
 
-      {/* Sound name */}
       <h3 className="font-medium text-gray-900 dark:text-white mb-2">{sound.name}</h3>
       
-      {/* Duration and action hint */}
       <div className="flex justify-between items-center mb-2 text-xs">
         <span className="text-gray-500 dark:text-gray-400">{sound.duration}</span>
         <span className="text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
@@ -202,7 +247,6 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
         </span>
       </div>
 
-      {/* Tags */}
       <div className="flex gap-2 flex-wrap mb-3">
         {sound.tags.map(tag => (
           <span
@@ -214,7 +258,6 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
         ))}
       </div>
 
-      {/* Actions */}
       <div className="flex items-center justify-between">
         <button
           onClick={(e) => {
@@ -245,7 +288,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
   )
 }
 
-export default function HeroSoundGrid() {
+export default function HeroSoundGrid({ variant = 'default' }: { variant?: 'default' | 'landing' }) {
   const [playing, setPlaying] = useState<string | null>(null)
   const [sounds, setSounds] = useState<{ [key: string]: Howl }>({})
   const [selectedSound, setSelectedSound] = useState<typeof heroSounds[0] | null>(null)
@@ -301,7 +344,7 @@ export default function HeroSoundGrid() {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className={variant === 'landing' ? 'landing-sound-grid' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'}>
         {heroSounds.map((sound) => (
           <HeroSoundCard
             key={sound.id}
@@ -310,6 +353,7 @@ export default function HeroSoundGrid() {
             onPlay={() => playSound(sound.id)}
             onStop={stopSound}
             onShowCode={() => setSelectedSound(sound)}
+            variant={variant}
           />
         ))}
       </div>

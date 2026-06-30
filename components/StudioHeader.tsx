@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { ArrowLeft, Volume2, Mic, Layers, Settings, HelpCircle } from 'lucide-react'
+import { ArrowLeft, Volume2, Mic, Settings, HelpCircle } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
-type StudioTool = 'voice' | 'audio' | 'sfx'
+type StudioTool = 'voice' | 'sfx'
 
 interface StudioHeaderProps {
   currentTool: StudioTool
@@ -28,22 +28,16 @@ const toolConfig: Record<StudioTool, {
     path: '/studio',
     description: 'Sound effects creation'
   },
-  audio: {
-    label: 'Audio', 
-    icon: Layers,
-    path: '/audio',
-    description: 'Audio processing & composition'
-  },
   voice: {
     label: 'Voice',
     icon: Mic,
-    path: '/voice',
+    path: '/studio?tool=voice',
     description: 'Text-to-speech generation'
   }
 }
 
 // Define the order explicitly
-const toolOrder: StudioTool[] = ['sfx', 'audio', 'voice']
+const toolOrder: StudioTool[] = ['sfx', 'voice']
 
 export default function StudioHeader({ 
   currentTool, 

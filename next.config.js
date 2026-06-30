@@ -1,8 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Use production ESLint config for static builds
-  eslint: {
-    ignoreDuringBuilds: process.env.BUILD_STATIC === 'true',
+  transpilePackages: ['hudsonkit', '@hudsonkit/ai'],
+  serverExternalPackages: ['@earendil-works/pi-ai'],
+
+  // Tree-shake the Phosphor icon barrel (used by the Sound Studio icon set).
+  // Not in Next's default optimize list, unlike lucide-react / @tabler.
+  experimental: {
+    optimizePackageImports: ['@phosphor-icons/react'],
   },
   // Static export for GitHub Pages
   output: process.env.BUILD_STATIC === 'true' ? 'export' : undefined,

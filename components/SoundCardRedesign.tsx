@@ -176,7 +176,7 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
 
   const handleStudio = (e: React.MouseEvent) => {
     e.stopPropagation()
-    router.push(`/studio?sound=${sound.id}`)
+    router.push(`/studio?sound=${encodeURIComponent(sound.id)}&type=${sound.type}`)
   }
 
   return (

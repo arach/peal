@@ -1,8 +1,18 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Play, Pause, Square, Save, FolderOpen, Settings, Sparkles, Volume2, SkipBack, ChevronLeft, ChevronRight, Scissors, Edit3, Wand2, HelpCircle } from 'lucide-react'
+import {
+  AiDesignIcon,
+  EditIcon,
+  LibraryIcon,
+  MagicWandIcon,
+  ParametersIcon,
+  SaveIcon,
+  ScissorsIcon,
+  SettingsIcon,
+} from '@/components/icons/PealStudioIcon'
 import { useSoundStore, Sound } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { VibeParser } from '@/lib/vibeParser'
@@ -10,12 +20,46 @@ import VibeDesignerModal from './VibeDesignerModal'
 import SoundLibraryModal from './SoundLibraryModal'
 import CodeEditor from './CodeEditor'
 import ResizableSidebar from './ResizableSidebar'
+import { useOptionalPealStudioHudson } from '@/app/hudson/peal-studio/Provider'
+import { PealStudioAIDesign } from '@/app/hudson/peal-studio/PealStudioAIDesign'
+import { soundFromProposal, type ProposeSoundInput } from '@/lib/ai/soundProposal'
+import {
+  StudioModuleTabs,
+  StudioPad,
+  StudioPadTray,
+  StudioRack,
+  StudioScopeWell,
+  StudioTransportDeck,
+} from '@/components/studio/StudioInstruments'
 
-export default function Studio() {
+interface StudioProps {
+  hudsonLayout?: boolean
+}
+
+function HudsonOptionalPortal({
+  enabled,
+  target,
+  children,
+}: {
+  enabled: boolean
+  target?: HTMLElement | null
+  children: ReactNode
+}) {
+  if (!enabled) return <>{children}</>
+  if (!target) return null
+  return createPortal(children, target)
+}
+
+export default function Studio({ hudsonLayout = false }: StudioProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { sounds } = useSoundStore()
   const { playSound } = useSoundGeneration()
+  const hudson = useOptionalPealStudioHudson()
+  const publishSfxRuntime = hudson?.publishSfxRuntime
+  const clearSfxRuntime = hudson?.clearSfxRuntime
+  const publishSfxEditor = hudson?.publishSfxEditor
+  const clearSfxEditor = hudson?.clearSfxEditor
   
   const [currentSound, setCurrentSound] = useState<Sound | null>(null)
   const [leftPanelWidth, setLeftPanelWidth] = useState(400)
@@ -319,11 +363,11 @@ export default function Studio() {
       ctx.fillRect(0, 0, editStartX, height)
       ctx.fillRect(editEndX, 0, width - editEndX, height)
       
-      // Highlight insert region with animated purple gradient
+      // Highlight insert region with animated accent-blue gradient
       const gradient = ctx.createLinearGradient(editStartX, 0, editEndX, 0)
-      gradient.addColorStop(0, 'rgba(147, 51, 234, 0.1)')
-      gradient.addColorStop(0.5, 'rgba(147, 51, 234, 0.2)')
-      gradient.addColorStop(1, 'rgba(147, 51, 234, 0.1)')
+      gradient.addColorStop(0, 'rgba(74, 158, 255, 0.1)')
+      gradient.addColorStop(0.5, 'rgba(74, 158, 255, 0.2)')
+      gradient.addColorStop(1, 'rgba(74, 158, 255, 0.1)')
       ctx.fillStyle = gradient
       ctx.fillRect(editStartX, 0, editEndX - editStartX, height)
       
@@ -340,13 +384,13 @@ export default function Studio() {
         const proposedEndX = centerX + insertWidth / 2
         
         // Draw proposed sound region with visual indication
-        ctx.fillStyle = 'rgba(168, 85, 247, 0.3)' // Purple with more opacity
+        ctx.fillStyle = 'rgba(107, 176, 255, 0.3)' // Accent blue with more opacity
         const actualStartX = Math.max(editStartX, proposedStartX)
         const actualEndX = Math.min(editEndX, proposedEndX)
         ctx.fillRect(actualStartX, 0, actualEndX - actualStartX, height)
         
         // Draw proposed sound waveform preview outline
-        ctx.strokeStyle = '#a855f7'
+        ctx.strokeStyle = '#6bb0ff'
         ctx.lineWidth = 2
         ctx.setLineDash([4, 4])
         ctx.strokeRect(actualStartX, height * 0.2, actualEndX - actualStartX, height * 0.6)
@@ -364,9 +408,9 @@ export default function Studio() {
       }
       
       // Draw insert boundaries with glow
-      ctx.strokeStyle = '#9333ea'
+      ctx.strokeStyle = '#4a9eff'
       ctx.lineWidth = 2
-      ctx.shadowColor = '#9333ea'
+      ctx.shadowColor = '#4a9eff'
       ctx.shadowBlur = 6
       
       ctx.beginPath()
@@ -384,7 +428,7 @@ export default function Studio() {
       // Add "+" icon if there's space and no duration overlay
       const regionWidth = editEndX - editStartX
       if (regionWidth > 30 && (!editedParams || !editedParams.duration)) {
-        ctx.fillStyle = '#9333ea'
+        ctx.fillStyle = '#4a9eff'
         ctx.font = 'bold 16px Inter'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
@@ -614,8 +658,8 @@ export default function Studio() {
       const editStartX = editStart * drawWidth
       const editEndX = editEnd * drawWidth
       
-      // Focus area background with purple
-      ctx.fillStyle = 'rgba(147, 51, 234, 0.2)'
+      // Focus area background with accent blue
+      ctx.fillStyle = 'rgba(74, 158, 255, 0.2)'
       ctx.fillRect(editStartX, 0, editEndX - editStartX, height)
       
       // Show the proposed sound length overlay on timeline
@@ -631,13 +675,13 @@ export default function Studio() {
         const proposedEndX = centerX + insertWidth / 2
         
         // Draw proposed sound region
-        ctx.fillStyle = 'rgba(168, 85, 247, 0.4)' // Purple with more opacity
+        ctx.fillStyle = 'rgba(107, 176, 255, 0.4)' // Accent blue with more opacity
         const actualStartX = Math.max(editStartX, proposedStartX)
         const actualEndX = Math.min(editEndX, proposedEndX)
         ctx.fillRect(actualStartX, height * 0.2, actualEndX - actualStartX, height * 0.6)
         
         // Draw duration indicator line
-        ctx.strokeStyle = '#a855f7'
+        ctx.strokeStyle = '#6bb0ff'
         ctx.lineWidth = 1.5
         ctx.setLineDash([3, 3])
         ctx.strokeRect(actualStartX, height * 0.2, actualEndX - actualStartX, height * 0.6)
@@ -658,12 +702,12 @@ export default function Studio() {
       }
       
       // Focus area border
-      ctx.strokeStyle = '#9333ea'
+      ctx.strokeStyle = '#4a9eff'
       ctx.lineWidth = 2
       ctx.strokeRect(editStartX, 0, editEndX - editStartX, height)
       
       // Draw insert handles
-      ctx.fillStyle = '#9333ea'
+      ctx.fillStyle = '#4a9eff'
       
       // Start handle
       ctx.fillRect(editStartX - 4, 0, 8, height)
@@ -671,7 +715,7 @@ export default function Studio() {
       ctx.fillRect(editStartX - 2, height/4, 4, height/2)
       
       // End handle  
-      ctx.fillStyle = '#9333ea'
+      ctx.fillStyle = '#4a9eff'
       ctx.fillRect(editEndX - 4, 0, 8, height)
       ctx.fillStyle = '#ffffff'
       ctx.fillRect(editEndX - 2, height/4, 4, height/2)
@@ -1776,12 +1820,18 @@ export default function Studio() {
   }
 
   // Navigation functions
+  const navigateToSound = (sound: Sound) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('sound', sound.id)
+    params.set('type', sound.type)
+    router.push(`/studio?${params.toString()}`)
+  }
+
   const navigateToPrevious = () => {
     if (!currentSound) return
     const currentIndex = sounds.findIndex(s => s.id === currentSound.id)
     if (currentIndex > 0) {
-      const prevSound = sounds[currentIndex - 1]
-      router.push(`/studio?sound=${prevSound.id}`)
+      navigateToSound(sounds[currentIndex - 1])
     }
   }
 
@@ -1789,8 +1839,7 @@ export default function Studio() {
     if (!currentSound) return
     const currentIndex = sounds.findIndex(s => s.id === currentSound.id)
     if (currentIndex < sounds.length - 1) {
-      const nextSound = sounds[currentIndex + 1]
-      router.push(`/studio?sound=${nextSound.id}`)
+      navigateToSound(sounds[currentIndex + 1])
     }
   }
 
@@ -2138,6 +2187,17 @@ export default function Studio() {
     }
   }
 
+  const handleProposeSoundFromAI = useCallback(async (input: ProposeSoundInput) => {
+    try {
+      const sound = soundFromProposal(input)
+      await (generator as any).renderSound(sound)
+      return sound
+    } catch (error) {
+      console.error('Error rendering AI sound proposal:', error)
+      return null
+    }
+  }, [generator])
+
   const handleVibeLoadToStudio = (sound: Sound) => {
     // Load the generated sound into the studio for editing
     console.log('Loading vibe sound to studio:', sound.id, sound.parameters)
@@ -2156,7 +2216,7 @@ export default function Studio() {
     // Create a new track with the vibe sound
     const newTrack: Track = {
       id: `track-vibe-${Date.now()}`,
-      name: 'Vibe Insert',
+      name: 'AI Insert',
       audioBuffer: sound.audioBuffer,
       waveformData: sound.waveformData || generateWaveformData(sound.audioBuffer),
       muted: false,
@@ -2241,15 +2301,88 @@ export default function Studio() {
     setShowLibraryModal(false)
   }
 
+  const handleCodeSoundChange = useCallback(async (updatedSound: Sound) => {
+    setCurrentSound(updatedSound)
+    setEditedParams(updatedSound.parameters)
+    setHasUnappliedChanges(true)
+
+    // Regenerate a preview from edited code using the existing Studio sound flow.
+    try {
+      const { SoundGenerator } = require('@/hooks/useSoundGeneration')
+      const tempGenerator = new SoundGenerator()
+      await tempGenerator.renderSound(updatedSound)
+      setPreviewSound(updatedSound)
+    } catch (error) {
+      console.error('Error regenerating sound:', error)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!hudsonLayout || !publishSfxRuntime) return
+
+    publishSfxRuntime({
+      summary: {
+        mounted: true,
+        soundId: currentSound?.id ?? null,
+        soundType: currentSound?.type ?? null,
+        durationMs: currentSound?.duration ?? null,
+        frequencyHz: currentSound?.frequency ?? null,
+        trackCount: tracks.length,
+        isPlaying,
+        isPaused,
+        isGenerating,
+        hasUnappliedChanges,
+        previewReady: Boolean(previewSound),
+        mode: insertMode ? 'insert' : editMode ? 'edit' : trimMode ? 'trim' : 'design',
+      },
+      actions: {
+        play: handlePlay,
+        pause: handlePause,
+        stop: handleStop,
+        saveProject: handleSaveProject,
+        openProject: handleLoadProject,
+        openLibrary: () => setShowLibraryModal(true),
+        openAIDesigner: () => {
+          setShowParametersPanel(true)
+          setShowVibePanel(true)
+        },
+        showParameters: () => {
+          setShowParametersPanel(true)
+          setShowVibePanel(false)
+        },
+        applyChanges,
+      },
+    })
+  })
+
+  useEffect(() => {
+    if (!hudsonLayout || !clearSfxRuntime) return
+    return () => clearSfxRuntime()
+  }, [hudsonLayout, clearSfxRuntime])
+
+  useEffect(() => {
+    if (!hudsonLayout || !publishSfxEditor) return
+    publishSfxEditor({
+      currentSound,
+      tracks,
+      onSoundChange: handleCodeSoundChange,
+    })
+  }, [hudsonLayout, publishSfxEditor, currentSound, tracks, handleCodeSoundChange])
+
+  useEffect(() => {
+    if (!hudsonLayout || !clearSfxEditor) return
+    return () => clearSfxEditor()
+  }, [hudsonLayout, clearSfxEditor])
+
   // Main render  
   const studioActions = (
     <>
       <button 
         onClick={handleLoadProject}
-        className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-gray-800/50 rounded-lg transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-[#232327]/50 rounded-lg transition-colors"
         title="Open a saved project"
       >
-        <FolderOpen size={16} />
+        <LibraryIcon size={16} />
         <span className="text-sm">Open</span>
       </button>
       <button 
@@ -2257,59 +2390,55 @@ export default function Studio() {
         disabled={!currentSound}
         className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
           currentSound 
-            ? 'bg-blue-500 hover:bg-blue-400 text-white' 
-            : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+            ? 'bg-[#4a9eff] hover:bg-[#4a9eff] text-white' 
+            : 'bg-[#2c2c2e] text-gray-400 cursor-not-allowed'
         }`}
         title="Save current project"
       >
-        <Save size={16} />
+        <SaveIcon size={16} />
         <span className="text-sm">Save</span>
       </button>
     </>
   )
 
   return (
-    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
+    <div className={hudsonLayout
+      ? 'h-full flex flex-col bg-[#111113] text-gray-100'
+      : 'h-full flex flex-col bg-gray-50 dark:bg-[#111113] text-[#1c1c1e] dark:text-gray-100 transition-colors'}>
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Code Editor */}
-        <ResizableSidebar side="left" defaultWidth={400} minWidth={300} maxWidth={600}>
-          <CodeEditor 
-            currentSound={currentSound}
-            tracks={tracks}
-            onSoundChange={async (updatedSound) => {
-              setCurrentSound(updatedSound)
-              setEditedParams(updatedSound.parameters)
-              setHasUnappliedChanges(true)
-              
-              // Regenerate the audio buffer with new parameters
-              try {
-                const { SoundGenerator } = require('@/hooks/useSoundGeneration')
-                const tempGenerator = new SoundGenerator()
-                await tempGenerator.renderSound(updatedSound)
-                setPreviewSound(updatedSound)
-              } catch (error) {
-                console.error('Error regenerating sound:', error)
-              }
-            }}
-          />
-        </ResizableSidebar>
+        {!hudsonLayout && (
+          <ResizableSidebar
+            side="left"
+            defaultWidth={400}
+            minWidth={300}
+            maxWidth={600}
+            resizable
+          >
+            <CodeEditor
+              currentSound={currentSound}
+              tracks={tracks}
+              onSoundChange={handleCodeSoundChange}
+            />
+          </ResizableSidebar>
+        )}
 
         {/* Center Panel - Main Canvas */}
-        <div className="flex-1 flex flex-col bg-gray-950">
+        <div className={`flex-1 flex flex-col bg-[#111113] ${hudsonLayout ? 'peal-instruments' : ''}`}>
           {/* Canvas Header */}
-          <div className="flex items-center justify-between px-6 py-3 bg-gray-900 border-b border-gray-800">
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-400">
-                {currentSound ? `Editing: ${currentSound.type} sound` : 'Ready to create your perfect sound'}
+          <div className="flex items-center justify-between px-6 py-2.5 bg-[#0d0d0f] border-b border-[#232327]">
+            <div className="flex items-center gap-3">
+              <span className="peal-inst-led peal-inst-led--on" aria-hidden />
+              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-400">
+                {currentSound ? `${currentSound.type} · ${currentSound.duration}ms` : 'Signal path idle'}
               </div>
             </div>
-            
-            <div className="flex items-center gap-2 text-sm text-gray-400">
+            <div className="peal-inst-rack-readout flex items-center gap-2">
               <span>44.1 kHz</span>
-              <span>•</span>
+              <span className="opacity-30">·</span>
               <span>16-bit</span>
-              <span>•</span>
+              <span className="opacity-30">·</span>
               <span>Mono</span>
             </div>
           </div>
@@ -2319,7 +2448,7 @@ export default function Studio() {
             {currentSound ? (
               <>
                 {/* Sound Info Header */}
-                <div className="px-6 py-4 border-b border-gray-800">
+                <div className="px-6 py-4 border-b border-[#232327]">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-100">
@@ -2336,7 +2465,7 @@ export default function Studio() {
                         </span>
                       )}
                       {isGenerating && (
-                        <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">
+                        <span className="text-xs bg-[#4a9eff]/20 text-[#4a9eff] px-2 py-1 rounded">
                           Regenerating...
                         </span>
                       )}
@@ -2348,39 +2477,36 @@ export default function Studio() {
                 <div className="flex-1 flex flex-col p-6 overflow-y-auto">
                   <div className="space-y-4">
                     {/* Main Waveform */}
-                    <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-sm font-medium text-gray-300">
-                          Waveform {selectedTrackId && (editMode || insertMode) 
-                            ? `(${tracks.find(t => t.id === selectedTrackId)?.name || 'Track'})`
-                            : previewSound 
-                              ? '(Preview)' 
-                              : '(Original)'
-                          }
-                        </h4>
-                        <div className="flex items-center gap-2 text-xs text-gray-400">
-                          <span>{currentSound.duration}ms</span>
-                          <span>•</span>
-                          <span>{currentSound.frequency}Hz</span>
+                    <StudioRack
+                      label="Scope"
+                      readout={`${currentSound.duration}ms · ${currentSound.frequency}Hz`}
+                      className="p-0 overflow-hidden"
+                    >
+                      <div className="px-4 py-3">
+                        <div className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-gray-500">
+                          {selectedTrackId && (editMode || insertMode)
+                            ? tracks.find((t) => t.id === selectedTrackId)?.name ?? 'Track'
+                            : previewSound
+                              ? 'Preview buffer'
+                              : 'Original buffer'}
                         </div>
+                        <StudioScopeWell>
+                          <canvas
+                            ref={waveformCanvasRef}
+                            width={800}
+                            height={200}
+                            className="w-full h-48"
+                          />
+                        </StudioScopeWell>
                       </div>
-                      <div className="bg-gray-950 rounded-lg overflow-hidden">
-                        <canvas
-                          ref={waveformCanvasRef}
-                          width={800}
-                          height={200}
-                          className="w-full h-48"
-                        />
-                      </div>
-                    </div>
+                    </StudioRack>
 
                     {/* Timeline & Trimmer */}
-                    <div className="bg-gray-900 rounded-xl border border-gray-800">
-                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-800 bg-gray-900/50">
-                        <div className="flex items-center gap-3">
-                          <h4 className="text-xs font-semibold text-gray-200 uppercase tracking-wider">Timeline</h4>
-                          <div className="flex items-center gap-1">
-                            <button
+                    <StudioRack label="Timeline" className="overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#232327]/80">
+                        <StudioPadTray>
+                            <StudioPad
+                              active={editMode}
                               onClick={() => {
                                 setEditMode(!editMode)
                                 if (!editMode) {
@@ -2388,17 +2514,13 @@ export default function Studio() {
                                   setInsertMode(false)
                                 }
                               }}
-                              className={`flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded transition-all ${
-                                editMode
-                                  ? 'bg-blue-500 text-white shadow-sm' 
-                                  : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
-                              }`}
                               title="Modify existing audio in selected region"
                             >
-                              <Edit3 size={10} />
+                              <EditIcon size={10} />
                               {editMode ? 'Exit' : 'Edit'}
-                            </button>
-                            <button
+                            </StudioPad>
+                            <StudioPad
+                              active={insertMode}
                               onClick={() => {
                                 setInsertMode(!insertMode)
                                 if (!insertMode) {
@@ -2406,19 +2528,16 @@ export default function Studio() {
                                   setTrimMode(false)
                                 }
                               }}
-                              className={`flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded transition-all ${
-                                insertMode
-                                  ? 'bg-purple-500 text-white shadow-sm' 
-                                  : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
-                              }`}
                               title="Add new sound at specific position"
                             >
-                              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden>
                                 <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                               </svg>
-                              {insertMode ? 'Exit' : 'Add Sound'}
-                            </button>
-                            <button
+                              {insertMode ? 'Exit' : 'Insert'}
+                            </StudioPad>
+                            <StudioPad
+                              active={trimMode}
+                              tone="amber"
                               onClick={() => {
                                 setTrimMode(!trimMode)
                                 if (!trimMode) {
@@ -2426,49 +2545,31 @@ export default function Studio() {
                                   setInsertMode(false)
                                 }
                               }}
-                              className={`flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded transition-all ${
-                                trimMode
-                                  ? 'bg-yellow-500 text-white shadow-sm' 
-                                  : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
-                              }`}
                               title="Trim audio to keep only selected region"
                             >
-                              <Scissors size={10} />
+                              <ScissorsIcon size={10} />
                               {trimMode ? 'Exit' : 'Trim'}
-                            </button>
-                            
-                            <div className="w-px h-3.5 bg-gray-700 mx-1"></div>
-                            
-                            <button
+                            </StudioPad>
+                            <StudioPad
+                              active={showTracks}
+                              tone="muted"
                               onClick={() => setShowTracks(!showTracks)}
-                              className={`flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded transition-all ${
-                                showTracks
-                                  ? 'bg-gray-600 text-gray-100' 
-                                  : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
-                              }`}
                               title="Show/hide track layers"
                             >
-                              <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+                              <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" aria-hidden>
                                 <rect x="0" y="0" width="8" height="1.5" />
                                 <rect x="0" y="3" width="8" height="1.5" />
                                 <rect x="0" y="6" width="8" height="1.5" />
                               </svg>
-                              Tracks
-                              {tracks.length > 0 && (
-                                <span className="ml-0.5 px-1 bg-gray-600 rounded text-[9px]">
-                                  {tracks.length}
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                        
+                              Trk{tracks.length > 0 ? ` ${tracks.length}` : ''}
+                            </StudioPad>
+                        </StudioPadTray>
                         <div className="flex items-center gap-3">
                           {/* Mode-specific info */}
                           {trimMode && (
                             <div className="flex items-center gap-2 text-[10px] text-gray-400">
                               <span>Selection: {Math.round(trimStart * 100)}%-{Math.round(trimEnd * 100)}%</span>
-                              <span className="text-gray-600">•</span>
+                              <span className="text-[#3a3a3e]">•</span>
                               <span>{currentSound ? Math.round((trimEnd - trimStart) * currentSound.duration) : 0}ms</span>
                             </div>
                           )}
@@ -2478,14 +2579,14 @@ export default function Studio() {
                               {currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated') ? (
                                 <span className="text-yellow-400">Full edit</span>
                               ) : (
-                                <span className="text-blue-400">Regional</span>
+                                <span className="text-[#4a9eff]">Regional</span>
                               )}
                             </div>
                           )}
                           {insertMode && (
                             <div className="flex items-center gap-2 text-[10px] text-gray-400">
                               <span>Insert: {Math.round(editStart * 100)}%-{Math.round(editEnd * 100)}%</span>
-                              <span className="text-purple-400">New sound</span>
+                              <span className="text-[#4a9eff]">New sound</span>
                             </div>
                           )}
                           
@@ -2504,7 +2605,7 @@ export default function Studio() {
                                   setEditStart(0)
                                   setEditEnd(0.1)
                                 }}
-                                className="px-1.5 py-0.5 text-[9px] bg-purple-500/20 hover:bg-purple-500/30 rounded text-purple-300 transition-colors"
+                                className="px-1.5 py-0.5 text-[9px] bg-[#4a9eff]/20 hover:bg-[#4a9eff]/30 rounded text-[#4a9eff] transition-colors"
                                 title="Insert at start"
                               >
                                 Start
@@ -2514,7 +2615,7 @@ export default function Studio() {
                                   setEditStart(0.45)
                                   setEditEnd(0.55)
                                 }}
-                                className="px-1.5 py-0.5 text-[9px] bg-purple-500/20 hover:bg-purple-500/30 rounded text-purple-300 transition-colors"
+                                className="px-1.5 py-0.5 text-[9px] bg-[#4a9eff]/20 hover:bg-[#4a9eff]/30 rounded text-[#4a9eff] transition-colors"
                                 title="Insert at middle"
                               >
                                 Mid
@@ -2524,7 +2625,7 @@ export default function Studio() {
                                   setEditStart(0.9)
                                   setEditEnd(1)
                                 }}
-                                className="px-1.5 py-0.5 text-[9px] bg-purple-500/20 hover:bg-purple-500/30 rounded text-purple-300 transition-colors"
+                                className="px-1.5 py-0.5 text-[9px] bg-[#4a9eff]/20 hover:bg-[#4a9eff]/30 rounded text-[#4a9eff] transition-colors"
                                 title="Insert at end"
                               >
                                 End
@@ -2533,9 +2634,9 @@ export default function Studio() {
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="p-3">
-                        <div className="bg-gray-950 rounded-lg overflow-hidden">
+                        <StudioScopeWell>
                           <canvas
                             ref={timelineCanvasRef}
                             className="w-full h-16"
@@ -2547,7 +2648,7 @@ export default function Studio() {
                             onMouseUp={handleTimelineMouseUp}
                             onMouseLeave={handleTimelineMouseUp}
                           />
-                        </div>
+                        </StudioScopeWell>
 
                         {/* Mode-specific Controls */}
                         {trimMode && (
@@ -2561,7 +2662,7 @@ export default function Studio() {
                                   setTrimStart(0)
                                   setTrimEnd(1)
                                 }}
-                                className="px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-[10px] text-gray-300 transition-colors"
+                                className="px-2 py-0.5 bg-[#2c2c2e] hover:bg-[#3a3a3e] rounded text-[10px] text-gray-300 transition-colors"
                               >
                                 Reset
                               </button>
@@ -2571,7 +2672,7 @@ export default function Studio() {
                                   console.log('Apply trim:', trimStart, trimEnd)
                                 }}
                                 disabled={trimStart === 0 && trimEnd === 1}
-                                className="px-2 py-0.5 bg-yellow-500 hover:bg-yellow-400 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded text-[10px] font-medium transition-colors"
+                                className="px-2 py-0.5 bg-yellow-500 hover:bg-yellow-400 disabled:bg-[#3a3a3e] disabled:cursor-not-allowed text-white rounded text-[10px] font-medium transition-colors"
                               >
                                 Apply
                               </button>
@@ -2590,7 +2691,7 @@ export default function Studio() {
                                   setEditStart(0.3)
                                   setEditEnd(0.7)
                                 }}
-                                className="px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-[10px] text-gray-300 transition-colors"
+                                className="px-2 py-0.5 bg-[#2c2c2e] hover:bg-[#3a3a3e] rounded text-[10px] text-gray-300 transition-colors"
                               >
                                 Reset
                               </button>
@@ -2609,7 +2710,7 @@ export default function Studio() {
                                   setEditStart(0.3)
                                   setEditEnd(0.7)
                                 }}
-                                className="px-2 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-[10px] text-gray-300 transition-colors"
+                                className="px-2 py-0.5 bg-[#2c2c2e] hover:bg-[#3a3a3e] rounded text-[10px] text-gray-300 transition-colors"
                               >
                                 Reset
                               </button>
@@ -2625,45 +2726,21 @@ export default function Studio() {
                           </div>
                         )}
                       </div>
-                    </div>
-                    
+                    </StudioRack>
+
                     {/* Central Transport Controls */}
-                    <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
-                      <div className="flex items-center justify-center gap-3">
-                        <button 
-                          onClick={handleStop}
-                          disabled={!currentSound && !previewSound}
-                          className="flex items-center justify-center w-14 h-14 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded-full transition-all"
-                          title="Stop"
-                        >
-                          <Square size={20} className="text-gray-300" />
-                        </button>
-                        
-                        {isPlaying ? (
-                          <button 
-                            onClick={handlePause}
-                            className="flex items-center justify-center w-20 h-20 bg-yellow-500 hover:bg-yellow-400 rounded-full shadow-lg transition-all transform hover:scale-105"
-                            title="Pause"
-                          >
-                            <Pause size={32} className="text-white" />
-                          </button>
-                        ) : (
-                          <button 
-                            onClick={handlePlay}
-                            disabled={!currentSound && !previewSound}
-                            className="flex items-center justify-center w-20 h-20 bg-primary-500 hover:bg-primary-400 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-full shadow-lg transition-all transform hover:scale-105 disabled:transform-none"
-                            title={isPaused ? "Resume" : "Play"}
-                          >
-                            <Play size={32} className="text-white ml-1" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
+                    <StudioTransportDeck
+                      onStop={handleStop}
+                      onPlay={handlePlay}
+                      onPause={handlePause}
+                      isPlaying={isPlaying}
+                      disabled={!currentSound && !previewSound}
+                    />
                     
                     {/* Tracks Panel - Below transport controls */}
                     {showTracks && (
-                      <div className="bg-gray-900 rounded-xl border border-gray-800 transition-all duration-300 overflow-hidden">
-                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-800 bg-gray-900/50">
+                      <div className="bg-[#1c1c1e] rounded-xl border border-[#232327] transition-all duration-300 overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#232327] bg-[#1c1c1e]/50">
                         <h4 className="text-xs font-semibold text-gray-200 uppercase tracking-wider">Tracks</h4>
                       </div>
                       
@@ -2672,14 +2749,14 @@ export default function Studio() {
                           No tracks yet. Use "Add Sound" to create tracks.
                         </div>
                       ) : (
-                        <div className="divide-y divide-gray-800">
+                        <div className="divide-y divide-[#232327]">
                           {tracks.map((track, index) => (
                             <div
                               key={track.id}
                               className={`group relative transition-all cursor-pointer ${
                                 selectedTrackId === track.id 
-                                  ? 'bg-blue-500/10 border-l-2 border-blue-500' 
-                                  : 'hover:bg-gray-800/15 border-l-2 border-transparent'
+                                  ? 'bg-[#4a9eff]/10 border-l-2 border-[#4a9eff]' 
+                                  : 'hover:bg-[#232327]/15 border-l-2 border-transparent'
                               }`}
                               onClick={() => setSelectedTrackId(track.id)}
                             >
@@ -2688,7 +2765,7 @@ export default function Studio() {
                                   <div className="flex items-center gap-2.5 flex-1 min-w-0">
                                     <div 
                                       className={`w-2 h-2 rounded-full flex-shrink-0 ring-2 ${
-                                        selectedTrackId === track.id ? 'ring-blue-500/50' : 'ring-gray-800/50'
+                                        selectedTrackId === track.id ? 'ring-[#4a9eff]/50' : 'ring-[#232327]/50'
                                       }`}
                                       style={{ backgroundColor: track.color }}
                                     />
@@ -2709,7 +2786,7 @@ export default function Studio() {
                                         className={`bg-transparent text-xs font-medium outline-none border-b border-transparent transition-colors ${
                                           track.name === 'Main' 
                                             ? 'text-gray-300 cursor-default' 
-                                            : 'text-gray-200 hover:border-gray-600 focus:border-blue-500'
+                                            : 'text-gray-200 hover:border-[#3a3a3e] focus:border-[#4a9eff]'
                                         } w-full max-w-[100px]`}
                                         readOnly={track.name === 'Main'}
                                       />
@@ -2737,7 +2814,7 @@ export default function Studio() {
                                       className={`w-6 h-6 text-[10px] font-semibold rounded transition-all ${
                                         track.solo 
                                           ? 'bg-yellow-500 text-white shadow-sm' 
-                                          : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
+                                          : 'bg-[#2c2c2e]/50 text-gray-400 hover:text-gray-200 hover:bg-[#3a3a3e]'
                                       }`}
                                       title={track.solo ? 'Disable Solo - Hear all tracks' : 'Solo - Only hear this track'}
                                     >
@@ -2755,14 +2832,14 @@ export default function Studio() {
                                       className={`w-6 h-6 text-[10px] font-semibold rounded transition-all ${
                                         track.muted 
                                           ? 'bg-red-500 text-white shadow-sm' 
-                                          : 'bg-gray-700/50 text-gray-400 hover:text-gray-200 hover:bg-gray-600'
+                                          : 'bg-[#2c2c2e]/50 text-gray-400 hover:text-gray-200 hover:bg-[#3a3a3e]'
                                       }`}
                                       title={track.muted ? 'Unmute - Enable this track' : 'Mute - Silence this track'}
                                     >
                                       M
                                     </button>
                                     {track.name !== 'Main' && (
-                                      <div className="w-px h-4 bg-gray-700 mx-0.5" />
+                                      <div className="w-px h-4 bg-[#2c2c2e] mx-0.5" />
                                     )}
                                     {track.name !== 'Main' && (
                                       <button
@@ -2775,7 +2852,7 @@ export default function Studio() {
                                             }
                                           }
                                         }}
-                                        className="w-6 h-6 text-xs bg-gray-700/50 text-gray-400 hover:bg-red-500 hover:text-white rounded transition-all"
+                                        className="w-6 h-6 text-xs bg-[#2c2c2e]/50 text-gray-400 hover:bg-red-500 hover:text-white rounded transition-all"
                                       >
                                         ×
                                       </button>
@@ -2785,7 +2862,7 @@ export default function Studio() {
                               
                                 {track.audioBuffer && (
                                   <div className="mt-1.5">
-                                    <div className="h-6 bg-gray-800/30 rounded overflow-hidden">
+                                    <div className="h-6 bg-[#232327]/30 rounded overflow-hidden">
                                       {/* Mini waveform preview */}
                                       <canvas
                                         width={300}
@@ -2866,16 +2943,16 @@ export default function Studio() {
                   <div className="flex gap-3 justify-center">
                     <button 
                       onClick={() => setShowVibeModal(true)}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-[#4a9eff] hover:bg-[#6bb0ff] text-white rounded-lg transition-colors"
                     >
-                      <Sparkles size={16} />
+                      <AiDesignIcon size={16} />
                       Design your first sound
                     </button>
                     <button 
                       onClick={() => setShowLibraryModal(true)}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-[#232327] text-gray-300 rounded-lg hover:bg-[#2c2c2e] transition-colors border border-[#2c2c2e]"
                     >
-                      <FolderOpen size={16} />
+                      <LibraryIcon size={16} />
                       Browse Library
                     </button>
                   </div>
@@ -2887,10 +2964,23 @@ export default function Studio() {
 
         {/* Right Panel - Parameters + AI Designer */}
         {showParametersPanel && (
-          <ResizableSidebar side="right" defaultWidth={320} minWidth={280} maxWidth={500}>
-            <div className="h-full flex flex-col">
+          <HudsonOptionalPortal
+            enabled={hudsonLayout}
+            target={hudson?.inspectorElement}
+          >
+          <ResizableSidebar
+            side="right"
+            defaultWidth={320}
+            minWidth={280}
+            maxWidth={500}
+            resizable={!hudsonLayout}
+            surface={hudsonLayout ? 'dark' : 'default'}
+            className={hudsonLayout ? 'border-l-0' : ''}
+          >
+            <div className={`h-full flex flex-col bg-[#111113] ${hudsonLayout ? 'peal-instruments' : ''}`}>
               {/* Panel Header with Tabs */}
-              <div className="border-b border-gray-800">
+              <div className="border-b border-[#232327]/80">
+                {!hudsonLayout && (
                 <div className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-gray-100">Studio Tools</span>
@@ -2898,7 +2988,7 @@ export default function Studio() {
                       <span className={`text-xs px-2 py-1 rounded ${
                         currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
                           ? 'bg-yellow-600 text-white'
-                          : 'bg-blue-600 text-white'
+                          : 'bg-[#4a9eff] text-white'
                       }`}>
                         {currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
                           ? 'Full Edit Only'
@@ -2907,7 +2997,7 @@ export default function Studio() {
                       </span>
                     )}
                     {insertMode && (
-                      <span className="text-xs px-2 py-1 rounded bg-purple-600 text-white">
+                      <span className="text-xs px-2 py-1 rounded bg-[#4a9eff] text-white">
                         Insert Mode
                       </span>
                     )}
@@ -2919,48 +3009,58 @@ export default function Studio() {
                     ×
                   </button>
                 </div>
+                )}
+
+                {hudsonLayout && (editMode || insertMode) && (
+                  <div className="flex items-center gap-2 px-4 py-2 border-b border-[#232327]/60">
+                    {editMode && (
+                      <span className={`text-[10px] px-2 py-1 rounded font-mono uppercase tracking-wide ${
+                        currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
+                          ? 'bg-yellow-600/90 text-white'
+                          : 'bg-[#4a9eff]/20 text-[#4a9eff]'
+                      }`}>
+                        {currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
+                          ? 'Full Edit'
+                          : 'Regional Edit'}
+                      </span>
+                    )}
+                    {insertMode && (
+                      <span className="text-[10px] px-2 py-1 rounded font-mono uppercase tracking-wide bg-[#4a9eff]/20 text-[#4a9eff]">
+                        Insert Mode
+                      </span>
+                    )}
+                  </div>
+                )}
                 
                 {/* Tab Navigation */}
-                <div className="flex bg-gray-950">
-                  <button
-                    onClick={() => setShowVibePanel(false)}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors relative ${
-                      !showVibePanel
-                        ? 'text-blue-400 bg-gray-900'
-                        : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
-                    }`}
-                  >
-                    <Settings size={14} />
-                    Parameters
-                    {!showVibePanel && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400" />
-                    )}
-                  </button>
-                  <button
-                    onClick={() => setShowVibePanel(true)}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors relative ${
-                      showVibePanel
-                        ? 'text-purple-400 bg-gray-900'
-                        : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
-                    }`}
-                  >
-                    <Sparkles size={14} />
-                    AI Design
-                    {showVibePanel && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400" />
-                    )}
-                  </button>
-                </div>
+                <StudioModuleTabs
+                  activeId={showVibePanel ? 'ai' : 'params'}
+                  onChange={(id) => setShowVibePanel(id === 'ai')}
+                  tabs={[
+                    { id: 'params', label: 'Parameters', icon: <ParametersIcon size={12} /> },
+                    { id: 'ai', label: 'AI Design', icon: <AiDesignIcon size={12} /> },
+                  ]}
+                />
               </div>
               
               {/* Panel Content */}
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto min-h-0 flex flex-col">
                 {showVibePanel ? (
-                  // AI Design Tab Content
+                  hudsonLayout ? (
+                    <PealStudioAIDesign
+                      currentSound={currentSound}
+                      onProposeSound={handleProposeSoundFromAI}
+                      onLoadSound={handleVibeLoadToStudio}
+                      onPlaySound={handleVibePlaySound}
+                      onAddAsTrack={handleVibeAddAsTrack}
+                      onOpenLibrary={() => setShowLibraryModal(true)}
+                    />
+                  ) : (
+                  // AI Design Tab Content (legacy rule-based)
                   <div className="p-4 space-y-4">
                     {/* Welcome message for empty state */}
                     {vibePrompt.length === 0 && vibeGeneratedSounds.length === 0 && (
-                      <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 mb-4">
+                      <div className="bg-[#1c1c1e]/50 border border-[#232327] rounded-lg p-4 mb-4">
                         <p className="text-sm text-gray-300 leading-relaxed">
                           Describe sounds in plain English and let AI bring them to life. 
                           Try describing timing, pitch, or the feeling you want.
@@ -2980,14 +3080,14 @@ export default function Studio() {
                           onChange={(e) => setVibePrompt(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleVibeGenerate()}
                           placeholder="Try: 'a short high beep' or '3 quick clicks'"
-                          className="w-full px-3 py-2 pr-10 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-3 py-2 pr-10 bg-[#232327] border border-[#2c2c2e] rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4a9eff]"
                         />
                         <button 
                           onClick={handleVibeGenerate}
                           disabled={!vibePrompt.trim() || isVibeGenerating}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-purple-500 text-white rounded hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-[#4a9eff] text-white rounded hover:bg-[#6bb0ff] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
-                          <Wand2 size={14} />
+                          <MagicWandIcon size={14} />
                         </button>
                       </div>
 
@@ -3004,9 +3104,9 @@ export default function Studio() {
                                 setVibePrompt(suggestion)
                                 setTimeout(() => handleVibeGenerate(), 100)
                               }}
-                              className="block w-full text-left px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors group"
+                              className="block w-full text-left px-3 py-2 text-sm bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-gray-300 transition-colors group"
                             >
-                              <span className="group-hover:text-purple-400 transition-colors">{suggestion}</span>
+                              <span className="group-hover:text-[#4a9eff] transition-colors">{suggestion}</span>
                             </button>
                           ))}
                         </div>
@@ -3016,8 +3116,8 @@ export default function Studio() {
                     {/* Loading State */}
                     {isVibeGenerating && (
                       <div className="text-center py-6">
-                        <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                        <p className="text-sm text-gray-400">Generating from your vibe...</p>
+                        <div className="w-6 h-6 border-2 border-[#4a9eff] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                        <p className="text-sm text-gray-400">Generating your sound...</p>
                       </div>
                     )}
 
@@ -3031,17 +3131,17 @@ export default function Studio() {
                           {vibeGeneratedSounds.map((sound) => (
                             <div
                               key={sound.id}
-                              className="p-3 bg-gray-800 rounded-lg border border-gray-700"
+                              className="p-3 bg-[#232327] rounded-lg border border-[#2c2c2e]"
                             >
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm font-medium text-purple-400">
+                                  <span className="text-sm font-medium text-[#4a9eff]">
                                     "{vibePrompt}"
                                   </span>
                                 </div>
                                 <button
                                   onClick={() => handleVibePlaySound(sound)}
-                                  className="px-2 py-1 bg-purple-500 text-white text-xs rounded hover:bg-purple-600 transition-colors"
+                                  className="px-2 py-1 bg-[#4a9eff] text-white text-xs rounded hover:bg-[#6bb0ff] transition-colors"
                                 >
                                   ▶ Test
                                 </button>
@@ -3055,7 +3155,7 @@ export default function Studio() {
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => handleVibeAddAsTrack(sound)}
-                                    className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors flex items-center justify-center gap-1"
+                                    className="flex-1 px-3 py-2 bg-[#4a9eff] hover:bg-[#6bb0ff] text-white text-sm rounded-lg transition-colors flex items-center justify-center gap-1"
                                     title="Add this sound as a new track in your current composition"
                                   >
                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
@@ -3069,7 +3169,7 @@ export default function Studio() {
                                         handleVibeLoadToStudio(sound)
                                       }
                                     }}
-                                    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-all"
+                                    className="px-3 py-2 bg-[#2c2c2e] hover:bg-[#3a3a3e] text-white text-sm rounded-lg transition-all"
                                     title="Replace current sound"
                                   >
                                     Replace
@@ -3078,7 +3178,7 @@ export default function Studio() {
                               ) : (
                                 <button
                                   onClick={() => handleVibeLoadToStudio(sound)}
-                                  className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                                  className="w-full px-3 py-2 bg-[#4a9eff] hover:bg-[#6bb0ff] text-white text-sm rounded-lg transition-colors"
                                 >
                                   Load to Studio
                                 </button>
@@ -3121,7 +3221,7 @@ export default function Studio() {
                                 setVibePrompt(example)
                                 setTimeout(() => handleVibeGenerate(), 100)
                               }}
-                              className="block w-full text-left text-sm px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition-colors"
+                              className="block w-full text-left text-sm px-3 py-2 bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-gray-300 transition-colors"
                             >
                               "{example}"
                             </button>
@@ -3130,6 +3230,7 @@ export default function Studio() {
                       </div>
                     )}
                   </div>
+                  )
                 ) : (
                   // Parameters Tab Content
                   <div className="p-4 space-y-6">
@@ -3154,11 +3255,11 @@ export default function Studio() {
                             })
                             setHasUnappliedChanges(true)
                           }}
-                          className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs text-gray-300 transition-colors"
+                          className="px-3 py-2 bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-xs text-gray-300 transition-colors"
                         >
                           <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 bg-blue-500/20 rounded flex items-center justify-center">
-                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <div className="w-4 h-4 bg-[#4a9eff]/20 rounded flex items-center justify-center">
+                              <div className="w-2 h-2 bg-[#4a9eff] rounded-full"></div>
                             </div>
                             Short Click
                           </div>
@@ -3178,7 +3279,7 @@ export default function Studio() {
                             })
                             setHasUnappliedChanges(true)
                           }}
-                          className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs text-gray-300 transition-colors"
+                          className="px-3 py-2 bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-xs text-gray-300 transition-colors"
                         >
                           <div className="flex items-center gap-2">
                             <div className="w-4 h-4 bg-green-500/20 rounded flex items-center justify-center">
@@ -3202,11 +3303,11 @@ export default function Studio() {
                             })
                             setHasUnappliedChanges(true)
                           }}
-                          className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs text-gray-300 transition-colors"
+                          className="px-3 py-2 bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-xs text-gray-300 transition-colors"
                         >
                           <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 bg-purple-500/20 rounded flex items-center justify-center">
-                              <div className="w-3 h-3 bg-purple-500 rounded-sm rotate-45"></div>
+                            <div className="w-4 h-4 bg-[#4a9eff]/20 rounded flex items-center justify-center">
+                              <div className="w-3 h-3 bg-[#4a9eff] rounded-sm rotate-45"></div>
                             </div>
                             Swoosh
                           </div>
@@ -3226,7 +3327,7 @@ export default function Studio() {
                             })
                             setHasUnappliedChanges(true)
                           }}
-                          className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs text-gray-300 transition-colors"
+                          className="px-3 py-2 bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-xs text-gray-300 transition-colors"
                         >
                           <div className="flex items-center gap-2">
                             <div className="w-4 h-4 bg-orange-500/20 rounded flex items-center justify-center">
@@ -3241,15 +3342,15 @@ export default function Studio() {
                     {/* Insert Type Selector */}
                     <div className="space-y-3">
                       <h3 className="text-sm font-medium text-gray-300">Sound Character</h3>
-                      <div className="grid grid-cols-4 gap-1 bg-gray-800 p-1 rounded-lg">
+                      <div className="grid grid-cols-4 gap-1 bg-[#232327] p-1 rounded-lg">
                         {['sine', 'square', 'triangle', 'sawtooth'].map((waveform) => (
                           <button
                             key={waveform}
                             onClick={() => updateParam('waveform', waveform)}
                             className={`px-2 py-1.5 rounded text-xs font-medium transition-colors ${
                               (editedParams?.waveform || 'sine') === waveform
-                                ? 'bg-primary-500 text-white'
-                                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                                ? 'bg-[#4a9eff] text-white'
+                                : 'text-gray-400 hover:text-gray-200 hover:bg-[#2c2c2e]'
                             }`}
                           >
                             {waveform.charAt(0).toUpperCase() + waveform.slice(1)}
@@ -3276,7 +3377,7 @@ export default function Studio() {
                             max="2000"
                             value={editedParams?.frequency || 440}
                             onChange={(e) => updateParam('frequency', Number(e.target.value))}
-                            className="flex-1 accent-primary-500"
+                            className="flex-1 accent-[#4a9eff]"
                           />
                           <span className="text-xs text-gray-500">High</span>
                         </div>
@@ -3297,7 +3398,7 @@ export default function Studio() {
                             step="0.01"
                             value={editedParams?.duration || 0.5}
                             onChange={(e) => updateParam('duration', Number(e.target.value))}
-                            className="flex-1 accent-primary-500"
+                            className="flex-1 accent-[#4a9eff]"
                           />
                           <span className="text-xs text-gray-500">Long</span>
                         </div>
@@ -3318,7 +3419,7 @@ export default function Studio() {
                             step="0.001"
                             value={editedParams?.attack || 0.01}
                             onChange={(e) => updateParam('attack', Number(e.target.value))}
-                            className="flex-1 accent-primary-500"
+                            className="flex-1 accent-[#4a9eff]"
                           />
                           <span className="text-xs text-gray-500">Sharp</span>
                         </div>
@@ -3326,16 +3427,16 @@ export default function Studio() {
                     </div>
                     
                     {/* Visual Region Indicator */}
-                    <div className="bg-gray-800 rounded-lg p-4">
+                    <div className="bg-[#232327] rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs text-gray-400">Insert Region</span>
                         <span className="text-xs text-gray-500">
                           {Math.round(editStart * 100)}% - {Math.round(editEnd * 100)}%
                         </span>
                       </div>
-                      <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                      <div className="h-2 bg-[#2c2c2e] rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-purple-500"
+                          className="h-full bg-[#4a9eff]"
                           style={{
                             marginLeft: `${editStart * 100}%`,
                             width: `${(editEnd - editStart) * 100}%`
@@ -3351,10 +3452,10 @@ export default function Studio() {
                         disabled={!hasUnappliedChanges || isGenerating}
                         className={`w-full px-4 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
                           isGenerating 
-                            ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                            ? 'bg-[#2c2c2e] text-gray-400 cursor-not-allowed'
                             : hasUnappliedChanges
-                              ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg transform hover:scale-[1.02]'
-                              : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                              ? 'bg-[#4a9eff] hover:bg-[#6bb0ff] text-white shadow-lg transform hover:scale-[1.02]'
+                              : 'bg-[#232327] text-gray-500 cursor-not-allowed'
                         }`}
                       >
                         {isGenerating ? (
@@ -3380,13 +3481,13 @@ export default function Studio() {
                   <>
                     {/* Apply Changes Button */}
                     {hasUnappliedChanges && (
-                      <div className="sticky top-0 z-10 bg-gray-900 -mx-4 px-4 pb-4 pt-2 border-b border-gray-800">
+                      <div className="sticky top-0 z-10 bg-[#1c1c1e] -mx-4 px-4 pb-4 pt-2 border-b border-[#232327]">
                         <button
                           onClick={applyChanges}
                           disabled={isGenerating}
                           className={`w-full px-4 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
                             isGenerating 
-                              ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                              ? 'bg-[#2c2c2e] text-gray-400 cursor-not-allowed'
                               : 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
                           }`}
                         >
@@ -3397,7 +3498,7 @@ export default function Studio() {
                             </>
                           ) : (
                             <>
-                              <Settings size={16} />
+                              <SettingsIcon size={16} />
                               {insertMode ? 'Add Sound' : 'Apply Changes'}
                               {(editMode || insertMode) && (
                                 <span className="text-xs opacity-90">
@@ -3427,7 +3528,7 @@ export default function Studio() {
                             max="2000"
                             value={editedParams?.frequency || 440}
                             onChange={(e) => updateParam('frequency', Number(e.target.value))}
-                            className={`w-full accent-primary-500 ${
+                            className={`w-full accent-[#4a9eff] ${
                               hasUnappliedChanges && currentSound && (editedParams?.frequency || 440) !== currentSound.parameters.frequency
                                 ? 'accent-green-500'
                                 : ''
@@ -3449,7 +3550,7 @@ export default function Studio() {
                             step="0.01"
                             value={editedParams?.duration || 0.5}
                             onChange={(e) => updateParam('duration', Number(e.target.value))}
-                            className={`w-full accent-primary-500 ${
+                            className={`w-full accent-[#4a9eff] ${
                               hasUnappliedChanges && currentSound && (editedParams?.duration || 0.5) !== currentSound.parameters.duration
                                 ? 'accent-green-500'
                                 : ''
@@ -3463,7 +3564,7 @@ export default function Studio() {
                             <select
                               value={editedParams?.waveform || 'sine'}
                               onChange={(e) => updateParam('waveform', e.target.value)}
-                              className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-100 text-sm"
+                              className="w-full bg-[#232327] border border-[#2c2c2e] rounded px-2 py-1 text-gray-100 text-sm"
                             >
                               <option value="sine">Sine</option>
                               <option value="square">Square</option>
@@ -3492,7 +3593,7 @@ export default function Studio() {
                               step="0.001"
                               value={editedParams.attack || 0.01}
                               onChange={(e) => updateParam('attack', Number(e.target.value))}
-                              className="w-full accent-primary-500"
+                              className="w-full accent-[#4a9eff]"
                             />
                           </div>
                           
@@ -3507,7 +3608,7 @@ export default function Studio() {
                               step="0.001"
                               value={editedParams.decay || 0.05}
                               onChange={(e) => updateParam('decay', Number(e.target.value))}
-                              className="w-full accent-primary-500"
+                              className="w-full accent-[#4a9eff]"
                             />
                           </div>
                           
@@ -3522,7 +3623,7 @@ export default function Studio() {
                               step="0.01"
                               value={editedParams.sustain || 0.5}
                               onChange={(e) => updateParam('sustain', Number(e.target.value))}
-                              className="w-full accent-primary-500"
+                              className="w-full accent-[#4a9eff]"
                             />
                           </div>
                           
@@ -3537,7 +3638,7 @@ export default function Studio() {
                               step="0.001"
                               value={editedParams.release || 0.1}
                               onChange={(e) => updateParam('release', Number(e.target.value))}
-                              className="w-full accent-primary-500"
+                              className="w-full accent-[#4a9eff]"
                             />
                           </div>
                         </div>
@@ -3555,7 +3656,7 @@ export default function Studio() {
                               type="checkbox"
                               checked={Boolean(enabled)}
                               onChange={(e) => updateEffect(effect, e.target.checked)}
-                              className="w-4 h-4 accent-primary-500"
+                              className="w-4 h-4 accent-[#4a9eff]"
                             />
                             <span className="capitalize text-gray-300">{effect}</span>
                           </label>
@@ -3564,7 +3665,7 @@ export default function Studio() {
                     </div>
                   </>
                 ) : (
-                  <div className="text-center text-gray-400 text-sm">
+                  <div className="flex h-full items-center justify-center p-6 text-center text-sm text-gray-500">
                     Select or create a sound to see parameters
                   </div>
                 )}
@@ -3573,19 +3674,20 @@ export default function Studio() {
               </div>
             </div>
           </ResizableSidebar>
+          </HudsonOptionalPortal>
         )}
       </div>
       
       {/* Context Menu */}
       {contextMenu && trackSelection && (
         <div
-          className="fixed z-50 bg-gray-900 border border-gray-700 rounded-lg shadow-xl py-1 min-w-[160px]"
+          className="fixed z-50 bg-[#1c1c1e] border border-[#2c2c2e] rounded-lg shadow-xl py-1 min-w-[160px]"
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={startMoveMode}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[#232327] hover:text-white transition-colors flex items-center gap-2"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
               <path d="M7 2L5 0v2H2v2h3v2l2-2 2 2V4h3V2H9V0L7 2zM2 7h2v3H2v2h2v2l2-2h4l2 2v-2h2v-2h-2V7h2V5H0v2h2z" opacity="0.5"/>
@@ -3598,9 +3700,9 @@ export default function Studio() {
               // TODO: Implement cut
               setContextMenu(null)
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[#232327] hover:text-white transition-colors flex items-center gap-2"
           >
-            <Scissors size={14} />
+            <ScissorsIcon size={14} />
             Cut
           </button>
           <button
@@ -3638,7 +3740,7 @@ export default function Studio() {
               // Optionally auto-start move mode
               setTimeout(() => setMoveMode(true), 100)
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[#232327] hover:text-white transition-colors flex items-center gap-2"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
               <path d="M10 0H2C1.4 0 1 0.4 1 1v9h2V2h7V0zm2 3H5C4.4 3 4 3.4 4 4v9c0 0.6 0.4 1 1 1h7c0.6 0 1-0.4 1-1V4c0-0.6-0.4-1-1-1zm0 10H5V4h7v9z"/>
@@ -3650,20 +3752,20 @@ export default function Studio() {
               // TODO: Implement delete
               setContextMenu(null)
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[#232327] hover:text-white transition-colors flex items-center gap-2"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
               <path d="M11 2h-1V1c0-0.6-0.4-1-1-1H5C4.4 0 4 0.4 4 1v1H3C2.4 2 2 2.4 2 3v1h10V3c0-0.6-0.4-1-1-1zM5 1h4v1H5V1zm6 4H3l0.5 8.1c0 0.5 0.4 0.9 0.9 0.9h5.2c0.5 0 0.9-0.4 0.9-0.9L11 5z"/>
             </svg>
             Delete
           </button>
-          <div className="border-t border-gray-800 my-1"></div>
+          <div className="border-t border-[#232327] my-1"></div>
           <button
             onClick={() => {
               // TODO: Implement extract to new track
               setContextMenu(null)
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[#232327] hover:text-white transition-colors"
           >
             Extract to New Track
           </button>
@@ -3696,7 +3798,7 @@ export default function Studio() {
           }}
         >
           <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]">
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 px-4 py-2 rounded-lg shadow-xl">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#1c1c1e] px-4 py-2 rounded-lg shadow-xl">
               <p className="text-sm text-gray-300">Click to place selection • Right-click to cancel</p>
             </div>
           </div>
@@ -3710,7 +3812,7 @@ export default function Studio() {
             className="absolute inset-0 bg-black/40 backdrop-blur-[3px]"
             onClick={() => setShowHelpModal(false)}
           />
-          <div className="relative bg-gray-900 rounded-xl shadow-2xl border border-gray-800 p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="relative bg-[#1c1c1e] rounded-xl shadow-2xl border border-[#232327] p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-100">Keyboard Shortcuts</h2>
               <button
@@ -3730,7 +3832,7 @@ export default function Studio() {
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Play/Stop</span>
-                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">Space</kbd>
+                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">Space</kbd>
                   </div>
                 </div>
               </div>
@@ -3741,19 +3843,19 @@ export default function Studio() {
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Insert sound</span>
-                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">Enter</kbd>
+                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">Enter</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Quick position: Start (0-10%)</span>
-                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">1</kbd>
+                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">1</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Quick position: Middle (45-55%)</span>
-                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">2</kbd>
+                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">2</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Quick position: End (90-100%)</span>
-                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">3</kbd>
+                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">3</kbd>
                   </div>
                 </div>
               </div>
@@ -3779,13 +3881,13 @@ export default function Studio() {
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Show this help</span>
-                    <kbd className="px-2 py-1 bg-gray-800 rounded text-xs font-mono">?</kbd>
+                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">?</kbd>
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="mt-6 pt-4 border-t border-gray-800">
+            <div className="mt-6 pt-4 border-t border-[#232327]">
               <p className="text-xs text-gray-500 text-center">Press Esc to close</p>
             </div>
           </div>

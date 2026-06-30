@@ -34,12 +34,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^5.3.0",
-    "commander": "^12.0.0",
-    "inquirer": "^9.2.15",
-    "ora": "^8.0.1"
+    "chalk": "^5.6.2",
+    "commander": "^15.0.0",
+    "inquirer": "^14.0.2",
+    "ora": "^9.4.1"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=20.0.0"
   }
 }

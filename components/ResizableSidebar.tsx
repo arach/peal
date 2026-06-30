@@ -10,6 +10,8 @@ interface ResizableSidebarProps {
   maxWidth?: number
   className?: string
   resizable?: boolean
+  /** Explicit dark surface — avoids relying on Tailwind `dark:` when Hudson owns the shell */
+  surface?: 'default' | 'dark'
 }
 
 export default function ResizableSidebar({
@@ -19,7 +21,8 @@ export default function ResizableSidebar({
   minWidth = 240,
   maxWidth = 600,
   className = '',
-  resizable = true
+  resizable = true,
+  surface = 'default',
 }: ResizableSidebarProps) {
   const [width, setWidth] = useState(defaultWidth)
   const [isResizing, setIsResizing] = useState(false)
@@ -64,16 +67,14 @@ export default function ResizableSidebar({
     setIsResizing(true)
   }
 
-  const baseClasses = `
-    relative h-full bg-gray-50 dark:bg-gray-900 
-    ${side === 'left' ? 'border-r' : 'border-l'} 
-    border-gray-200 dark:border-gray-800
-  `
+  const baseClasses = surface === 'dark'
+    ? `relative h-full bg-[#111113] ${side === 'left' ? 'border-r' : 'border-l'} border-gray-800/80`
+    : `relative h-full bg-gray-50 dark:bg-gray-900 ${side === 'left' ? 'border-r' : 'border-l'} border-gray-200 dark:border-gray-800`
 
   return (
     <div 
       ref={sidebarRef}
-      style={{ width: `${width}px`, flexShrink: 0 }}
+      style={{ width: resizable ? `${width}px` : '100%', flexShrink: 0 }}
       className={`${baseClasses} ${className}`}
     >
       {children}

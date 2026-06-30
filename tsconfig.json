@@ -6,7 +6,7 @@
       "ES2020",
       "DOM"
     ],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -19,7 +19,7 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -31,7 +31,8 @@
         "name": "next"
       }
     ],
-    "incremental": true
+    "incremental": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": [
     "src/**/*",
@@ -41,7 +42,8 @@
     "store/**/*",
     "lib/**/*",
     "types/**/*",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

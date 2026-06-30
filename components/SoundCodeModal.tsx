@@ -476,7 +476,7 @@ export function play${sound.name.replace(/\s+/g, '')}(volume = 0.4) {
           <div className="p-6 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
             <div className="flex items-center justify-center gap-6 text-sm">
               <a 
-                href={`/studio?sound=${sound.id}&type=${sound.type}`} 
+                href={`/studio?sound=${encodeURIComponent(sound.id)}&type=${sound.type}`} 
                 className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

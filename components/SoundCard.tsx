@@ -260,7 +260,7 @@ export default function SoundCard({ sound, index }: SoundCardProps) {
               label: 'Edit',
               onClick: (e) => {
                 e.stopPropagation()
-                router.push(`/studio?sound=${sound.id}`)
+                router.push(`/studio?sound=${encodeURIComponent(sound.id)}&type=${sound.type}`)
               }
             },
             {

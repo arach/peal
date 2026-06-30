@@ -16,7 +16,7 @@ export function Waveform({ isGenerating = false, isPlaying = false, audioUrl, cl
   const audioRef = useRef<HTMLAudioElement | undefined>(undefined)
   const audioContextRef = useRef<AudioContext | undefined>(undefined)
   const analyserRef = useRef<AnalyserNode | undefined>(undefined)
-  const dataArrayRef = useRef<Uint8Array | undefined>(undefined)
+  const dataArrayRef = useRef<Uint8Array<ArrayBuffer> | undefined>(undefined)
   const [waveformData, setWaveformData] = useState<number[]>([])
 
   // Generate static waveform data for non-playing states

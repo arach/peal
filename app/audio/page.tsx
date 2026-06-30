@@ -1,14 +1,14 @@
-"use client"
+import { redirect } from 'next/navigation'
+import {
+  studioHrefWithTool,
+  type LegacyStudioSearchParams,
+} from '@/app/hudson/peal-studio/routing'
 
-import { Suspense } from 'react'
-import UnifiedStudio from '@/components/UnifiedStudio'
+interface AudioLabPageProps {
+  searchParams?: Promise<LegacyStudioSearchParams>
+}
 
-export default function AudioLabPage() {
-  return (
-    <main className="h-screen bg-gray-950 overflow-hidden">
-      <Suspense fallback={<div className="h-screen bg-gray-950 flex items-center justify-center text-gray-400">Loading Audio Lab...</div>}>
-        <UnifiedStudio initialTool="audio" />
-      </Suspense>
-    </main>
-  )
+export default async function AudioLabPage({ searchParams }: AudioLabPageProps) {
+  // Legacy entry point: Hudson Studio owns tools at /studio; preserve sound/type deep links.
+  redirect(studioHrefWithTool(await searchParams, 'sfx'))
 }

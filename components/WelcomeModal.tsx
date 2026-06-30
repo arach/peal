@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Zap, Sparkles, Keyboard, Volume2, Download, Code } from 'lucide-react'
 
-export default function WelcomeModal() {
+export default function WelcomeModal({ variant = 'default' }: { variant?: 'default' | 'landing' }) {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
 
@@ -23,22 +23,22 @@ export default function WelcomeModal() {
 
   const steps = [
     {
-      icon: <Volume2 className="w-12 h-12 text-blue-500" />,
+      icon: <Volume2 className="w-12 h-12 text-[#4a9eff]" />,
       title: "Welcome to Peal",
       content: "Create and discover beautiful sound effects for your apps. Click any sound to preview it instantly."
     },
     {
-      icon: <Sparkles className="w-12 h-12 text-purple-500" />,
+      icon: <Sparkles className="w-12 h-12 text-[#4a9eff]" />,
       title: "Studio Mode",
       content: "Design custom sounds in real-time with our Studio. Adjust parameters and hear changes instantly."
     },
     {
-      icon: <Keyboard className="w-12 h-12 text-green-500" />,
+      icon: <Keyboard className="w-12 h-12 text-[#4a9eff]" />,
       title: "Keyboard Shortcuts",
       content: "Press '?' anytime to see keyboard shortcuts. Use Space to play/pause, and arrow keys to navigate."
     },
     {
-      icon: <Download className="w-12 h-12 text-orange-500" />,
+      icon: <Download className="w-12 h-12 text-[#4a9eff]" />,
       title: "Export & Use",
       content: "Download sounds as WAV files or copy the code to integrate them into your project."
     }
@@ -54,7 +54,7 @@ export default function WelcomeModal() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-black/50 z-50"
+            className={`fixed inset-0 z-50 ${variant === 'landing' ? 'landing-welcome-backdrop' : 'bg-black/50'}`}
           />
           
           {/* Modal */}
@@ -64,7 +64,11 @@ export default function WelcomeModal() {
             exit={{ opacity: 0, scale: 0.9 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+            <div className={`rounded-2xl shadow-2xl max-w-md w-full p-6 relative ${
+              variant === 'landing'
+                ? 'landing-welcome-panel'
+                : 'bg-white dark:bg-gray-800'
+            }`}>
               {/* Close button */}
               <button
                 onClick={handleClose}

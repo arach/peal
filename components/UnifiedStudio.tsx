@@ -3,7 +3,7 @@
 import { useState, createContext, useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import StudioHeader from './StudioHeader'
-import StudioAudioLab from './StudioAudioLab'
+
 import Studio from './Studio'
 import TTSStudio from './TTSStudio'
 import VoiceProviders from './VoiceProviders'
@@ -17,7 +17,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 
-type StudioTool = 'voice' | 'audio' | 'sfx'
+type StudioTool = 'voice' | 'sfx'
 
 interface StudioContextType {
   currentTool: StudioTool
@@ -60,8 +60,6 @@ export default function UnifiedStudio({ initialTool = 'voice' }: UnifiedStudioPr
     switch (currentTool) {
       case 'voice':
         return <TTSStudio />
-      case 'audio':
-        return <StudioAudioLab />
       case 'sfx':
         return <Studio />
       default:

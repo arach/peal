@@ -1,0 +1,451 @@
+/**
+ * Peal Sound Studio — professional instrument / EDC rack aesthetic.
+ * Scoped under .peal-studio-shell so marketing pages stay untouched.
+ */
+
+.peal-studio-shell {
+  --inst-chassis: #0c0c0e;
+  --inst-face: #16161a;
+  --inst-face-raised: #1e1e22;
+  --inst-well: #09090b;
+  --inst-line-hi: rgba(255, 255, 255, 0.09);
+  --inst-line-lo: rgba(0, 0, 0, 0.55);
+  --inst-accent: #4a9eff;
+  --inst-accent-hi: #6bb0ff;
+  --inst-accent-glow: rgba(74, 158, 255, 0.42);
+  --inst-amber: #e8a317;
+  --inst-amber-glow: rgba(232, 163, 23, 0.38);
+  --inst-label: rgba(255, 255, 255, 0.42);
+  --inst-engrave: rgba(255, 255, 255, 0.72);
+}
+
+/* ── Rack panels ─────────────────────────────────────────────── */
+
+.peal-inst-rack {
+  background: linear-gradient(180deg, var(--inst-face) 0%, var(--inst-chassis) 100%);
+  border: 1px solid var(--inst-line-lo);
+  border-top-color: var(--inst-line-hi);
+  border-radius: 6px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.peal-inst-rack-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--inst-line-lo);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+}
+
+.peal-inst-rack-label {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--inst-label);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+.peal-inst-rack-readout {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.peal-inst-scope-well {
+  background: var(--inst-well);
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 2px 12px rgba(0, 0, 0, 0.45) inset;
+}
+
+/* ── LED indicators ──────────────────────────────────────────── */
+
+.peal-inst-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5) inset;
+  flex-shrink: 0;
+}
+
+.peal-inst-led--on {
+  background: var(--inst-accent);
+  box-shadow:
+    0 0 6px var(--inst-accent-glow),
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+}
+
+.peal-inst-led--amber {
+  background: var(--inst-amber);
+  box-shadow:
+    0 0 6px var(--inst-amber-glow),
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+}
+
+.peal-inst-led--green {
+  background: #3ecf6e;
+  box-shadow: 0 0 6px rgba(62, 207, 110, 0.4);
+}
+
+/* ── Toggle / pad buttons (timeline tools, presets) ──────────── */
+
+.peal-inst-pad-tray {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--inst-well);
+  border: 1px solid var(--inst-line-lo);
+  border-radius: 5px;
+  box-shadow: 0 1px 0 var(--inst-line-hi) inset;
+}
+
+.peal-inst-pad {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  min-height: 22px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  background: linear-gradient(180deg, #242428 0%, #1a1a1e 100%);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-top-color: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s, transform 0.08s;
+  cursor: pointer;
+}
+
+.peal-inst-pad:hover:not(:disabled) {
+  color: rgba(255, 255, 255, 0.78);
+  background: linear-gradient(180deg, #2a2a30 0%, #1f1f24 100%);
+}
+
+.peal-inst-pad:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.peal-inst-pad--active {
+  color: #0a0a0c;
+  background: linear-gradient(180deg, var(--inst-accent-hi) 0%, var(--inst-accent) 100%);
+  border-color: rgba(0, 0, 0, 0.35);
+  box-shadow:
+    0 0 10px var(--inst-accent-glow),
+    0 1px 0 rgba(255, 255, 255, 0.25) inset;
+}
+
+.peal-inst-pad--amber.peal-inst-pad--active {
+  color: #0a0a0c;
+  background: linear-gradient(180deg, #f0b429 0%, var(--inst-amber) 100%);
+  box-shadow: 0 0 10px var(--inst-amber-glow);
+}
+
+.peal-inst-pad--muted.peal-inst-pad--active {
+  color: rgba(255, 255, 255, 0.88);
+  background: linear-gradient(180deg, #3a3a40 0%, #2c2c32 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+.peal-inst-pad:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Transport deck ──────────────────────────────────────────── */
+
+.peal-inst-deck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(74, 158, 255, 0.06) 0%, transparent 70%),
+    linear-gradient(180deg, var(--inst-face-raised) 0%, var(--inst-chassis) 100%);
+  border: 1px solid var(--inst-line-lo);
+  border-top-color: var(--inst-line-hi);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.peal-inst-transport {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.45);
+  transition: transform 0.1s, box-shadow 0.12s;
+  cursor: pointer;
+}
+
+.peal-inst-transport:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.peal-inst-transport--aux {
+  width: 3.25rem;
+  height: 3.25rem;
+  background: linear-gradient(145deg, #2a2a30 0%, #18181c 55%, #121216 100%);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.peal-inst-transport--aux:hover:not(:disabled) {
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.peal-inst-transport--main {
+  width: 4.75rem;
+  height: 4.75rem;
+  background: linear-gradient(145deg, var(--inst-accent-hi) 0%, var(--inst-accent) 45%, #2d6eb8 100%);
+  color: #fff;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+    0 0 24px var(--inst-accent-glow),
+    0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.peal-inst-transport--main:hover:not(:disabled) {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+    0 0 32px var(--inst-accent-glow),
+    0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.peal-inst-transport--pause {
+  background: linear-gradient(145deg, #f0b429 0%, var(--inst-amber) 45%, #b87a0f 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+    0 0 24px var(--inst-amber-glow),
+    0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.peal-inst-transport:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.peal-inst-transport-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+}
+
+/* ── Module tabs (Parameters / AI Design) ────────────────────── */
+
+.peal-inst-module-tabs {
+  display: flex;
+  padding: 4px;
+  gap: 2px;
+  background: var(--inst-well);
+  border-bottom: 1px solid var(--inst-line-lo);
+}
+
+.peal-inst-module-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
+  cursor: pointer;
+  position: relative;
+}
+
+.peal-inst-module-tab:hover {
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.peal-inst-module-tab--active {
+  color: var(--inst-accent);
+  background: linear-gradient(180deg, #1c1c20 0%, #141418 100%);
+  border-color: rgba(0, 0, 0, 0.45);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+}
+
+.peal-inst-module-tab--active::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: var(--inst-accent);
+  border-radius: 1px;
+  box-shadow: 0 0 8px var(--inst-accent-glow);
+}
+
+/* ── Fader sliders ───────────────────────────────────────────── */
+
+.peal-instruments input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(180deg, #08080a 0%, #141418 100%);
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.peal-instruments input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #4a4a52 0%, #1e1e24 55%, #121216 100%);
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  cursor: grab;
+}
+
+.peal-instruments input[type='range']::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #4a4a52 0%, #1e1e24 55%, #121216 100%);
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  cursor: grab;
+}
+
+.peal-instruments input[type='range']:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  box-shadow:
+    0 0 8px var(--inst-accent-glow),
+    0 0 0 1px var(--inst-accent);
+}
+
+/* ── Nav tool strip (Hudson bar) ─────────────────────────────── */
+
+.peal-inst-nav-tray {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--inst-well);
+  border: 1px solid var(--inst-line-lo);
+  border-radius: 5px;
+  box-shadow: 0 1px 0 var(--inst-line-hi) inset;
+}
+
+.peal-inst-nav-tool {
+  padding: 0.3rem 0.65rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  background: linear-gradient(180deg, #222228 0%, #18181c 100%);
+  border: 1px solid rgba(0, 0, 0, 0.45);
+  border-radius: 3px;
+  transition: color 0.12s, background 0.12s, box-shadow 0.12s;
+}
+
+.peal-inst-nav-tool:hover {
+  color: var(--inst-accent);
+  background: linear-gradient(180deg, #282830 0%, #1c1c22 100%);
+}
+
+.peal-inst-nav-tool--active {
+  color: #0a0a0c;
+  background: linear-gradient(180deg, var(--inst-accent-hi) 0%, var(--inst-accent) 100%);
+  border-color: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 8px var(--inst-accent-glow);
+}
+
+.peal-inst-nav-transport {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  min-height: 28px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--inst-accent);
+  background: linear-gradient(180deg, #1a1a1e 0%, #121216 100%);
+  border: 1px solid rgba(74, 158, 255, 0.28);
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  transition: background 0.12s, box-shadow 0.12s;
+}
+
+.peal-inst-nav-transport:hover:not(:disabled) {
+  background: linear-gradient(180deg, #222228 0%, #16161a 100%);
+  box-shadow: 0 0 10px rgba(74, 158, 255, 0.15);
+}
+
+.peal-inst-nav-transport:disabled {
+  opacity: 0.35;
+}
+
+/* ── Code editor chrome pads ─────────────────────────────────── */
+
+.peal-inst-tool-pad {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: rgba(255, 255, 255, 0.55);
+  background: linear-gradient(180deg, #1e1e24 0%, #141418 100%);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-top-color: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  transition: color 0.12s, background 0.12s, box-shadow 0.12s;
+}
+
+.peal-inst-tool-pad:hover {
+  color: rgba(255, 255, 255, 0.88);
+  background: linear-gradient(180deg, #282830 0%, #1a1a20 100%);
+}
+
+.peal-inst-tool-pad--active {
+  color: var(--inst-accent);
+  border-color: rgba(74, 158, 255, 0.35);
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.18);
+}

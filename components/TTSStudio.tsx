@@ -38,6 +38,8 @@ export default function TTSStudio() {
   const [isMac, setIsMac] = useState(false)
   const [selectedAudioId, setSelectedAudioId] = useState<string | null>(null)
   const [audioTracks, setAudioTracks] = useState<GeneratedAudio[]>([])
+  const [providerStatus, setProviderStatus] = useState<Record<string, boolean>>({})
+  const [generateError, setGenerateError] = useState<string | null>(null)
 
   const audioRef = useRef<HTMLAudioElement>(null)
 
@@ -46,12 +48,32 @@ export default function TTSStudio() {
     setIsMac(typeof window !== 'undefined' && navigator.platform.includes('Mac'))
   }, [])
 
+  useEffect(() => {
+    fetch('/api/check-providers')
+      .then((res) => res.json())
+      .then((status: Record<string, boolean>) => {
+        setProviderStatus(status)
+        if (!status.OPENAI_API_KEY && status.GROQ_API_KEY) {
+          setSelectedModel('playai-tts')
+          setSelectedVoice('Fritz-PlayAI')
+        }
+      })
+      .catch(() => {})
+  }, [])
+
   const models = [
-    { id: "tts-1", name: "OpenAI TTS-1", provider: "OpenAI", tier: "Standard" },
-    { id: "tts-1-hd", name: "OpenAI TTS-1 HD", provider: "OpenAI", tier: "Premium" },
-    { id: "playai-tts", name: "Groq PlayAI TTS (English)", provider: "Groq", tier: "Fast" },
-    { id: "playai-tts-arabic", name: "Groq PlayAI TTS (Arabic)", provider: "Groq", tier: "Fast" },
+    { id: "tts-1", name: "OpenAI TTS-1", provider: "OpenAI", tier: "Standard", envKey: "OPENAI_API_KEY" },
+    { id: "tts-1-hd", name: "OpenAI TTS-1 HD", provider: "OpenAI", tier: "Premium", envKey: "OPENAI_API_KEY" },
+    { id: "playai-tts", name: "Groq PlayAI TTS (English)", provider: "Groq", tier: "Fast", envKey: "GROQ_API_KEY" },
+    { id: "playai-tts-arabic", name: "Groq PlayAI TTS (Arabic)", provider: "Groq", tier: "Fast", envKey: "GROQ_API_KEY" },
   ]
+
+  const activeModel = models.find((m) => m.id === selectedModel)
+  const providersLoaded = Object.keys(providerStatus).length > 0
+  const activeProviderReady = !providersLoaded || !activeModel || providerStatus[activeModel.envKey] === true
+  const providerBanner = providersLoaded && !activeProviderReady && activeModel
+    ? `${activeModel.provider} is not configured. Add ${activeModel.envKey} to .env.local and restart the dev server on port 3001.`
+    : null
 
   const voices = {
     "tts-1": ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
@@ -73,6 +95,7 @@ export default function TTSStudio() {
     if (!script.trim()) return
 
     setIsGenerating(true)
+    setGenerateError(null)
 
     try {
       const response = await fetch("/api/generate-tts", {
@@ -87,8 +110,12 @@ export default function TTSStudio() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Generation failed")
+        const errorData = await response.json().catch(() => ({}))
+        const parts = [
+          errorData.error || 'Generation failed',
+          errorData.hint,
+        ].filter(Boolean)
+        throw new Error(parts.join(' '))
       }
 
       const data = await response.json()
@@ -116,7 +143,9 @@ export default function TTSStudio() {
       setGeneratedAudios((prev) => [newAudio, ...prev])
       setScript("")
     } catch (error) {
-      console.error("Generation failed:", error)
+      const message = error instanceof Error ? error.message : 'Generation failed'
+      console.error('Generation failed:', error)
+      setGenerateError(message)
     } finally {
       setIsGenerating(false)
     }
@@ -266,6 +295,12 @@ export default function TTSStudio() {
       {/* Main Content Area */}
       <div className="flex-1 p-6 overflow-auto">
         <div className="space-y-6">
+          {(providerBanner || generateError) && (
+            <div className="rounded border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/90">
+              {generateError ?? providerBanner}
+            </div>
+          )}
+
           {/* Project Configuration */}
           <div className="space-y-4">
             <h2 className={styles.studio.sectionTitle}>PROJECT</h2>
@@ -318,8 +353,8 @@ export default function TTSStudio() {
               <div className="border-t border-gray-800/50 p-6">
                 <Button
                   onClick={handleGenerate}
-                  disabled={!script.trim() || isGenerating}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-light h-11 rounded-sm shadow-lg shadow-blue-500/20 transition-all duration-200"
+                  disabled={!script.trim() || isGenerating || !activeProviderReady}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-light h-11 rounded-sm shadow-lg shadow-blue-500/20 transition-all duration-200 disabled:opacity-40"
                 >
                   {isGenerating ? (
                     <div className="flex items-center gap-2">

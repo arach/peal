@@ -188,13 +188,13 @@
 
 /* Card System */
 .card {
-  @apply surface-primary rounded-xl;
-  @apply card-padding;
+  @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl;
+  padding: 0.875rem;
 }
 
 .card-sm {
-  @apply surface-primary rounded-lg;
-  @apply card-padding-sm;
+  @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg;
+  padding: 0.625rem;
 }
 
 /* Layout Utilities */

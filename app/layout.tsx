@@ -1,12 +1,21 @@
 import type { Metadata } from 'next'
-import { Figtree } from 'next/font/google'
+import { Figtree, Space_Grotesk, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import ThemeProvider from '@/components/ThemeProvider'
 
-// Load fonts but only use CSS variables
 const figtree = Figtree({ 
   subsets: ['latin'],
   variable: '--font-figtree'
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains',
 })
 
 export const metadata: Metadata = {
@@ -20,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={figtree.variable}>
+    <html lang="en" suppressHydrationWarning className={`${figtree.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
       <body className="bg-background dark:bg-gray-950 text-text-primary dark:text-gray-100 transition-colors">
         <ThemeProvider>
           {children}
