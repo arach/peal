@@ -1,0 +1,108 @@
+/* Peal library — dark shell aligned with landing, docs, about, and peal-nav.
+   The `.library` wrapper also carries the `dark` class so the SoundDesigner
+   subtree always renders in the Peal dark palette, independent of the global
+   theme toggle. This matches the other product surfaces (landing / docs / about /
+   studio), which are all dark-only, instead of presenting a bright page under the
+   dark nav chrome.
+
+   Card internals reuse shared Tailwind utility components (SoundCardRedesign,
+   SkeletonCard are also used by the Studio sound-library modal), so the cool-gray
+   dark palette is retoned to Peal-neutral here via scoped overrides rather than by
+   editing those shared files — keeping the change contained to `/library`. */
+
+.library {
+  --library-bg: #111113;
+  --library-surface: #1c1c1e;
+  --library-surface-2: #18181b;
+  --library-surface-3: #232326;
+  --library-surface-hover: #2c2c2e;
+  --library-border: rgba(255, 255, 255, 0.06);
+  --library-border-lit: rgba(255, 255, 255, 0.1);
+  --library-text: rgba(255, 255, 255, 0.92);
+  --library-text-dim: rgba(255, 255, 255, 0.5);
+  --library-text-muted: rgba(255, 255, 255, 0.32);
+  --library-accent: #4a9eff;
+  --library-accent-hi: #6bb0ff;
+
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background-color: var(--library-bg);
+  background-image:
+    radial-gradient(ellipse 105% 65% at 50% -12%, rgba(74, 158, 255, 0.025), transparent 64%),
+    radial-gradient(ellipse 72% 42% at 50% 0%, rgba(255, 255, 255, 0.008), transparent 56%),
+    linear-gradient(180deg, #121214 0%, #111113 32%, #0f0f11 100%);
+  color: var(--library-text);
+  font-family: var(--font-space-grotesk), var(--font-figtree), system-ui, sans-serif;
+}
+
+/* The page <main> shouldn't paint its own surface over the shell gradient. */
+.library > main {
+  background: transparent !important;
+}
+
+/* Peal type rhythm for headings inside the library subtree. */
+.library h1,
+.library h2,
+.library h3 {
+  letter-spacing: -0.01em;
+}
+
+/* ---- Surface retones: cool gray -> Peal neutral ------------------------ */
+
+/* Page-level backdrops let the shell gradient show through. */
+.library .dark\:bg-gray-950 {
+  background-color: transparent !important;
+}
+
+/* Card + panel surfaces. */
+.library .dark\:bg-gray-900\/50,
+.library .dark\:bg-gray-900 {
+  background-color: var(--library-surface) !important;
+}
+
+/* Controls (buttons, tags, inputs). */
+.library .dark\:bg-gray-800 {
+  background-color: var(--library-surface-3) !important;
+}
+
+.library .dark\:bg-gray-700 {
+  background-color: var(--library-surface-hover) !important;
+}
+
+.library .dark\:hover\:bg-gray-800:hover {
+  background-color: var(--library-surface-3) !important;
+}
+
+.library .dark\:hover\:bg-gray-700:hover {
+  background-color: var(--library-surface-hover) !important;
+}
+
+/* Hairline dividers. */
+.library .dark\:bg-gray-600 {
+  background-color: var(--library-border-lit) !important;
+}
+
+/* Semantic surface helper (LoadingOverlay / modals). */
+.library .surface-primary {
+  background-color: var(--library-surface) !important;
+  border-color: var(--library-border) !important;
+}
+
+/* ---- Borders: cool gray -> hairline white ------------------------------ */
+
+.library .dark\:border-gray-800 {
+  border-color: var(--library-border) !important;
+}
+
+.library .dark\:border-gray-700,
+.library .dark\:hover\:border-gray-700:hover {
+  border-color: var(--library-border-lit) !important;
+}
+
+/* Generate-more card: drop the cool-gray gradient for a flat Peal surface. */
+.library .border-dashed {
+  background-image: none !important;
+  background-color: var(--library-surface-2) !important;
+  border-color: var(--library-border-lit) !important;
+}
