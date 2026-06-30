@@ -1,15 +1,6 @@
 import { NextResponse } from 'next/server'
-import { isTtsProviderConfigured } from '@/lib/ttsCredentials'
+import { pealCredentialsStatus } from '@/lib/credentials'
 
 export async function GET() {
-  const providers = {
-    OPENAI_API_KEY: isTtsProviderConfigured('openai'),
-    GROQ_API_KEY: isTtsProviderConfigured('groq'),
-    ELEVENLABS_API_KEY: Boolean(process.env.ELEVENLABS_API_KEY?.trim()),
-    FAL_API_KEY: Boolean(process.env.FAL_API_KEY?.trim()),
-    HUGGINGFACE_API_KEY: Boolean(process.env.HUGGINGFACE_API_KEY?.trim()),
-    MINIMAX_API_KEY: Boolean(process.env.MINIMAX_API_KEY?.trim()),
-  }
-
-  return NextResponse.json(providers)
+  return NextResponse.json(pealCredentialsStatus())
 }

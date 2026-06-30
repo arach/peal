@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-06-30T02:49:59.294Z",
+  "beds": [
+    {
+      "id": "success",
+      "label": "Success glow",
+      "pealSound": "success",
+      "musicPrompt": "Warm ambient UI success bed, soft major pads, gentle upward lift, 6 seconds, minimal, no vocals, sits under a spoken saved confirmation",
+      "suggestedSpeech": "Saved successfully.",
+      "file": "/message-beds/success.mp3",
+      "mimeType": "audio/mpeg"
+    },
+    {
+      "id": "error",
+      "label": "Error tension",
+      "pealSound": "error",
+      "musicPrompt": "Low subtle error underscore, minor key, tight muted pulse, 5 seconds, restrained tension, no vocals, background for spoken failure message",
+      "suggestedSpeech": "Something went wrong. Please try again.",
+      "file": "/message-beds/error.mp3",
+      "mimeType": "audio/mpeg"
+    },
+    {
+      "id": "notification",
+      "label": "Notification hum",
+      "pealSound": "notification",
+      "musicPrompt": "Neutral notification bed, soft synth hum, light rhythmic pulse, 5 seconds, friendly but unobtrusive, no vocals",
+      "suggestedSpeech": "You have a new notification.",
+      "file": "/message-beds/notification.mp3",
+      "mimeType": "audio/mpeg"
+    },
+    {
+      "id": "message",
+      "label": "Message pad",
+      "pealSound": "message",
+      "musicPrompt": "Calm conversational background, warm mid-range pads, very subtle movement, 7 seconds, intimate UI message feel, no vocals",
+      "suggestedSpeech": "New message received.",
+      "file": "/message-beds/message.mp3",
+      "mimeType": "audio/mpeg"
+    },
+    {
+      "id": "mention",
+      "label": "Mention sparkle",
+      "pealSound": "mention",
+      "musicPrompt": "Light attention bed for mentions, soft bright arpeggio texture, short 4 second loop feel, playful not harsh, no vocals",
+      "suggestedSpeech": "You were mentioned.",
+      "file": "/message-beds/mention.mp3",
+      "mimeType": "audio/mpeg"
+    },
+    {
+      "id": "loading",
+      "label": "Loading pulse",
+      "pealSound": "loading",
+      "musicPrompt": "Gentle loading loop bed, soft pulsing synth, neutral key, 8 seconds, patient waiting-room energy, no vocals",
+      "suggestedSpeech": "Loading, please wait.",
+      "file": "/message-beds/loading.mp3",
+      "mimeType": "audio/mpeg"
+    }
+  ]
+}

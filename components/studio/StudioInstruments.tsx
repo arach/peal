@@ -137,6 +137,8 @@ export function StudioTransportDeck({
   )
 }
 
+export { StudioKnob } from './StudioKnob'
+
 export function StudioModuleTabs({
   tabs,
   activeId,

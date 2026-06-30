@@ -24,6 +24,11 @@
  *
  * Do not import `@phosphor-icons/react` directly in studio files — add a
  * semantic mapping here instead so the icon set stays swappable in one place.
+ *
+ * Glyphs are imported from `@phosphor-icons/react/ssr` so server and client
+ * render the same SVG paths. The main package uses React Context for weight;
+ * during Next.js SSR that falls back to `regular` while the client applies our
+ * default `bold`, which triggers hydration mismatches on every icon.
  */
 
 import type { Icon, IconProps } from '@phosphor-icons/react'
@@ -32,6 +37,7 @@ import {
   Check,
   Code,
   Copy,
+  DownloadSimple,
   FloppyDisk,
   FolderOpen,
   GearSix,
@@ -45,11 +51,14 @@ import {
   SlidersHorizontal,
   Sparkle,
   SpeakerHigh,
+  SquaresFour,
   StackSimple,
   Stop,
+  Columns,
+  Trash,
   Waveform,
   WarningCircle,
-} from '@phosphor-icons/react'
+} from '@phosphor-icons/react/ssr'
 
 export type PealStudioIconProps = IconProps
 
@@ -76,12 +85,16 @@ export const SettingsIcon = studioIcon(GearSix, 'SettingsIcon')
 export const AiDesignIcon = studioIcon(Sparkle, 'AiDesignIcon')
 export const CodeIcon = studioIcon(Code, 'CodeIcon')
 export const LayersIcon = studioIcon(StackSimple, 'LayersIcon')
+export const LayoutIcon = studioIcon(Columns, 'LayoutIcon')
+export const GridIcon = studioIcon(SquaresFour, 'GridIcon')
 
 // Tools / actions
 export const ScissorsIcon = studioIcon(Scissors, 'ScissorsIcon')
 export const EditIcon = studioIcon(PencilSimple, 'EditIcon')
 export const MagicWandIcon = studioIcon(MagicWand, 'MagicWandIcon')
 export const CopyIcon = studioIcon(Copy, 'CopyIcon')
+export const DownloadIcon = studioIcon(DownloadSimple, 'DownloadIcon')
+export const TrashIcon = studioIcon(Trash, 'TrashIcon')
 export const CheckIcon = studioIcon(Check, 'CheckIcon')
 export const RefreshIcon = studioIcon(ArrowsClockwise, 'RefreshIcon')
 export const GitBranchIcon = studioIcon(GitBranch, 'GitBranchIcon')

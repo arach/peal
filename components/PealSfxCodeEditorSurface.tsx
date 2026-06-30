@@ -37,25 +37,36 @@ export default function PealSfxCodeEditorSurface({
   return (
     <div className={`flex h-full min-h-0 flex-col overflow-hidden bg-[#0a0f12] text-gray-200 ${className}`}>
       <div className="shrink-0 border-b border-white/10 bg-[#0d1317] px-3 py-2">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-2 min-w-0">
           <div className="flex min-w-0 items-center gap-2">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-[#4a9eff]/25 bg-[#4a9eff]/10 text-[#4a9eff]">
               <CodeIcon size={14} />
             </div>
-            <div className="min-w-0">
-              <div className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-[#4a9eff]">
-                Web Audio
-              </div>
-              <div className="truncate text-[11px] text-gray-400">
-                {currentSound
-                  ? `${currentSound.frequency}Hz · ${currentSound.duration}ms · ${tracks.length} track${tracks.length === 1 ? '' : 's'}`
-                  : 'Load or generate a sound to edit code'}
-              </div>
+            <div className="min-w-0 font-mono text-[10px] uppercase tracking-[0.18em] text-[#4a9eff] truncate">
+              Web Audio
             </div>
           </div>
 
           {currentSound ? (
-            <div className="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={() => editor.applyCode()}
+              disabled={editor.isApplying}
+              className="peal-inst-pad peal-inst-pad--active shrink-0 gap-1 px-2.5 py-1 disabled:cursor-wait disabled:opacity-50"
+              title="Apply code changes to Studio (Cmd+S)"
+            >
+              <CheckIcon size={12} />
+              Apply
+            </button>
+          ) : null}
+        </div>
+
+        {currentSound ? (
+          <>
+            <div className="mt-1.5 truncate font-mono text-[10px] text-gray-500">
+              {currentSound.frequency}Hz · {currentSound.duration}ms · {tracks.length} track{tracks.length === 1 ? '' : 's'}
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-1">
               {editor.studioHasChanged ? (
                 <button
                   type="button"
@@ -90,19 +101,13 @@ export default function PealSfxCodeEditorSurface({
               >
                 {editor.copied ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
               </button>
-              <button
-                type="button"
-                onClick={() => editor.applyCode()}
-                disabled={editor.isApplying}
-                className="peal-inst-tool-pad peal-inst-tool-pad--active inline-flex gap-1 px-2.5 font-mono text-[10px] uppercase tracking-[0.12em] disabled:cursor-wait disabled:opacity-50"
-                title="Apply code changes to Studio (Cmd+S)"
-              >
-                <CheckIcon size={12} />
-                Apply
-              </button>
             </div>
-          ) : null}
-        </div>
+          </>
+        ) : (
+          <p className="mt-1.5 text-[11px] leading-5 text-gray-400">
+            Load or generate a sound to edit code
+          </p>
+        )}
 
         {(editor.hasUnsavedChanges || editor.error) && currentSound ? (
           <div className="mt-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em]">

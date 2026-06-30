@@ -17,6 +17,9 @@ import {
   parsePealStudioTool,
   type PealStudioTool,
 } from './routing'
+import { PealVoiceLayoutProvider } from './voice/PealVoiceLayout'
+import { PealVoiceAIProvider } from './voice/PealVoiceAIProvider'
+import { PealVoiceProvider } from './voice/PealVoiceProvider'
 
 export type { PealStudioTool } from './routing'
 
@@ -213,7 +216,13 @@ export function PealStudioProvider({ children }: { children: ReactNode; disabled
 
   return (
     <PealStudioHudsonContext.Provider value={value}>
-      {children}
+      <PealVoiceLayoutProvider>
+        <PealVoiceProvider>
+          <PealVoiceAIProvider>
+            {children}
+          </PealVoiceAIProvider>
+        </PealVoiceProvider>
+      </PealVoiceLayoutProvider>
     </PealStudioHudsonContext.Provider>
   )
 }

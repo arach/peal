@@ -7,10 +7,18 @@ interface WaveformProps {
   isGenerating?: boolean
   isPlaying?: boolean
   audioUrl?: string
+  /** When true, only animates — does not spawn a second audio element (use when playback is driven elsewhere). */
+  visualOnly?: boolean
   className?: string
 }
 
-export function Waveform({ isGenerating = false, isPlaying = false, audioUrl, className }: WaveformProps) {
+export function Waveform({
+  isGenerating = false,
+  isPlaying = false,
+  audioUrl,
+  visualOnly = false,
+  className,
+}: WaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | undefined>(undefined)
   const audioRef = useRef<HTMLAudioElement | undefined>(undefined)
@@ -36,10 +44,26 @@ export function Waveform({ isGenerating = false, isPlaying = false, audioUrl, cl
     }
   }, [isPlaying, isGenerating])
 
+  // Animated playback meter (no duplicate audio output)
+  useEffect(() => {
+    if (!visualOnly || !isPlaying) return
+
+    const tick = () => {
+      generateAnimatedWaveform()
+    }
+
+    tick()
+    const interval = window.setInterval(tick, 90)
+    return () => window.clearInterval(interval)
+  }, [isPlaying, visualOnly])
+
   // Setup audio analysis for playback
   useEffect(() => {
-    if (isPlaying && audioUrl) {
-      const setupAudioAnalysis = async () => {
+    if (visualOnly || !isPlaying || !audioUrl) {
+      return
+    }
+
+    const setupAudioAnalysis = async () => {
         try {
           if (!audioContextRef.current) {
             audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
@@ -68,8 +92,7 @@ export function Waveform({ isGenerating = false, isPlaying = false, audioUrl, cl
         }
       }
 
-      setupAudioAnalysis()
-    }
+    setupAudioAnalysis()
 
     return () => {
       if (audioRef.current) {
@@ -77,7 +100,7 @@ export function Waveform({ isGenerating = false, isPlaying = false, audioUrl, cl
         audioRef.current = undefined
       }
     }
-  }, [isPlaying, audioUrl])
+  }, [isPlaying, audioUrl, visualOnly])
 
   const generateAnimatedWaveform = () => {
     const bars = 64
@@ -107,6 +130,8 @@ export function Waveform({ isGenerating = false, isPlaying = false, audioUrl, cl
         const wave3 = Math.sin(time * 2 + i * 0.05) * 0.2
         return Math.abs(wave1 + wave2 + wave3) + 0.1
       })
+    } else if (isPlaying && visualOnly) {
+      data = waveformData
     } else if (isPlaying && analyserRef.current && dataArrayRef.current) {
       // Real-time audio analysis
       analyserRef.current.getByteFrequencyData(dataArrayRef.current)

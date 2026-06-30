@@ -9,7 +9,7 @@ import { loadToolset } from '@/lib/ai/toolsets'
 
 export const runtime = 'nodejs'
 
-const PEAL_LOCAL_TOOLSETS = new Set(['peal-studio', 'intents'])
+const PEAL_LOCAL_TOOLSETS = new Set(['peal-studio', 'peal-voice', 'intents'])
 
 function log(msg: string) {
   const ts = new Date().toISOString().slice(11, 23)

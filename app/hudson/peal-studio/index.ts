@@ -42,7 +42,7 @@ export const pealStudioApp: HudsonApp = {
   manifest: pealStudioManifest,
   intents: pealStudioIntents,
   leftPanel: {
-    title: 'Web Audio',
+    title: 'Studio',
     icon: createElement(CodeIcon, { size: 12 }),
   },
   rightPanel: {

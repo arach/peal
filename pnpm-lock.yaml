@@ -83,6 +83,9 @@ importers:
       '@types/fluent-ffmpeg':
         specifier: ^2.1.28
         version: 2.1.28
+      '@voxd/client':
+        specifier: ^0.3.4
+        version: 0.3.4
       '@xterm/addon-fit':
         specifier: ^0.11.0
         version: 0.11.0
@@ -115,7 +118,7 @@ importers:
         version: 2.2.4
       hudsonkit:
         specifier: file:../hudson/packages/web/hudsonkit
-        version: file:../hudson/packages/web/hudsonkit(@codemirror/commands@6.10.4)(@codemirror/lang-css@6.3.1)(@codemirror/lang-html@6.4.11)(@codemirror/lang-javascript@6.2.5)(@codemirror/lang-json@6.0.2)(@codemirror/lang-markdown@6.5.0)(@codemirror/language@6.12.4)(@codemirror/state@6.7.0)(@codemirror/view@6.43.4)(@lezer/highlight@1.2.3)(@pierre/diffs@1.2.11(@shikijs/themes@4.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@types/react@19.2.17)(@xterm/addon-fit@0.11.0)(@xterm/addon-webgl@0.19.0)(@xterm/xterm@6.0.0)(lucide-react@1.22.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)
+        version: file:../hudson/packages/web/hudsonkit(@codemirror/commands@6.10.4)(@codemirror/lang-css@6.3.1)(@codemirror/lang-html@6.4.11)(@codemirror/lang-javascript@6.2.5)(@codemirror/lang-json@6.0.2)(@codemirror/lang-markdown@6.5.0)(@codemirror/language@6.12.4)(@codemirror/state@6.7.0)(@codemirror/view@6.43.4)(@lezer/highlight@1.2.3)(@pierre/diffs@1.2.11(@shikijs/themes@4.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@types/react@19.2.17)(@voxd/client@0.3.4)(@xterm/addon-fit@0.11.0)(@xterm/addon-webgl@0.19.0)(@xterm/xterm@6.0.0)(lucide-react@1.22.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)
       inquirer:
         specifier: ^14.0.2
         version: 14.0.2(@types/node@26.0.1)
@@ -2270,6 +2273,9 @@ packages:
 
   '@vitest/utils@4.1.9':
     resolution: {integrity: sha512-A51o8ymO5PpqlWNnBP9ZHPXDIpuMtTLlGSjN7la4US+LJzoUMyhwjA5QXlm39JexgwHKW4Xjs8Z2d3dLCXOeuA==}
+
+  '@voxd/client@0.3.4':
+    resolution: {integrity: sha512-Vn1J2mY3e4a4rpDmOCvF6hxfgbLxvvGHtL6LeLf+Daz2Q1UfRriexKa6kAHYxMmADMOeJJxfGujhYOiBMalRSA==}
 
   '@workflow/serde@4.1.0':
     resolution: {integrity: sha512-pav4F2BoirECWR7Nf1TKt+2eETcBj7jj4cBefQ8VXQCA6NPkaKeLfj/zMgi+3zYV5ZIBT4GuUiphsj0/b9hPQQ==}
@@ -6826,6 +6832,8 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
+  '@voxd/client@0.3.4': {}
+
   '@workflow/serde@4.1.0': {}
 
   '@xterm/addon-fit@0.11.0': {}
@@ -7863,7 +7871,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  hudsonkit@file:../hudson/packages/web/hudsonkit(@codemirror/commands@6.10.4)(@codemirror/lang-css@6.3.1)(@codemirror/lang-html@6.4.11)(@codemirror/lang-javascript@6.2.5)(@codemirror/lang-json@6.0.2)(@codemirror/lang-markdown@6.5.0)(@codemirror/language@6.12.4)(@codemirror/state@6.7.0)(@codemirror/view@6.43.4)(@lezer/highlight@1.2.3)(@pierre/diffs@1.2.11(@shikijs/themes@4.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@types/react@19.2.17)(@xterm/addon-fit@0.11.0)(@xterm/addon-webgl@0.19.0)(@xterm/xterm@6.0.0)(lucide-react@1.22.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3):
+  hudsonkit@file:../hudson/packages/web/hudsonkit(@codemirror/commands@6.10.4)(@codemirror/lang-css@6.3.1)(@codemirror/lang-html@6.4.11)(@codemirror/lang-javascript@6.2.5)(@codemirror/lang-json@6.0.2)(@codemirror/lang-markdown@6.5.0)(@codemirror/language@6.12.4)(@codemirror/state@6.7.0)(@codemirror/view@6.43.4)(@lezer/highlight@1.2.3)(@pierre/diffs@1.2.11(@shikijs/themes@4.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@types/react@19.2.17)(@voxd/client@0.3.4)(@xterm/addon-fit@0.11.0)(@xterm/addon-webgl@0.19.0)(@xterm/xterm@6.0.0)(lucide-react@1.22.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3):
     dependencies:
       '@ai-sdk/react': 3.0.218(react@19.2.7)(zod@4.4.3)
       '@base-ui-components/react': 1.0.0-rc.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -7884,6 +7892,7 @@ snapshots:
       '@codemirror/view': 6.43.4
       '@lezer/highlight': 1.2.3
       '@pierre/diffs': 1.2.11(@shikijs/themes@4.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@voxd/client': 0.3.4
       '@xterm/addon-fit': 0.11.0
       '@xterm/addon-webgl': 0.19.0
       '@xterm/xterm': 6.0.0

@@ -1,12 +1,17 @@
+import { hydratePealCredentialsFromFiles } from './lib/credentials/envFiles.ts'
+
+// Shared monorepo credentials (e.g. ../.env.local) — project .env.local still wins.
+hydratePealCredentialsFromFiles()
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['hudsonkit', '@hudsonkit/ai'],
+  transpilePackages: ['hudsonkit', '@hudsonkit/ai', '@voxd/client'],
   serverExternalPackages: ['@earendil-works/pi-ai'],
 
-  // Tree-shake the Phosphor icon barrel (used by the Sound Studio icon set).
-  // Not in Next's default optimize list, unlike lucide-react / @tabler.
+  // Tree-shake the Phosphor SSR icon barrel (used by the Sound Studio icon set).
+  // Studio icons import from /ssr so server + client share the same glyph paths.
   experimental: {
-    optimizePackageImports: ['@phosphor-icons/react'],
+    optimizePackageImports: ['@phosphor-icons/react/ssr'],
   },
   // Static export for GitHub Pages
   output: process.env.BUILD_STATIC === 'true' ? 'export' : undefined,

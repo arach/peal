@@ -1,22 +1,24 @@
-import { getEnvApiKey } from '@earendil-works/pi-ai'
+import {
+  ensurePealCredentialsLoaded,
+  isPealCredentialConfigured,
+  pealCredentialSetupHint,
+  resolvePealCredential,
+} from '@/lib/credentials'
 
 export type TtsProvider = 'openai' | 'groq'
 
-const PROVIDER_ENV: Record<TtsProvider, string> = {
+const PROVIDER_CREDENTIAL: Record<TtsProvider, 'OPENAI_API_KEY' | 'GROQ_API_KEY'> = {
   openai: 'OPENAI_API_KEY',
   groq: 'GROQ_API_KEY',
 }
 
-/** Resolve TTS API keys — process.env first, then pi-ai provider mapping. */
 export function resolveTtsApiKey(provider: TtsProvider): string | undefined {
-  const envVar = PROVIDER_ENV[provider]
-  const fromEnv = process.env[envVar]?.trim()
-  if (fromEnv) return fromEnv
-  return getEnvApiKey(provider)?.trim() || undefined
+  ensurePealCredentialsLoaded()
+  return resolvePealCredential(PROVIDER_CREDENTIAL[provider])
 }
 
 export function isTtsProviderConfigured(provider: TtsProvider): boolean {
-  return Boolean(resolveTtsApiKey(provider))
+  return isPealCredentialConfigured(PROVIDER_CREDENTIAL[provider])
 }
 
 export function ttsProviderForModel(model: string): TtsProvider {
@@ -24,6 +26,5 @@ export function ttsProviderForModel(model: string): TtsProvider {
 }
 
 export function providerSetupHint(provider: TtsProvider): string {
-  const envVar = PROVIDER_ENV[provider]
-  return `Add ${envVar} to .env.local in the Peal repo root, then restart the dev server (port 3001).`
+  return pealCredentialSetupHint(PROVIDER_CREDENTIAL[provider])
 }

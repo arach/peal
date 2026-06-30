@@ -6,6 +6,7 @@
  * Credentials resolve via pi-ai's getEnvApiKey (MINIMAX_API_KEY, etc.).
  */
 import { createPiAiBackend, listAvailableModels } from '@hudsonkit/ai'
+import { ensurePealCredentialsLoaded, resolvePealCredential } from '@/lib/credentials'
 
 export const piBackend = createPiAiBackend()
 
@@ -18,12 +19,14 @@ export function buildDefaultModels(): Record<string, string> {
   return out
 }
 
-/**
- * Empty map — streamUI falls back to pi-ai getEnvApiKey per provider.
- * No provider-specific logic lives in Peal.
- */
+/** Credentials for pi-ai streamUI — env files + process.env + pi-ai fallbacks. */
 export function loadCredentials(): Record<string, string | undefined> {
-  return {}
+  ensurePealCredentialsLoaded()
+  return {
+    minimax: resolvePealCredential('MINIMAX_API_KEY'),
+    openai: resolvePealCredential('OPENAI_API_KEY'),
+    groq: resolvePealCredential('GROQ_API_KEY'),
+  }
 }
 
 const HUDSON_AI_ORIGIN = process.env.HUDSON_AI_ORIGIN ?? 'http://localhost:3500'

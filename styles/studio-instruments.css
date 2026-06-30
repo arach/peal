@@ -449,3 +449,744 @@
   border-color: rgba(74, 158, 255, 0.35);
   box-shadow: 0 0 8px rgba(74, 158, 255, 0.18);
 }
+
+/* ── Voice studio fields ─────────────────────────────────────── */
+
+.peal-inst-field,
+.peal-inst-select {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--inst-engrave);
+  background: var(--inst-well);
+  border: 1px solid var(--inst-line-lo);
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+  outline: none;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.peal-inst-field:focus,
+.peal-inst-select:focus {
+  border-color: rgba(74, 158, 255, 0.45);
+  box-shadow: 0 0 0 1px rgba(74, 158, 255, 0.2);
+}
+
+.peal-inst-select {
+  cursor: pointer;
+}
+
+.peal-inst-take-row {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--inst-line-lo);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.peal-inst-take-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.peal-inst-take-row--active {
+  border-left: 2px solid var(--inst-accent);
+  background: rgba(74, 158, 255, 0.08);
+}
+
+/* ── Voice clip controller (track strips) ────────────────────── */
+
+.peal-inst-voice-tracks {
+  display: flex;
+  flex-direction: column;
+}
+
+.peal-inst-voice-track {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--inst-line-lo);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.peal-inst-voice-track:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.peal-inst-voice-track--selected {
+  border-left: 2px solid var(--inst-accent);
+  background: rgba(74, 158, 255, 0.06);
+}
+
+.peal-inst-voice-track--playing {
+  background: rgba(232, 163, 23, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(232, 163, 23, 0.14);
+}
+
+.peal-inst-voice-track-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.peal-inst-voice-track-slot {
+  width: 1rem;
+  flex-shrink: 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.28);
+  text-align: center;
+}
+
+.peal-inst-voice-track-fx {
+  width: 7.5rem;
+  flex-shrink: 0;
+  padding: 0.35rem 0.45rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.78);
+  background: var(--inst-well);
+  border: 1px solid var(--inst-line-lo);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.peal-inst-voice-track-fx:focus {
+  border-color: rgba(74, 158, 255, 0.45);
+}
+
+.peal-inst-voice-track-meter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 2.75rem;
+}
+
+.peal-inst-voice-track-fx-readout {
+  width: 5.5rem;
+  flex-shrink: 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(74, 158, 255, 0.72);
+}
+
+/* ── Peal Deck (soundboard pads) ─────────────────────────────── */
+
+.peal-inst-deck-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+@media (max-width: 900px) {
+  .peal-inst-deck-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.peal-inst-deck-pad {
+  position: relative;
+  display: flex;
+  min-height: 6.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.65rem 0.55rem 0.5rem;
+  text-align: left;
+  background: linear-gradient(165deg, var(--inst-face-raised) 0%, var(--inst-well) 55%, #08080a 100%);
+  border: 1px solid var(--inst-line-lo);
+  border-top-color: var(--inst-line-hi);
+  border-radius: 6px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 6px 18px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.08s, border-color 0.12s, box-shadow 0.12s;
+}
+
+.peal-inst-deck-pad:active {
+  transform: scale(0.97);
+}
+
+.peal-inst-deck-pad--empty {
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.peal-inst-deck-pad--target {
+  border-color: rgba(74, 158, 255, 0.55);
+  box-shadow: 0 0 16px rgba(74, 158, 255, 0.18);
+}
+
+.peal-inst-deck-pad--selected {
+  outline: 1px solid rgba(74, 158, 255, 0.35);
+}
+
+.peal-inst-deck-pad--playing {
+  border-color: rgba(232, 163, 23, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(232, 163, 23, 0.18) inset,
+    0 0 20px var(--inst-amber-glow);
+}
+
+.peal-inst-deck-pad--tts {
+  border-left: 3px solid rgba(74, 158, 255, 0.75);
+}
+
+.peal-inst-deck-pad--music {
+  border-left: 3px solid rgba(232, 163, 23, 0.75);
+}
+
+.peal-inst-deck-pad--sfx {
+  border-left: 3px solid rgba(62, 207, 110, 0.75);
+}
+
+.peal-inst-deck-pad-top {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.peal-inst-deck-pad-slot {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.peal-inst-deck-pad-source {
+  margin-left: auto;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.34);
+}
+
+.peal-inst-deck-pad-label {
+  width: 100%;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--inst-engrave);
+}
+
+.peal-inst-deck-pad-meta {
+  width: 100%;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.34);
+}
+
+.peal-inst-deck-pad-action {
+  margin-top: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(74, 158, 255, 0.85);
+  cursor: pointer;
+}
+
+.peal-inst-deck-pad-action:hover {
+  color: rgba(74, 158, 255, 1);
+}
+
+.peal-inst-deck-pad-empty-label {
+  margin-top: auto;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── Deck in left panel (compact) ────────────────────────────── */
+
+.peal-inst-deck-panel .peal-inst-deck-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.peal-inst-deck-panel .peal-inst-deck-pad {
+  min-height: 5.25rem;
+  padding: 0.5rem 0.45rem 0.4rem;
+}
+
+.peal-inst-deck-panel .peal-inst-deck-pad-label {
+  font-size: 9px;
+}
+
+/* ── FX designer (center hero) ───────────────────────────────── */
+
+.peal-inst-mixer,
+.peal-inst-fx-designer {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, transparent 28%);
+}
+
+.peal-inst-fx-scope {
+  display: flex;
+  flex-direction: column;
+}
+
+.peal-inst-fx-knob-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+  align-items: start;
+  grid-auto-rows: min-content;
+}
+
+@media (max-width: 720px) {
+  .peal-inst-fx-knob-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ── Rotary knobs (channel strip) ────────────────────────────── */
+
+.peal-inst-knob {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.4rem 0.45rem;
+  user-select: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.32) 100%);
+  border: 1px solid var(--inst-line-lo, rgba(0, 0, 0, 0.55));
+  border-top-color: var(--inst-line-hi, rgba(255, 255, 255, 0.09));
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+}
+
+.peal-inst-knob--tweaked {
+  border-color: rgba(74, 158, 255, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(74, 158, 255, 0.1) inset,
+    0 0 14px rgba(74, 158, 255, 0.08);
+}
+
+.peal-inst-knob-module {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  cursor: ns-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.peal-inst-knob-module:focus-visible .peal-inst-knob-svg {
+  filter: drop-shadow(0 0 6px rgba(74, 158, 255, 0.45));
+}
+
+.peal-inst-knob-module:active {
+  cursor: grabbing;
+}
+
+.peal-inst-knob-svg {
+  display: block;
+  width: 4.75rem;
+  height: 4.75rem;
+  max-width: 100%;
+}
+
+.peal-inst-knob--tweaked .peal-inst-knob-readout {
+  color: #8ec5ff;
+}
+
+.peal-inst-knob-readout {
+  min-height: 0.9rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.peal-inst-knob-label {
+  max-width: 5.5rem;
+  text-align: center;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.35;
+  color: var(--inst-label, rgba(255, 255, 255, 0.42));
+}
+
+.peal-inst-knob-tweak {
+  margin-left: 0.15rem;
+  color: #4a9eff;
+}
+
+/* ── Sample rows (left panel) ────────────────────────────────── */
+
+.peal-inst-sample-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.45rem 0.35rem 0.35rem;
+  border: 1px solid var(--inst-line-lo);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.peal-inst-sample-row--empty {
+  width: 100%;
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+}
+
+.peal-inst-sample-row--target {
+  border-color: rgba(74, 158, 255, 0.45);
+}
+
+.peal-inst-sample-row--selected {
+  border-color: rgba(74, 158, 255, 0.5);
+  box-shadow: 0 0 12px rgba(74, 158, 255, 0.12);
+}
+
+.peal-inst-sample-row--playing {
+  border-color: rgba(232, 163, 23, 0.45);
+}
+
+.peal-inst-sample-row--tts {
+  border-left: 3px solid rgba(74, 158, 255, 0.75);
+}
+
+.peal-inst-sample-row--music {
+  border-left: 3px solid rgba(232, 163, 23, 0.75);
+}
+
+.peal-inst-sample-row--sfx {
+  border-left: 3px solid rgba(62, 207, 110, 0.75);
+}
+
+.peal-inst-sample-row-body {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.15rem 0.25rem;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.peal-inst-sample-row-slot {
+  flex-shrink: 0;
+  width: 1.25rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.peal-inst-sample-row-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--inst-engrave);
+}
+
+.peal-inst-sample-row-meta {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.34);
+}
+
+/* ── Voice workspace: tabs + tile ────────────────────────────── */
+
+.peal-voice-tile-root {
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.peal-voice-tile-pane {
+  display: flex;
+  min-height: 0;
+  min-width: 12rem;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.peal-voice-tile-divider {
+  flex-shrink: 0;
+  width: 5px;
+  border: none;
+  background: var(--inst-line-lo);
+  cursor: col-resize;
+  transition: background 0.12s;
+}
+
+.peal-voice-tile-divider:hover,
+.peal-voice-tile-divider--active {
+  background: rgba(74, 158, 255, 0.45);
+}
+
+/* ── Voice AI edit: diff replay + composer ───────────────────── */
+
+.peal-voice-ai-composer-input {
+  border: 1px solid rgba(74, 158, 255, 0.35);
+  border-radius: 6px;
+  background: #1c1c1e;
+  padding: 0.65rem 0.85rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  font-weight: 500;
+  color: #f3f4f6;
+  outline: none;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.peal-voice-ai-composer-input::placeholder {
+  color: rgba(156, 163, 175, 0.85);
+}
+
+.peal-voice-ai-composer-input:focus {
+  border-color: rgba(74, 158, 255, 0.65);
+  box-shadow:
+    0 0 0 2px rgba(74, 158, 255, 0.15),
+    0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.peal-voice-ai-composer-input:disabled {
+  opacity: 0.55;
+}
+
+.peal-voice-ai-diff-label {
+  margin-bottom: 0.45rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(74, 158, 255, 0.85);
+}
+
+.peal-voice-ai-applied-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(74, 158, 255, 0.22);
+  background: rgba(74, 158, 255, 0.08);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  color: #b9d9ff;
+}
+
+.peal-voice-ai-applied-chip--genre {
+  border-color: rgba(74, 158, 255, 0.35);
+  font-weight: 600;
+}
+
+.peal-voice-ai-compare-meta {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.peal-voice-ai-diff-row {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr auto 1fr;
+  gap: 0.35rem 0.5rem;
+  align-items: center;
+  padding: 0.3rem 0.45rem;
+  border-radius: 4px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+}
+
+.peal-voice-ai-diff-row--highlight {
+  background: rgba(74, 158, 255, 0.08);
+  border: 1px solid rgba(74, 158, 255, 0.2);
+}
+
+.peal-voice-ai-diff-key {
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 9px;
+}
+
+.peal-voice-ai-diff-before {
+  color: rgba(156, 163, 175, 0.9);
+  text-align: right;
+}
+
+.peal-voice-ai-diff-arrow {
+  color: rgba(74, 158, 255, 0.7);
+  text-align: center;
+}
+
+.peal-voice-ai-diff-after {
+  color: #b9d9ff;
+  font-weight: 600;
+}
+
+.peal-voice-ai-compare {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.peal-voice-ai-compare-vs {
+  align-self: center;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.peal-voice-ai-compare-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  min-height: 3.25rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--inst-line-lo, rgba(0, 0, 0, 0.55));
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.28) 100%);
+  cursor: pointer;
+  transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
+}
+
+.peal-voice-ai-compare-btn:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.peal-voice-ai-compare-btn--before.peal-voice-ai-compare-btn--active {
+  border-color: rgba(156, 163, 175, 0.45);
+  box-shadow: 0 0 12px rgba(156, 163, 175, 0.12);
+}
+
+.peal-voice-ai-compare-btn--after.peal-voice-ai-compare-btn--active {
+  border-color: rgba(74, 158, 255, 0.55);
+  box-shadow: 0 0 14px rgba(74, 158, 255, 0.18);
+  background: linear-gradient(180deg, rgba(74, 158, 255, 0.08) 0%, rgba(0, 0, 0, 0.28) 100%);
+}
+
+.peal-voice-ai-compare-label {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.peal-voice-ai-compare-btn--active .peal-voice-ai-compare-label {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.peal-voice-ai-compare-value {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  color: #e5e7eb;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.peal-voice-ai-compare-btn--after.peal-voice-ai-compare-btn--active .peal-voice-ai-compare-value {
+  color: #b9d9ff;
+}
+
+.peal-voice-ai-diff-btn {
+  min-width: 0;
+  padding: 0.25rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+
+.peal-voice-ai-diff-btn--before {
+  color: rgba(156, 163, 175, 0.95);
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.peal-voice-ai-diff-btn--before:hover,
+.peal-voice-ai-diff-btn--before.peal-voice-ai-diff-btn--active {
+  color: #d1d5db;
+  border-color: rgba(156, 163, 175, 0.35);
+  background: rgba(156, 163, 175, 0.08);
+}
+
+.peal-voice-ai-diff-btn--after {
+  color: #b9d9ff;
+  font-weight: 600;
+  background: rgba(74, 158, 255, 0.06);
+  border-color: rgba(74, 158, 255, 0.18);
+}
+
+.peal-voice-ai-diff-btn--after:hover,
+.peal-voice-ai-diff-btn--after.peal-voice-ai-diff-btn--active {
+  border-color: rgba(74, 158, 255, 0.45);
+  background: rgba(74, 158, 255, 0.14);
+}
+
+.peal-inst-knob--ai-highlight {
+  border-color: rgba(74, 158, 255, 0.55) !important;
+  box-shadow:
+    0 0 0 1px rgba(74, 158, 255, 0.2) inset,
+    0 0 18px rgba(74, 158, 255, 0.22);
+  animation: peal-ai-highlight-pulse 1.6s ease-in-out infinite;
+}
+
+.peal-inst-pad--ai-highlight {
+  border-color: rgba(74, 158, 255, 0.55) !important;
+  box-shadow: 0 0 14px rgba(74, 158, 255, 0.25);
+  animation: peal-ai-highlight-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes peal-ai-highlight-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.82; }
+}

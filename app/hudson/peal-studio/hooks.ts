@@ -14,15 +14,16 @@ import {
   VolumeIcon,
 } from '@/components/icons/PealStudioIcon'
 import { usePealStudioHudson, type PealStudioTool } from './Provider'
+import { useOptionalPealVoice } from './voice/PealVoiceProvider'
 
 const TOOL_LABELS: Record<PealStudioTool, string> = {
   sfx: 'SFX',
-  voice: 'Voice',
+  voice: 'Deck',
 }
 
 const TOOL_DESCRIPTIONS: Record<PealStudioTool, string> = {
   sfx: 'Sound effects creation',
-  voice: 'Text-to-speech generation',
+  voice: 'Deck · mixer · capture',
 }
 
 const TOOL_ORDER: PealStudioTool[] = ['sfx', 'voice']
@@ -66,6 +67,10 @@ export function usePealStudioCommands(): CommandOption[] {
       label: 'Open AI Design',
       icon: createElement(AiDesignIcon, { size: 14 }),
       action: () => {
+        if (currentTool === 'voice') {
+          setCurrentTool('voice')
+          return
+        }
         setCurrentTool('sfx')
         window.setTimeout(() => runSfxAction('openAIDesigner'), 0)
       },
@@ -90,6 +95,14 @@ export function usePealStudioCommands(): CommandOption[] {
 
 export function usePealStudioStatus(): { label: string; color: StatusColor } {
   const { currentTool, sfxSummary } = usePealStudioHudson()
+  const voice = useOptionalPealVoice()
+
+  if (currentTool === 'voice' && voice) {
+    if (voice.isGenerating) return { label: 'generating', color: 'amber' }
+    if (voice.currentlyPlayingId) return { label: 'playing', color: 'emerald' }
+    if (voice.takes.length) return { label: `${voice.takes.length} takes`, color: 'emerald' }
+    return { label: 'ready', color: 'neutral' }
+  }
 
   if (currentTool !== 'sfx') {
     return { label: `${TOOL_LABELS[currentTool]} ready`, color: 'neutral' }
@@ -106,11 +119,14 @@ export function usePealStudioStatus(): { label: string; color: StatusColor } {
 
 function PealNavCenter() {
   const { currentTool, sfxSummary } = usePealStudioHudson()
+  const voice = useOptionalPealVoice()
   const detail = currentTool === 'sfx'
     ? sfxSummary.soundId
       ? `${sfxSummary.soundType ?? 'sound'} · ${sfxSummary.durationMs ?? 0}ms · ${sfxSummary.frequencyHz ?? 0}Hz`
       : 'design UI sounds'
-    : TOOL_DESCRIPTIONS[currentTool]
+    : currentTool === 'voice' && voice
+      ? `${voice.selectedVoice} · ${voice.selectedModel} · ${voice.speed}x`
+      : TOOL_DESCRIPTIONS[currentTool]
 
   return createElement('div', {
     className: 'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] font-mono text-[var(--hud-ink-3)]',
@@ -123,6 +139,10 @@ function PealNavCenter() {
 
 function PealNavActions() {
   const { currentTool, setCurrentTool, runSfxAction, sfxSummary } = usePealStudioHudson()
+  const voice = useOptionalPealVoice()
+
+  const voicePlayTarget = voice?.selectedTakeId ?? voice?.takes[0]?.id ?? null
+  const voiceIsPlaying = voicePlayTarget != null && voice?.currentlyPlayingId === voicePlayTarget
 
   return createElement('div', { className: 'flex items-center gap-2' },
     createElement('div', { className: 'peal-inst-nav-tray' },
@@ -139,13 +159,21 @@ function PealNavActions() {
     ),
     createElement('button', {
       type: 'button',
-      onClick: () => runSfxAction(sfxSummary.isPlaying ? 'pause' : 'play'),
+      onClick: () => {
+        if (currentTool === 'voice' && voice && voicePlayTarget) {
+          voice.togglePlay(voicePlayTarget)
+          return
+        }
+        runSfxAction(sfxSummary.isPlaying ? 'pause' : 'play')
+      },
       className: 'peal-inst-nav-transport',
-      disabled: currentTool !== 'sfx' || !sfxSummary.mounted,
-      title: sfxSummary.isPlaying ? 'Pause sound' : 'Play sound',
+      disabled: currentTool === 'sfx'
+        ? !sfxSummary.mounted
+        : !voicePlayTarget,
+      title: (currentTool === 'voice' ? voiceIsPlaying : sfxSummary.isPlaying) ? 'Pause' : 'Play',
     },
-      createElement(sfxSummary.isPlaying ? PauseIcon : PlayIcon, { size: 12 }),
-      sfxSummary.isPlaying ? 'Pause' : 'Play',
+      createElement((currentTool === 'voice' ? voiceIsPlaying : sfxSummary.isPlaying) ? PauseIcon : PlayIcon, { size: 12 }),
+      (currentTool === 'voice' ? voiceIsPlaying : sfxSummary.isPlaying) ? 'Pause' : 'Play',
     ),
   )
 }
@@ -160,6 +188,10 @@ export function usePealStudioNavActions() {
 
 export function usePealStudioStatusLeft() {
   const { currentTool, sfxSummary } = usePealStudioHudson()
+  const voice = useOptionalPealVoice()
+  if (currentTool === 'voice' && voice) {
+    return voice.takes.length ? `deck ${voice.takes.length} clips` : 'Deck · HudsonApp'
+  }
   if (currentTool !== 'sfx') return `${TOOL_LABELS[currentTool]} · HudsonApp`
   return sfxSummary.soundId ? `tracks ${sfxSummary.trackCount} · ${sfxSummary.mode}` : 'SFX · HudsonApp'
 }
