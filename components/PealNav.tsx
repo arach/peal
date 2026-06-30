@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Book, Crown, Library, Menu, Mic, Sparkles, X } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
@@ -38,11 +38,9 @@ function navActive(pathname: string, tool: string | null, id: NavId): boolean {
   }
 }
 
-export default function PealNav() {
+function PealNavShell({ tool }: { tool: string | null }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname() ?? ''
-  const searchParams = useSearchParams()
-  const tool = searchParams.get('tool')
   const isDev = process.env.NODE_ENV === 'development'
 
   const libraryHref = isStaticBuild ? getPublicUrl('/docs') : '/library'
@@ -128,5 +126,18 @@ export default function PealNav() {
         </div>
       )}
     </nav>
+  )
+}
+
+function PealNavWithSearchParams() {
+  const searchParams = useSearchParams()
+  return <PealNavShell tool={searchParams.get('tool')} />
+}
+
+export default function PealNav() {
+  return (
+    <Suspense fallback={<PealNavShell tool={null} />}>
+      <PealNavWithSearchParams />
+    </Suspense>
   )
 }

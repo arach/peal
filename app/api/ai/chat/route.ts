@@ -1,3 +1,4 @@
+import type { PiAiUIMessage } from '@hudsonkit/ai'
 import { defaultRegistry } from '@hudsonkit/ai/toolsets'
 import {
   buildDefaultModels,
@@ -8,6 +9,7 @@ import {
 import { loadToolset } from '@/lib/ai/toolsets'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-static'
 
 const PEAL_LOCAL_TOOLSETS = new Set(['peal-studio', 'peal-voice', 'intents'])
 
@@ -26,10 +28,13 @@ export async function POST(req: Request) {
   }
 
   const toolset = typeof body.toolset === 'string' ? body.toolset : ''
-  const messages = body.messages
-  const context = body.context ?? {}
-  const provider = body.provider
-  const model = body.model
+  const messages = Array.isArray(body.messages) ? (body.messages as PiAiUIMessage[]) : []
+  const context =
+    body.context && typeof body.context === 'object' && !Array.isArray(body.context)
+      ? (body.context as Record<string, unknown>)
+      : {}
+  const provider = typeof body.provider === 'string' ? body.provider : undefined
+  const model = typeof body.model === 'string' ? body.model : undefined
 
   if (toolset && !PEAL_LOCAL_TOOLSETS.has(toolset) && !defaultRegistry.resolve(toolset)) {
     log(`proxy → Hudson | toolset=${toolset}`)

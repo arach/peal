@@ -22,6 +22,14 @@ export interface UsePealStudioAIOptions {
   model?: string
 }
 
+export type UsePealStudioAIResult = {
+  chat: ReturnType<typeof useHudsonAI>
+  activity: PealStudioAIActivity[]
+  lastProposal: { input: ProposeSoundInput; sound: Sound } | null
+  clearProposal: () => void
+  log: (tool: string, summary: string) => void
+}
+
 function nextId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
 }
@@ -33,7 +41,7 @@ export function usePealStudioAI({
   onFocusAIDesign,
   provider = 'minimax',
   model,
-}: UsePealStudioAIOptions) {
+}: UsePealStudioAIOptions): UsePealStudioAIResult {
   const [activity, setActivity] = useState<PealStudioAIActivity[]>([])
   const [lastProposal, setLastProposal] = useState<{ input: ProposeSoundInput; sound: Sound } | null>(null)
 

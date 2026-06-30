@@ -23,7 +23,7 @@ jobs:
         with:
           path: peal
 
-      - name: Checkout Hudson (file: deps)
+      - name: "Checkout Hudson (file deps)"
         uses: actions/checkout@v4
         with:
           repository: arach/hudson
@@ -56,7 +56,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Build Hudson packages (linked file: deps)
+      - name: "Build Hudson packages (linked file deps)"
         working-directory: hudson
         run: |
           bun install --frozen-lockfile

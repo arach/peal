@@ -15,7 +15,7 @@ import {
   usePealStudioStatusRight,
 } from './hooks'
 import { pealStudioIntents } from './intents'
-import { PEAL_STUDIO_SHELL_LAYOUT } from './layout'
+import { PEAL_STUDIO_SHELL_LAYOUT } from './shell-layout'
 
 const pealStudioManifest: AppManifest = {
   id: 'peal-studio',
@@ -32,7 +32,7 @@ const pealStudioManifest: AppManifest = {
   ],
 }
 
-export const pealStudioApp: HudsonApp = {
+export const pealStudioApp = {
   id: 'peal-studio',
   name: 'Sound Studio',
   description: 'Design UI sounds with live Web Audio API code and AI',
@@ -65,4 +65,4 @@ export const pealStudioApp: HudsonApp = {
     useNavActions: usePealStudioNavActions,
     useLayoutMode: usePealStudioLayoutMode,
   },
-}
+} as HudsonApp

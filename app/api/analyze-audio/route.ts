@@ -11,6 +11,8 @@ const execAsync = promisify(exec)
 // Set FFmpeg path to system installation
 ffmpeg.setFfmpegPath('/opt/homebrew/bin/ffmpeg')
 
+export const dynamic = 'force-static'
+
 export async function POST(request: NextRequest) {
   try {
     const { audioFilePath } = await request.json()

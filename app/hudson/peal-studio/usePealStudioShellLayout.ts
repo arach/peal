@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useAppShellSidePanels } from 'hudsonkit/app-shell'
-import { PEAL_STUDIO_LAYOUT_MIGRATION_KEY, PEAL_STUDIO_SHELL_LAYOUT } from './layout'
+import { PEAL_STUDIO_LAYOUT_MIGRATION_KEY, PEAL_STUDIO_SHELL_LAYOUT } from './shell-layout'
 
 /**
  * One-time bump for users who persisted the old 260/280 AppShell defaults

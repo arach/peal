@@ -6,6 +6,8 @@ import {
   ttsProviderForModel,
 } from '@/lib/ttsCredentials'
 
+export const dynamic = 'force-static'
+
 export async function POST(request: NextRequest) {
   try {
     const { text, model, voice, speed } = await request.json()

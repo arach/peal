@@ -19,6 +19,13 @@ export type { PealVoiceLastEdit, VoiceAiKnobChange } from './voiceAiEditDiff'
 
 export type EditCompareSide = 'before' | 'after'
 
+export interface PealVoiceAIHighlights {
+  knobKeys: Set<keyof VoiceFxParams>
+  genreIdAfter: string
+  genreChanged: boolean
+  compareSide: EditCompareSide
+}
+
 export interface PealVoiceAIActivity {
   id: string
   tool: string
@@ -30,7 +37,21 @@ function nextId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
 }
 
-export function usePealVoiceAI(provider = 'openai', model?: string) {
+export type UsePealVoiceAIResult = {
+  chat: ReturnType<typeof useHudsonAI>
+  activity: PealVoiceAIActivity[]
+  lastEdit: PealVoiceLastEdit | null
+  lastEditExpanded: boolean
+  compareSide: EditCompareSide
+  previewEditCompare: (side: EditCompareSide) => void
+  toggleLastEdit: () => void
+  aiHighlights: PealVoiceAIHighlights | null
+  clearLastEdit: () => void
+  availableVoices: string[]
+  log: (tool: string, summary: string) => void
+}
+
+export function usePealVoiceAI(provider = 'openai', model?: string): UsePealVoiceAIResult {
   const voice = usePealVoice()
   const [activity, setActivity] = useState<PealVoiceAIActivity[]>([])
   const [lastEdit, setLastEdit] = useState<PealVoiceLastEdit | null>(null)

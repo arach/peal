@@ -8,6 +8,7 @@ import {
 import {
   PEAL_CREDENTIALS,
   PEAL_CREDENTIAL_IDS,
+  type PealCredentialDef,
   type PealCredentialFeature,
   type PealCredentialId,
 } from './registry'
@@ -43,7 +44,7 @@ function trimValue(value: string | undefined): string | undefined {
 
 export function resolvePealCredential(id: PealCredentialId): string | undefined {
   ensurePealCredentialsLoaded()
-  const def = PEAL_CREDENTIALS[id]
+  const def = PEAL_CREDENTIALS[id] as PealCredentialDef
 
   const fromPrimary = trimValue(process.env[def.envVar])
   if (fromPrimary) return fromPrimary
@@ -65,7 +66,7 @@ export function isPealCredentialConfigured(id: PealCredentialId): boolean {
 }
 
 export function pealCredentialSetupHint(id: PealCredentialId): string {
-  const def = PEAL_CREDENTIALS[id]
+  const def = PEAL_CREDENTIALS[id] as PealCredentialDef
   const root = pealProjectRoot()
   return [
     `Set ${def.envVar} in ${root}/.env.local,`,
@@ -85,5 +86,8 @@ export function pealCredentialsStatus(): Record<PealCredentialId, boolean> {
 }
 
 export function credentialsForFeature(feature: PealCredentialFeature): PealCredentialId[] {
-  return PEAL_CREDENTIAL_IDS.filter((id) => PEAL_CREDENTIALS[id].features.includes(feature))
+  return PEAL_CREDENTIAL_IDS.filter((id) => {
+    const def = PEAL_CREDENTIALS[id] as PealCredentialDef
+    return def.features.includes(feature)
+  })
 }

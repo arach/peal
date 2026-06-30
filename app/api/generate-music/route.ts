@@ -5,6 +5,8 @@ import {
   resolvePealCredential,
 } from '@/lib/credentials'
 
+export const dynamic = 'force-static'
+
 export async function POST(request: NextRequest) {
   try {
     const { prompt, model, isInstrumental } = await request.json()

@@ -7,17 +7,13 @@ import {
   usePealVoiceAI,
   type EditCompareSide,
   type PealVoiceAIActivity,
+  type PealVoiceAIHighlights,
   type PealVoiceLastEdit,
 } from './usePealVoiceAI'
 
 type HudsonAIChat = ReturnType<typeof useHudsonAI>
 
-export interface PealVoiceAIHighlights {
-  knobKeys: Set<keyof VoiceFxParams>
-  genreIdAfter: string
-  genreChanged: boolean
-  compareSide: EditCompareSide
-}
+export type { PealVoiceAIHighlights }
 
 interface PealVoiceAIContextValue {
   chat: HudsonAIChat
