@@ -63,14 +63,14 @@ export default function LandingHero() {
         </div>
 
         <h1>
-          Lightweight sounds
+          Design your own
           <br />
-          <span className="accent">for modern apps</span>
+          <span className="accent">SFX library</span>
         </h1>
 
         <p className="landing-sub">
-          Professional notification sounds, a CLI to drop them into any project,
-          and a studio to design new ones — all on Web Audio.
+          Curated library, Web Audio studio, and CLI — shape new UI audio or
+          drop presets into any project.
         </p>
 
         <div className="landing-pillars">

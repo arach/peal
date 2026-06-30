@@ -33,6 +33,17 @@ export function PealBrandMark({ size = 26 }: { size?: number }) {
           <stop offset="0" stopColor="#1c2e49" />
           <stop offset="1" stopColor="#131f33" />
         </linearGradient>
+        <linearGradient id={`${gid}-stroke`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="rgba(107, 176, 255, 0.75)" />
+          <stop offset="1" stopColor="rgba(45, 110, 184, 0.45)" />
+        </linearGradient>
+        <filter id={`${gid}-glow`} x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="0.8" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
       <rect
         x={0.6}
@@ -41,13 +52,14 @@ export function PealBrandMark({ size = 26 }: { size?: number }) {
         height={size - 1.2}
         rx={radius}
         fill={`url(#${gid})`}
-        stroke="rgba(74, 158, 255, 0.5)"
+        stroke={`url(#${gid}-stroke)`}
         strokeWidth={1}
       />
       {WAVE.map((h, i) => {
         const barH = Math.max(maxBarHeight * h, barWidth)
         const x = pad + i * (barWidth + gap)
         const y = cy - barH / 2
+        const isCenter = i === Math.floor(n / 2)
         return (
           <rect
             key={i}
@@ -57,6 +69,7 @@ export function PealBrandMark({ size = 26 }: { size?: number }) {
             height={barH}
             rx={barWidth / 2}
             fill={barColor(i, n)}
+            filter={isCenter ? `url(#${gid}-glow)` : undefined}
           />
         )
       })}
