@@ -1,24 +1,22 @@
-/* Peal presets — dark shell aligned with docs, about, and peal-nav */
+/* Peal presets — muted dark shell, no layout-shift hovers */
 
 .presets {
   --presets-bg: #111113;
   --presets-surface: #1c1c1e;
   --presets-border: rgba(255, 255, 255, 0.06);
-  --presets-border-lit: rgba(255, 255, 255, 0.1);
+  --presets-border-lit: rgba(255, 255, 255, 0.11);
   --presets-text: rgba(255, 255, 255, 0.92);
   --presets-text-dim: rgba(255, 255, 255, 0.5);
-  --presets-text-muted: rgba(255, 255, 255, 0.32);
-  --presets-accent: #4a9eff;
-  --presets-accent-hi: #6bb0ff;
-  --presets-accent-tint: rgba(74, 158, 255, 0.1);
+  --presets-text-muted: rgba(255, 255, 255, 0.34);
+  --presets-accent: rgba(255, 255, 255, 0.78);
+  --presets-accent-hi: rgba(255, 255, 255, 0.92);
+  --presets-accent-tint: rgba(255, 255, 255, 0.06);
 
   position: relative;
   isolation: isolate;
   min-height: 100vh;
   background-color: var(--presets-bg);
-  background-image:
-    radial-gradient(ellipse 105% 65% at 50% -12%, rgba(74, 158, 255, 0.025), transparent 64%),
-    linear-gradient(180deg, #121214 0%, #111113 32%, #0f0f11 100%);
+  background-image: linear-gradient(180deg, #121214 0%, #111113 32%, #0f0f11 100%);
   color: var(--presets-text);
   font-family: var(--font-space-grotesk), var(--font-figtree), system-ui, sans-serif;
   font-weight: 400;
@@ -39,7 +37,7 @@
   font-family: var(--font-jetbrains), ui-monospace, monospace;
   font-size: 10px;
   font-weight: 500;
-  color: var(--presets-accent);
+  color: var(--presets-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.18em;
   margin-bottom: 10px;
@@ -86,30 +84,18 @@
   transition:
     color 0.15s ease,
     background 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.15s ease;
 }
 
 .presets-btn-primary {
-  color: #fff;
-  background: var(--presets-accent);
-  border-color: rgba(74, 158, 255, 0.35);
-  box-shadow: 0 0 24px -10px rgba(74, 158, 255, 0.45);
+  color: var(--presets-accent-hi);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .presets-btn-primary:hover {
-  background: var(--presets-accent-hi);
-}
-
-.presets-btn-secondary {
-  color: var(--presets-text);
-  background: rgba(255, 255, 255, 0.05);
-  border-color: var(--presets-border);
-}
-
-.presets-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--presets-border-lit);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .presets-btn-icon {
@@ -121,16 +107,19 @@
   padding: 0;
   border-radius: 8px;
   border: 1px solid var(--presets-border);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--presets-text-dim);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .presets-btn-icon:hover {
   color: var(--presets-text);
   border-color: var(--presets-border-lit);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .presets-btn-icon:disabled {
@@ -150,7 +139,7 @@
 .presets-category {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   padding: 7px 12px;
   border-radius: 8px;
   border: 1px solid transparent;
@@ -161,25 +150,33 @@
   color: var(--presets-text-dim);
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .presets-category:hover {
   color: var(--presets-text);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.04);
 }
 
 .presets-category.is-active {
   color: var(--presets-accent-hi);
   background: var(--presets-accent-tint);
-  border-color: rgba(74, 158, 255, 0.18);
-  box-shadow: 0 0 20px -8px rgba(74, 158, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .presets-category-icon {
-  font-size: 14px;
-  line-height: 1;
+  opacity: 0.65;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+}
+
+.presets-category:hover .presets-category-icon,
+.presets-category.is-active .presets-category-icon {
+  opacity: 0.9;
 }
 
 .presets-grid {
@@ -195,16 +192,12 @@
   border-radius: 12px;
   border: 1px solid var(--presets-border);
   background: var(--presets-surface);
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .presets-card:hover {
   border-color: var(--presets-border-lit);
-  transform: translateY(-1px);
-  box-shadow: 0 10px 28px -18px rgba(0, 0, 0, 0.6);
+  background: #1e1e20;
 }
 
 .presets-card-head {
@@ -276,29 +269,37 @@
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid var(--presets-border);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.03);
   font-size: 13px;
   font-weight: 500;
   color: var(--presets-text-dim);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .presets-preview:hover:not(:disabled) {
   color: var(--presets-text);
   border-color: var(--presets-border-lit);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .presets-preview.is-playing {
   color: var(--presets-accent-hi);
-  background: var(--presets-accent-tint);
-  border-color: rgba(74, 158, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .presets-preview:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.presets-copied {
+  font-size: 11px;
+  color: var(--presets-accent);
 }
 
 .presets-empty {
@@ -318,8 +319,8 @@
 .presets-about-panel {
   padding: 22px 24px 24px;
   border-radius: 12px;
-  border: 1px solid rgba(74, 158, 255, 0.12);
-  background: linear-gradient(180deg, rgba(74, 158, 255, 0.06) 0%, rgba(74, 158, 255, 0.02) 100%);
+  border: 1px solid var(--presets-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.008) 100%);
 }
 
 .presets-about-panel h3 {

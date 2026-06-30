@@ -3,11 +3,32 @@
 import '@/styles/presets.css'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Play, Sparkles, Copy, Volume2 } from 'lucide-react'
+import {
+  Play,
+  Sparkles,
+  Copy,
+  Volume2,
+  MousePointerClick,
+  CircleCheck,
+  ArrowRight,
+  Bell,
+  Settings,
+  AudioLines,
+  type LucideIcon,
+} from 'lucide-react'
 import Header from '@/components/Header'
 import { modernAppPresets, soundCategories, getPresetsByCategory, type SoundPreset } from '@/lib/presets/modernAppSounds'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { useSoundStore } from '@/store/soundStore'
+
+const categoryIcons: Record<string, LucideIcon> = {
+  interaction: MousePointerClick,
+  feedback: CircleCheck,
+  navigation: ArrowRight,
+  notification: Bell,
+  system: Settings,
+  ambient: AudioLines,
+}
 
 export default function PresetsPage() {
   const router = useRouter()
@@ -168,19 +189,20 @@ export default function PresetsPage() {
         </header>
 
         <nav className="presets-categories" aria-label="Sound categories">
-          {Object.entries(soundCategories).map(([key, category]) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setSelectedCategory(key)}
-              className={`presets-category${selectedCategory === key ? ' is-active' : ''}`}
-            >
-              <span className="presets-category-icon" aria-hidden="true">
-                {category.icon}
-              </span>
-              {category.name}
-            </button>
-          ))}
+          {Object.entries(soundCategories).map(([key, category]) => {
+            const Icon = categoryIcons[key]
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setSelectedCategory(key)}
+                className={`presets-category${selectedCategory === key ? ' is-active' : ''}`}
+              >
+                {Icon ? <Icon size={14} className="presets-category-icon" /> : null}
+                {category.name}
+              </button>
+            )
+          })}
         </nav>
 
         <div className="presets-grid">
@@ -243,7 +265,7 @@ export default function PresetsPage() {
                   title="Copy parameters"
                 >
                   {copiedId === preset.id ? (
-                    <span style={{ fontSize: 11, color: 'var(--presets-accent-hi)' }}>✓</span>
+                    <span className="presets-copied">✓</span>
                   ) : (
                     <Copy size={15} />
                   )}
