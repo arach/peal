@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ArrowLeft, Play, Pause, Loader, MousePointer, Cpu, Filter, Download, Keyboard } from 'lucide-react'
-import Link from 'next/link'
+import { Play, Pause, Loader, MousePointer, Cpu, Download, Keyboard } from 'lucide-react'
+import Header from '@/components/Header'
 import { uiMechanicsPresets, UIMechanicsSound } from '@/lib/presets/uiMechanicsPresets'
 import { dotsPatternPresets, DotsPatternSound } from '@/lib/presets/dotsPatternPresets'
 import { keyboardPresets, KeyboardSound } from '@/lib/presets/keyboardPresets'
@@ -113,14 +113,14 @@ export default function MechanicsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background dark:bg-gray-950">
-      <header className="sticky top-0 z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-              <ArrowLeft size={20} />
-            </Link>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">UI Mechanics & Patterns</h1>
+    <>
+      <Header />
+      <div className="min-h-screen bg-[#111113] text-gray-100">
+      <div className="border-b border-gray-800">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">UI Mechanics & Patterns</h1>
+            <p className="text-sm text-gray-400 mt-1">Loading, clicks, sequences, and keyboard UI sounds</p>
           </div>
           <div className="flex items-center gap-4">
             <input
@@ -128,10 +128,10 @@ export default function MechanicsPage() {
               placeholder="Search sounds..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-64 px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-64 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#4a9eff]"
             />
             <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-600 dark:text-gray-400">Volume</label>
+              <label className="text-sm text-gray-400">Volume</label>
               <input
                 type="range"
                 min="0"
@@ -150,9 +150,9 @@ export default function MechanicsPage() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Category filters */}
         <div className="flex gap-2 mb-8">
           {categories.map(category => (
@@ -162,8 +162,8 @@ export default function MechanicsPage() {
               className={`
                 px-4 py-2 rounded-lg text-sm font-medium transition-all
                 ${selectedCategory === category.value
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  ? 'bg-[#4a9eff] text-white'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                 }
               `}
             >
@@ -185,14 +185,14 @@ export default function MechanicsPage() {
             return (
               <div
                 key={sound.file}
-                className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 hover:shadow-lg transition-all"
+                className="bg-[#1c1c1e] rounded-xl border border-gray-800 p-6 hover:border-gray-700 transition-all"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                    <h3 className="font-semibold mb-1">
                       {sound.name}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-400">
                       {sound.description}
                     </p>
                   </div>
@@ -213,14 +213,14 @@ export default function MechanicsPage() {
                 </div>
 
                 <div className="mb-4">
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mb-2">
+                  <p className="text-xs text-gray-500 mb-2">
                     <span className="font-medium">Use case:</span> {sound.useCase}
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {sound.tags && sound.tags.map(tag => (
                       <span
                         key={tag}
-                        className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded"
+                        className="text-xs px-2 py-1 bg-gray-800 text-gray-400 rounded"
                       >
                         {tag}
                       </span>
@@ -234,8 +234,8 @@ export default function MechanicsPage() {
                     className={`
                       flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-medium text-sm transition-all
                       ${isPlaying
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        ? 'bg-[#4a9eff] text-white'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                       }
                     `}
                   >
@@ -244,7 +244,7 @@ export default function MechanicsPage() {
                   </button>
                   <button
                     onClick={() => downloadSound(sound)}
-                    className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                    className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-all"
                     title="Download"
                   >
                     <Download size={16} />
@@ -257,12 +257,13 @@ export default function MechanicsPage() {
 
         {filteredSounds.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-gray-400">
               No sounds found matching your criteria.
             </p>
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

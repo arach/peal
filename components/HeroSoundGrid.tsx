@@ -102,6 +102,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)
   const progressRef = useRef(0)
+  const [isHovered, setIsHovered] = useState(false)
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -131,27 +132,19 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
         const x = index * barWidth
         const y = centerY - barHeight / 2
         
-        // Highlight played portion when playing
         const isPlayed = isPlaying && (index / sound.waveform.length) < progressRef.current
-        
-        // Create gradient for each bar
+        const alpha = isPlayed ? 1 : isPlaying ? 0.72 : isHovered ? 0.58 : 0.38
+
         const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight)
-        if (isPlayed) {
-          gradient.addColorStop(0, 'rgba(74, 158, 255, 1)')
-          gradient.addColorStop(0.5, 'rgba(100, 180, 255, 1)')
-          gradient.addColorStop(1, 'rgba(74, 158, 255, 1)')
-        } else {
-          gradient.addColorStop(0, 'rgba(74, 158, 255, 0.8)')
-          gradient.addColorStop(0.5, 'rgba(74, 158, 255, 1)')
-          gradient.addColorStop(1, 'rgba(74, 158, 255, 0.8)')
-        }
-        
+        gradient.addColorStop(0, `rgba(74, 158, 255, ${alpha * 0.85})`)
+        gradient.addColorStop(0.5, `rgba(100, 180, 255, ${alpha})`)
+        gradient.addColorStop(1, `rgba(74, 158, 255, ${alpha * 0.85})`)
+
         ctx.fillStyle = gradient
-        ctx.fillRect(x + barGap/2, y, barWidth - barGap, barHeight)
-        
-        // Add subtle reflection
-        ctx.fillStyle = isPlayed ? 'rgba(74, 158, 255, 0.2)' : 'rgba(74, 158, 255, 0.1)'
-        ctx.fillRect(x + barGap/2, centerY + barHeight / 2 + 2, barWidth - barGap, barHeight * 0.2)
+        ctx.fillRect(x + barGap / 2, y, barWidth - barGap, barHeight)
+
+        ctx.fillStyle = isPlayed ? 'rgba(74, 158, 255, 0.18)' : 'rgba(74, 158, 255, 0.06)'
+        ctx.fillRect(x + barGap / 2, centerY + barHeight / 2 + 2, barWidth - barGap, barHeight * 0.18)
       })
       
       if (isPlaying) {
@@ -168,7 +161,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [sound.waveform, isPlaying])
+  }, [sound.waveform, isPlaying, isHovered])
   
   useEffect(() => {
     if (!isPlaying) {
@@ -181,43 +174,45 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
       <div
         className={`landing-sound-card ${isPlaying ? 'is-playing' : ''}`}
         onClick={onShowCode}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <div className="landing-sound-wave">
           <canvas ref={canvasRef} className="w-full h-full" style={{ width: '100%', height: '100%' }} />
         </div>
-        <div className="landing-sound-name">{sound.name}</div>
-        <div className="landing-sound-meta">
-          <span>{sound.duration}</span>
-          <span>code</span>
-        </div>
-        <div className="landing-sound-tags">
-          {sound.tags.map((tag) => (
-            <span key={tag} className="landing-sound-tag">{tag}</span>
-          ))}
-        </div>
-        <div className="landing-sound-actions">
-          <button
-            type="button"
-            className={`landing-sound-play ${isPlaying ? 'is-active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation()
-              isPlaying ? onStop() : onPlay()
-            }}
-            aria-label={isPlaying ? 'Stop sound' : 'Play sound'}
-          >
-            {isPlaying ? <Pause size={14} /> : <Play size={14} />}
-          </button>
-          <button
-            type="button"
-            className="landing-link"
-            style={{ padding: '4px 8px', fontSize: 11 }}
-            onClick={(e) => {
-              e.stopPropagation()
-              onShowCode()
-            }}
-          >
-            <Code2 size={12} /> View code
-          </button>
+        <div className="landing-sound-footer">
+          <div className="landing-sound-info">
+            <div className="landing-sound-name">{sound.name}</div>
+            <div className="landing-sound-meta">
+              <span>{sound.duration}</span>
+              <span className="landing-sound-sep">·</span>
+              <span>{sound.type}</span>
+            </div>
+          </div>
+          <div className="landing-sound-actions">
+            <button
+              type="button"
+              className={`landing-sound-play ${isPlaying ? 'is-active' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation()
+                isPlaying ? onStop() : onPlay()
+              }}
+              aria-label={isPlaying ? 'Stop sound' : 'Play sound'}
+            >
+              {isPlaying ? <Pause size={14} /> : <Play size={14} />}
+            </button>
+            <button
+              type="button"
+              className="landing-sound-code-link"
+              onClick={(e) => {
+                e.stopPropagation()
+                onShowCode()
+              }}
+            >
+              <Code2 size={12} />
+              View code
+            </button>
+          </div>
         </div>
       </div>
     )

@@ -1,7 +1,7 @@
-# 🎵 Peal - Professional UI Sound Effects
+# Peal — Design your own SFX library
 
 <p align="center">
-  <strong>Professional UI sounds for web apps - CLI to manage sounds, thin Howler.js wrapper to play them</strong>
+  <strong>Curated UI sounds, a Web Audio studio, and a CLI — shape new effects or drop presets into any project</strong>
 </p>
 
 <p align="center">
@@ -16,15 +16,21 @@
 
 ## Overview
 
-Peal is a professional sound library for web applications that includes:
+Peal is an npm package (`@peal-sounds/peal`) and a web app for designing and shipping UI sound effects.
 
-- **🎯 CLI Tool**: Quickly add curated UI sounds to your project
-- **📦 Library**: Lightweight Howler.js wrapper for playing sounds
-- **🌐 Web App**: Sound generation and exploration tool for creating custom effects
+- **📦 Library** — Howler.js wrapper for playing sounds in web apps
+- **🎯 CLI** — Add curated UI sounds to any project and generate a typed helper
+- **🌐 Web App** — Browse, design, and manage sounds in the browser
 
-The CLI instantly copies high-quality UI sounds to your project and generates a helper file for easy playback.
+The CLI copies high-quality WAV files into your repo and generates a helper that handles paths for you. The web app lets you explore presets, design custom sounds, and export audio for use anywhere.
 
 ## ✨ Features
+
+### 📦 Library
+- **Lightweight**: Thin wrapper around Howler.js (~2KB gzipped)
+- **Cross-Platform**: Works in modern browsers and Node.js
+- **TypeScript First**: Full TypeScript support with generated types
+- **Performance**: Efficient sound loading and playback management
 
 ### 🎯 CLI Tool
 - **Instant Setup**: Add professional UI sounds to any project in seconds
@@ -32,17 +38,11 @@ The CLI instantly copies high-quality UI sounds to your project and generates a 
 - **Auto-Generated Helper**: Creates a typed helper file with all your sounds
 - **Zero Configuration**: Works out of the box, no setup required
 
-### 📦 Library
-- **Lightweight**: Thin wrapper around Howler.js (~2KB gzipped)
-- **Cross-Platform**: Works in all modern browsers and React Native
-- **TypeScript First**: Full TypeScript support with generated types
-- **Performance**: Efficient sound loading and playback management
-
-### 🌐 Web App (Optional)
-- **Sound Generation**: Create custom UI sounds with real-time preview
-- **Waveform Visualization**: See the audio signature of generated sounds
-- **Export Options**: Download sounds as WAV files for use anywhere
-- **Advanced Controls**: Fine-tune frequency, duration, and effects
+### 🌐 Web App
+- **Library** ([`/library`](http://localhost:3001/library)): Browse, generate, and manage your sound collection
+- **Studio** ([`/studio`](http://localhost:3001/studio)): IDE-style sound designer with live Web Audio API code, AI-assisted design, and parameter panels
+- **Voice** ([`/studio?tool=voice`](http://localhost:3001/studio?tool=voice)): TTS studio for spoken UI feedback (`/voice` redirects here)
+- **Presets**: Curated collections at [`/presets`](http://localhost:3001/presets), `/premium`, `/mechanics`, `/keyboard`, `/brands`, and `/signature`
 
 ## 🚀 Quick Start
 
@@ -259,9 +259,20 @@ const options: PealOptions = {
 peal.play('success', options);
 ```
 
-## 🌐 Web App Development
+## 🌐 Web App
 
-For local development of the web app (sound generation interface):
+Peal ships as a Next.js web app alongside the npm package. Use it to preview presets, design custom sounds, and manage your collection.
+
+| Surface | Path | Description |
+| --- | --- | --- |
+| **Library** | [`/library`](http://localhost:3001/library) | Browse, generate, and manage sounds |
+| **Studio** | [`/studio`](http://localhost:3001/studio) | Sound designer with live Web Audio code and AI-assisted parameters |
+| **Voice** | [`/studio?tool=voice`](http://localhost:3001/studio?tool=voice) | TTS studio for spoken UI feedback |
+| **Presets** | [`/presets`](http://localhost:3001/presets) | Curated sound collections (`/premium`, `/mechanics`, `/keyboard`, `/brands`, `/signature`) |
+
+Studio uses **hudsonkit** for app chrome, with a material/instrument aesthetic for sound design controls.
+
+### Local development
 
 ```bash
 git clone https://github.com/arach/peal.git
@@ -270,7 +281,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to access the sound generation interface.
+Open [http://localhost:3001](http://localhost:3001) — the dev server runs on port **3001**.
 
 ## 🛠️ Tech Stack
 
@@ -281,7 +292,8 @@ Open [http://localhost:3000](http://localhost:3000) to access the sound generati
 - **CLI Framework**: [Commander.js](https://github.com/tj/commander.js/)
 
 ### Web App
-- **Framework**: Next.js 15 with App Router
+- **Framework**: Next.js with App Router
+- **Studio Shell**: hudsonkit
 - **Styling**: Tailwind CSS
 - **Audio**: Web Audio API
 - **State**: Zustand
@@ -290,7 +302,7 @@ Open [http://localhost:3000](http://localhost:3000) to access the sound generati
 
 - **npm Package**: [@peal-sounds/peal](https://www.npmjs.com/package/@peal-sounds/peal)
 - **GitHub**: [github.com/arach/peal](https://github.com/arach/peal)
-- **Web App**: [peal.app](https://peal.app) (Coming Soon)
+- **Web App**: [peal.app](https://peal.app)
 - **Issues**: [Report bugs](https://github.com/arach/peal/issues)
 
 ## 🤝 Contributing

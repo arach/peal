@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Play, Download, Sparkles, Copy, Volume2 } from 'lucide-react'
+import { Play, Sparkles, Copy, Volume2 } from 'lucide-react'
 import Header from '@/components/Header'
 import { modernAppPresets, soundCategories, getPresetsByCategory, type SoundPreset } from '@/lib/presets/modernAppSounds'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
@@ -171,17 +171,22 @@ export default function PresetsPage() {
 
   return (
     <>
-      <Header 
-        variant="studio" 
-        title="Modern App Sounds"
-        subtitle="Polished, intentional sound effects for futuristic applications"
-        backLabel="Back"
-        rightContent={rightContent}
-      />
-      <div className="min-h-screen bg-gray-950 text-gray-100">
+      <Header />
+      <div className="min-h-screen bg-[#111113] text-gray-100">
+      <div className="border-b border-gray-800">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">Modern App Sounds</h1>
+            <p className="text-sm text-gray-400 mt-1">
+              Polished, intentional sound effects for futuristic applications
+            </p>
+          </div>
+          {rightContent}
+        </div>
+      </div>
 
       {/* Category Tabs */}
-      <div className="border-b border-gray-800 sticky top-0 bg-gray-950 z-10">
+      <div className="border-b border-gray-800 sticky top-[52px] bg-[#111113] z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-1 py-3 overflow-x-auto">
             {Object.entries(soundCategories).map(([key, category]) => (

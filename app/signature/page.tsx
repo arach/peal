@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ArrowLeft, Play, Pause, Brain, Smartphone, Sparkles, Atom, Download, Volume2 } from 'lucide-react'
-import Link from 'next/link'
+import { Play, Pause, Brain, Smartphone, Sparkles, Atom, Download, Volume2 } from 'lucide-react'
+import Header from '@/components/Header'
 import { Howl } from 'howler'
 
 interface SignatureSound {
@@ -219,48 +219,46 @@ export default function SignaturePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900">
-      <header className="sticky top-0 z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-              <ArrowLeft size={20} />
-            </Link>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Signature Sounds</h1>
+    <>
+      <Header />
+      <div className="min-h-screen bg-[#111113] text-gray-100">
+      <div className="border-b border-gray-800">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">Signature Sounds</h1>
+            <p className="text-sm text-gray-400 mt-1">Neural, haptic, cascade, and experimental UI audio</p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Volume2 size={16} className="text-gray-500" />
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={volume}
-                onChange={(e) => {
-                  const newVolume = parseFloat(e.target.value)
-                  setVolume(newVolume)
-                  if (currentHowl) {
-                    currentHowl.volume(newVolume)
-                  }
-                }}
-                className="w-24"
-              />
-              <span className="text-sm text-gray-600 dark:text-gray-400 w-8">
-                {Math.round(volume * 100)}%
-              </span>
-            </div>
+          <div className="flex items-center gap-2">
+            <Volume2 size={16} className="text-gray-500" />
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={volume}
+              onChange={(e) => {
+                const newVolume = parseFloat(e.target.value)
+                setVolume(newVolume)
+                if (currentHowl) {
+                  currentHowl.volume(newVolume)
+                }
+              }}
+              className="w-24"
+            />
+            <span className="text-sm text-gray-400 w-8">
+              {Math.round(volume * 100)}%
+            </span>
           </div>
         </div>
-      </header>
+      </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Hero section */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h2 className="text-3xl font-bold mb-4">
             Signature Sound Collection
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Inspired by your favorites: Neural Pulse 🔥, Triple Click Cascade 👌🏻, and Haptic Click.
             These sounds push the boundaries of UI audio design.
           </p>
@@ -279,8 +277,8 @@ export default function SignaturePage() {
                 className={`
                   px-6 py-3 rounded-xl font-medium transition-all transform
                   ${isActive
-                    ? `bg-${colorClass}-500 text-white scale-105 shadow-lg`
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:scale-102 shadow-md'
+                    ? (colorClass === 'purple' ? 'bg-purple-500' : colorClass === 'orange' ? 'bg-orange-500' : colorClass === 'blue' ? 'bg-blue-500' : 'bg-green-500') + ' text-white scale-105 shadow-lg'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 shadow-md'
                   }
                 `}
               >
@@ -298,7 +296,7 @@ export default function SignaturePage() {
 
         {/* Category description */}
         {selectedCategory !== 'all' && (
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-center text-gray-400 mb-8">
             {categoryDescriptions[selectedCategory]}
           </p>
         )}
@@ -313,20 +311,20 @@ export default function SignaturePage() {
               <div
                 key={sound.file}
                 className={`
-                  bg-white dark:bg-gray-900 rounded-2xl p-6 
+                  bg-[#1c1c1e] rounded-2xl p-6 
                   border-2 transition-all duration-300
                   ${isPlaying 
-                    ? `border-${colorClass}-400 shadow-xl scale-102` 
-                    : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-lg'
+                    ? (colorClass === 'purple' ? 'border-purple-400' : colorClass === 'orange' ? 'border-orange-400' : colorClass === 'blue' ? 'border-blue-400' : 'border-green-400') + ' shadow-xl scale-102'
+                    : 'border-gray-800 hover:border-gray-700 hover:shadow-lg'
                   }
                 `}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                    <h3 className="text-lg font-semibold mb-1">
                       {sound.displayName}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-400">
                       {sound.description}
                     </p>
                   </div>
@@ -355,8 +353,8 @@ export default function SignaturePage() {
                       flex-1 flex items-center justify-center gap-2 py-3 rounded-xl
                       font-medium text-sm transition-all duration-200
                       ${isPlaying
-                        ? `bg-${colorClass}-500 text-white`
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        ? (colorClass === 'purple' ? 'bg-purple-500' : colorClass === 'orange' ? 'bg-orange-500' : colorClass === 'blue' ? 'bg-blue-500' : 'bg-green-500') + ' text-white'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                       }
                     `}
                   >
@@ -372,7 +370,7 @@ export default function SignaturePage() {
                       link.click()
                       document.body.removeChild(link)
                     }}
-                    className="px-4 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                    className="px-4 py-3 bg-gray-800 text-gray-300 rounded-xl hover:bg-gray-700 transition-all"
                     title="Download"
                   >
                     <Download size={18} />
@@ -383,6 +381,7 @@ export default function SignaturePage() {
           })}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

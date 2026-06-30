@@ -2930,27 +2930,27 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center p-8">
-                <div className="text-center space-y-6 max-w-md">
+                <div className="peal-studio-welcome">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-100 mb-3">
+                    <h2 className="peal-studio-welcome-title mb-2">
                       Welcome to Sound Studio
                     </h2>
-                    <p className="text-sm text-gray-400 leading-relaxed">
+                    <p className="peal-studio-welcome-copy">
                       Create custom sounds with AI or browse our curated library.
                       Start with a description of what you need, or pick from professional presets.
                     </p>
                   </div>
-                  <div className="flex gap-3 justify-center">
-                    <button 
+                  <div className="peal-studio-welcome-actions">
+                    <button
                       onClick={() => setShowVibeModal(true)}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-[#4a9eff] hover:bg-[#6bb0ff] text-white rounded-lg transition-colors"
+                      className="peal-studio-welcome-cta peal-studio-welcome-cta--primary"
                     >
                       <AiDesignIcon size={16} />
                       Design your first sound
                     </button>
-                    <button 
+                    <button
                       onClick={() => setShowLibraryModal(true)}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-[#232327] text-gray-300 rounded-lg hover:bg-[#2c2c2e] transition-colors border border-[#2c2c2e]"
+                      className="peal-studio-welcome-cta peal-studio-welcome-cta--secondary"
                     >
                       <LibraryIcon size={16} />
                       Browse Library

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Play, Pause, Volume2, Sparkles, CheckCircle, XCircle } from 'lucide-react'
+import { Play, Pause, Volume2, Sparkles, CheckCircle } from 'lucide-react'
+import Header from '@/components/Header'
 import { premiumUIPresets, getPremiumPresetsByCategory, getPremiumPresetsByStyle, getComparisonPairs } from '@/lib/presets/premiumUIPresets'
 import { playPremiumSound, preloadPremiumSounds, playComparisonPair, playPremiumSoundDemo } from '@/lib/presets/playPremiumSound'
 
@@ -97,43 +98,32 @@ export default function PremiumSoundsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
-      {/* Header */}
+    <>
+      <Header />
+      <div className="min-h-screen bg-[#111113] text-gray-100">
       <div className="border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push('/')}
-                className="flex items-center gap-2 text-gray-400 hover:text-gray-100 transition-colors"
-              >
-                <ArrowLeft size={18} />
-                Back
-              </button>
-              <div className="w-px h-6 bg-gray-700"></div>
-              <div>
-                <h1 className="text-2xl font-bold">Premium UI Sounds</h1>
-                <p className="text-sm text-gray-400 mt-1">
-                  Modern, elegant sounds inspired by Apple, Palantir, and Airbnb
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handlePlayDemo}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-100 rounded-lg transition-colors"
-              >
-                <Play size={16} />
-                Play Demo
-              </button>
-              <button
-                onClick={() => router.push('/studio')}
-                className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-400 text-white rounded-lg transition-colors"
-              >
-                <Sparkles size={16} />
-                Sound Studio
-              </button>
-            </div>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">Premium UI Sounds</h1>
+            <p className="text-sm text-gray-400 mt-1">
+              Modern, elegant sounds inspired by Apple, Palantir, and Airbnb
+            </p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={handlePlayDemo}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-100 rounded-lg transition-colors"
+            >
+              <Play size={16} />
+              Play Demo
+            </button>
+            <button
+              onClick={() => router.push('/studio')}
+              className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-400 text-white rounded-lg transition-colors"
+            >
+              <Sparkles size={16} />
+              Sound Studio
+            </button>
           </div>
         </div>
       </div>
@@ -182,7 +172,7 @@ export default function PremiumSoundsPage() {
       </div>
 
       {/* Category Tabs */}
-      <div className="border-b border-gray-800 sticky top-0 bg-gray-950 z-10">
+      <div className="border-b border-gray-800 sticky top-[52px] bg-[#111113] z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-1 py-3">
             {Object.entries(categories).map(([key, category]) => (
@@ -278,6 +268,7 @@ export default function PremiumSoundsPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

@@ -1,11 +1,11 @@
 'use client'
 
+import '@/styles/docs.css'
 import Header from '@/components/Header'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useCallback, useLayoutEffect, useState } from 'react'
 import { isStaticBuild } from '@/utils/build'
-import { getPublicUrl } from '@/utils/url'
-import { 
+import {
   FileCode, 
   Zap, 
   Book, 
@@ -389,7 +389,7 @@ peal.load('click', '/peal/click.wav');
 function CodeBlock({ children, language = 'javascript' }: { children: string, language?: string }) {
   const [copied, setCopied] = useState(false)
   const isTerminal = language === 'bash' || language === 'shell'
-  
+
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(children)
@@ -399,207 +399,139 @@ function CodeBlock({ children, language = 'javascript' }: { children: string, la
       console.error('Failed to copy text: ', err)
     }
   }
-  
+
   if (isTerminal) {
-    return (
-      <div className="bg-gray-950 rounded-md overflow-hidden border border-gray-800 my-2 relative group">
-        <div className="bg-gray-900 px-3 py-1.5 border-b border-gray-800 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500/40"></div>
-              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40"></div>
-              <div className="w-2.5 h-2.5 rounded-full bg-green-500/40"></div>
-            </div>
-            <span className="text-xs text-gray-500 font-mono">terminal</span>
-          </div>
+    const lines = children.split('\n')
+
+    // Multi-line scripts (with comments / blank separators) need a real
+    // pre-formatted well — the single-line pill collapses newlines.
+    if (lines.length > 1) {
+      return (
+        <div className="docs-code-block docs-terminal-block">
           <button
+            type="button"
             onClick={copyToClipboard}
-            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-800 rounded text-gray-400 hover:text-gray-200"
+            className="docs-copy-btn"
             title="Copy to clipboard"
+            aria-label="Copy command"
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
           </button>
+          <pre>
+            {lines.map((line, idx) => (
+              <span key={idx}>
+                {/^\s*#/.test(line) ? (
+                  <span className="docs-term-cmt">{line}</span>
+                ) : line.length > 0 ? (
+                  <>
+                    <span className="docs-term-prompt">$</span>
+                    {line}
+                  </>
+                ) : null}
+                {'\n'}
+              </span>
+            ))}
+          </pre>
         </div>
-        <pre className="p-3 overflow-x-auto">
-          <code className="text-xs font-mono text-gray-300 leading-5">{children}</code>
-        </pre>
+      )
+    }
+
+    return (
+      <div className="docs-terminal-cmd">
+        <code>
+          <span className="prompt">$</span>
+          {children}
+        </code>
+        <button
+          type="button"
+          onClick={copyToClipboard}
+          className="docs-copy-btn"
+          title="Copy to clipboard"
+          aria-label="Copy command"
+        >
+          {copied ? <Check size={14} /> : <Copy size={14} />}
+        </button>
       </div>
     )
   }
-  
-  // Tokenize and highlight JavaScript/TypeScript code
-  const highlightJavaScript = (code: string) => {
-    // Token types for syntax highlighting
-    const TOKEN_TYPES = {
-      STRING: 'text-green-600 dark:text-green-400',
-      KEYWORD: 'text-blue-600 dark:text-blue-400',
-      BOOLEAN: 'text-purple-600 dark:text-purple-400',
-      NUMBER: 'text-purple-600 dark:text-purple-400',
-      FUNCTION: 'text-yellow-600 dark:text-yellow-400',
-      PROPERTY: 'text-red-500 dark:text-red-400',
-      PEAL: 'text-orange-600 dark:text-orange-400',
-      COMMENT: 'text-gray-500'
-    }
-    
-    // First decode any existing HTML entities
-    const decodeHtml = (str: string) => {
-      return str
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#039;/g, "'")
-    }
-    
-    // Then escape HTML to prevent XSS
-    const escapeHtml = (str: string) => {
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;')
-    }
-    
-    // Decode first to get clean code
-    const cleanCode = decodeHtml(code)
-    
-    // Tokenize the code to identify different parts
-    const tokens: Array<{type: string, value: string}> = []
-    let remaining = cleanCode
-    let position = 0
-    
-    while (remaining.length > 0) {
-      let matched = false
-      
-      // Check for comments first
-      if (remaining.match(/^\/\/.*/)) {
-        const match = remaining.match(/^\/\/.*/)![0]
-        tokens.push({ type: 'COMMENT', value: match })
-        remaining = remaining.slice(match.length)
-        matched = true
-      }
-      // Check for strings
-      else if (remaining.match(/^(['"`])(?:[^\\]|\\.)*?\1/)) {
-        const match = remaining.match(/^(['"`])(?:[^\\]|\\.)*?\1/)![0]
-        tokens.push({ type: 'STRING', value: match })
-        remaining = remaining.slice(match.length)
-        matched = true
-      }
-      // Check for keywords
-      else if (remaining.match(/^(import|export|from|const|let|var|function|async|await|try|catch|throw|if|else|return|new|default|class|extends|constructor|static)\b/)) {
-        const match = remaining.match(/^(import|export|from|const|let|var|function|async|await|try|catch|throw|if|else|return|new|default|class|extends|constructor|static)\b/)![0]
-        tokens.push({ type: 'KEYWORD', value: match })
-        remaining = remaining.slice(match.length)
-        matched = true
-      }
-      // Check for boolean/null
-      else if (remaining.match(/^(true|false|null|undefined)\b/)) {
-        const match = remaining.match(/^(true|false|null|undefined)\b/)![0]
-        tokens.push({ type: 'BOOLEAN', value: match })
-        remaining = remaining.slice(match.length)
-        matched = true
-      }
-      // Check for numbers
-      else if (remaining.match(/^\d+(?:\.\d+)?/)) {
-        const match = remaining.match(/^\d+(?:\.\d+)?/)![0]
-        tokens.push({ type: 'NUMBER', value: match })
-        remaining = remaining.slice(match.length)
-        matched = true
-      }
-      // Check for Peal methods
-      else if (remaining.match(/^(peal|play|stop|pause|volume|mute|click|success|error|notification)\b/)) {
-        const match = remaining.match(/^(peal|play|stop|pause|volume|mute|click|success|error|notification)\b/)![0]
-        tokens.push({ type: 'PEAL', value: match })
-        remaining = remaining.slice(match.length)
-        matched = true
-      }
-      // Check for function calls
-      else if (remaining.match(/^[a-zA-Z_$][\w$]*(?=\s*\()/)) {
-        const match = remaining.match(/^[a-zA-Z_$][\w$]*/)![0]
-        tokens.push({ type: 'FUNCTION', value: match })
-        remaining = remaining.slice(match.length)
-        matched = true
-      }
-      // Check for properties
-      else if (remaining.match(/^[a-zA-Z_$][\w$]*(?=\s*:)/)) {
-        const match = remaining.match(/^[a-zA-Z_$][\w$]*/)![0]
-        tokens.push({ type: 'PROPERTY', value: match })
-        remaining = remaining.slice(match.length)
-        matched = true
-      }
-      
-      // If nothing matched, just take the next character as plain text
-      if (!matched) {
-        tokens.push({ type: 'PLAIN', value: remaining[0] })
-        remaining = remaining.slice(1)
-      }
-    }
-    
-    // Convert tokens to HTML
-    return tokens.map(token => {
-      const escaped = escapeHtml(token.value)
-      if (token.type === 'PLAIN') {
-        return escaped
-      }
-      const className = TOKEN_TYPES[token.type as keyof typeof TOKEN_TYPES]
-      return className ? `<span class="${className}">${escaped}</span>` : escaped
-    }).join('')
-  }
-  
+
   return (
-    <div className="bg-gray-50 dark:bg-gray-950/50 border border-gray-200 dark:border-gray-800 rounded-md text-xs my-2 relative group">
+    <div className="docs-code-block">
       <button
+        type="button"
         onClick={copyToClipboard}
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 z-10"
+        className="docs-copy-btn"
         title="Copy to clipboard"
+        aria-label="Copy code"
       >
         {copied ? <Check size={14} /> : <Copy size={14} />}
       </button>
-      <pre className="p-3 overflow-x-auto">
-        <code 
-          className="font-mono leading-5 block"
-          dangerouslySetInnerHTML={{ __html: highlightJavaScript(children) }}
-        />
+      <pre>
+        <code>{children}</code>
       </pre>
     </div>
   )
 }
 
-function MarkdownContent({ content }: { content: string }) {
-  // Simple markdown parser for our docs
+function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = []
+  const boldParts = text.split(/\*\*/)
+
+  boldParts.forEach((part, bi) => {
+    if (!part) return
+    if (bi % 2 === 1) {
+      nodes.push(<strong key={`${keyPrefix}-b-${bi}`}>{part}</strong>)
+      return
+    }
+    const codeParts = part.split('`')
+    codeParts.forEach((cp, ci) => {
+      if (!cp) return
+      if (ci % 2 === 1) {
+        nodes.push(<code key={`${keyPrefix}-c-${bi}-${ci}`}>{cp}</code>)
+      } else {
+        nodes.push(cp)
+      }
+    })
+  })
+
+  return nodes
+}
+
+function MarkdownContent({ content, skipTitle }: { content: string; skipTitle?: boolean }) {
   const lines = content.trim().split('\n')
   const elements: React.ReactNode[] = []
   let i = 0
-  
+  let skippedTitle = !skipTitle
+
   while (i < lines.length) {
     const line = lines[i]
-    
-    // Headers
+
     if (line.startsWith('# ')) {
-      elements.push(
-        <h1 key={i} className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 mt-8">
-          {line.substring(2)}
-        </h1>
-      )
+      if (!skippedTitle) {
+        skippedTitle = true
+        i++
+        continue
+      }
+      elements.push(<h1 key={i}>{line.substring(2)}</h1>)
     } else if (line.startsWith('## ')) {
-      elements.push(
-        <h2 key={i} className="text-xl font-medium text-gray-900 dark:text-white mb-3 mt-6">
-          {line.substring(3)}
-        </h2>
-      )
+      elements.push(<h2 key={i}>{line.substring(3)}</h2>)
     } else if (line.startsWith('### ')) {
+      elements.push(<h3 key={i}>{line.substring(4)}</h3>)
+    } else if (line.startsWith('#### `') && line.endsWith('`')) {
+      const signature = line.slice(5, -1)
+      let description = ''
+      if (i + 1 < lines.length && lines[i + 1].trim() && !lines[i + 1].startsWith('#') && !lines[i + 1].startsWith('```')) {
+        description = lines[i + 1].trim()
+        i++
+      }
       elements.push(
-        <h3 key={i} className="text-lg font-medium text-gray-900 dark:text-white mb-2 mt-4">
-          {line.substring(4)}
-        </h3>
+        <div key={i} className="docs-method">
+          <p className="docs-method-sig">{signature}</p>
+          {description ? <p className="docs-method-desc">{description}</p> : null}
+        </div>
       )
     } else if (line.startsWith('#### ')) {
-      elements.push(
-        <h4 key={i} className="text-base font-medium text-gray-800 dark:text-gray-200 mb-2 mt-3">
-          {line.substring(5)}
-        </h4>
-      )
+      elements.push(<h4 key={i}>{line.substring(5)}</h4>)
     }
     // Code blocks
     else if (line.startsWith('```')) {
@@ -611,209 +543,181 @@ function MarkdownContent({ content }: { content: string }) {
         i++
       }
       elements.push(
-        <div key={`code-${i}`} className="my-4">
-          <CodeBlock language={language}>{codeLines.join('\n')}</CodeBlock>
-        </div>
+        <CodeBlock key={`code-${i}`} language={language}>
+          {codeLines.join('\n')}
+        </CodeBlock>
       )
     }
-    // Inline code
-    else if (line.includes('`')) {
-      const parts = line.split('`')
-      const lineElements: React.ReactNode[] = []
-      parts.forEach((part, idx) => {
-        if (idx % 2 === 0) {
-          lineElements.push(part)
-        } else {
-          lineElements.push(
-            <code key={`inline-${i}-${idx}`} className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
-              {part}
-            </code>
-          )
-        }
-      })
-      elements.push(
-        <p key={i} className="mb-3 text-sm leading-relaxed">
-          {lineElements}
-        </p>
-      )
+    else if (/^\d+\.\s/.test(line)) {
+      const items: React.ReactNode[] = []
+      const start = i
+      while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
+        const itemText = lines[i].replace(/^\d+\.\s/, '')
+        items.push(<li key={i}>{renderInline(itemText, `li-${i}`)}</li>)
+        i++
+      }
+      elements.push(<ol key={`ol-${start}`}>{items}</ol>)
+      continue
     }
-    // Bold text
-    else if (line.includes('**')) {
-      const parts = line.split('**')
-      const lineElements: React.ReactNode[] = []
-      parts.forEach((part, idx) => {
-        if (idx % 2 === 0) {
-          lineElements.push(part)
-        } else {
-          lineElements.push(
-            <strong key={`bold-${i}-${idx}`} className="font-medium text-gray-900 dark:text-white">
-              {part}
-            </strong>
-          )
-        }
-      })
-      elements.push(
-        <p key={i} className="mb-3 text-sm leading-relaxed">
-          {lineElements}
-        </p>
-      )
+    else if (line.includes('`') || line.includes('**')) {
+      elements.push(<p key={i}>{renderInline(line, `p-${i}`)}</p>)
     }
     // Regular paragraphs
     else if (line.trim()) {
-      elements.push(
-        <p key={i} className="mb-3 text-sm leading-relaxed">
-          {line}
-        </p>
-      )
+      elements.push(<p key={i}>{line}</p>)
     }
     
     i++
   }
   
-  return <div className="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">{elements}</div>
+  return <div className="docs-prose">{elements}</div>
+}
+
+const sectionKickers: Record<string, string> = {
+  'quick-start': 'Guide',
+  api: 'API',
+  cli: 'CLI',
+  examples: 'Examples',
+  troubleshooting: 'Help',
+}
+
+const sectionLeads: Record<string, string> = {
+  'quick-start': 'Get Peal sounds working in your app in under 2 minutes.',
+  api: 'Play, stop, and control volume on the CLI-generated helper module.',
+  cli: 'Add, remove, and preview sounds from the terminal.',
+  examples: 'Drop-in patterns for React, Vue, and vanilla JavaScript.',
+  troubleshooting: 'Common issues and how to fix them.',
 }
 
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState('quick-start')
   const activeContent = sections.find(s => s.id === activeSection)
+  const isOverview = activeSection === 'quick-start'
+  const ActiveIcon = activeContent?.icon
+
+  const selectSection = useCallback((id: string) => {
+    setActiveSection(id)
+  }, [])
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0)
+  }, [activeSection])
 
   return (
-    <>
+    <div className="docs">
       <Header />
-      <main className="min-h-screen bg-white dark:bg-gray-950">
-        <div className="container mx-auto py-12">
-          {/* Hero Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
-              Documentation
-            </h1>
-            <p className="text-base text-gray-600 dark:text-gray-400">
-              Everything you need to add professional sounds to your web app
-            </p>
-          </div>
-
-          {/* Quick Links */}
-          {!isStaticBuild && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              <Link
-                href="https://www.npmjs.com/package/@peal-sounds/peal"
-                target="_blank"
-                className="group p-6 bg-gray-50 dark:bg-gray-900 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                <Package className="w-8 h-8 text-blue-600 mb-3" />
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">npm Package</h3>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  @peal-sounds/peal
-                </p>
-                <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-
-              <Link
-                href="https://github.com/arach/peal"
-                target="_blank"
-                className="group p-6 bg-gray-50 dark:bg-gray-900 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                <FileCode className="w-8 h-8 text-blue-600 mb-3" />
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">GitHub</h3>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Source code & issues
-                </p>
-                <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-
-              <button
-                onClick={() => setActiveSection('quick-start')}
-                className="group p-6 bg-gray-50 dark:bg-gray-900 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
-              >
-                <Zap className="w-8 h-8 text-blue-600 mb-3" />
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Quick Start</h3>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Get started in 2 minutes
-                </p>
-                <ArrowRight className="w-4 h-4 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
-              </button>
+      <main className="docs-shell">
+        <div className="docs-layout">
+          <nav className="docs-sidebar" aria-label="Documentation sections">
+            <div className="docs-sidebar-panel">
+              <div className="docs-sidebar-label">Sections</div>
+              {sections.map((section) => {
+                const Icon = section.icon
+                return (
+                  <button
+                    key={section.id}
+                    type="button"
+                    onClick={() => selectSection(section.id)}
+                    className={`docs-sidebar-link${activeSection === section.id ? ' is-active' : ''}`}
+                  >
+                    <Icon size={15} />
+                    {section.title}
+                  </button>
+                )
+              })}
             </div>
-          )}
+          </nav>
 
-          {/* Documentation Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Sidebar Navigation */}
-            <nav className="lg:col-span-1">
-              <div className="sticky top-24 space-y-1">
-                {sections.map((section) => {
-                  const Icon = section.icon
-                  return (
-                    <button
-                      key={section.id}
-                      onClick={() => setActiveSection(section.id)}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-left ${
-                        activeSection === section.id
-                          ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                          : 'hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-600 dark:text-gray-400'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
-                      <span className="text-sm">{section.title}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </nav>
-
-            {/* Content Area */}
-            <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6">
-                {activeContent && <MarkdownContent content={activeContent.content} />}
-              </div>
-
-              {/* Features */}
-              {activeSection === 'quick-start' && (
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                    <Terminal className="w-6 h-6 text-blue-600 mb-2" />
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                      CLI Manages Sounds
-                    </h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      Add and remove sounds from our curated collection with simple commands
-                    </p>
-                  </div>
-
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                    <Volume2 className="w-6 h-6 text-blue-600 mb-2" />
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                      Library Plays Them
-                    </h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      Thin wrapper around Howler.js with zero configuration needed
-                    </p>
-                  </div>
-
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                    <CheckCircle className="w-6 h-6 text-blue-600 mb-2" />
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                      TypeScript Ready
-                    </h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      Full TypeScript support with generated types for your sounds
-                    </p>
-                  </div>
-
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                    <Wrench className="w-6 h-6 text-blue-600 mb-2" />
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                      Framework Agnostic
-                    </h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      Works with React, Vue, Svelte, or vanilla JavaScript
-                    </p>
-                  </div>
+          <div className="docs-main">
+            <div className="docs-page-header">
+              {isOverview ? (
+                <div className="docs-hero">
+                  <div className="docs-kicker">Developer docs</div>
+                  <h1>Documentation</h1>
+                  <p>Everything you need to add professional sounds to your web app</p>
                 </div>
+              ) : activeContent ? (
+                <header className="docs-article-header">
+                  <div className="docs-kicker">{sectionKickers[activeContent.id] ?? 'Docs'}</div>
+                  <div className="docs-article-title">
+                    {ActiveIcon ? <ActiveIcon size={22} className="docs-article-icon" /> : null}
+                    <h1>{activeContent.title}</h1>
+                  </div>
+                  <p className="docs-article-lead">{sectionLeads[activeContent.id]}</p>
+                </header>
+              ) : null}
+            </div>
+
+            <div className="docs-content-panel">
+              {activeContent && (
+                <MarkdownContent content={activeContent.content} skipTitle />
               )}
             </div>
+
+            {isOverview && !isStaticBuild && (
+              <div className="docs-quick-links">
+                <Link
+                  href="https://www.npmjs.com/package/@peal-sounds/peal"
+                  target="_blank"
+                  className="docs-quick-link"
+                >
+                  <Package className="docs-quick-icon" />
+                  <h3>npm Package</h3>
+                  <p>@peal-sounds/peal</p>
+                  <ArrowRight className="docs-quick-arrow" />
+                </Link>
+
+                <Link
+                  href="https://github.com/arach/peal"
+                  target="_blank"
+                  className="docs-quick-link"
+                >
+                  <FileCode className="docs-quick-icon" />
+                  <h3>GitHub</h3>
+                  <p>Source code &amp; issues</p>
+                  <ArrowRight className="docs-quick-arrow" />
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => selectSection('quick-start')}
+                  className="docs-quick-link"
+                >
+                  <Zap className="docs-quick-icon" />
+                  <h3>Quick Start</h3>
+                  <p>Get started in 2 minutes</p>
+                  <ArrowRight className="docs-quick-arrow" />
+                </button>
+              </div>
+            )}
+
+            {activeSection === 'quick-start' && (
+              <div className="docs-features">
+                <div className="docs-feature">
+                  <Terminal />
+                  <h3>CLI Manages Sounds</h3>
+                  <p>Add and remove sounds from our curated collection with simple commands</p>
+                </div>
+                <div className="docs-feature">
+                  <Volume2 />
+                  <h3>Library Plays Them</h3>
+                  <p>Thin wrapper around Howler.js with zero configuration needed</p>
+                </div>
+                <div className="docs-feature">
+                  <CheckCircle />
+                  <h3>TypeScript Ready</h3>
+                  <p>Full TypeScript support with generated types for your sounds</p>
+                </div>
+                <div className="docs-feature">
+                  <Wrench />
+                  <h3>Framework Agnostic</h3>
+                  <p>Works with React, Vue, Svelte, or vanilla JavaScript</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
-    </>
+    </div>
   )
 }

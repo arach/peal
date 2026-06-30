@@ -1190,3 +1190,107 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.82; }
 }
+
+/* ── Studio welcome empty-state CTAs ──────────────────────────── */
+/* Self-contained (token fallbacks) so it renders identically whether
+   mounted inside .peal-studio-shell or the legacy /studio layout. */
+
+.peal-studio-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  max-width: 25rem;
+  text-align: center;
+}
+
+.peal-studio-welcome-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.peal-studio-welcome-copy {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.peal-studio-welcome-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.peal-studio-welcome-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.05rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.14s, color 0.14s, border-color 0.14s,
+    box-shadow 0.14s, transform 0.08s;
+}
+
+.peal-studio-welcome-cta:active {
+  transform: translateY(1px);
+}
+
+/* Primary — machined blue cap: inset top-light, restrained accent glow */
+.peal-studio-welcome-cta--primary {
+  color: #0a1628;
+  background: linear-gradient(
+    180deg,
+    var(--inst-accent-hi, #6bb0ff) 0%,
+    var(--inst-accent, #4a9eff) 52%,
+    #2d6eb8 100%
+  );
+  border-color: rgba(0, 0, 0, 0.38);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28) inset,
+    0 0 14px rgba(74, 158, 255, 0.18),
+    0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.peal-studio-welcome-cta--primary:hover {
+  background: linear-gradient(
+    180deg,
+    #8ec5ff 0%,
+    var(--inst-accent-hi, #6bb0ff) 50%,
+    var(--inst-accent, #4a9eff) 100%
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.32) inset,
+    0 0 20px rgba(74, 158, 255, 0.26),
+    0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+/* Secondary — recessed outlined pad: dual-tone hairline, inset rim light */
+.peal-studio-welcome-cta--secondary {
+  color: rgba(255, 255, 255, 0.7);
+  background: linear-gradient(
+    180deg,
+    var(--inst-face-raised, #1e1e22) 0%,
+    var(--inst-face, #141418) 100%
+  );
+  border-color: var(--inst-line-lo, rgba(0, 0, 0, 0.5));
+  border-top-color: var(--inst-line-hi, rgba(255, 255, 255, 0.08));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.peal-studio-welcome-cta--secondary:hover {
+  color: rgba(255, 255, 255, 0.92);
+  border-color: rgba(74, 158, 255, 0.4);
+  border-top-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 0 12px rgba(74, 158, 255, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+}

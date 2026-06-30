@@ -6,7 +6,7 @@ export default function LibraryPage() {
   return (
     <>
       <Header variant="app" />
-      <main className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <main className="min-h-screen bg-[#111113] text-gray-100">
         <ErrorBoundary>
           <SoundDesigner />
         </ErrorBoundary>

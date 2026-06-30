@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Howl } from 'howler'
+import Header from '@/components/Header'
 
 interface KeyboardSound {
   name: string
@@ -206,20 +207,22 @@ export default function KeyboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <>
+      <Header />
+      <div className="min-h-screen bg-[#111113] text-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Keyboard Sound Comparison</h1>
-          <p className="mt-2 text-gray-600">Compare reference recordings with synthetic keyboard sounds</p>
+          <h1 className="text-3xl font-bold">Keyboard Sound Comparison</h1>
+          <p className="mt-2 text-gray-400">Compare reference recordings with synthetic keyboard sounds</p>
           <p className="mt-1 text-sm text-gray-500">Press Space or Escape to stop playback</p>
         </div>
 
         {/* Reference Samples */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+        <div className="bg-[#1c1c1e] rounded-lg border border-gray-800 p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
             <span className="mr-2">📼</span> Reference & 30-Second Sequences
           </h2>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-gray-400 mb-4">
             Compare our 30-second code-generated typing vs sample-based approach
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -228,13 +231,13 @@ export default function KeyboardPage() {
                 key={sound.name}
                 className={`border rounded-lg p-4 transition-all ${
                   playing === sound.name 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-[#4a9eff] bg-[#4a9eff]/10' 
+                    : 'border-gray-800 hover:border-gray-700'
                 }`}
               >
                 <div className="border-l-4 border-gray-500 pl-3">
-                  <h3 className="font-medium text-gray-900">{sound.displayName}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{sound.description}</p>
+                  <h3 className="font-medium">{sound.displayName}</h3>
+                  <p className="text-sm text-gray-400 mt-1">{sound.description}</p>
                   <button
                     onClick={() => playing === sound.name ? stopSound() : playSound(sound)}
                     className={`mt-3 px-4 py-2 rounded text-sm font-medium transition-colors ${
@@ -252,8 +255,8 @@ export default function KeyboardPage() {
         </div>
 
         {/* Best Realistic Sounds */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+        <div className="bg-[#1c1c1e] rounded-lg border border-gray-800 p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
             <span className="mr-2">✅</span> Best Realistic Sounds
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -262,13 +265,13 @@ export default function KeyboardPage() {
                 key={sound.name}
                 className={`border rounded-lg p-4 transition-all ${
                   playing === sound.name 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-[#4a9eff] bg-[#4a9eff]/10' 
+                    : 'border-gray-800 hover:border-gray-700'
                 }`}
               >
-                <div className="border-l-4 border-blue-500 pl-3">
-                  <h3 className="font-medium text-gray-900">{sound.displayName}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{sound.description}</p>
+                <div className="border-l-4 border-[#4a9eff] pl-3">
+                  <h3 className="font-medium">{sound.displayName}</h3>
+                  <p className="text-sm text-gray-400 mt-1">{sound.description}</p>
                   <button
                     onClick={() => playing === sound.name ? stopSound() : playSound(sound)}
                     className={`mt-3 px-4 py-2 rounded text-sm font-medium transition-colors ${
@@ -286,8 +289,8 @@ export default function KeyboardPage() {
         </div>
 
         {/* Experimental Sounds */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+        <div className="bg-[#1c1c1e] rounded-lg border border-gray-800 p-6">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
             <span className="mr-2">🧪</span> Experimental Sounds
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -296,13 +299,13 @@ export default function KeyboardPage() {
                 key={sound.name}
                 className={`border rounded-lg p-4 transition-all ${
                   playing === sound.name 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-[#4a9eff] bg-[#4a9eff]/10' 
+                    : 'border-gray-800 hover:border-gray-700'
                 }`}
               >
                 <div className="border-l-4 border-green-500 pl-3">
-                  <h3 className="font-medium text-gray-900">{sound.displayName}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{sound.description}</p>
+                  <h3 className="font-medium">{sound.displayName}</h3>
+                  <p className="text-sm text-gray-400 mt-1">{sound.description}</p>
                   <button
                     onClick={() => playing === sound.name ? stopSound() : playSound(sound)}
                     className={`mt-3 px-4 py-2 rounded text-sm font-medium transition-colors ${
@@ -319,6 +322,7 @@ export default function KeyboardPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

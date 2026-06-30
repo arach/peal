@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { ArrowLeft, Play, Pause, Sparkles, Grid3X3, List, Volume2 } from 'lucide-react'
+import { Play, Pause, Grid3X3, List, Volume2 } from 'lucide-react'
+import Header from '@/components/Header'
 import { brandPresets, processingPreset, type BrandPreset, type BrandSound } from '@/lib/presets/brandPresets'
 import { playPremiumSound, preloadPremiumSounds } from '@/lib/presets/playPremiumSound'
 
@@ -28,7 +28,6 @@ const categories = {
 }
 
 export default function BrandsPage() {
-  const router = useRouter()
   const [selectedBrand, setSelectedBrand] = useState<string>('all')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [playingId, setPlayingId] = useState<string | null>(null)
@@ -157,55 +156,44 @@ export default function BrandsPage() {
     })).filter(preset => preset.sounds.length > 0) : []
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
-      {/* Header */}
+    <>
+      <Header />
+      <div className="min-h-screen bg-[#111113] text-gray-100">
       <div className="border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">Brand Sound Inspiration</h1>
+            <p className="text-sm text-gray-400 mt-1">
+              Explore sounds inspired by Slack, Discord, Microsoft, Spotify, and more
+            </p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            {comparedSounds.length > 0 && (
               <button
-                onClick={() => router.push('/')}
-                className="flex items-center gap-2 text-gray-400 hover:text-gray-100 transition-colors"
+                onClick={playComparison}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
               >
-                <ArrowLeft size={18} />
-                Back
+                <Play size={16} />
+                Play Comparison ({comparedSounds.length})
               </button>
-              <div className="w-px h-6 bg-gray-700"></div>
-              <div>
-                <h1 className="text-2xl font-bold">Brand Sound Inspiration</h1>
-                <p className="text-sm text-gray-400 mt-1">
-                  Explore sounds inspired by Slack, Discord, Microsoft, Spotify, and more
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              {comparedSounds.length > 0 && (
-                <button
-                  onClick={playComparison}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
-                >
-                  <Play size={16} />
-                  Play Comparison ({comparedSounds.length})
-                </button>
-              )}
-              <div className="flex items-center gap-2 bg-gray-800 rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded transition-colors ${
-                    viewMode === 'grid' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <Grid3X3 size={16} />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 rounded transition-colors ${
-                    viewMode === 'list' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <List size={16} />
-                </button>
-              </div>
+            )}
+            <div className="flex items-center gap-2 bg-gray-800 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === 'grid' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Grid3X3 size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === 'list' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <List size={16} />
+              </button>
             </div>
           </div>
         </div>
@@ -366,7 +354,8 @@ export default function BrandsPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Figtree, Space_Grotesk, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
+import '@/styles/peal-nav.css'
 import ThemeProvider from '@/components/ThemeProvider'
 
 const figtree = Figtree({ 
@@ -10,7 +11,7 @@ const figtree = Figtree({
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  weight: ['500', '600', '700'],
+  weight: ['300', '400', '500', '600'],
   variable: '--font-space-grotesk',
 })
 

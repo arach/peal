@@ -14,14 +14,13 @@ const installCommands: Record<PkgManager, string> = {
   bun: 'bun add @peal-sounds/peal',
 }
 
-const cliCommand = 'npx peal add success notification error'
+const cliCommand = 'npx @peal-sounds/peal add success notification error'
 
-const usageCode = `<span class="hl-cmt">// Play sounds in your app</span>
-<span class="hl-kw">import</span> { <span class="hl-fn">play</span> } <span class="hl-kw">from</span> <span class="hl-str">'@peal-sounds/peal'</span>
+const usageCode = `<span class="hl-kw">import</span> peal <span class="hl-kw">from</span> <span class="hl-str">'./peal'</span>
 
-<span class="hl-fn">play</span>(<span class="hl-str">'success'</span>)
-<span class="hl-fn">play</span>(<span class="hl-str">'notification'</span>, { <span class="hl-key">volume</span>: <span class="hl-str">'loud'</span> })
-<span class="hl-fn">play</span>(<span class="hl-str">'error'</span>, { <span class="hl-key">volume</span>: <span class="hl-str">'quiet'</span> })`
+peal.<span class="hl-fn">play</span>(<span class="hl-str">'success'</span>)
+peal.<span class="hl-fn">play</span>(<span class="hl-str">'notification'</span>)
+peal.<span class="hl-fn">play</span>(<span class="hl-str">'error'</span>, { volume: <span class="hl-key">0.5</span> })`
 
 function CopyIcon() {
   return (
@@ -93,7 +92,7 @@ export default function LandingHero() {
               <Terminal size={16} />
             </span>
             <h2>CLI workflow</h2>
-            <p>Add curated UI sounds to your repo with <code>npx peal add</code> — no manual wiring.</p>
+            <p>Add curated UI sounds to your repo with <code>npx @peal-sounds/peal add</code> — no manual wiring.</p>
           </div>
         </div>
 
@@ -162,48 +161,33 @@ export default function LandingHero() {
       </section>
 
       <section className="landing-section fade-in fade-in-delay-2" id="integrate">
-        <div className="landing-config-grid">
-          <div>
-            <div className="landing-kicker">CLI</div>
-            <h2 style={{ fontSize: '1.45rem', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8 }}>
-              Add sounds in one command
-            </h2>
-            <p style={{ color: 'var(--landing-text-dim)', fontSize: 14, lineHeight: 1.55, marginBottom: 16 }}>
-              The Peal CLI copies WAV files and generates a ready-to-use module for your project.
-            </p>
-            <div className="landing-install-cmd" style={{ marginBottom: 12 }}>
-              <code>
-                <span className="prompt">$</span>
-                {cliCommand}
-              </code>
-              <button
-                type="button"
-                className="landing-install-copy"
-                onClick={() => copy(cliCommand, 'cli')}
-                aria-label="Copy CLI command"
-              >
-                {copied === 'cli' ? <CheckIcon /> : <CopyIcon />}
-              </button>
-            </div>
+        <div className="landing-integrate">
+          <div className="landing-kicker">CLI</div>
+          <h2 className="landing-integrate-title">Add sounds in one command</h2>
+          <p className="landing-integrate-lead">
+            The Peal CLI copies WAV files and generates a ready-to-use module for your project.
+          </p>
+          <div className="landing-install-cmd">
+            <code>
+              <span className="prompt">$</span>
+              {cliCommand}
+            </code>
+            <button
+              type="button"
+              className="landing-install-copy"
+              onClick={() => copy(cliCommand, 'cli')}
+              aria-label="Copy CLI command"
+            >
+              {copied === 'cli' ? <CheckIcon /> : <CopyIcon />}
+            </button>
           </div>
-
-          <div className="landing-code-block">
-            <div className="landing-code-header">
-              <span className="landing-code-dot landing-code-dot-red" />
-              <span className="landing-code-dot landing-code-dot-yellow" />
-              <span className="landing-code-dot landing-code-dot-green" />
-              <span className="landing-code-filename">peal.ts</span>
-            </div>
-            <pre
-              className="landing-code-pre"
-              dangerouslySetInnerHTML={{ __html: usageCode }}
-            />
-            <div className="landing-terminal-out">
-              <div className="ok">✓ success</div>
-              <div className="ok">✓ notification</div>
-              <div className="ok">✓ error</div>
-            </div>
-          </div>
+          <p className="landing-integrate-after">
+            Then import and call <code>play()</code> in your app.
+          </p>
+          <pre
+            className="landing-code-snippet"
+            dangerouslySetInnerHTML={{ __html: usageCode }}
+          />
         </div>
       </section>
 
@@ -262,30 +246,17 @@ export default function LandingHero() {
       </section>
 
       <section className="landing-section fade-in fade-in-delay-2">
-        <div className="landing-studio-card">
-          <div>
-            <div className="landing-kicker">Sound studio</div>
-            <h2 style={{ fontSize: '1.45rem', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 10 }}>
-              Design audio like you design UI
-            </h2>
-            <p style={{ color: 'var(--landing-text-dim)', fontSize: 14, lineHeight: 1.55, marginBottom: 16 }}>
-              Three-pane studio: code on the left, waveform in the center, AI + parameters on the right.
-              The same dark chrome you see across Peal — not a separate marketing skin.
-            </p>
-            <a href={studioHref} className="landing-btn landing-btn-primary">
-              <Code2 size={16} />
-              Open studio
-            </a>
-          </div>
-          <div className="landing-studio-preview" aria-hidden="true">
-            <div className="landing-studio-preview-bar">
-              <span className="landing-code-dot landing-code-dot-red" />
-              <span className="landing-code-dot landing-code-dot-yellow" />
-              <span className="landing-code-dot landing-code-dot-green" />
-              <span style={{ marginLeft: 8 }}>peal — studio</span>
-            </div>
-            <div className="landing-studio-preview-pane">Web Audio API · live</div>
-          </div>
+        <div className="landing-integrate">
+          <div className="landing-kicker">Sound studio</div>
+          <h2 className="landing-integrate-title">Design audio like you design UI</h2>
+          <p className="landing-integrate-lead">
+            Three-pane studio: code on the left, waveform in the center, AI + parameters on the right.
+            The same dark chrome you see across Peal — not a separate marketing skin.
+          </p>
+          <a href={studioHref} className="landing-btn landing-btn-primary">
+            <Code2 size={16} />
+            Open studio
+          </a>
         </div>
       </section>
 
