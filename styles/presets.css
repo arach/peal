@@ -156,6 +156,27 @@
     border-color 0.15s ease;
 }
 
+.presets-category {
+  position: relative;
+  overflow: hidden;
+}
+
+.presets-category::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 100%);
+}
+
+.presets-category:hover::before,
+.presets-category.is-active::before {
+  opacity: 1;
+}
+
 .presets-category:hover {
   color: var(--presets-text);
   background: rgba(255, 255, 255, 0.04);
@@ -186,18 +207,65 @@
 }
 
 .presets-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   padding: 18px 18px 16px;
   border-radius: 12px;
   border: 1px solid var(--presets-border);
   background: var(--presets-surface);
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+/* Top wash + soft corner light — no layout shift */
+.presets-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 46%),
+    radial-gradient(ellipse 85% 70% at 8% -12%, rgba(255, 255, 255, 0.07), transparent 58%);
+}
+
+/* Hairline top gleam */
+.presets-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 100%
+  );
 }
 
 .presets-card:hover {
   border-color: var(--presets-border-lit);
   background: #1e1e20;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 32px -20px rgba(0, 0, 0, 0.65);
+}
+
+.presets-card:hover::before,
+.presets-card:hover::after {
+  opacity: 1;
 }
 
 .presets-card-head {
