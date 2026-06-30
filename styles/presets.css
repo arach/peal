@@ -137,6 +137,8 @@
 }
 
 .presets-category {
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -154,11 +156,6 @@
     color 0.15s ease,
     background 0.15s ease,
     border-color 0.15s ease;
-}
-
-.presets-category {
-  position: relative;
-  overflow: hidden;
 }
 
 .presets-category::before {
