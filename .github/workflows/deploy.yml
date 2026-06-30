@@ -18,8 +18,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Peal
         uses: actions/checkout@v4
+        with:
+          path: peal
+
+      - name: Checkout Hudson (file: deps)
+        uses: actions/checkout@v4
+        with:
+          repository: arach/hudson
+          path: hudson
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -27,28 +35,40 @@ jobs:
           node-version: "20"
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
-          version: 8
-          run_install: false
+          version: 9
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Get pnpm store directory
         shell: bash
+        working-directory: peal
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('peal/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      - name: Build Hudson packages (linked file: deps)
+        working-directory: hudson
+        run: |
+          bun install --frozen-lockfile
+          bun run --filter @hudsonkit/ai build
+          bun run --filter hudsonkit build
+
       - name: Install dependencies
-        run: pnpm install
+        working-directory: peal
+        run: pnpm install --frozen-lockfile
 
       - name: Build
+        working-directory: peal
         run: pnpm run build:static
         env:
           NEXT_PUBLIC_BASE_PATH: /peal
@@ -56,7 +76,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: peal/out
 
   deploy:
     environment:
