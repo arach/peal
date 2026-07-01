@@ -711,8 +711,9 @@
 }
 
 .landing .landing-install-cmd--multiline code {
-  white-space: pre;
+  white-space: pre-wrap;
   line-height: 1.55;
+  word-break: normal;
 }
 
 .landing .landing-integrate-title {

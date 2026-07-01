@@ -94,10 +94,10 @@ Run `peal list` for the full list in the terminal.
 ```bash
 peal add                         # interactive picker
 peal add click                   # one sound
-peal add click success error     # several at once
-peal add \
+peal add \                       # several sounds
   click \
-  success                        # same thing, easier to read
+  success \
+  error
 peal add --dir ./sounds          # custom output folder
 peal add --typescript            # generate peal.ts instead of peal.js
 

@@ -14,10 +14,14 @@ const installCommands: Record<PkgManager, string> = {
   bun: 'bun add @peal-sounds/peal',
 }
 
-const cliCommand = `npx @peal-sounds/peal add \\
+const addSoundsCommand = `peal add \\
   click \\
   success \\
   error`
+
+function quickStartCommand(pm: PkgManager) {
+  return `${installCommands[pm]}\n\n${addSoundsCommand}`
+}
 
 const usageCode = `<span class="hl-kw">import</span> peal <span class="hl-kw">from</span> <span class="hl-str">'./peal'</span>
 
@@ -118,16 +122,19 @@ export default function LandingHero() {
                   </button>
                 ))}
               </div>
-              <div className="landing-install-cmd">
+              <div className="landing-install-cmd landing-install-cmd--multiline">
                 <code>
                   <span className="prompt">$</span>
                   {installCommands[pm]}
+                  {'\n\n'}
+                  <span className="prompt">$</span>
+                  {addSoundsCommand}
                 </code>
                 <button
                   type="button"
                   className="landing-install-copy"
-                  onClick={() => copy(installCommands[pm], 'install')}
-                  aria-label="Copy install command"
+                  onClick={() => copy(quickStartCommand(pm), 'install')}
+                  aria-label="Copy install and add commands"
                 >
                   {copied === 'install' ? <CheckIcon /> : <CopyIcon />}
                 </button>
@@ -173,12 +180,12 @@ export default function LandingHero() {
           <div className="landing-install-cmd landing-install-cmd--multiline">
             <code>
               <span className="prompt">$</span>
-              {cliCommand}
+              {addSoundsCommand}
             </code>
             <button
               type="button"
               className="landing-install-copy"
-              onClick={() => copy(cliCommand, 'cli')}
+              onClick={() => copy(addSoundsCommand, 'cli')}
               aria-label="Copy CLI command"
             >
               {copied === 'cli' ? <CheckIcon /> : <CopyIcon />}
