@@ -31,7 +31,9 @@
     "cli": "node cli/index.js",
     "cli:generate-sounds": "node cli/generate-cli-sounds.cjs",
     "credentials": "node scripts/check-credentials.mjs",
-    "seed:message-beds": "node scripts/seed-message-beds.mjs"
+    "seed:message-beds": "node scripts/seed-message-beds.mjs",
+    "publish:npm": "node scripts/publish-npm.mjs",
+    "publish:npm:arach": "node scripts/publish-npm.mjs --only @arach/peal"
   },
   "keywords": [
     "sound",
