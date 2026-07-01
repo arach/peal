@@ -1,10 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { X, Search, Play, Pause, Check } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { X, Search } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sound, useSoundStore } from '@/store/soundStore'
+import { modernAppPresets, soundCategories } from '@/lib/presets/modernAppSounds'
+import {
+  getPresetAudioBuffer,
+  isPresetSoundId,
+  presetIdFromSoundId,
+  presetToSound,
+} from '@/lib/presets/presetSound'
 import SoundGridRenderer from './SoundGridRenderer'
+import '@/styles/studio-library-modal.css'
 
 interface SoundLibraryModalProps {
   isOpen: boolean
@@ -12,108 +21,125 @@ interface SoundLibraryModalProps {
   onSelectSound: (sound: Sound) => void
 }
 
+const presetSounds = modernAppPresets.map(presetToSound)
+
+const categoryOptions = [
+  { value: 'all', label: 'All Sounds' },
+  ...Object.entries(soundCategories).map(([value, category]) => ({
+    value,
+    label: category.name,
+  })),
+  { value: 'my-ui', label: 'My UI Sounds' },
+  { value: 'my-notification', label: 'My Notifications' },
+  { value: 'my-success', label: 'My Success' },
+  { value: 'my-error', label: 'My Error' },
+]
+
 export default function SoundLibraryModal({ isOpen, onClose, onSelectSound }: SoundLibraryModalProps) {
   const { sounds } = useSoundStore()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [playingId, setPlayingId] = useState<string | null>(null)
+  const [selectingId, setSelectingId] = useState<string | null>(null)
 
-  // Filter sounds based on category and search
-  const filteredSounds = sounds.filter(sound => {
-    const matchesCategory = selectedCategory === 'all' || sound.tags.includes(selectedCategory)
-    const matchesSearch = searchQuery === '' || 
+  const librarySounds = useMemo(() => [...presetSounds, ...sounds], [sounds])
+
+  const filteredSounds = librarySounds.filter(sound => {
+    const isUserSound = !isPresetSoundId(sound.id)
+    const matchesCategory = selectedCategory === 'all' || (
+      selectedCategory.startsWith('my-')
+        ? isUserSound && sound.tags.includes(selectedCategory.slice(4))
+        : isPresetSoundId(sound.id) && sound.tags.includes(selectedCategory)
+    )
+    const matchesSearch = searchQuery === '' ||
       sound.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
       sound.type.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesCategory && matchesSearch
   })
 
-  // No need for preloading - we'll use Web Audio API directly
+  const handleSelectSound = async (sound: Sound) => {
+    if (selectingId) return
 
-  const handlePlay = (soundId: string) => {
-    if (playingId === soundId) {
-      // Can't stop Web Audio API sounds easily, just clear the playing state
-      setPlayingId(null)
-    } else {
-      // Play new sound
-      const sound = sounds.find(s => s.id === soundId)
-      if (sound?.audioBuffer) {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-        const source = audioContext.createBufferSource()
-        source.buffer = sound.audioBuffer
-        source.connect(audioContext.destination)
-        source.start(0)
-        source.onended = () => setPlayingId(null)
-        setPlayingId(soundId)
+    setSelectingId(sound.id)
+
+    try {
+      if (isPresetSoundId(sound.id) && !sound.audioBuffer) {
+        const audioBuffer = await getPresetAudioBuffer(presetIdFromSoundId(sound.id))
+        if (!audioBuffer) return
+
+        onSelectSound({ ...sound, audioBuffer })
+        onClose()
+        return
       }
+
+      onSelectSound(sound)
+      onClose()
+    } catch (error) {
+      console.error('Error loading library sound:', error)
+    } finally {
+      setSelectingId(null)
     }
   }
 
-  const handleSelectSound = (sound: Sound) => {
-    onSelectSound(sound)
-    onClose()
-  }
+  if (typeof document === 'undefined') return null
 
-  const categoryOptions = [
-    { value: 'all', label: 'All Sounds' },
-    { value: 'ui', label: 'UI Sounds' },
-    { value: 'notification', label: 'Notifications' },
-    { value: 'success', label: 'Success' },
-    { value: 'error', label: 'Error' },
-    { value: 'click', label: 'Clicks' },
-    { value: 'transition', label: 'Transitions' }
-  ]
-
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop */}
+        <div className="peal-library-modal">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/55 z-[250]"
           />
 
-          {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.16 }}
+            className="fixed inset-0 flex items-center justify-center z-[250] px-6 py-8 pointer-events-none"
           >
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-              {/* Header */}
-              <div className="border-b border-gray-200 dark:border-gray-800 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Sound Library
-                  </h2>
+            <div
+              className="peal-library-modal__panel pointer-events-auto w-full max-w-[min(1280px,calc(100vw-3rem))] max-h-[calc(100vh-4rem)] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="peal-library-modal__header">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="peal-library-modal__kicker">Browse</p>
+                    <h2 className="peal-library-modal__title">Sound Library</h2>
+                    <p className="peal-library-modal__copy">
+                      Curated presets and your saved sounds
+                    </p>
+                  </div>
                   <button
+                    type="button"
                     onClick={onClose}
-                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                    className="peal-library-modal__close"
+                    aria-label="Close"
                   >
-                    <X size={20} />
+                    <X size={18} />
                   </button>
                 </div>
 
-                {/* Search and filters */}
-                <div className="flex gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <div className="peal-library-modal__controls">
+                  <div className="peal-library-modal__search-wrap">
+                    <Search className="peal-library-modal__search-icon" size={16} />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search sounds..."
-                      className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="peal-library-modal__input"
                     />
                   </div>
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="peal-library-modal__select"
+                    aria-label="Filter by category"
                   >
                     {categoryOptions.map(option => (
                       <option key={option.value} value={option.value}>
@@ -124,32 +150,32 @@ export default function SoundLibraryModal({ isOpen, onClose, onSelectSound }: So
                 </div>
               </div>
 
-              {/* Sound Grid */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="peal-library-modal__body">
                 <SoundGridRenderer
                   sounds={filteredSounds}
                   columns={{
-                    default: 2,
-                    sm: 2,
-                    lg: 3,
-                    xl: 3
+                    default: 4,
                   }}
                   gap={4}
                   onSoundClick={handleSelectSound}
+                  cardVariant="rack"
                 />
 
                 {filteredSounds.length === 0 && (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 dark:text-gray-400">
-                      No sounds found matching your criteria
-                    </p>
-                  </div>
+                  <p className="peal-library-modal__empty">
+                    No sounds found matching your criteria
+                  </p>
+                )}
+
+                {selectingId && (
+                  <p className="peal-library-modal__loading">Loading sound…</p>
                 )}
               </div>
             </div>
           </motion.div>
-        </>
+        </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   )
 }

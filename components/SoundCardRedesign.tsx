@@ -4,17 +4,27 @@ import { useState, useRef, useEffect } from 'react'
 import { Sound, useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { exportAudioAsWAV, generateSoundFilename } from '@/utils/audioExport'
-import { Play, Pause, Star, Sliders, MoreVertical, Sparkles } from 'lucide-react'
+import { Play, Pause, Star, Sliders, Sparkles } from 'lucide-react'
+import {
+  MagicWandIcon,
+  MoreIcon,
+  PauseIcon,
+  PlayIcon,
+  StarIcon,
+  WaveformIcon,
+} from '@/components/icons/PealStudioIcon'
+import { extractWaveformData } from '@/lib/audioUtils'
+import { getPresetWaveform, isPresetSoundId, presetIdFromSoundId } from '@/lib/presets/presetSound'
 import SoundCardDropdown from './SoundCardDropdown'
 import { useRouter } from 'next/navigation'
 
 interface SoundCardProps {
   sound: Sound
   index: number
+  variant?: 'default' | 'rack'
 }
 
-
-export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
+export default function SoundCardRedesign({ sound, index, variant = 'default' }: SoundCardProps) {
   const {
     selectedSounds,
     currentlyPlaying,
@@ -29,6 +39,8 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
   const { playSound } = useSoundGeneration()
   const router = useRouter()
   const [isPlaying, setIsPlaying] = useState(false)
+  const [waveformPreview, setWaveformPreview] = useState<number[] | null>(sound.waveformData)
+  const [waveformLoading, setWaveformLoading] = useState(false)
   const [showTagInput, setShowTagInput] = useState(false)
   const [newTag, setNewTag] = useState('')
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -53,7 +65,53 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
   }, [])
 
   useEffect(() => {
-    if (!canvasRef.current || !sound.waveformData) return
+    setWaveformPreview(sound.waveformData)
+  }, [sound.id])
+
+  useEffect(() => {
+    if (sound.waveformData) return
+
+    let cancelled = false
+
+    const loadWaveform = async () => {
+      setWaveformLoading(true)
+
+      try {
+        if (isPresetSoundId(sound.id)) {
+          const data = await getPresetWaveform(presetIdFromSoundId(sound.id))
+          if (!cancelled && data.length > 0) setWaveformPreview(data)
+          return
+        }
+
+        if (sound.audioBuffer) {
+          const data = extractWaveformData(sound.audioBuffer)
+          if (!cancelled) setWaveformPreview(data)
+          return
+        }
+
+        const { SoundGenerator } = await import('@/hooks/useSoundGeneration')
+        const tempSound = { ...sound }
+        const generator = new SoundGenerator()
+        await (generator as any).renderSound(tempSound)
+        if (!cancelled && tempSound.waveformData) {
+          setWaveformPreview(tempSound.waveformData)
+        }
+      } catch (error) {
+        console.error('Error generating waveform preview:', sound.id, error)
+      } finally {
+        if (!cancelled) setWaveformLoading(false)
+      }
+    }
+
+    loadWaveform()
+
+    return () => {
+      cancelled = true
+    }
+  }, [sound.id, sound.waveformData, sound.audioBuffer])
+
+  useEffect(() => {
+    if (!canvasRef.current || !waveformPreview) return
     
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
@@ -65,17 +123,16 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
     const animate = () => {
       ctx.clearRect(0, 0, width, height)
       
-      // Skip if no waveform data
-      if (!sound.waveformData) return
-      
-      // Draw waveform bars
+      if (!waveformPreview) return
+
       const barCount = 40
       const barWidth = width / barCount
       const barGap = 2
-      
+      const peak = Math.max(...waveformPreview, 0.001)
+
       for (let i = 0; i < barCount; i++) {
-        const dataIndex = Math.floor((i / barCount) * sound.waveformData.length)
-        const value = sound.waveformData[dataIndex] || 0.5
+        const dataIndex = Math.floor((i / barCount) * waveformPreview.length)
+        const value = (waveformPreview[dataIndex] || 0) / peak
         const barHeight = value * height * 0.7
         const x = i * barWidth
         const y = (height - barHeight) / 2
@@ -119,7 +176,7 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
         animationRef.current = null
       }
     }
-  }, [sound.waveformData, isPlaying])
+  }, [waveformPreview, isPlaying])
 
   useEffect(() => {
     if (!isPlaying) {
@@ -212,14 +269,22 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
           </span>
         </div>
 
-        {/* Waveform visualization */}
-        <div className="relative h-20 mb-3 rounded-lg overflow-hidden bg-blue-50 dark:bg-gray-900/50">
+        <div
+          className={`relative h-20 mb-3 rounded-lg overflow-hidden bg-blue-50 dark:bg-gray-900/50${
+            variant === 'rack' ? ' peal-sound-card-scope' : ''
+          }`}
+        >
           <canvas
             ref={canvasRef}
             width={240}
             height={80}
             className="w-full h-full"
           />
+          {waveformLoading && !waveformPreview && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="peal-sound-card-scope-placeholder">···</span>
+            </div>
+          )}
         </div>
 
         {/* Tags */}
@@ -239,65 +304,108 @@ export default function SoundCardRedesign({ sound, index }: SoundCardProps) {
           )}
         </div>
 
-        {/* Action buttons */}
-        <div className="flex items-center gap-2">
-          {/* Play button */}
-          <button
-            onClick={handlePlay}
-            className={`
-              flex-1 flex items-center justify-center gap-2 h-9 rounded-lg font-medium text-sm transition-all
-              ${isPlaying 
-                ? 'bg-blue-500 hover:bg-blue-600 text-white' 
-                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
-              }
-            `}
-            title="Play"
-          >
-            {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-            {isPlaying ? 'Playing' : 'Play'}
-          </button>
-
-          {/* Star button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              toggleFavorite(sound.id)
-            }}
-            className={`
-              w-9 h-9 flex items-center justify-center rounded-lg transition-all
-              ${sound.favorite 
-                ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400' 
-                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
-              }
-            `}
-            title="Favorite"
-          >
-            <Star size={16} fill={sound.favorite ? 'currentColor' : 'none'} />
-          </button>
-
-          {/* Studio button */}
-          <button
-            onClick={handleStudio}
-            className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all"
-            title="Edit in Studio"
-          >
-            <Sliders size={16} />
-          </button>
-
-          {/* More options */}
-          <SoundCardDropdown 
-            items={[
-              {
-                icon: <Sparkles size={14} />,
-                label: 'Generate variations',
-                onClick: (e) => {
-                  e.stopPropagation()
-                  showVariations(sound.id)
+        {variant === 'rack' ? (
+          <div className="peal-sound-card-pad-tray" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={handlePlay}
+              className={`peal-sound-card-pad${isPlaying ? ' peal-sound-card-pad--active' : ''}`}
+              title={isPlaying ? 'Pause preview' : 'Preview'}
+              aria-label={isPlaying ? 'Pause preview' : 'Preview sound'}
+            >
+              {isPlaying ? <PauseIcon size={11} /> : <PlayIcon size={11} />}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                toggleFavorite(sound.id)
+              }}
+              className={`peal-sound-card-pad${sound.favorite ? ' peal-sound-card-pad--fav' : ''}`}
+              title={sound.favorite ? 'Unfavorite' : 'Favorite'}
+              aria-label={sound.favorite ? 'Unfavorite' : 'Favorite'}
+            >
+              <StarIcon size={11} weight={sound.favorite ? 'fill' : 'bold'} />
+            </button>
+            <button
+              type="button"
+              onClick={handleStudio}
+              className="peal-sound-card-pad"
+              title="Open in Studio"
+              aria-label="Open in Studio"
+            >
+              <WaveformIcon size={11} />
+            </button>
+            <SoundCardDropdown
+              variant="rack"
+              items={[
+                {
+                  icon: <MagicWandIcon size={12} />,
+                  label: 'Generate variations',
+                  onClick: (e) => {
+                    e.stopPropagation()
+                    showVariations(sound.id)
+                  },
+                },
+              ]}
+            />
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePlay}
+              className={`
+                flex-1 flex items-center justify-center gap-2 h-9 rounded-lg font-medium text-sm transition-all
+                ${isPlaying
+                  ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                 }
-              }
-            ]}
-          />
-        </div>
+              `}
+              title="Play"
+            >
+              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+              {isPlaying ? 'Playing' : 'Play'}
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                toggleFavorite(sound.id)
+              }}
+              className={`
+                w-9 h-9 flex items-center justify-center rounded-lg transition-all
+                ${sound.favorite
+                  ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400'
+                  : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
+                }
+              `}
+              title="Favorite"
+            >
+              <Star size={16} fill={sound.favorite ? 'currentColor' : 'none'} />
+            </button>
+
+            <button
+              onClick={handleStudio}
+              className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all"
+              title="Edit in Studio"
+            >
+              <Sliders size={16} />
+            </button>
+
+            <SoundCardDropdown
+              items={[
+                {
+                  icon: <Sparkles size={14} />,
+                  label: 'Generate variations',
+                  onClick: (e) => {
+                    e.stopPropagation()
+                    showVariations(sound.id)
+                  },
+                },
+              ]}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

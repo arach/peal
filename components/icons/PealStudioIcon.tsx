@@ -55,6 +55,8 @@ import {
   StackSimple,
   Stop,
   Columns,
+  DotsThree,
+  Star,
   Trash,
   Waveform,
   WarningCircle,
@@ -104,3 +106,5 @@ export const WarningIcon = studioIcon(WarningCircle, 'WarningIcon')
 export const VolumeIcon = studioIcon(SpeakerHigh, 'VolumeIcon')
 export const WaveformIcon = studioIcon(Waveform, 'WaveformIcon')
 export const MicIcon = studioIcon(Microphone, 'MicIcon')
+export const StarIcon = studioIcon(Star, 'StarIcon')
+export const MoreIcon = studioIcon(DotsThree, 'MoreIcon')

@@ -2299,6 +2299,32 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
     setPreviewSound(null)
     setHasUnappliedChanges(false)
     setShowLibraryModal(false)
+    setShowParametersPanel(true)
+
+    const mainTrack: Track = {
+      id: `track-main-${sound.id}`,
+      name: 'Main',
+      audioBuffer: sound.audioBuffer,
+      waveformData: sound.waveformData,
+      muted: false,
+      solo: false,
+      volume: 1,
+      color: '#6b7280',
+    }
+    setTracks([mainTrack])
+
+    if (!sound.audioBuffer) {
+      setTimeout(async () => {
+        await (generator as any).renderSound(sound)
+        setTracks(prevTracks =>
+          prevTracks.map(track =>
+            track.id === mainTrack.id
+              ? { ...track, audioBuffer: sound.audioBuffer, waveformData: sound.waveformData }
+              : track,
+          ),
+        )
+      }, 100)
+    }
   }
 
   const handleCodeSoundChange = useCallback(async (updatedSound: Sound) => {

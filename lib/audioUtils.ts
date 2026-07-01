@@ -1,5 +1,22 @@
 import { Sound } from '@/store/soundStore'
 
+export function extractWaveformData(buffer: AudioBuffer, samples = 200): number[] {
+  const data = buffer.getChannelData(0)
+  const blockSize = Math.max(1, Math.floor(data.length / samples))
+  const waveform: number[] = []
+
+  for (let i = 0; i < samples; i++) {
+    const start = blockSize * i
+    let sum = 0
+    for (let j = 0; j < blockSize; j++) {
+      sum += Math.abs(data[start + j])
+    }
+    waveform.push(sum / blockSize)
+  }
+
+  return waveform
+}
+
 export function audioBufferToWav(buffer: AudioBuffer): ArrayBuffer {
   const length = buffer.length * buffer.numberOfChannels * 2 + 44
   const arrayBuffer = new ArrayBuffer(length)

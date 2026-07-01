@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { MoreIcon } from '@/components/icons/PealStudioIcon'
 import { MoreVertical, Edit, Shuffle, Hash, Download } from 'lucide-react'
 import { createPortal } from 'react-dom'
 
@@ -14,9 +15,17 @@ interface DropdownItem {
 
 interface SoundCardDropdownProps {
   items: DropdownItem[]
+  variant?: 'default' | 'rack'
+  triggerClassName?: string
+  triggerIcon?: React.ReactNode
 }
 
-export default function SoundCardDropdown({ items }: SoundCardDropdownProps) {
+export default function SoundCardDropdown({
+  items,
+  variant = 'default',
+  triggerClassName,
+  triggerIcon,
+}: SoundCardDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
   const [mounted, setMounted] = useState(false)
@@ -113,10 +122,16 @@ export default function SoundCardDropdown({ items }: SoundCardDropdownProps) {
       <button
         ref={buttonRef}
         onClick={handleToggle}
-        className="flex items-center justify-center w-8 h-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 rounded transition-all hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-600"
+        className={
+          triggerClassName ??
+          (variant === 'rack'
+            ? 'peal-sound-card-pad'
+            : 'flex items-center justify-center w-8 h-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 rounded transition-all hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-600')
+        }
         title="More actions"
+        aria-label="More actions"
       >
-        <MoreVertical size={14} />
+        {triggerIcon ?? (variant === 'rack' ? <MoreIcon size={11} /> : <MoreVertical size={14} />)}
       </button>
       {mounted && isOpen && typeof document !== 'undefined' && createPortal(dropdownContent, document.body)}
     </>

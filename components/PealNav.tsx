@@ -65,25 +65,14 @@ function PealNavShell({ tool }: { tool: string | null }) {
 
   const allLinks = [...productLinks, ...metaLinks]
 
-  const linkClass = (id: NavId, variant: 'tray' | 'meta' | 'mobile' = 'tray') =>
+  const linkClass = (id: NavId, variant: 'meta' | 'mobile' = 'meta') =>
     `peal-nav-link peal-nav-link--${variant}${navActive(pathname, tool, id) ? ' is-active' : ''}`
 
-  const renderTrayLink = (item: NavItem) => (
+  const renderDesktopLink = (item: NavItem, variant: 'meta' | 'mobile' = 'meta') => (
     <BaseLink
       key={item.id}
       href={item.href}
-      className={linkClass(item.id, 'tray')}
-      onClick={() => setMobileOpen(false)}
-    >
-      {item.label}
-    </BaseLink>
-  )
-
-  const renderMetaLink = (item: NavItem) => (
-    <BaseLink
-      key={item.id}
-      href={item.href}
-      className={linkClass(item.id, 'meta')}
+      className={linkClass(item.id, variant)}
       onClick={() => setMobileOpen(false)}
     >
       {item.label}
@@ -113,15 +102,13 @@ function PealNavShell({ tool }: { tool: string | null }) {
           <PealWordmark />
         </BaseLink>
 
-        <div className="peal-nav-tray" aria-label="Product">
-          {productLinks.map(renderTrayLink)}
+        <div className="peal-nav-links" aria-label="Site">
+          {productLinks.map((item) => renderDesktopLink(item))}
+          <span className="peal-nav-divider" aria-hidden />
+          {metaLinks.map((item) => renderDesktopLink(item, 'meta'))}
         </div>
 
         <div className="peal-nav-end">
-          <div className="peal-nav-meta" aria-label="Resources">
-            {metaLinks.map(renderMetaLink)}
-          </div>
-
           <div className="peal-nav-theme">
             <ThemeToggle />
           </div>

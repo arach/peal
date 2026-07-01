@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useSoundStore, Sound } from '@/store/soundStore'
 import { playPresetSound } from '@/lib/presets/playPresetSound'
+import { ensureSoundAudioBuffer, isPresetSoundId } from '@/lib/presets/presetSound'
 import { getAutoTags } from '@/lib/presets/uiMechanicsPresets'
 
 export class SoundGenerator {
@@ -370,12 +371,19 @@ export class SoundGenerator {
       console.error('No audio context available')
       return null
     }
-    
-    // If no audio buffer, regenerate it
+
+    if (audioContext.state === 'suspended') {
+      await audioContext.resume()
+    }
+
     if (!sound.audioBuffer) {
       console.log('Regenerating audio buffer for sound:', sound.id)
-      await this.renderSound(sound)
-      
+      if (isPresetSoundId(sound.id)) {
+        await ensureSoundAudioBuffer(sound)
+      } else {
+        await this.renderSound(sound)
+      }
+
       if (!sound.audioBuffer) {
         console.error('Failed to generate valid audio buffer for sound:', sound.id)
         return null

@@ -1,0 +1,288 @@
+/* Sound Library modal — machined dark rack */
+
+.peal-library-modal {
+  --lib-modal-bg: #111113;
+  --lib-modal-surface: #141416;
+  --lib-modal-well: #09090b;
+  --lib-modal-border: rgba(255, 255, 255, 0.07);
+  --lib-modal-border-lit: rgba(255, 255, 255, 0.11);
+  --lib-modal-text: rgba(255, 255, 255, 0.9);
+  --lib-modal-text-dim: rgba(255, 255, 255, 0.46);
+  --lib-modal-text-muted: rgba(255, 255, 255, 0.3);
+  --lib-modal-accent: #4a9eff;
+}
+
+.peal-library-modal__panel {
+  background: var(--lib-modal-bg);
+  border: 1px solid var(--lib-modal-border);
+  border-radius: 10px;
+  box-shadow: 0 24px 64px -32px rgba(0, 0, 0, 0.75);
+}
+
+.peal-library-modal__header {
+  border-bottom: 1px solid var(--lib-modal-border);
+  padding: 20px 24px;
+}
+
+.peal-library-modal__kicker {
+  font-family: var(--font-jetbrains, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--lib-modal-text-muted);
+  margin-bottom: 4px;
+}
+
+.peal-library-modal__title {
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--lib-modal-text);
+  margin: 0;
+}
+
+.peal-library-modal__copy {
+  font-size: 0.8rem;
+  color: var(--lib-modal-text-dim);
+  margin: 4px 0 0;
+}
+
+.peal-library-modal__close {
+  padding: 6px;
+  color: var(--lib-modal-text-muted);
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.peal-library-modal__close:hover {
+  color: var(--lib-modal-text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.peal-library-modal__controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.peal-library-modal__search-wrap {
+  position: relative;
+  flex: 1;
+}
+
+.peal-library-modal__search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--lib-modal-text-muted);
+  pointer-events: none;
+}
+
+.peal-library-modal__input,
+.peal-library-modal__select {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  font-size: 13px;
+  color: var(--lib-modal-text);
+  background: var(--lib-modal-well);
+  border: 1px solid var(--lib-modal-border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.peal-library-modal__select {
+  width: auto;
+  min-width: 148px;
+  padding-left: 12px;
+  cursor: pointer;
+}
+
+.peal-library-modal__input:focus,
+.peal-library-modal__select:focus {
+  border-color: rgba(74, 158, 255, 0.35);
+}
+
+.peal-library-modal__input::placeholder {
+  color: var(--lib-modal-text-muted);
+}
+
+.peal-library-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 20px;
+}
+
+.peal-library-modal__empty {
+  text-align: center;
+  padding: 48px 0;
+  font-size: 13px;
+  color: var(--lib-modal-text-dim);
+}
+
+.peal-library-modal__loading {
+  text-align: center;
+  padding: 12px 0;
+  font-size: 12px;
+  font-family: var(--font-jetbrains, ui-monospace, monospace);
+  color: var(--lib-modal-accent);
+  letter-spacing: 0.06em;
+}
+
+/* ── Library card ───────────────────────────────────────────── */
+
+.peal-library-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--lib-modal-surface);
+  border: 1px solid var(--lib-modal-border);
+  border-radius: 8px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.peal-library-card:hover {
+  border-color: var(--lib-modal-border-lit);
+  background: #18181b;
+}
+
+.peal-library-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.peal-library-card__type {
+  font-family: var(--font-jetbrains, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lib-modal-text-muted);
+}
+
+.peal-library-card__duration {
+  font-family: var(--font-jetbrains, ui-monospace, monospace);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--lib-modal-text-muted);
+}
+
+.peal-library-card__scope {
+  position: relative;
+  height: 56px;
+  background: var(--lib-modal-well);
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.peal-library-card__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.peal-library-card__scope-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-jetbrains, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--lib-modal-text-muted);
+}
+
+.peal-library-card__name {
+  margin: 0;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--lib-modal-text);
+  line-height: 1.3;
+}
+
+.peal-library-card__meta {
+  margin: -4px 0 0;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--lib-modal-text-muted);
+}
+
+.peal-library-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.peal-library-card__pad {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-top-color: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, #1e1e22 0%, #141416 100%);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: color 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.peal-library-card__pad:hover {
+  color: rgba(255, 255, 255, 0.78);
+  background: linear-gradient(180deg, #26262c 0%, #1a1a1e 100%);
+}
+
+.peal-library-card__pad:active {
+  transform: translateY(1px);
+}
+
+.peal-library-card__pad--play {
+  width: 34px;
+}
+
+.peal-library-card__pad.is-active {
+  color: #fff;
+  background: linear-gradient(180deg, #6bb0ff 0%, var(--lib-modal-accent) 55%, #2d6eb8 100%);
+  border-color: rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.peal-library-card__pad.is-fav {
+  color: #e8a317;
+  border-color: rgba(232, 163, 23, 0.2);
+}
+
+.peal-library-card__pad.is-fav:hover {
+  color: #f0b429;
+}
+
+/* Legacy pad class used by SoundCardRedesign rack + dropdown fallback */
+.peal-library-modal .peal-sound-card-pad {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-top-color: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, #1e1e22 0%, #141416 100%);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+}

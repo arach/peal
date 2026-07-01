@@ -36,13 +36,7 @@ export function PealBrandMark({ size = 28 }: { size?: number }) {
           <stop offset="0%" stopColor="rgba(140, 196, 255, 0.9)" />
           <stop offset="100%" stopColor="rgba(52, 108, 176, 0.55)" />
         </linearGradient>
-        <radialGradient id={`${gid}-glow`} cx="50%" cy="42%" r="58%">
-          <stop offset="0%" stopColor="rgba(74, 158, 255, 0.22)" />
-          <stop offset="100%" stopColor="rgba(74, 158, 255, 0)" />
-        </radialGradient>
       </defs>
-
-      <rect x={0} y={0} width={size} height={size} rx={radius} fill={`url(#${gid}-glow)`} />
 
       <rect
         x={0.75}
@@ -53,15 +47,6 @@ export function PealBrandMark({ size = 28 }: { size?: number }) {
         fill={`url(#${gid}-tile)`}
         stroke={`url(#${gid}-rim)`}
         strokeWidth={1}
-      />
-
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={size * 0.34}
-        fill="none"
-        stroke="rgba(106, 176, 255, 0.14)"
-        strokeWidth={0.75}
       />
 
       {WAVE.map((h, i) => {
