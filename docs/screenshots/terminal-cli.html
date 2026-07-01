@@ -7,44 +7,52 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #0d0d0f;
-      color: #e8e8ea;
-      font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      padding: 32px;
-      min-width: 720px;
+      background: #0a0a0b;
+      color: #d4d4d8;
+      font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      padding: 36px;
+      min-width: 760px;
     }
     .window {
-      background: #141416;
+      background: #111113;
       border: 1px solid #2a2a2e;
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 24px 80px rgba(0,0,0,.45);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     }
     .titlebar {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 14px;
-      background: #1a1a1d;
+      padding: 10px 14px;
+      background: #1c1c1e;
       border-bottom: 1px solid #2a2a2e;
-      color: #8b8b93;
+      color: #71717a;
       font-size: 12px;
     }
     .dot { width: 10px; height: 10px; border-radius: 50%; }
     .dot.red { background: #ff5f57; }
     .dot.yellow { background: #febc2e; }
     .dot.green { background: #28c840; }
-    pre {
-      padding: 20px 22px 24px;
-      white-space: pre-wrap;
-      word-break: break-word;
+    .terminal {
+      padding: 22px 24px 26px;
     }
-    .prompt { color: #4a9eff; }
-    .cmd { color: #f2f2f4; }
-    .ok { color: #5fd38d; }
-    .muted { color: #8b8b93; }
-    .section { color: #c4b5fd; }
-    .item { color: #d4d4d8; }
+    .line { min-height: 1.6em; }
+    .line + .line { margin-top: 2px; }
+    .line.output { margin-top: 6px; }
+    .line.gap { margin-top: 14px; }
+    .path { color: #71717a; }
+    .sigil { color: #4a9eff; }
+    .bin { color: #e4e4e7; }
+    .subcmd { color: #a1a1aa; }
+    .arg { color: #fafafa; }
+    .cont { color: #52525b; padding-left: 11ch; }
+    .ok { color: #6ee7a0; }
+    .dim { color: #71717a; }
+    .label { color: #a1a1aa; font-weight: 600; margin-top: 10px; }
+    .group { color: #71717a; margin-top: 8px; }
+    .sounds { color: #d4d4d8; padding-left: 2ch; }
+    .cursor { display: inline-block; width: 7px; height: 1.1em; background: #a1a1aa; vertical-align: text-bottom; }
   </style>
 </head>
 <body>
@@ -53,29 +61,40 @@
       <span class="dot red"></span>
       <span class="dot yellow"></span>
       <span class="dot green"></span>
-      <span>peal — zsh</span>
+      <span>Terminal — my-app</span>
     </div>
-    <pre><span class="prompt">my-app %</span> <span class="cmd">peal add click success error</span>
-<span class="ok">✔</span> Copied click.wav, success.wav, error.wav → <span class="item">./peal/</span>
-<span class="ok">✔</span> Generated <span class="item">peal.js</span>
+    <div class="terminal">
+      <div class="line">
+        <span class="path">~/my-app</span> <span class="sigil">$</span>
+        <span class="bin"> peal</span><span class="subcmd"> add</span><span class="arg"> \</span>
+      </div>
+      <div class="line cont"><span class="arg">click</span><span class="dim"> \</span></div>
+      <div class="line cont"><span class="arg">success</span><span class="dim"> \</span></div>
+      <div class="line cont"><span class="arg">error</span></div>
 
-<span class="prompt">my-app %</span> <span class="cmd">peal list</span>
+      <div class="line output ok">added click.wav, success.wav, error.wav → ./peal/</div>
+      <div class="line output ok">wrote peal.js</div>
 
-<span class="muted">🔊 Available Peal Sounds:</span>
+      <div class="line gap">
+        <span class="path">~/my-app</span> <span class="sigil">$</span>
+        <span class="bin"> peal</span><span class="subcmd"> list</span>
+      </div>
 
-<span class="section">UI Feedback</span>
-  <span class="item">• success</span>  <span class="item">• error</span>  <span class="item">• notification</span>  <span class="item">• click</span>  <span class="item">• tap</span>
+      <div class="line output label">Available sounds</div>
+      <div class="line output group">UI feedback</div>
+      <div class="line output sounds">click, success, error, notification, tap</div>
+      <div class="line output group">Transitions</div>
+      <div class="line output sounds">transition, swoosh</div>
+      <div class="line output group">Loading</div>
+      <div class="line output sounds">loading, complete</div>
+      <div class="line output group">Alerts</div>
+      <div class="line output sounds">alert, warning</div>
 
-<span class="section">Transitions</span>
-  <span class="item">• transition</span>  <span class="item">• swoosh</span>
-
-<span class="section">Loading</span>
-  <span class="item">• loading</span>  <span class="item">• complete</span>
-
-<span class="section">Alerts</span>
-  <span class="item">• alert</span>  <span class="item">• warning</span>
-
-<span class="prompt">my-app %</span> <span class="muted">_</span></pre>
+      <div class="line gap">
+        <span class="path">~/my-app</span> <span class="sigil">$</span>
+        <span class="cursor"></span>
+      </div>
+    </div>
   </div>
 </body>
 </html>

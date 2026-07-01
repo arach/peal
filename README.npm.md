@@ -18,7 +18,11 @@ No sound hosting, no accounts. Files sit in your repo; you call `peal.click()` w
 
 ```bash
 npm install @peal-sounds/peal
-peal add click success error
+
+peal add \
+  click \
+  success \
+  error
 ```
 
 That writes something like:
@@ -53,7 +57,11 @@ async function save() {
 
 `./peal.js` is created by the CLI in your project root. You are not importing the npm package for playback — only the generated helper (which wraps Howler and points at `./peal/*.wav`).
 
-Prefer a one-off without installing? `npx @peal-sounds/peal add click success error` does the same thing.
+Prefer a one-off without installing?
+
+```bash
+npx @peal-sounds/peal add click
+```
 
 Also published as `@arach/peal` (same package, older namespace).
 
@@ -84,10 +92,14 @@ Run `peal list` for the full list in the terminal.
 ## CLI
 
 ```bash
-peal add                    # interactive picker
-peal add click success      # add specific sounds
-peal add --dir ./sounds     # custom output folder
-peal add --typescript       # generate peal.ts instead of peal.js
+peal add                         # interactive picker
+peal add click                   # one sound
+peal add click success error     # several at once
+peal add \
+  click \
+  success                        # same thing, easier to read
+peal add --dir ./sounds          # custom output folder
+peal add --typescript            # generate peal.ts instead of peal.js
 
 peal list                   # show available sounds
 peal play click             # preview a sound
