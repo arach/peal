@@ -706,6 +706,15 @@
   padding: 12px 14px;
 }
 
+.landing .landing-install-cmd--multiline {
+  align-items: flex-start;
+}
+
+.landing .landing-install-cmd--multiline code {
+  white-space: pre;
+  line-height: 1.55;
+}
+
 .landing .landing-integrate-title {
   font-size: 1.45rem;
   font-weight: 500;

@@ -1,5 +1,9 @@
 import type { NextConfig } from 'next'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { hydratePealCredentialsFromFiles } from './lib/credentials/envFiles'
+
+const projectRoot = path.dirname(fileURLToPath(import.meta.url))
 
 // Shared monorepo credentials (e.g. ../.env.local) — project .env.local still wins.
 hydratePealCredentialsFromFiles()
@@ -20,8 +24,8 @@ const nextConfig: NextConfig = {
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
   assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH || '',
 
-  // Enable Turbopack for faster development builds
-  turbopack: {},
+  // Pin Turbopack root so file: sibling deps (hudsonkit) resolve correctly.
+  turbopack: { root: projectRoot },
 
   // Disable image optimization for static export
   images: {

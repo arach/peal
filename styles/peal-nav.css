@@ -1,27 +1,26 @@
-/* Peal product nav — sticky dark chrome, works on light + dark pages */
+/* Peal product nav — sticky dark chrome */
 
 .peal-nav {
   --peal-nav-bg: #111113;
   --peal-nav-text: rgba(255, 255, 255, 0.92);
-  --peal-nav-text-dim: rgba(255, 255, 255, 0.5);
-  --peal-nav-text-muted: rgba(255, 255, 255, 0.32);
+  --peal-nav-text-dim: rgba(255, 255, 255, 0.52);
   --peal-nav-border: rgba(255, 255, 255, 0.06);
   --peal-nav-border-lit: rgba(255, 255, 255, 0.1);
   --peal-nav-edge-hi: rgba(255, 255, 255, 0.1);
   --peal-nav-edge-lo: rgba(0, 0, 0, 0.45);
   --peal-nav-accent: #4a9eff;
   --peal-nav-accent-hi: #6bb0ff;
-  --peal-nav-accent-tint: rgba(74, 158, 255, 0.1);
+  --peal-nav-accent-tint: rgba(74, 158, 255, 0.12);
 
   position: sticky;
   top: 0;
   z-index: 50;
-  backdrop-filter: blur(16px);
-  background: color-mix(in srgb, var(--peal-nav-bg) 90%, transparent);
+  backdrop-filter: blur(18px);
+  background: color-mix(in srgb, var(--peal-nav-bg) 92%, transparent);
   border-bottom: 1px solid var(--peal-nav-edge-lo);
   box-shadow:
     0 1px 0 var(--peal-nav-edge-hi),
-    0 12px 32px -24px rgba(0, 0, 0, 0.4);
+    0 16px 40px -28px rgba(0, 0, 0, 0.55);
 }
 
 .peal-nav::before {
@@ -29,35 +28,28 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, transparent 100%);
 }
 
 .peal-nav-inner {
   position: relative;
-  max-width: 1100px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 0 24px;
-  display: flex;
+  padding: 0 20px;
+  min-height: 56px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
-  min-height: 52px;
-}
-
-.peal-nav-start {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
 }
 
 .peal-nav-brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   text-decoration: none;
   color: var(--peal-nav-text);
-  flex-shrink: 0;
+  justify-self: start;
   transition: color 0.15s ease;
 }
 
@@ -73,7 +65,7 @@
   font-family: var(--font-space-grotesk), system-ui, sans-serif;
   font-size: 15px;
   font-weight: 500;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: var(--peal-nav-text);
   transition: color 0.15s ease;
 }
@@ -81,48 +73,46 @@
 .peal-nav .peal-brand-mark {
   flex-shrink: 0;
   display: block;
-  border-radius: 30%;
-  box-shadow:
-    0 0 0 1px rgba(74, 158, 255, 0.14),
-    0 2px 10px rgba(74, 158, 255, 0.08);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  filter: drop-shadow(0 2px 10px rgba(74, 158, 255, 0.14));
+  transition: filter 0.2s ease, transform 0.2s ease;
 }
 
 .peal-nav-brand:hover .peal-brand-mark {
-  box-shadow:
-    0 0 0 1px rgba(74, 158, 255, 0.24),
-    0 4px 16px rgba(74, 158, 255, 0.14);
+  filter: drop-shadow(0 4px 16px rgba(74, 158, 255, 0.22));
   transform: translateY(-0.5px);
 }
 
-.peal-nav-product {
+.peal-nav-tray {
   display: none;
   align-items: center;
   gap: 2px;
-  margin-left: 8px;
-  padding-left: 12px;
-  border-left: 1px solid var(--peal-nav-border);
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 20px -16px rgba(0, 0, 0, 0.5);
+  justify-self: center;
 }
 
 @media (min-width: 768px) {
-  .peal-nav-product {
-    display: flex;
+  .peal-nav-tray {
+    display: inline-flex;
   }
 }
 
 .peal-nav-end {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  justify-self: end;
 }
 
 .peal-nav-meta {
   display: none;
   align-items: center;
   gap: 2px;
-  padding-right: 6px;
-  margin-right: 2px;
-  border-right: 1px solid var(--peal-nav-border);
 }
 
 @media (min-width: 768px) {
@@ -135,8 +125,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
   border: 1px solid transparent;
   font-family: var(--font-space-grotesk), system-ui, sans-serif;
   font-size: 13px;
@@ -153,10 +143,15 @@
     box-shadow 0.15s ease;
 }
 
-.peal-nav-link svg {
-  opacity: 0.72;
-  flex-shrink: 0;
-  transition: opacity 0.15s ease;
+.peal-nav-link--tray {
+  padding: 7px 14px;
+}
+
+.peal-nav-link--meta {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.42);
 }
 
 .peal-nav-link:hover {
@@ -165,26 +160,32 @@
   border-color: rgba(255, 255, 255, 0.04);
 }
 
-.peal-nav-link:hover svg {
-  opacity: 1;
+.peal-nav-link--meta:hover {
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .peal-nav-link.is-active {
   color: var(--peal-nav-accent-hi);
   background: var(--peal-nav-accent-tint);
-  border-color: rgba(74, 158, 255, 0.18);
-  box-shadow: 0 0 20px -8px rgba(74, 158, 255, 0.25);
+  border-color: rgba(74, 158, 255, 0.2);
+  box-shadow: 0 0 18px -8px rgba(74, 158, 255, 0.35);
 }
 
-.peal-nav-link.is-active svg {
-  opacity: 1;
-  color: var(--peal-nav-accent);
+.peal-nav-link--meta.is-active {
+  color: var(--peal-nav-accent-hi);
+  background: rgba(74, 158, 255, 0.08);
+}
+
+.peal-nav-link svg {
+  opacity: 0.72;
+  flex-shrink: 0;
 }
 
 .peal-nav-theme button {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   border: 1px solid var(--peal-nav-border);
   background: rgba(255, 255, 255, 0.04);
   color: var(--peal-nav-text-dim);
@@ -201,10 +202,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border: 1px solid var(--peal-nav-border);
-  border-radius: 6px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.04);
   color: var(--peal-nav-text-dim);
   cursor: pointer;
@@ -239,10 +240,21 @@
   width: 100%;
   justify-content: flex-start;
   padding: 10px 12px;
+  border-radius: 8px;
 }
 
 @media (min-width: 768px) {
   .peal-nav-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .peal-nav-inner {
+    grid-template-columns: 1fr auto;
+  }
+
+  .peal-nav-tray {
     display: none;
   }
 }

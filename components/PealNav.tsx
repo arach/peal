@@ -65,16 +65,38 @@ function PealNavShell({ tool }: { tool: string | null }) {
 
   const allLinks = [...productLinks, ...metaLinks]
 
-  const linkClass = (id: NavId) =>
-    `peal-nav-link${navActive(pathname, tool, id) ? ' is-active' : ''}`
+  const linkClass = (id: NavId, variant: 'tray' | 'meta' | 'mobile' = 'tray') =>
+    `peal-nav-link peal-nav-link--${variant}${navActive(pathname, tool, id) ? ' is-active' : ''}`
 
-  const renderLink = (item: NavItem) => {
+  const renderTrayLink = (item: NavItem) => (
+    <BaseLink
+      key={item.id}
+      href={item.href}
+      className={linkClass(item.id, 'tray')}
+      onClick={() => setMobileOpen(false)}
+    >
+      {item.label}
+    </BaseLink>
+  )
+
+  const renderMetaLink = (item: NavItem) => (
+    <BaseLink
+      key={item.id}
+      href={item.href}
+      className={linkClass(item.id, 'meta')}
+      onClick={() => setMobileOpen(false)}
+    >
+      {item.label}
+    </BaseLink>
+  )
+
+  const renderMobileLink = (item: NavItem) => {
     const Icon = item.icon
     return (
       <BaseLink
         key={item.id}
         href={item.href}
-        className={linkClass(item.id)}
+        className={linkClass(item.id, 'mobile')}
         onClick={() => setMobileOpen(false)}
       >
         {Icon ? <Icon size={14} /> : null}
@@ -86,20 +108,18 @@ function PealNavShell({ tool }: { tool: string | null }) {
   return (
     <nav className="peal-nav" aria-label="Primary">
       <div className="peal-nav-inner">
-        <div className="peal-nav-start">
-          <BaseLink href="/" className="peal-nav-brand" onClick={() => setMobileOpen(false)}>
-            <PealBrandMark size={26} />
-            <PealWordmark />
-          </BaseLink>
+        <BaseLink href="/" className="peal-nav-brand" onClick={() => setMobileOpen(false)}>
+          <PealBrandMark size={28} />
+          <PealWordmark />
+        </BaseLink>
 
-          <div className="peal-nav-product" aria-label="Product">
-            {productLinks.map(renderLink)}
-          </div>
+        <div className="peal-nav-tray" aria-label="Product">
+          {productLinks.map(renderTrayLink)}
         </div>
 
         <div className="peal-nav-end">
           <div className="peal-nav-meta" aria-label="Resources">
-            {metaLinks.map(renderLink)}
+            {metaLinks.map(renderMetaLink)}
           </div>
 
           <div className="peal-nav-theme">
@@ -121,7 +141,7 @@ function PealNavShell({ tool }: { tool: string | null }) {
       {mobileOpen && (
         <div className="peal-nav-mobile">
           <div className="peal-nav-mobile-grid">
-            {allLinks.map(renderLink)}
+            {allLinks.map(renderMobileLink)}
           </div>
         </div>
       )}

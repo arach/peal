@@ -14,7 +14,10 @@ const installCommands: Record<PkgManager, string> = {
   bun: 'bun add @peal-sounds/peal',
 }
 
-const cliCommand = 'npx @peal-sounds/peal add success notification error'
+const cliCommand = `npx @peal-sounds/peal add \\
+  click \\
+  success \\
+  error`
 
 const usageCode = `<span class="hl-kw">import</span> peal <span class="hl-kw">from</span> <span class="hl-str">'./peal'</span>
 
@@ -167,7 +170,7 @@ export default function LandingHero() {
           <p className="landing-integrate-lead">
             The Peal CLI copies WAV files and generates a ready-to-use module for your project.
           </p>
-          <div className="landing-install-cmd">
+          <div className="landing-install-cmd landing-install-cmd--multiline">
             <code>
               <span className="prompt">$</span>
               {cliCommand}

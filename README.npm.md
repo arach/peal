@@ -148,7 +148,11 @@ peal.success()
 The npm package is the CLI + library. Peal also runs in the browser — browse presets, generate sounds, or design in the studio — then copy what you need into a project with `peal add`.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/library.png" alt="Peal library welcome screen in the browser" width="900">
+  <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/landing-hero.png" alt="Peal landing page with header navigation and hero" width="900">
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/sounds.png" alt="Signature sounds grid — click to preview UI sounds" width="900">
 </p>
 
 [Open the app](https://arach.github.io/peal/) · [GitHub](https://github.com/arach/peal)
