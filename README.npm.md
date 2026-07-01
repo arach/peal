@@ -28,7 +28,7 @@ peal add \
 That writes something like:
 
 ```
-widget/
+dev/
 ├── peal.js          # generated — import this in your app
 └── peal/
     ├── click.wav
