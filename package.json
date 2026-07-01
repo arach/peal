@@ -4,7 +4,7 @@
   "bin": {
     "peal": "./cli/index.js"
   },
-  "description": "Professional UI sounds for web apps - CLI to manage sounds, thin Howler.js wrapper to play them",
+  "description": "Curated UI sounds for web apps — CLI copies WAVs into your project and generates a Howler.js player",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
