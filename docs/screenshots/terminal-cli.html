@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Peal CLI</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d0d0f;
+      color: #e8e8ea;
+      font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      padding: 32px;
+      min-width: 720px;
+    }
+    .window {
+      background: #141416;
+      border: 1px solid #2a2a2e;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,.45);
+    }
+    .titlebar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      background: #1a1a1d;
+      border-bottom: 1px solid #2a2a2e;
+      color: #8b8b93;
+      font-size: 12px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.red { background: #ff5f57; }
+    .dot.yellow { background: #febc2e; }
+    .dot.green { background: #28c840; }
+    pre {
+      padding: 20px 22px 24px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt { color: #4a9eff; }
+    .cmd { color: #f2f2f4; }
+    .ok { color: #5fd38d; }
+    .muted { color: #8b8b93; }
+    .section { color: #c4b5fd; }
+    .item { color: #d4d4d8; }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+      <span>peal — zsh</span>
+    </div>
+    <pre><span class="prompt">my-app %</span> <span class="cmd">peal add click success error</span>
+<span class="ok">✔</span> Copied click.wav, success.wav, error.wav → <span class="item">./peal/</span>
+<span class="ok">✔</span> Generated <span class="item">peal.js</span>
+
+<span class="prompt">my-app %</span> <span class="cmd">peal list</span>
+
+<span class="muted">🔊 Available Peal Sounds:</span>
+
+<span class="section">UI Feedback</span>
+  <span class="item">• success</span>  <span class="item">• error</span>  <span class="item">• notification</span>  <span class="item">• click</span>  <span class="item">• tap</span>
+
+<span class="section">Transitions</span>
+  <span class="item">• transition</span>  <span class="item">• swoosh</span>
+
+<span class="section">Loading</span>
+  <span class="item">• loading</span>  <span class="item">• complete</span>
+
+<span class="section">Alerts</span>
+  <span class="item">• alert</span>  <span class="item">• warning</span>
+
+<span class="prompt">my-app %</span> <span class="muted">_</span></pre>
+  </div>
+</body>
+</html>

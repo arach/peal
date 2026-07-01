@@ -2,6 +2,10 @@
 
 Curated UI sounds for web apps — clicks, success chimes, errors, and the rest — copied into your repo and played through a small generated helper.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/cli.png" alt="Peal CLI copying sound files and listing the built-in catalog" width="720">
+</p>
+
 ## What you get
 
 1. **CLI** — pick sounds from the built-in set and copy `.wav` files into your project
@@ -126,6 +130,16 @@ import { peal } from './peal'
 
 peal.success()
 ```
+
+## Web app
+
+The npm package is the CLI + library. Peal also runs in the browser — browse presets, generate sounds, or design in the studio — then copy what you need into a project with `peal add`.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/library.png" alt="Peal library welcome screen in the browser" width="900">
+</p>
+
+[Open the app](https://arach.github.io/peal/) · [GitHub](https://github.com/arach/peal)
 
 ## Links
 
