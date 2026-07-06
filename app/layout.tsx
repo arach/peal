@@ -5,6 +5,7 @@ import './globals.css'
 import '@/styles/peal-type.css'
 import '@/styles/peal-nav.css'
 import '@/styles/peal-context-bar.css'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 import ThemeProvider from '@/components/ThemeProvider'
 
 const figtree = Figtree({ 
@@ -36,6 +37,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${figtree.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        <GoogleAnalytics />
+      </head>
       <body className="bg-background dark:bg-gray-950 text-text-primary dark:text-gray-100 transition-colors">
         <Script
           id="peal-theme-init"
@@ -47,16 +51,6 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
         </ThemeProvider>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-GSHDZPFRZG"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-GSHDZPFRZG');`}
-        </Script>
       </body>
     </html>
   )
