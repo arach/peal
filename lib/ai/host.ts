@@ -6,6 +6,7 @@
  * Credentials resolve via pi-ai's getEnvApiKey (MINIMAX_API_KEY, etc.).
  */
 import { createPiAiBackend, listAvailableModels } from '@hudsonkit/ai/pi-ai'
+import { resolveOpenAICodexAccessToken } from '@/lib/ai/codexCredentials'
 import { ensurePealCredentialsLoaded, resolvePealCredential } from '@/lib/credentials'
 
 export const piBackend = createPiAiBackend()
@@ -26,6 +27,7 @@ export function loadCredentials(): Record<string, string | undefined> {
     minimax: resolvePealCredential('MINIMAX_API_KEY'),
     openai: resolvePealCredential('OPENAI_API_KEY'),
     groq: resolvePealCredential('GROQ_API_KEY'),
+    'openai-codex': resolveOpenAICodexAccessToken(),
   }
 }
 

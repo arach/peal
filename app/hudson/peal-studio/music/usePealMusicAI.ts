@@ -1,11 +1,21 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHudsonAI } from 'hudsonkit'
-import { buildMusicLastEdit, type PealMusicLastEdit } from '@/lib/ai/musicAiFollowUps'
+import {
+  buildMusicLastEdit,
+  finalizeMusicLastEdit,
+  type PealMusicLastEdit,
+} from '@/lib/ai/musicAiFollowUps'
+import type { MusicImprovStyle } from '@/lib/ai/musicImprovPrompts'
 import type { PealAISession } from '@/lib/ai/pealAiSessions'
 import type { MusicLane } from './types'
 import { usePealMusic } from './PealMusicProvider'
+import {
+  defaultImprovLoopState,
+  usePealMusicImprovLoop,
+  type PealMusicImprovLoopState,
+} from './usePealMusicImprovLoop'
 
 export type { PealMusicLastEdit } from '@/lib/ai/musicAiFollowUps'
 
@@ -20,11 +30,48 @@ function nextId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
 }
 
-export function usePealMusicAI(session: PealAISession) {
+const PATTERN_ROUTE_TOOLS = new Set([
+  'describe_to_pattern',
+  'write_pattern',
+  'edit_pattern',
+  'layer_track',
+])
+
+function versionLabelForTool(tool: string): string {
+  switch (tool) {
+    case 'describe_to_pattern':
+      return 'AI pattern'
+    case 'write_pattern':
+      return 'New pattern'
+    case 'edit_pattern':
+      return 'AI edit'
+    case 'layer_track':
+      return 'Layer added'
+    default:
+      return 'AI change'
+  }
+}
+
+export function usePealMusicAI(session: PealAISession, options?: { visible?: boolean }) {
   const music = usePealMusic()
   const { config, id: sessionId } = session
+  const visible = options?.visible ?? true
   const [activity, setActivity] = useState<PealMusicAIActivity[]>([])
   const [lastEdit, setLastEdit] = useState<PealMusicLastEdit | null>(null)
+  const [improvLoop, setImprovLoop] = useState<PealMusicImprovLoopState>(defaultImprovLoopState)
+  const [improvTick, setImprovTick] = useState(0)
+  const turnCompleteRef = useRef<(() => void) | null>(null)
+  const registerTurnComplete = useCallback((handler: (() => void) | null) => {
+    turnCompleteRef.current = handler
+  }, [])
+  const musicRef = useRef(music)
+  const lastEditRef = useRef(lastEdit)
+  const turnStartPatternRef = useRef('')
+  const turnToolsRef = useRef<string[]>([])
+  const prevChatStatusRef = useRef<string>('ready')
+
+  musicRef.current = music
+  lastEditRef.current = lastEdit
 
   const log = useCallback((tool: string, summary: string) => {
     setActivity((prev) => [...prev.slice(-9), { id: nextId(), tool, summary, timestamp: Date.now() }])
@@ -54,6 +101,42 @@ export function usePealMusicAI(session: PealAISession) {
     setLastEdit(null)
   }, [])
 
+  const finishTurn = useCallback((input?: { isAbort?: boolean; isDisconnect?: boolean; isError?: boolean }) => {
+    if (input?.isAbort || input?.isDisconnect || input?.isError) return
+
+    const m = musicRef.current
+    const code = m.patternCode.trim()
+    if (!code) return
+
+    const hadPatternTool = turnToolsRef.current.some((tool) => PATTERN_ROUTE_TOOLS.has(tool))
+    const shouldRoute = m.isPatternDirty || hadPatternTool
+    if (!shouldRoute) return
+
+    m.routeToStrudel()
+    m.markActiveVersionRouted()
+
+    setLastEdit(finalizeMusicLastEdit(lastEditRef.current, {
+      patternBefore: turnStartPatternRef.current,
+      patternAfter: code,
+      tempoCps: m.tempoCps,
+      tempoBpm: m.tempoBpm,
+      summary: lastEditRef.current?.summary ?? 'Playing in Strudel',
+    }))
+    log('auto_route', 'routed to Strudel at end of turn')
+  }, [log])
+
+  const setImprovEnabled = useCallback((enabled: boolean) => {
+    setImprovLoop((prev) => ({ ...prev, enabled }))
+  }, [])
+
+  const setImprovIntervalSec = useCallback((intervalSec: number) => {
+    setImprovLoop((prev) => ({ ...prev, intervalSec }))
+  }, [])
+
+  const setImprovStyle = useCallback((style: MusicImprovStyle) => {
+    setImprovLoop((prev) => ({ ...prev, style }))
+  }, [])
+
   const context = useMemo(() => ({
     patternCode: music.patternCode,
     lane: music.lane,
@@ -65,6 +148,14 @@ export function usePealMusicAI(session: PealAISession) {
     isPatternDirty: music.isPatternDirty,
     minimaxAvailable: false,
     musicPrompt: music.musicPrompt,
+    improvLoop: improvLoop.enabled
+      ? {
+          active: true,
+          tick: improvTick,
+          style: improvLoop.style,
+          intervalSec: improvLoop.intervalSec,
+        }
+      : null,
   }), [
     music.patternCode,
     music.lane,
@@ -75,6 +166,10 @@ export function usePealMusicAI(session: PealAISession) {
     music.strudelMountStatus,
     music.isPatternDirty,
     music.musicPrompt,
+    improvLoop.enabled,
+    improvLoop.style,
+    improvLoop.intervalSec,
+    improvTick,
   ])
 
   const chat = useHudsonAI({
@@ -90,8 +185,21 @@ export function usePealMusicAI(session: PealAISession) {
       appId: 'peal-studio',
       appName: 'Music Studio',
     },
+    onFinish: (event) => {
+      finishTurn({
+        isAbort: event.isAbort,
+        isDisconnect: event.isDisconnect,
+        isError: event.isError,
+      })
+      turnToolsRef.current = []
+      // Keep improv loop alive after errors; only user abort should pause the chain.
+      if (!event.isAbort) {
+        turnCompleteRef.current?.()
+      }
+    },
     onToolCall: async (name, args) => {
       try {
+        turnToolsRef.current.push(name)
         const record = args as Record<string, unknown>
         const patternBefore = music.patternCode
 
@@ -107,6 +215,13 @@ export function usePealMusicAI(session: PealAISession) {
             }
             music.setPatternCode(code)
             music.setLane('live')
+            music.pushPatternVersion({
+              code,
+              label: versionLabelForTool(name),
+              source: 'ai',
+              tool: name,
+              summary: code.slice(0, 64),
+            })
             log(name, code.slice(0, 48))
             commitEdit({
               tool: name,
@@ -136,6 +251,7 @@ export function usePealMusicAI(session: PealAISession) {
           }
           case 'evaluate_pattern': {
             music.routeToStrudel()
+            music.markActiveVersionRouted()
             log('evaluate_pattern', 'routed to Strudel mount')
             commitEdit({
               tool: name,
@@ -215,5 +331,49 @@ export function usePealMusicAI(session: PealAISession) {
     },
   })
 
-  return { chat, activity, lastEdit, clearLastEdit, log }
+  const chatStatus = chat.status
+  const isBusy = chatStatus === 'streaming' || chatStatus === 'submitted'
+
+  const sendImprovPrompt = useCallback((text: string) => {
+    if (isBusy) return
+    void chat.sendMessage({ text })
+  }, [chat, isBusy])
+
+  const improvRuntime = usePealMusicImprovLoop({
+    enabled: improvLoop.enabled,
+    intervalSec: improvLoop.intervalSec,
+    style: improvLoop.style,
+    active: visible,
+    canRun: music.patternCode.trim().length > 0 && music.lane === 'live',
+    isBusy,
+    patternCode: music.patternCode,
+    isPlaying: music.isPlaying,
+    sendPrompt: sendImprovPrompt,
+    onTurnComplete: registerTurnComplete,
+  })
+
+  useEffect(() => {
+    setImprovTick(improvRuntime.tick)
+  }, [improvRuntime.tick])
+
+  useEffect(() => {
+    if (prevChatStatusRef.current !== 'submitted' && chatStatus === 'submitted') {
+      turnStartPatternRef.current = music.patternCode
+      turnToolsRef.current = []
+    }
+    prevChatStatusRef.current = chatStatus
+  }, [chatStatus, music.patternCode])
+
+  return {
+    chat,
+    activity,
+    lastEdit,
+    clearLastEdit,
+    log,
+    improvLoop,
+    improvRuntime,
+    setImprovEnabled,
+    setImprovIntervalSec,
+    setImprovStyle,
+  }
 }

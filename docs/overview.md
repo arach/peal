@@ -195,11 +195,23 @@ your-project/
 - **Size**: 10-200KB per sound
 - **Optimized**: For low latency
 
+## Peal Studio (web app)
+
+Beyond the npm library, Peal ships a Next.js studio on port **3001**:
+
+| Leg | Route | Focus |
+| --- | --- | --- |
+| **SFX** | `/studio` | Web Audio sound design + AI |
+| **Voice** | `/studio?tool=voice` | TTS deck, mixer, capture |
+| **Music** | `/studio?tool=music` | Strudel editor + REPL, managed engine, Minimax/Codex copilot, auto-route, improv loop, version history, lyricless beat curriculum |
+
+Music uses a managed [Strudel](https://strudel.cc/) process (AGPL, external checkout). See **[Music Studio guide](./music-studio.md)**.
+
 ## Roadmap
 
 Coming soon:
 - 🎨 Sound packs (themes)
-- 🎵 Web-based sound editor
 - 📊 Analytics integration
 - 🎮 Game sound pack
 - 🌐 CDN hosting option
+- 🎵 Native Strudel engine + capture-to-deck (Music Phase 2)

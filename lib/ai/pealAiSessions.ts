@@ -27,6 +27,9 @@ export interface PealAISessionWorkspace {
   splitSessionId: string | null
 }
 
+const PEAL_DEFAULT_MINIMAX_SESSION_ID = 'sess-default-minimax'
+const PEAL_DEFAULT_CODEX_SESSION_ID = 'sess-default-codex'
+
 function nextSessionId() {
   return `sess-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
 }
@@ -53,9 +56,18 @@ export function createPealAISession(label: string, preset = DEFAULT_PEAL_AI_PRES
   }
 }
 
+/** Stable defaults for SSR and pre-hydration client render — never use random ids here. */
 export function defaultMusicSessions(): PealAISessionWorkspace {
-  const minimax = createPealAISession('Minimax', presetForValue('minimax:MiniMax-M2.7'))
-  const codex = createPealAISession('Codex', presetForValue('openai-codex:gpt-5.4'))
+  const minimax: PealAISession = {
+    id: PEAL_DEFAULT_MINIMAX_SESSION_ID,
+    label: 'Minimax',
+    config: configFromPreset(presetForValue('minimax:MiniMax-M2.7')),
+  }
+  const codex: PealAISession = {
+    id: PEAL_DEFAULT_CODEX_SESSION_ID,
+    label: 'Codex',
+    config: configFromPreset(presetForValue('openai-codex:gpt-5.4')),
+  }
   return {
     sessions: [minimax, codex],
     activeId: minimax.id,

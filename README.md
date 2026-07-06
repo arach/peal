@@ -16,11 +16,12 @@
 
 ## Overview
 
-Peal is an npm package (`@peal-sounds/peal`) and a web app for designing and shipping UI sound effects.
+Peal is an npm package (`@peal-sounds/peal`) and a web app for designing and shipping UI sound effects — plus a **Music Studio** for live-coded instrumental beats.
 
 - **📦 Library** — Howler.js wrapper for playing sounds in web apps
 - **🎯 CLI** — Add curated UI sounds to any project and generate a typed helper
 - **🌐 Web App** — Browse, design, and manage sounds in the browser
+- **🎵 Music Studio** — Strudel live coding, AI copilot, improv loop, lyricless beat curriculum
 
 The CLI copies high-quality WAV files into your repo and generates a helper that handles paths for you. The web app lets you explore presets, design custom sounds, and export audio for use anywhere.
 
@@ -42,6 +43,7 @@ The CLI copies high-quality WAV files into your repo and generates a helper that
 - **Library** ([`/library`](http://localhost:3001/library)): Browse, generate, and manage your sound collection
 - **Studio** ([`/studio`](http://localhost:3001/studio)): IDE-style sound designer with live Web Audio API code, AI-assisted design, and parameter panels
 - **Voice** ([`/studio?tool=voice`](http://localhost:3001/studio?tool=voice)): TTS studio for spoken UI feedback (`/voice` redirects here)
+- **Music** ([`/studio?tool=music`](http://localhost:3001/studio?tool=music)): Strudel beats — managed engine, dual AI sessions (Minimax + Codex), auto-route, improv loop, version history, grounded curriculum for **lyricless varied grooves** ([docs](./docs/music-studio.md))
 - **Presets**: Curated collections at [`/presets`](http://localhost:3001/presets), `/premium`, `/mechanics`, `/keyboard`, `/brands`, and `/signature`
 
 ## 🚀 Quick Start
@@ -266,8 +268,9 @@ Peal ships as a Next.js web app alongside the npm package. Use it to preview pre
 | Surface | Path | Description |
 | --- | --- | --- |
 | **Library** | [`/library`](http://localhost:3001/library) | Browse, generate, and manage sounds |
-| **Studio** | [`/studio`](http://localhost:3001/studio) | Sound designer with live Web Audio code and AI-assisted parameters |
+| **Studio (SFX)** | [`/studio`](http://localhost:3001/studio) | Sound designer with live Web Audio code and AI-assisted parameters |
 | **Voice** | [`/studio?tool=voice`](http://localhost:3001/studio?tool=voice) | TTS studio for spoken UI feedback |
+| **Music** | [`/studio?tool=music`](http://localhost:3001/studio?tool=music) | Strudel editor + REPL, AI copilot (Minimax/Codex), improv loop, auto-route, versions |
 | **Presets** | [`/presets`](http://localhost:3001/presets) | Curated sound collections (`/premium`, `/mechanics`, `/keyboard`, `/brands`, `/signature`) |
 
 Studio uses **hudsonkit** for app chrome, with a material/instrument aesthetic for sound design controls.
@@ -282,6 +285,21 @@ pnpm dev
 ```
 
 Open [http://localhost:3001](http://localhost:3001) — the dev server runs on port **3001**.
+
+### Music Studio + Strudel
+
+Music uses a **managed Strudel checkout** (AGPL, not vendored):
+
+```bash
+bun run strudel:install
+bun run strudel:start
+```
+
+Then open [`/studio?tool=music`](http://localhost:3001/studio?tool=music). Transport → **Start engine** → edit pattern → **Route** (⌘↵) or ask the copilot.
+
+**Latest:** dual AI sessions (Minimax + Codex), auto-route after AI edits, improv loop, 32-version history, smart follow-up chips, grounded lyricless-beat curriculum.
+
+See [`docs/music-studio.md`](./docs/music-studio.md) and [`lib/strudel/README.md`](./lib/strudel/README.md).
 
 ## 🛠️ Tech Stack
 

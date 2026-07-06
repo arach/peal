@@ -2,6 +2,7 @@
 
 import { WaveformIcon } from '@/components/icons/PealStudioIcon'
 import { PealMusicEngineControls } from './PealMusicEngineControls'
+import { PealMusicPatternHistory } from './PealMusicPatternHistory'
 import { usePealMusic } from './PealMusicProvider'
 
 export function PealMusicSidebar() {
@@ -66,6 +67,8 @@ export function PealMusicSidebar() {
             {isPlaying ? 'Playing' : isPatternDirty ? 'Edits pending' : strudelMountStatus === 'routed' ? 'Routed' : 'Ready'}
           </p>
         </div>
+
+        <PealMusicPatternHistory />
       </div>
     </div>
   )

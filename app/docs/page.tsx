@@ -17,7 +17,8 @@ import {
   Volume2,
   CheckCircle,
   Copy,
-  Check
+  Check,
+  Music,
 } from 'lucide-react'
 
 const quickStartContent = isStaticBuild ? `# Quick Start
@@ -321,6 +322,48 @@ async function submitForm(data) {
     `
   },
   {
+    id: 'music-studio',
+    title: 'Music Studio',
+    icon: Music,
+    content: `
+# Music Studio
+
+Live-code **lyricless, varied instrumental beats** — Strudel editor + REPL, grounded AI copilot, improv loop.
+
+**Open:** [\`/studio?tool=music\`](/studio?tool=music) · **Full guide:** [docs/music-studio.md](https://github.com/arach/peal/blob/master/docs/music-studio.md)
+
+## Latest features
+
+- **Managed Strudel** — Install / Start / Stop in Transport (left) or \`bun run strudel:*\`
+- **Editor + REPL** — code on top, Strudel iframe below; **Route** (⌘↵) or **auto-route** after AI edits
+- **Dual AI sessions** — default **Minimax** + **Codex** tabs; optional split-pane compare
+- **Grounded curriculum** — OMT2, Tidal course, Strudel workshop; lyricless evolving grooves
+- **Improv loop** — Subtle / Bold / arc; timed passes, one variation per cycle
+- **Version history** — 32 snapshots, roll back, last-edit undo
+- **Smart chips** — context follow-ups after each edit (*breakdown mask*, *hat alternation*, etc.)
+
+## Quick start
+
+\`\`\`bash
+pnpm dev
+bun run strudel:install
+bun run strudel:start
+\`\`\`
+
+Ask the copilot: *Instrumental house — alternating hats every 2 bars, no vocals, 124 bpm*
+
+## Codex setup
+
+Codex sessions need OAuth — \`~/.codex/auth.json\` from the Codex CLI, or \`OPENAI_CODEX_ACCESS_TOKEN\` in \`.env.local\`.
+
+## Synth rule
+
+Use \`note()\` for synth pitch — not \`n()\` (breaks oscillators). Samples: \`s("bd sd")\`.
+
+Peal manages Strudel as a **separate AGPL process** (not vendored in the MIT app).
+    `
+  },
+  {
     id: 'troubleshooting',
     title: 'Troubleshooting',
     icon: HelpCircle,
@@ -578,6 +621,7 @@ const sectionKickers: Record<string, string> = {
   api: 'API',
   cli: 'CLI',
   examples: 'Examples',
+  'music-studio': 'Studio',
   troubleshooting: 'Help',
 }
 
@@ -586,6 +630,7 @@ const sectionLeads: Record<string, string> = {
   api: 'Play, stop, and control volume on the CLI-generated helper module.',
   cli: 'Add, remove, and preview sounds from the terminal.',
   examples: 'Drop-in patterns for React, Vue, and vanilla JavaScript.',
+  'music-studio': 'Managed Strudel, dual AI sessions, auto-route, improv loop, version history, lyricless beat curriculum.',
   troubleshooting: 'Common issues and how to fix them.',
 }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Volume2, Sparkles, Code2, Package, Terminal } from 'lucide-react'
+import { ArrowRight, Volume2, Sparkles, Code2, Package, Terminal, Music } from 'lucide-react'
 import HeroSoundGrid from './HeroSoundGrid'
 import { isStaticBuild } from '@/utils/build'
 import { getPublicUrl } from '@/utils/url'
@@ -58,6 +58,7 @@ export default function LandingHero() {
 
   const libraryHref = isStaticBuild ? getPublicUrl('/docs') : '/library'
   const studioHref = isStaticBuild ? getPublicUrl('/about') : '/studio'
+  const musicHref = isStaticBuild ? getPublicUrl('/about') : '/studio?tool=music'
   const docsHref = isStaticBuild ? getPublicUrl('/docs') : '/docs'
 
   return (
@@ -75,8 +76,8 @@ export default function LandingHero() {
         </h1>
 
         <p className="landing-sub">
-          Curated library, Web Audio studio, and CLI — shape new UI audio or
-          drop presets into any project.
+          Curated library, Web Audio studio, live-code beats, and CLI — shape UI
+          audio or compose lyricless grooves in Strudel.
         </p>
 
         <div className="landing-pillars">
@@ -92,7 +93,14 @@ export default function LandingHero() {
               <Sparkles size={16} />
             </span>
             <h2>Sound studio</h2>
-            <p>Design sounds with AI, live parameters, and exported Web Audio API code.</p>
+            <p>SFX, voice deck, and Music — AI-assisted design with live code and parameters.</p>
+          </div>
+          <div className="landing-pillar">
+            <span className="landing-pillar-icon">
+              <Music size={16} />
+            </span>
+            <h2>Music beats</h2>
+            <p>Managed Strudel, Minimax + Codex copilot, improv loop, auto-route, and lyricless groove curriculum.</p>
           </div>
           <div className="landing-pillar">
             <span className="landing-pillar-icon">
@@ -231,6 +239,10 @@ export default function LandingHero() {
               <p>Describe a sound in natural language and refine it in the parameter panel.</p>
             </div>
             <div className="landing-feature">
+              <h3>Music leg</h3>
+              <p>Editor + REPL, dual AI sessions, improv loop, version history, smart follow-up chips.</p>
+            </div>
+            <div className="landing-feature">
               <h3>Dark IDE chrome</h3>
               <p>Same terminal-forward aesthetic as the rest of the product surfaces.</p>
             </div>
@@ -260,13 +272,20 @@ export default function LandingHero() {
           <div className="landing-kicker">Sound studio</div>
           <h2 className="landing-integrate-title">Design audio like you design UI</h2>
           <p className="landing-integrate-lead">
-            Three-pane studio: code on the left, waveform in the center, AI + parameters on the right.
-            The same dark chrome you see across Peal — not a separate marketing skin.
+            Three studio legs — SFX, Voice deck, and Music. Music ships a managed Strudel engine, editor +
+            live REPL, Minimax/Codex copilot with improv loop, and a grounded curriculum for lyricless
+            beats that evolve bar to bar.
           </p>
-          <a href={studioHref} className="landing-btn landing-btn-primary">
-            <Code2 size={16} />
-            Open studio
-          </a>
+          <div className="landing-hero-links">
+            <a href={studioHref} className="landing-btn landing-btn-primary">
+              <Code2 size={16} />
+              Open SFX studio
+            </a>
+            <a href={musicHref} className="landing-btn landing-btn-secondary">
+              <Music size={16} />
+              Music beats
+            </a>
+          </div>
         </div>
       </section>
 

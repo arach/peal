@@ -3,7 +3,7 @@ setcps(1)
 
 stack(
   s("bd ~ sd ~").bank('RolandTR909'),
-  n("c2 eb2 g2").scale('C:minor').s('sawtooth').gain(0.35).lpf(800),
+  note("c2 eb2 g2").scale('C:minor').s('sawtooth').gain(0.35).lpf(800),
 )
 `
 

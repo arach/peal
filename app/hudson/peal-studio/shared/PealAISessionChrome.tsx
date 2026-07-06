@@ -137,7 +137,7 @@ export function PealAISessionChrome({
             onChange={(e) => onConfigChange(configSession.id, { presetValue: e.target.value })}
             className={`${selectClassName()} flex-1`}
           >
-            {PEAL_AI_MODEL_PRESETS.map((preset) => (
+            {providerPresets.map((preset) => (
               <option key={preset.value} value={preset.value}>
                 {preset.label}
               </option>

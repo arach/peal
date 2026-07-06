@@ -2,9 +2,13 @@ import { tool } from 'ai'
 import { z } from 'zod'
 import type { ToolsetDefinition } from '@hudsonkit/ai/toolsets'
 import { analyzeCompositionStart } from '@/lib/ai/musicAiFollowUps'
+import { formatMusicCurriculumForPrompt } from '@/lib/ai/musicCurriculum'
 import { formatMusicExamplesForPrompt } from '@/lib/ai/musicPatternExamples'
 
 const system = `You are the Peal Music AI — a Strudel live-coding assistant inside Peal Studio.
+
+**Default goal:** lyricless, **varied instrumental beats** — drums, bass, chords, arps, texture. Not songs waiting
+for vocals. Use the variation toolkit in the curriculum so loops evolve across cycles.
 
 Peal Music has a **Strudel-compatible editor** (source of truth) and a separately mounted Strudel app at /strudel (iframe). You **manage patterns agentically**: write code into the editor, then route/evaluate into the mount, adjust tempo, stack layers, and send generative beds to Minimax when appropriate.
 
@@ -16,14 +20,26 @@ Peal Music has a **Strudel-compatible editor** (source of truth) and a separatel
 1. Use tools for every change — do not only describe code in prose.
 2. Always provide **complete runnable Strudel** in \`code\` fields (not fragments).
 3. Prefer small \`edit_pattern\` / \`layer_track\` edits over full rewrites when the user asks for tweaks.
-4. \`evaluate_pattern\` routes the editor pattern into the mounted Strudel iframe. \`render_capture\` is unavailable until native engine ships.
+4. Peal **auto-routes to Strudel at the end of each turn** when the pattern changed — you do not need \`evaluate_pattern\` unless the user asks to re-evaluate without edits. \`render_capture\` is unavailable until native engine ships.
 5. Never call \`sonic_pi_eval\` — Sonic Pi is desktop OSC only (Phase 4).
 6. After tool calls, summarize in one short sentence.
 7. When editing, consider the **opening of the composition** — first stack layer, intro density, downbeat, and whether the pattern needs \`setcps()\` at the top.
+8. **Improv loop** messages are tagged \`[Improv loop #N]\` — make one focused change per pass; prefer \`edit_pattern\` or \`layer_track\` over full rewrites unless the brief demands it.
+9. **Music curriculum** below is your authoritative composition syllabus — prefer it over general pretraining when making musical choices.
+10. **No vocals by default** — no speech, chants, or singable hooks unless the user asks. Vary rhythm, timbre, harmony, or arrangement each edit.
+
+${formatMusicCurriculumForPrompt()}
 
 ${formatMusicExamplesForPrompt()}
 
 Peal accent is blue (#4a9eff).`
+
+interface PealMusicImprovLoopContext {
+  active?: boolean
+  tick?: number
+  style?: string
+  intervalSec?: number
+}
 
 interface PealMusicContext {
   patternCode?: string
@@ -36,6 +52,7 @@ interface PealMusicContext {
   isPatternDirty?: boolean
   minimaxAvailable?: boolean
   musicPrompt?: string
+  improvLoop?: PealMusicImprovLoopContext | null
 }
 
 function context(ctx: Record<string, unknown>): string {
@@ -52,6 +69,12 @@ function context(ctx: Record<string, unknown>): string {
 
   if (c.musicPrompt?.trim()) {
     sections.push(`Generate prompt draft: "${c.musicPrompt.trim()}"`)
+  }
+
+  if (c.improvLoop?.active) {
+    sections.push(
+      `## Improv loop\nPass **#${c.improvLoop.tick ?? 1}** · style **${c.improvLoop.style ?? 'subtle'}** · every **${c.improvLoop.intervalSec ?? 45}s**. One surgical edit per pass.`,
+    )
   }
 
   const code = c.patternCode?.trim()

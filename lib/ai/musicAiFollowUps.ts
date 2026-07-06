@@ -68,18 +68,64 @@ export function analyzeCompositionStart(code: string): CompositionStartSnapshot 
   }
 }
 
+const PATTERN_WRITE_TOOLS = new Set([
+  'describe_to_pattern',
+  'write_pattern',
+  'edit_pattern',
+  'layer_track',
+  'auto_route',
+])
+
+function postRouteSuggestions(start: CompositionStartSnapshot): string[] {
+  const suggestions: string[] = []
+
+  if (!start.openingSparse && start.hasDrums) {
+    suggestions.push('Soften the opening — sparse first bar')
+  }
+  if (start.hasDrums && !start.hasBass) {
+    suggestions.push('Add sub bass under the kick')
+  }
+  if (start.layerCount === 1) {
+    suggestions.push('Layer a second part with stack()')
+  }
+  if (start.layerCount >= 2 && !start.hasPad) {
+    suggestions.push('Add room and a pad for width')
+  }
+  if (start.hasDrums) {
+    suggestions.push('Alternate hat pattern with <a b c>')
+    suggestions.push('Add swing to the hi-hats')
+  }
+  if (start.hasBass || start.hasLead) {
+    suggestions.push('Make it darker — lower the filter')
+    suggestions.push('Vary bass roots every 2 bars')
+  }
+  if (start.tempoCps != null && start.tempoCps >= 1.2) {
+    suggestions.push('Half-time feel on the first bar')
+  } else if (start.hasDrums) {
+    suggestions.push('Add a 2-bar breakdown mask')
+  }
+  if (start.firstLayerHint === 'kick-forward opening') {
+    suggestions.push('Add a fill into bar 2')
+  }
+  if (start.layerCount >= 2) {
+    suggestions.push('Slow filter sweep on one layer')
+  }
+  if (!start.hasPad && start.layerCount >= 2) {
+    suggestions.push('Rotate chord voicing — instrumental bed')
+  }
+
+  return suggestions
+}
+
 export function getMusicFollowUpSuggestions(edit: PealMusicLastEdit): string[] {
   const suggestions: string[] = []
   const { tool, start, routed, isDirty, patternAfter } = edit
   const changed = edit.patternBefore.trim() !== edit.patternAfter.trim()
+  const patternWritten = PATTERN_WRITE_TOOLS.has(tool) && changed
+  const listening = routed && !isDirty
 
-  if (tool === 'evaluate_pattern') {
-    suggestions.push('Tighten the intro — sparse first bar')
-    suggestions.push('Add a counter-melody on bar 2')
-    if (!start.hasBass && start.hasDrums) {
-      suggestions.push('Add sub bass under the downbeat')
-    }
-    suggestions.push('Double hi-hat density in the chorus')
+  if (listening && (patternWritten || tool === 'evaluate_pattern' || tool === 'auto_route')) {
+    suggestions.push(...postRouteSuggestions(start))
   }
 
   if (tool === 'set_tempo') {
@@ -88,10 +134,12 @@ export function getMusicFollowUpSuggestions(edit: PealMusicLastEdit): string[] {
     } else {
       suggestions.push('Push energy — denser hats after the intro')
     }
-    suggestions.push('Route and listen to the new tempo')
+    if (patternAfter.trim()) {
+      suggestions.push('Tighten the kick pattern to match the new tempo')
+    }
   }
 
-  if (['describe_to_pattern', 'write_pattern', 'edit_pattern', 'layer_track'].includes(tool) && changed) {
+  if (patternWritten && !listening) {
     if (!start.openingSparse && start.hasDrums) {
       suggestions.push('Soften the opening — sparse first bar')
     }
@@ -103,9 +151,6 @@ export function getMusicFollowUpSuggestions(edit: PealMusicLastEdit): string[] {
     }
     if (start.layerCount === 1) {
       suggestions.push('Layer a second part with stack()')
-    }
-    if (start.layerCount >= 2 && !start.hasPad) {
-      suggestions.push('Add room and a pad for width')
     }
     if (start.tempoCps == null) {
       suggestions.push('Set tempo with setcps() at the top')
@@ -124,7 +169,9 @@ export function getMusicFollowUpSuggestions(edit: PealMusicLastEdit): string[] {
   if (tool === 'explain_pattern') {
     suggestions.push('Make the intro more cinematic')
     suggestions.push('Add a fill into bar 2')
-    suggestions.push('Route and iterate on the opening')
+    if (patternAfter.trim()) {
+      suggestions.push('Refine the opening layer')
+    }
   }
 
   if (tool === 'set_lane' || tool === 'set_music_prompt' || tool === 'generate_music') {
@@ -135,22 +182,67 @@ export function getMusicFollowUpSuggestions(edit: PealMusicLastEdit): string[] {
   if (suggestions.length === 0) {
     if (!patternAfter.trim()) {
       return [
-        'Lo-fi hip-hop bed, dusty drums, 78 bpm, 8 bars',
-        'Four-on-the-floor house kick with offbeat hats at 128 bpm',
-        'Ambient pad in C minor — slow evolution, lots of room',
+        'Instrumental lo-fi beat — dusty drums, chords, no vocals, 82 bpm',
+        'House groove with alternating hats every 2 bars, 124 bpm',
+        'Downtempo trip-hop — heavy kick, filtered pad, 90 bpm',
       ]
     }
-    if (!routed || isDirty) {
+    if (!listening) {
       suggestions.push('Route to hear the current pattern')
+    } else {
+      suggestions.push(...postRouteSuggestions(start))
     }
-    if (!start.openingSparse) {
-      suggestions.push('Soften the opening — sparse first bar')
+    if (suggestions.length === 0) {
+      suggestions.push('Add a sub bass under the current pattern')
+      suggestions.push('Make it darker — lower the filter and add room')
     }
-    suggestions.push('Add a sub bass under the current pattern')
-    suggestions.push('Make it darker — lower the filter and add room')
   }
 
-  return [...new Set(suggestions)].slice(0, 4)
+  let unique = [...new Set(suggestions)]
+  if (isDirty) {
+    unique = [
+      'Route to hear the new pattern',
+      ...unique.filter((s) => !s.toLowerCase().includes('route')),
+    ]
+  }
+  return unique.slice(0, 4)
+}
+
+/** Refresh routed/dirty flags and follow-ups after an end-of-turn Strudel push. */
+export function finalizeMusicLastEdit(
+  edit: PealMusicLastEdit | null,
+  input: {
+    patternBefore: string
+    patternAfter: string
+    tempoCps: number | null
+    tempoBpm: number | null
+    summary?: string
+    tool?: string
+  },
+): PealMusicLastEdit {
+  if (edit) {
+    return buildMusicLastEdit({
+      tool: edit.tool,
+      summary: input.summary ?? edit.summary,
+      patternBefore: edit.patternBefore,
+      patternAfter: input.patternAfter,
+      routed: true,
+      isDirty: false,
+      tempoCps: input.tempoCps,
+      tempoBpm: input.tempoBpm,
+    })
+  }
+
+  return buildMusicLastEdit({
+    tool: input.tool ?? 'auto_route',
+    summary: input.summary ?? 'Playing in Strudel',
+    patternBefore: input.patternBefore,
+    patternAfter: input.patternAfter,
+    routed: true,
+    isDirty: false,
+    tempoCps: input.tempoCps,
+    tempoBpm: input.tempoBpm,
+  })
 }
 
 export function buildMusicLastEdit(input: {

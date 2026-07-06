@@ -11,6 +11,7 @@ Welcome to the Peal documentation! Peal is a lightweight sound effect library fo
 ## Guides
 
 - **[Library Documentation](./library.md)** - Comprehensive guide with examples
+- **[Music Studio](./music-studio.md)** - Managed Strudel, dual AI sessions, improv loop, auto-route, version history, lyricless beat curriculum
 - **[Migration Guide](./migration-guide.md)** - Moving from other audio solutions
 - **[Troubleshooting](./troubleshooting.md)** - Common issues and solutions
 
@@ -73,6 +74,9 @@ docs/
 ├── overview.md         # Architecture and concepts
 ├── api-reference.md    # Concise API docs
 ├── library.md          # Full library documentation
+├── music-studio.md     # Strudel beats, AI curriculum, improv loop
+├── specs/
+│   └── peal-001-music-studio.md
 ├── migration-guide.md  # Moving from other solutions
 └── troubleshooting.md  # Common issues and fixes
 ```

@@ -29,14 +29,34 @@ export function PealMusicCodePanel({
     setPatternCode,
     resetPattern,
     routeToStrudel,
+    pushPatternVersion,
+    markActiveVersionRouted,
+    rollbackPatternVersion,
+    canRollbackPattern,
     strudelMountStatus,
     isPatternDirty,
     isPlaying,
   } = usePealMusic()
 
   const handleRoute = useCallback(() => {
+    if (isPatternDirty) {
+      pushPatternVersion({
+        code: patternCode,
+        label: 'Manual edit',
+        source: 'manual',
+        routed: true,
+      })
+    } else {
+      markActiveVersionRouted()
+    }
     routeToStrudel()
-  }, [routeToStrudel])
+  }, [
+    isPatternDirty,
+    patternCode,
+    pushPatternVersion,
+    markActiveVersionRouted,
+    routeToStrudel,
+  ])
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
@@ -64,6 +84,15 @@ export function PealMusicCodePanel({
           >
             <PlayIcon size={11} />
             Route
+          </button>
+          <button
+            type="button"
+            disabled={!canRollbackPattern}
+            onClick={() => rollbackPatternVersion({ route: true })}
+            className="inline-flex items-center gap-1 rounded border border-white/10 px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-gray-400 hover:border-[#4a9eff]/30 hover:text-[#4a9eff] disabled:cursor-not-allowed disabled:opacity-40"
+            title="Restore previous version"
+          >
+            Roll back
           </button>
           <button
             type="button"

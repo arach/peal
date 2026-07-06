@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   createPealAISession,
+  defaultMusicSessions,
   loadPealAISessions,
   savePealAISessions,
   type PealAISession,
@@ -12,7 +13,7 @@ import {
 import { presetForValue, type PealAIModelPreset } from '@/lib/ai/pealModelPresets'
 
 export function usePealAISessions(storageKey: string) {
-  const [workspace, setWorkspace] = useState<PealAISessionWorkspace>(() => loadPealAISessions(storageKey))
+  const [workspace, setWorkspace] = useState<PealAISessionWorkspace>(defaultMusicSessions)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
@@ -116,6 +117,7 @@ export function usePealAISessions(storageKey: string) {
   }, [])
 
   return {
+    hydrated,
     sessions: workspace.sessions,
     activeId: workspace.activeId,
     activeSession,

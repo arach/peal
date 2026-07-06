@@ -16,6 +16,7 @@ import {
   Mail,
   Copy,
   Check,
+  Music,
 } from 'lucide-react'
 
 function GithubMark() {
@@ -71,6 +72,11 @@ const categories = [
     icon: Sparkles,
     title: 'Custom',
     body: 'Design sounds tailored to your brand in the Peal Studio.',
+  },
+  {
+    icon: Music,
+    title: 'Beats',
+    body: 'Managed Strudel, Minimax/Codex copilot, improv loop, auto-route, and version history for lyricless beats.',
   },
 ]
 

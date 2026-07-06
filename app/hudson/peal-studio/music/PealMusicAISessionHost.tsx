@@ -4,6 +4,7 @@ import { useCallback, useRef } from 'react'
 import type { PealAISession } from '@/lib/ai/pealAiSessions'
 import { PealMusicAIDesign } from './PealMusicAIDesign'
 import { PealMusicAISessionContextProvider } from './PealMusicAIContext'
+import { usePealMusic } from './PealMusicProvider'
 import { usePealMusicAI } from './usePealMusicAI'
 
 interface PealMusicAISessionHostProps {
@@ -12,7 +13,8 @@ interface PealMusicAISessionHostProps {
 }
 
 export function PealMusicAISessionHost({ session, visible }: PealMusicAISessionHostProps) {
-  const ai = usePealMusicAI(session)
+  const music = usePealMusic()
+  const ai = usePealMusicAI(session, { visible })
   const isBusy = ai.chat.status === 'streaming' || ai.chat.status === 'submitted'
   const isBusyRef = useRef(isBusy)
   isBusyRef.current = isBusy
@@ -34,6 +36,14 @@ export function PealMusicAISessionHost({ session, visible }: PealMusicAISessionH
       isBusy={isBusy}
       sendPrompt={sendPrompt}
       sessionLabel={session.label}
+      improvLoop={ai.improvLoop}
+      improvTick={ai.improvRuntime.tick}
+      improvWaiting={ai.improvRuntime.waiting}
+      improvNextFireAt={ai.improvRuntime.nextFireAt}
+      improvCanRun={music.patternCode.trim().length > 0 && music.lane === 'live'}
+      setImprovEnabled={ai.setImprovEnabled}
+      setImprovIntervalSec={ai.setImprovIntervalSec}
+      setImprovStyle={ai.setImprovStyle}
     >
       <PealMusicAIDesign />
     </PealMusicAISessionContextProvider>

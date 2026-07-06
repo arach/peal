@@ -1,7 +1,7 @@
 # peal-001 — Music Studio (Strudel × Minimax × Sonic Pi)
 
 **Studio**: /eng/peal-001
-**Status**: Phase 1 shipped (uncommitted WIP) · Phases 2–6 designed
+**Status**: Phase 1 + AI copilot shipped · P2 native engine + capture · P4 Sonic Pi bridge
 **Owner**: peal.master (project-native) · handoff from arc-opus / Grok
 **Date**: 2026-07-05
 **Surface**: Next.js app, port 3001 · Hudson `AppShell` app at `app/hudson/peal-studio/`
@@ -23,9 +23,21 @@ Add a third tool leg — **Music** — to Peal Studio alongside **SFX** and **Vo
 
 **The single blocking decision** is Strudel's license (AGPL-3.0 vs Peal's MIT). Phase 1 sidesteps it with an **iframe embed** (arm's-length, reversible). Bundling `@strudel/web` (Phase 2) requires an explicit call — see §5.
 
-### 1.1 Key finding — Phase 1 is already built and verified
+### 1.1 Shipped beyond Phase 1 scaffolding
 
-The scaffolding requested in the brief's deliverable #6 already exists as uncommitted WIP and **compiles clean** (`/studio?tool=music` → HTTP 200 against the running dev server). It is more than an "empty shell": a working Strudel REPL, a pattern provider with persistence, a 3-lane inspector, and a code panel. See §8 for the verified inventory. Remaining work is Phases 2–6 below.
+`/studio?tool=music` is a working leg with managed Strudel, AI copilot, and beat-focused curriculum:
+
+- **Managed Strudel** — UI + `bun run strudel:*`, `/api/strudel`, editor+REPL layout, `peal-strudel` bridge
+- **`peal-music` toolset** — write/edit/layer; **auto-route** on turn end; activity feed + last-edit undo
+- **AI sessions** — default Minimax + Codex tabs, split-pane, harness API, effort, Codex OAuth (`codexCredentials.ts`)
+- **Follow-up chips** — `musicAiFollowUps` composition-aware suggestions after each edit
+- **Grounded curriculum** — `musicCurriculum.ts`; **lyricless varied beats**; `note()` synth rule
+- **Improv loop** — Subtle / Bold / arc; 30s–2m; survives AI errors
+- **Version history** — 32 snapshots, Transport + code panel + copilot rollback
+- **Hydration-safe sessions** — stable SSR defaults for AI chrome (`usePealAISessions`)
+- **User docs** — [`docs/music-studio.md`](../music-studio.md)
+
+Remaining: Phase 2 in-process Strudel + capture-to-deck, Phase 4 Sonic Pi OSC, Phase 5 Library export.
 
 ---
 
@@ -208,19 +220,19 @@ Grounding: `lib/ai/musicPatternExamples.ts` few-shots for reliable mini-notation
 
 ---
 
-## 8. Verified current inventory (Phase 1 WIP)
+## 8. Verified current inventory
 
-Untracked/modified, compiles clean, `/studio?tool=music` → **HTTP 200**:
+`/studio?tool=music` — Strudel leg + AI copilot:
 
-- `app/hudson/peal-studio/music/PealMusicEditor.tsx` — Strudel iframe (`allow="midi; microphone; autoplay"`) + open-fullscreen link.
-- `music/PealMusicProvider.tsx` — `patternCode` (persisted to `peal-music-pattern-v1`), `lane`, `engineId: 'strudel'`, `isPlaying`, `resetPattern`; `usePealMusic` / `useOptionalPealMusic`.
-- `music/PealMusicInspector.tsx` — `StudioModuleTabs` Live / Generate / Bridge, phase-annotated copy.
-- `music/PealMusicCodePanel.tsx` — pattern `<textarea>` + reset.
-- `music/constants.ts` — `DEFAULT_STRUDEL_PATTERN`, `STRUDEL_REPL_ORIGIN`.
-- `music/types.ts` — `MusicLane`, `MusicEngineId`.
-- Wiring: `routing.ts`, `Content.tsx`, `Inspector.tsx`, `LeftPanel.tsx`, `hooks.ts`, `index.ts`, `intents.ts`, `Provider.tsx`, `components/icons/PealStudioIcon.tsx`, `components/peal-nav/routing.ts`.
+| Area | Key paths |
+| --- | --- |
+| Shell | `routing.ts`, `Content.tsx`, `Inspector.tsx`, `LeftPanel.tsx`, `hooks.ts`, `Provider.tsx` |
+| Pattern | `PealMusicProvider.tsx`, `PealMusicCodePanel.tsx`, `constants.ts`, `musicPatternVersions.ts` |
+| Strudel | `lib/strudel/manage.ts`, `mount.ts`, `app/api/strudel/`, `useStrudelManage.ts`, `PealStrudelRepl.tsx` |
+| AI | `lib/ai/toolsets/peal-music.ts`, `musicCurriculum.ts`, `musicImprovPrompts.ts`, `usePealMusicAI.ts`, `PealMusicAIProvider.tsx` |
+| Docs | [`docs/music-studio.md`](../music-studio.md), `lib/strudel/README.md` |
 
-**Not yet committed.** Per repo convention the maintainer commits; no `Co-Authored-By` trailer.
+User guide: **[Music Studio](../music-studio.md)**.
 
 ---
 

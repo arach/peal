@@ -49,6 +49,19 @@ export function PealMusicAICopilotShell() {
     [sessions.sessions, sessions.visibleSessionIds],
   )
 
+  if (!sessions.hydrated) {
+    return (
+      <div className="flex h-full min-h-0 flex-col overflow-hidden">
+        <div className="shrink-0 border-b border-white/6 bg-[#111113] px-2 py-5">
+          <div className="h-3 w-28 animate-pulse rounded bg-white/5" />
+        </div>
+        <div className="flex flex-1 items-center justify-center">
+          <span className="font-mono text-[9px] text-gray-600">Loading AI sessions…</span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <PealAISessionChrome

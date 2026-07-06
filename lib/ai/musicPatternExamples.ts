@@ -1,28 +1,29 @@
 export const MUSIC_PATTERN_EXAMPLE_PROMPTS = [
-  'Lo-fi hip-hop bed, dusty drums, 78 bpm, 8 bars',
-  'Four-on-the-floor house kick with offbeat hats at 128 bpm',
-  'Ambient pad in C minor — slow evolution, lots of room',
-  'Minimal techno groove — tight kick, sparse percussion',
+  'Instrumental lo-fi beat — dusty drums, Rhodes chords, no vocals, 82 bpm',
+  'House groove with alternating hat patterns every 2 bars, 124 bpm',
+  'Downtempo trip-hop — heavy kick, filtered pad, bass roots, 90 bpm',
+  'Boom-bap instrumental — punchy kick/snare, short sample stabs, varied hats',
+  'Minimal techno — evolving filter on one layer, not a static loop',
 ] as const
 
 export const MUSIC_EDIT_EXAMPLE_PROMPTS = [
-  'Add a sub bass under the current pattern',
-  'Make it darker — lower the filter and add room',
-  'Double the hi-hat density',
-  'Slow to 70 bpm and simplify the drums',
+  'Add a sub bass under the kick — keep it instrumental',
+  'Vary the hi-hat pattern with <a b c> alternation',
+  'Add a 2-bar breakdown mask on the busiest layer',
+  'Swap chord voicing every 4 bars — no melody that needs lyrics',
+  'Euclidean fill on the rim — rotate placement',
+  'Slow filter sweep on the pad layer',
 ] as const
 
 export const STRUDEL_PATTERN_GROUNDING = `
 ## Strudel mini-notation (write runnable code)
-- Notes: \`n("c3 e3 g3")\`, scales: \`.scale('C:minor')\`, sounds: \`.s('sawtooth')\` or \`.s("bd sd")\`
-- Samples: \`.bank('RolandTR909')\`, \`s("bd ~ sd ~")\`
-- Tempo: \`setcps(1)\` or pattern \`.cpm(120/4)\` / \`.cps(2)\`
-- Combine: \`stack(part1, part2)\`
-- Euclidean: \`s("bd").euclid(3,8)\`
-- Effects: \`.gain(0.4).lpf(800).room(0.3)\`
-- Polyrhythm: \`<a b>\`, repeats: \`a*2\`, slows: \`a/2\`
+- **Synth pitch:** \`note("c3 e3 g3").scale('C:minor').s('sawtooth')\` — use \`note()\`, not \`n()\`, for melodies/bass on waveforms
+- **Samples:** \`s("bd ~ sd ~").bank('RolandTR909')\` — \`n\` is only for sample variant indices
+- Tempo: \`setcps(1)\` (global) · \`stack(part1, part2)\` for layers
+- Euclidean: \`s("bd").euclid(3,8)\` · Polyrhythm: \`[kick, hat*8]\` · Alt: \`<a b>\` · Rests: \`~\`
+- Effects: \`.gain(0.4).lpf(800).room(0.3)\` per layer
 
-Always emit complete runnable Strudel — prefer \`stack(...)\` for multi-part grooves.
+Always emit complete runnable Strudel — prefer \`stack(...)\` with one role per child.
 `.trim()
 
 export function formatMusicExamplesForPrompt(): string {

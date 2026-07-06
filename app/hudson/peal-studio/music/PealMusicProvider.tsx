@@ -16,6 +16,13 @@ import {
   type StrudelMountStatus,
 } from '@/lib/strudel/mount'
 import { DEFAULT_STRUDEL_PATTERN } from './constants'
+import {
+  markPatternVersionRouted,
+  pushPatternVersion,
+  type PealMusicPatternVersion,
+  type PushPatternVersionInput,
+  previousPatternVersion,
+} from './musicPatternVersions'
 import type { MusicEngineId, MusicLane } from './types'
 
 interface PealMusicContextValue {
@@ -44,11 +51,43 @@ interface PealMusicContextValue {
   markStrudelMirrorReady: () => void
   routeToStrudel: (code?: string) => void
   stopStrudel: () => void
+  patternVersions: PealMusicPatternVersion[]
+  activeVersionId: string | null
+  canRollbackPattern: boolean
+  pushPatternVersion: (input: PushPatternVersionInput) => string | null
+  markActiveVersionRouted: () => void
+  restorePatternVersion: (id: string, options?: { route?: boolean }) => void
+  rollbackPatternVersion: (options?: { route?: boolean }) => boolean
+  applyPatternSnapshot: (
+    code: string,
+    input: Omit<PushPatternVersionInput, 'code'> & { route?: boolean },
+  ) => void
 }
 
 const PealMusicContext = createContext<PealMusicContextValue | null>(null)
 
 const STORAGE_KEY = 'peal-music-pattern-v1'
+const VERSIONS_STORAGE_KEY = 'peal-music-pattern-versions.v1'
+
+interface StoredPatternVersions {
+  versions: PealMusicPatternVersion[]
+  activeId: string | null
+}
+
+function readStoredVersions(): StoredPatternVersions {
+  try {
+    const raw = localStorage.getItem(VERSIONS_STORAGE_KEY)
+    if (!raw) return { versions: [], activeId: null }
+    const parsed = JSON.parse(raw) as StoredPatternVersions
+    if (!Array.isArray(parsed.versions)) return { versions: [], activeId: null }
+    return {
+      versions: parsed.versions,
+      activeId: typeof parsed.activeId === 'string' ? parsed.activeId : null,
+    }
+  } catch {
+    return { versions: [], activeId: null }
+  }
+}
 
 function readStoredPattern(): string {
   try {
@@ -61,11 +100,6 @@ function readStoredPattern(): string {
 export function PealMusicProvider({ children }: { children: ReactNode }) {
   const [patternCode, setPatternCodeState] = useState(DEFAULT_STRUDEL_PATTERN)
   const [patternReady, setPatternReady] = useState(false)
-
-  useEffect(() => {
-    setPatternCodeState(readStoredPattern())
-    setPatternReady(true)
-  }, [])
   const [lane, setLane] = useState<MusicLane>('live')
   const [isPlaying, setIsPlaying] = useState(false)
   const [tempoCps, setTempoCps] = useState<number | null>(1)
@@ -74,8 +108,44 @@ export function PealMusicProvider({ children }: { children: ReactNode }) {
   const [strudelMountStatus, setStrudelMountStatus] = useState<StrudelMountStatus>('idle')
   const [lastRoutedCode, setLastRoutedCode] = useState('')
   const [routeGeneration, setRouteGeneration] = useState(0)
+  const [patternVersions, setPatternVersions] = useState<PealMusicPatternVersion[]>([])
+  const [activeVersionId, setActiveVersionId] = useState<string | null>(null)
   const strudelFrameRef = useRef<HTMLIFrameElement | null>(null)
+  const versionsHydratedRef = useRef(false)
   const engineId: MusicEngineId = 'strudel'
+
+  useEffect(() => {
+    const storedPattern = readStoredPattern()
+    setPatternCodeState(storedPattern)
+    const storedVersions = readStoredVersions()
+    if (storedVersions.versions.length > 0) {
+      setPatternVersions(storedVersions.versions)
+      setActiveVersionId(storedVersions.activeId ?? storedVersions.versions.at(-1)?.id ?? null)
+    } else if (storedPattern.trim()) {
+      const seeded = pushPatternVersion([], {
+        code: storedPattern,
+        label: 'Saved pattern',
+        source: 'initial',
+        routed: false,
+      })
+      setPatternVersions(seeded.versions)
+      setActiveVersionId(seeded.activeId)
+    }
+    versionsHydratedRef.current = true
+    setPatternReady(true)
+  }, [])
+
+  useEffect(() => {
+    if (!versionsHydratedRef.current) return
+    try {
+      localStorage.setItem(VERSIONS_STORAGE_KEY, JSON.stringify({
+        versions: patternVersions,
+        activeId: activeVersionId,
+      }))
+    } catch {
+      // ignore quota errors
+    }
+  }, [patternVersions, activeVersionId])
 
   const setTempo = useCallback((input: { cps?: number; bpm?: number }) => {
     if (typeof input.cps === 'number') {
@@ -107,9 +177,20 @@ export function PealMusicProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const resetPattern = useCallback(() => {
-    setPatternCode(DEFAULT_STRUDEL_PATTERN)
-  }, [setPatternCode])
+  const commitPatternVersion = useCallback((input: PushPatternVersionInput) => {
+    let nextId: string | null = null
+    setPatternVersions((prev) => {
+      const next = pushPatternVersion(prev, input)
+      nextId = next.activeId
+      return next.versions
+    })
+    if (nextId) setActiveVersionId(nextId)
+    return nextId
+  }, [])
+
+  const markActiveVersionRouted = useCallback(() => {
+    setPatternVersions((prev) => markPatternVersionRouted(prev, activeVersionId))
+  }, [activeVersionId])
 
   const registerStrudelFrame = useCallback((iframe: HTMLIFrameElement | null) => {
     strudelFrameRef.current = iframe
@@ -152,6 +233,44 @@ export function PealMusicProvider({ children }: { children: ReactNode }) {
       code: payload,
     })
   }, [patternCode])
+
+  const restorePatternVersion = useCallback((id: string, options?: { route?: boolean }) => {
+    const version = patternVersions.find((entry) => entry.id === id)
+    if (!version) return
+    setPatternCode(version.code)
+    setActiveVersionId(id)
+    if (options?.route !== false) {
+      routeToStrudel(version.code)
+    }
+  }, [patternVersions, setPatternCode, routeToStrudel])
+
+  const rollbackPatternVersion = useCallback((options?: { route?: boolean }) => {
+    const previous = previousPatternVersion(patternVersions, activeVersionId)
+    if (!previous) return false
+    restorePatternVersion(previous.id, options)
+    return true
+  }, [patternVersions, activeVersionId, restorePatternVersion])
+
+  const applyPatternSnapshot = useCallback((
+    code: string,
+    input: Omit<PushPatternVersionInput, 'code'> & { route?: boolean },
+  ) => {
+    setPatternCode(code)
+    const id = commitPatternVersion({ ...input, code })
+    if (input.route !== false) {
+      routeToStrudel(code)
+    } else if (id) {
+      setActiveVersionId(id)
+    }
+  }, [setPatternCode, commitPatternVersion, routeToStrudel])
+
+  const resetPattern = useCallback(() => {
+    applyPatternSnapshot(DEFAULT_STRUDEL_PATTERN, {
+      label: 'Default pattern',
+      source: 'reset',
+      route: false,
+    })
+  }, [applyPatternSnapshot])
 
   const stopStrudel = useCallback(() => {
     postToStrudelFrame(strudelFrameRef.current, { type: 'peal-strudel', action: 'stop' })
@@ -202,6 +321,11 @@ export function PealMusicProvider({ children }: { children: ReactNode }) {
     [patternCode, lastRoutedCode],
   )
 
+  const canRollbackPattern = useMemo(
+    () => previousPatternVersion(patternVersions, activeVersionId) !== null,
+    [patternVersions, activeVersionId],
+  )
+
   const value = useMemo<PealMusicContextValue>(() => ({
     patternCode,
     setPatternCode,
@@ -228,6 +352,14 @@ export function PealMusicProvider({ children }: { children: ReactNode }) {
     markStrudelMirrorReady,
     routeToStrudel,
     stopStrudel,
+    patternVersions,
+    activeVersionId,
+    canRollbackPattern,
+    pushPatternVersion: commitPatternVersion,
+    markActiveVersionRouted,
+    restorePatternVersion,
+    rollbackPatternVersion,
+    applyPatternSnapshot,
   }), [
     patternCode,
     setPatternCode,
@@ -251,6 +383,14 @@ export function PealMusicProvider({ children }: { children: ReactNode }) {
     markStrudelMirrorReady,
     routeToStrudel,
     stopStrudel,
+    patternVersions,
+    activeVersionId,
+    canRollbackPattern,
+    commitPatternVersion,
+    markActiveVersionRouted,
+    restorePatternVersion,
+    rollbackPatternVersion,
+    applyPatternSnapshot,
   ])
 
   return (
