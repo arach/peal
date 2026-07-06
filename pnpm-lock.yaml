@@ -3177,6 +3177,7 @@ packages:
       html2canvas-pro: ^2.0.0
       lucide-react: ^0.564.0 || ^0.574.0
       react: ^19.0.0
+      react-dom: ^19.0.0
       react-markdown: ^10.1.0
       remark-gfm: ^4.0.1
     peerDependenciesMeta:
@@ -7879,6 +7880,7 @@ snapshots:
       lucide-react: 1.22.0(react@19.2.7)
       motion: 12.42.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
       server-only: 0.0.1
     optionalDependencies:
       '@codemirror/commands': 6.10.4
@@ -7899,7 +7901,6 @@ snapshots:
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
       - '@types/react'
-      - react-dom
       - zod
 
   human-signals@5.0.0: {}

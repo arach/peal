@@ -2,6 +2,8 @@ import type { NextConfig } from 'next'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { hydratePealCredentialsFromFiles } from './lib/credentials/envFiles'
+import { buildStrudelUpstreamAssetPrefix } from './lib/strudel/manage'
+
 
 const projectRoot = path.dirname(fileURLToPath(import.meta.url))
 
@@ -9,6 +11,8 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url))
 hydratePealCredentialsFromFiles()
 
 const nextConfig: NextConfig = {
+  // HMR websocket is blocked when the page is opened via 127.0.0.1 instead of localhost.
+  allowedDevOrigins: ['127.0.0.1', 'localhost'],
   transpilePackages: ['hudsonkit', '@hudsonkit/ai', '@voxd/client'],
   serverExternalPackages: ['@earendil-works/pi-ai'],
 
@@ -39,11 +43,23 @@ const nextConfig: NextConfig = {
     if (process.env.BUILD_STATIC === 'true') {
       return []
     }
+    // /strudel/* → app/strudel/[[...path]]/route.ts (HTML base rewrite).
+    // Root-level Vite/Astro paths catch stale embed HTML still requesting /src, /@vite, etc.
+    const strudelAssets = buildStrudelUpstreamAssetPrefix()
     return [
       {
         source: '/sounds/:path*',
         destination: '/assets/sounds/:path*',
       },
+      { source: '/@vite/:path*', destination: `${strudelAssets}/@vite/:path*` },
+      { source: '/@fs/:path*', destination: `${strudelAssets}/@fs/:path*` },
+      { source: '/@id/:path*', destination: `${strudelAssets}/@id/:path*` },
+      { source: '/src/:path*', destination: `${strudelAssets}/src/:path*` },
+      {
+        source: '/make-scrollable-code-focusable.js',
+        destination: `${strudelAssets}/make-scrollable-code-focusable.js`,
+      },
+      { source: '/node_modules/:path*', destination: `${strudelAssets}/node_modules/:path*` },
     ]
   },
 }

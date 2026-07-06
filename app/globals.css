@@ -27,8 +27,8 @@
     --radius: 0.5rem;
 
     /* Font family variables - change these to update fonts globally */
-    --font-sans: var(--font-figtree), system-ui, -apple-system, sans-serif;
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --font-sans: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -73,11 +73,12 @@
   }
 
   body {
-    @apply bg-black text-white font-light text-sm;
+    @apply bg-black text-white text-sm;
     font-family: var(--font-sans);
+    font-weight: 300;
     font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
-    letter-spacing: 0.01em;
-    line-height: 1.6;
+    letter-spacing: -0.02em;
+    line-height: var(--peal-leading);
   }
 
   /* Ensure all text elements use our font system */
@@ -135,15 +136,15 @@
   /* Display text - hero headings, marketing */
   .font-display {
     font-family: var(--font-sans);
-    font-weight: 500;
-    letter-spacing: -0.02em;
+    font-weight: 300;
+    letter-spacing: -0.04em;
   }
 
   /* UI text - buttons, navigation, labels */
   .font-ui {
     font-family: var(--font-sans);
-    font-weight: 500;
-    letter-spacing: 0.01em;
+    font-weight: 400;
+    letter-spacing: -0.02em;
   }
 
   /* Code and technical content */

@@ -31,6 +31,13 @@
     "cli": "node cli/index.js",
     "cli:generate-sounds": "node cli/generate-cli-sounds.cjs",
     "credentials": "node scripts/check-credentials.mjs",
+    "strudel": "bun scripts/strudel-cli.ts",
+    "strudel:install": "bun scripts/strudel-cli.ts install",
+    "strudel:start": "bun scripts/strudel-cli.ts start",
+    "strudel:stop": "bun scripts/strudel-cli.ts stop",
+    "strudel:status": "bun scripts/strudel-cli.ts status",
+    "strudel:path": "bun scripts/strudel-cli.ts path",
+    "strudel:set-path": "bun scripts/strudel-cli.ts set-path",
     "seed:message-beds": "node scripts/seed-message-beds.mjs",
     "publish:npm": "node scripts/publish-npm.mjs",
     "publish:npm:arach": "node scripts/publish-npm.mjs --only @arach/peal"

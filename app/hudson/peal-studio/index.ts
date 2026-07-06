@@ -29,6 +29,7 @@ const pealStudioManifest: AppManifest = {
     { id: 'peal-studio:open-library', label: 'Open Library' },
     { id: 'peal-studio:switch-sfx', label: 'Switch tool: SFX' },
     { id: 'peal-studio:switch-voice', label: 'Switch tool: Voice' },
+    { id: 'peal-studio:switch-music', label: 'Switch tool: Music' },
   ],
 }
 

@@ -1,5 +1,16 @@
 /* Peal about — dark shell aligned with landing, docs, and peal-nav */
 
+.about .peal-nav {
+  --peal-nav-bg: #111113;
+  --peal-nav-text: rgba(255, 255, 255, 0.92);
+  --peal-nav-text-dim: rgba(255, 255, 255, 0.5);
+  --peal-nav-border: rgba(255, 255, 255, 0.06);
+  --peal-nav-border-lit: rgba(255, 255, 255, 0.1);
+  --peal-nav-accent: #4a9eff;
+  --peal-nav-accent-hi: #6bb0ff;
+  --peal-nav-accent-glow: rgba(74, 158, 255, 0.1);
+}
+
 .about {
   --about-bg: #111113;
   --about-surface: #1c1c1e;
@@ -21,8 +32,10 @@
     radial-gradient(ellipse 72% 42% at 50% 0%, rgba(255, 255, 255, 0.008), transparent 56%),
     linear-gradient(180deg, #121214 0%, #111113 32%, #0f0f11 100%);
   color: var(--about-text);
-  font-family: var(--font-space-grotesk), var(--font-figtree), system-ui, sans-serif;
-  font-weight: 400;
+  font-family: var(--peal-font);
+  font-weight: var(--peal-font-weight);
+  letter-spacing: var(--peal-tracking);
+  line-height: var(--peal-leading);
 }
 
 .about-shell {
@@ -30,7 +43,7 @@
   z-index: 1;
   max-width: 880px;
   margin: 0 auto;
-  padding: 0 32px 96px;
+  padding: 0 28px 56px;
 }
 
 /* Hero */
@@ -38,7 +51,7 @@
 .about-hero {
   position: relative;
   text-align: center;
-  padding: 88px 0 64px;
+  padding: 52px 0 40px;
 }
 
 .about-hero::before {
@@ -55,21 +68,21 @@
 
 .about-kicker {
   display: inline-flex;
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 10px;
-  font-weight: 500;
+  font-weight: var(--peal-font-weight-ui);
   color: var(--about-accent);
   text-transform: uppercase;
-  letter-spacing: 0.18em;
-  margin-bottom: 14px;
+  letter-spacing: var(--peal-tracking-wide);
+  margin-bottom: 10px;
 }
 
 .about-hero h1 {
-  font-size: clamp(2rem, 4.4vw, 2.85rem);
-  font-weight: 400;
-  letter-spacing: -0.025em;
-  line-height: 1.12;
-  margin: 0 0 18px;
+  font-size: clamp(1.75rem, 4vw, 2.45rem);
+  font-weight: var(--peal-font-weight);
+  letter-spacing: var(--peal-tracking-tight);
+  line-height: var(--peal-leading-tight);
+  margin: 0 0 12px;
   color: var(--about-text);
 }
 
@@ -78,24 +91,25 @@
 }
 
 .about-hero p {
-  font-size: 16px;
-  font-weight: 300;
+  font-size: 14px;
+  font-weight: var(--peal-font-weight);
   color: var(--about-text-dim);
-  line-height: 1.7;
-  max-width: 520px;
+  line-height: var(--peal-leading);
+  letter-spacing: var(--peal-tracking);
+  max-width: 52ch;
   margin: 0 auto;
 }
 
 /* Sections */
 
 .about-section {
-  padding-top: 52px;
-  margin-top: 52px;
+  padding-top: 36px;
+  margin-top: 36px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .about-section-head {
-  margin-bottom: 26px;
+  margin-bottom: 18px;
 }
 
 .about-section-head h2 {
@@ -121,14 +135,14 @@
 .about-points {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px 22px;
+  gap: 10px 16px;
 }
 
 .about-point {
   display: flex;
   align-items: flex-start;
-  gap: 13px;
-  padding: 16px 18px;
+  gap: 10px;
+  padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.04);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.022) 0%, rgba(255, 255, 255, 0.01) 100%);
@@ -261,7 +275,7 @@
   justify-content: space-between;
   padding: 10px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 10px;
   color: var(--about-text-muted);
   text-transform: uppercase;
@@ -290,7 +304,7 @@
   margin: 0;
   padding: 16px 18px 18px;
   overflow-x: auto;
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 12.5px;
   line-height: 1.75;
   color: rgba(255, 255, 255, 0.8);
@@ -349,7 +363,7 @@
 }
 
 .about-callout code {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 11.5px;
   padding: 1px 6px;
   border-radius: 4px;
@@ -453,6 +467,6 @@
 @layer base {
   .about-code pre,
   .about-callout code {
-    font-family: var(--font-jetbrains), ui-monospace, monospace !important;
+    font-family: var(--peal-font) !important;
   }
 }

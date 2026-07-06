@@ -1,0 +1,58 @@
+/* Peal typography — JetBrains Mono Light, tight rhythm */
+
+:root {
+  --peal-font: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --peal-font-weight: 300;
+  --peal-font-weight-ui: 400;
+  --peal-font-weight-strong: 500;
+  --peal-tracking: -0.02em;
+  --peal-tracking-tight: -0.04em;
+  --peal-tracking-wide: 0.12em;
+  --peal-leading: 1.36;
+  --peal-leading-tight: 1.2;
+  --peal-space-2xs: 4px;
+  --peal-space-xs: 6px;
+  --peal-space-sm: 10px;
+  --peal-space-md: 14px;
+  --peal-space-lg: 20px;
+  --peal-space-xl: 28px;
+  --peal-space-2xl: 40px;
+  --peal-space-section: 52px;
+  --peal-nav-height: 46px;
+  --peal-nav-height-studio: 40px;
+  --peal-nav-max-width-landing: 1000px;
+  --peal-nav-padding-x-landing: clamp(20px, 3vw, 32px);
+  --peal-app-gutter: 16px;
+}
+
+/* App route wrapper — full-bleed nav gutters align with page chrome */
+.peal-app-shell {
+  min-height: 100vh;
+}
+
+.peal-wordmark {
+  font-family: var(--peal-font);
+  font-size: 13px;
+  font-weight: var(--peal-font-weight);
+  letter-spacing: var(--peal-tracking-tight);
+  text-transform: lowercase;
+  font-feature-settings: "ss01" 1, "liga" 1;
+  font-variant-ligatures: common-ligatures;
+}
+
+/* Tighten product-surface headings that inherit the shell font */
+.landing h1,
+.landing h2,
+.landing h3,
+.library h1,
+.library h2,
+.library h3,
+.docs h1,
+.docs h2,
+.docs h3,
+.about h1,
+.about h2,
+.about h3 {
+  font-family: var(--peal-font);
+  letter-spacing: var(--peal-tracking-tight);
+}

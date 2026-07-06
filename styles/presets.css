@@ -1,5 +1,16 @@
 /* Peal presets — muted dark shell, no layout-shift hovers */
 
+.presets .peal-nav {
+  --peal-nav-bg: #111113;
+  --peal-nav-text: rgba(255, 255, 255, 0.92);
+  --peal-nav-text-dim: rgba(255, 255, 255, 0.5);
+  --peal-nav-border: rgba(255, 255, 255, 0.06);
+  --peal-nav-border-lit: rgba(255, 255, 255, 0.1);
+  --peal-nav-accent: #4a9eff;
+  --peal-nav-accent-hi: #6bb0ff;
+  --peal-nav-accent-glow: rgba(74, 158, 255, 0.15);
+}
+
 .presets {
   --presets-bg: #111113;
   --presets-surface: #1c1c1e;
@@ -18,8 +29,10 @@
   background-color: var(--presets-bg);
   background-image: linear-gradient(180deg, #121214 0%, #111113 32%, #0f0f11 100%);
   color: var(--presets-text);
-  font-family: var(--font-space-grotesk), var(--font-figtree), system-ui, sans-serif;
-  font-weight: 400;
+  font-family: var(--peal-font);
+  font-weight: var(--peal-font-weight);
+  letter-spacing: var(--peal-tracking);
+  line-height: var(--peal-leading);
 }
 
 .presets-shell {

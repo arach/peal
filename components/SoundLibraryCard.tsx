@@ -4,12 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import { Sound, useSoundStore } from '@/store/soundStore'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import {
-  MagicWandIcon,
-  MoreIcon,
+  EditIcon,
   PauseIcon,
   PlayIcon,
   StarIcon,
-  WaveformIcon,
 } from '@/components/icons/PealStudioIcon'
 import { extractWaveformData } from '@/lib/audioUtils'
 import {
@@ -18,12 +16,12 @@ import {
   playPresetPreview,
   presetIdFromSoundId,
 } from '@/lib/presets/presetSound'
-import SoundCardDropdown from './SoundCardDropdown'
 import '@/styles/studio-library-modal.css'
 
 interface SoundLibraryCardProps {
   sound: Sound
   index: number
+  onOpenInStudio?: (sound: Sound) => void
 }
 
 function displayName(sound: Sound): string {
@@ -74,8 +72,8 @@ function drawScopeWaveform(
   }
 }
 
-export default function SoundLibraryCard({ sound, index }: SoundLibraryCardProps) {
-  const { currentlyPlaying, toggleFavorite, showVariations, setCurrentlyPlaying } = useSoundStore()
+export default function SoundLibraryCard({ sound, index, onOpenInStudio }: SoundLibraryCardProps) {
+  const { currentlyPlaying, toggleFavorite, setCurrentlyPlaying } = useSoundStore()
   const { playSound } = useSoundGeneration()
   const [isPlaying, setIsPlaying] = useState(false)
   const [waveformPreview, setWaveformPreview] = useState<number[] | null>(sound.waveformData)
@@ -245,27 +243,17 @@ export default function SoundLibraryCard({ sound, index }: SoundLibraryCardProps
         </button>
         <button
           type="button"
-          className="peal-library-card__pad"
-          title="Waveform"
-          aria-label="Waveform"
+          onClick={(e) => {
+            e.stopPropagation()
+            onOpenInStudio?.(sound)
+          }}
+          className="peal-library-card__pad peal-library-card__pad--studio"
+          title="Open in Studio"
+          aria-label="Open in Studio"
         >
-          <WaveformIcon size={11} />
+          <EditIcon size={11} />
+          <span>Studio</span>
         </button>
-        <SoundCardDropdown
-          variant="rack"
-          items={[
-            {
-              icon: <MagicWandIcon size={12} />,
-              label: 'Generate variations',
-              onClick: (e) => {
-                e.stopPropagation()
-                showVariations(sound.id)
-              },
-            },
-          ]}
-          triggerClassName="peal-library-card__pad"
-          triggerIcon={<MoreIcon size={11} />}
-        />
       </div>
     </article>
   )

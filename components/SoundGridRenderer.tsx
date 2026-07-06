@@ -90,7 +90,11 @@ export default function SoundGridRenderer({
           className={onSoundClick ? 'cursor-pointer' : ''}
         >
           {cardVariant === 'rack' ? (
-            <SoundLibraryCard sound={sound} index={index} />
+            <SoundLibraryCard
+              sound={sound}
+              index={index}
+              onOpenInStudio={onSoundClick}
+            />
           ) : (
             <SoundCardRedesign sound={sound} index={index} />
           )}

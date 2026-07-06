@@ -166,7 +166,7 @@ export default function PresetsPage() {
   }
 
   return (
-    <div className="presets">
+    <div className="presets peal-app-shell">
       <Header />
       <main className="presets-shell">
         <header className="presets-page-header">

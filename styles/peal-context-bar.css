@@ -1,0 +1,125 @@
+/* Breadcrumb-level section toggle — inline in header row, separate from primary links */
+
+.peal-chrome {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  --peal-chrome-height: var(--peal-nav-height);
+}
+
+.peal-chrome:has(.peal-nav--studio) {
+  --peal-chrome-height: var(--peal-nav-height-studio);
+}
+
+.peal-nav-context {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .peal-nav-context {
+    display: inline-flex;
+  }
+}
+
+.peal-context-crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.peal-context-section {
+  font-family: var(--peal-font);
+  font-size: 10px;
+  font-weight: var(--peal-font-weight-ui);
+  letter-spacing: var(--peal-tracking-wide);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  white-space: nowrap;
+}
+
+.peal-context-sep {
+  color: rgba(255, 255, 255, 0.22);
+  flex-shrink: 0;
+}
+
+.peal-context-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.peal-context-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 9px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  font-family: var(--peal-font);
+  font-size: 10px;
+  font-weight: var(--peal-font-weight-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.42);
+  white-space: nowrap;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.peal-context-toggle-btn:hover {
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.peal-context-toggle-btn.is-active {
+  color: var(--peal-nav-accent-hi, #6bb0ff);
+  background: rgba(74, 158, 255, 0.1);
+  border-color: rgba(74, 158, 255, 0.18);
+}
+
+.peal-nav-context--studio .peal-context-section {
+  color: rgba(142, 194, 255, 0.58);
+}
+
+.peal-nav-context--library .peal-context-section {
+  color: rgba(255, 255, 255, 0.48);
+}
+
+/* Mobile — context toggle in drawer, not mixed into primary link grid */
+.peal-nav-mobile-context {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 4px;
+  margin-top: 6px;
+  border-top: 1px solid var(--peal-nav-border);
+}
+
+.peal-nav-mobile-context .peal-context-crumb {
+  padding: 0 2px;
+}
+
+.peal-nav-mobile-context .peal-context-toggle {
+  width: 100%;
+}
+
+.peal-nav-mobile-context .peal-context-toggle-btn {
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .peal-nav-mobile-context {
+    display: none;
+  }
+}

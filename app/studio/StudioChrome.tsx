@@ -1,7 +1,7 @@
 'use client'
 
 import { useLayoutEffect } from 'react'
-import PealNav from '@/components/PealNav'
+import PealChrome from '@/components/PealChrome'
 
 export default function StudioChrome({ children }: { children: React.ReactNode }) {
   useLayoutEffect(() => {
@@ -16,9 +16,14 @@ export default function StudioChrome({ children }: { children: React.ReactNode }
   }, [])
 
   return (
-    <>
-      <PealNav />
-      <div className="h-[calc(100vh-52px)] overflow-hidden">{children}</div>
-    </>
+    <div className="peal-studio-chrome">
+      <PealChrome layout="studio" />
+      <div
+        className="overflow-hidden"
+        style={{ height: 'calc(100vh - var(--peal-chrome-height, 40px))' }}
+      >
+        {children}
+      </div>
+    </div>
   )
 }

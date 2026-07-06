@@ -2,10 +2,10 @@
  * Hudson AI host adapter for Peal.
  *
  * Peal does not call provider APIs (Minimax, OpenAI, etc.) directly.
- * All inference goes through @hudsonkit/ai → createPiAiBackend → pi-ai.
+ * All inference goes through @hudsonkit/ai/pi-ai → createPiAiBackend → pi-ai.
  * Credentials resolve via pi-ai's getEnvApiKey (MINIMAX_API_KEY, etc.).
  */
-import { createPiAiBackend, listAvailableModels } from '@hudsonkit/ai'
+import { createPiAiBackend, listAvailableModels } from '@hudsonkit/ai/pi-ai'
 import { ensurePealCredentialsLoaded, resolvePealCredential } from '@/lib/credentials'
 
 export const piBackend = createPiAiBackend()

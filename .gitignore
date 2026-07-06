@@ -50,3 +50,6 @@ audio-cache/
 analysis-cache/
 # OpenScout local state
 .openscout/project.json
+
+# Peal local process state (managed Strudel, etc.)
+.peal/

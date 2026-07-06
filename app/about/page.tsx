@@ -100,7 +100,7 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="about">
+    <div className="about peal-app-shell">
       <Header />
       <main className="about-shell">
         <header className="about-hero">

@@ -1,11 +1,13 @@
-export type PealStudioTool = 'sfx' | 'voice'
+export type PealStudioTool = 'sfx' | 'voice' | 'music'
 
 export type LegacyStudioSearchParams = Record<string, string | string[] | undefined>
 
-export const PEAL_STUDIO_TOOLS: PealStudioTool[] = ['sfx', 'voice']
+export const PEAL_STUDIO_TOOLS: PealStudioTool[] = ['sfx', 'voice', 'music']
 
 export function parsePealStudioTool(value: string | null | undefined): PealStudioTool {
-  return value === 'voice' ? 'voice' : 'sfx'
+  if (value === 'voice') return 'voice'
+  if (value === 'music') return 'music'
+  return 'sfx'
 }
 
 export function applyPealStudioToolParam(params: URLSearchParams, tool: PealStudioTool) {

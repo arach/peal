@@ -604,7 +604,7 @@ export default function DocsPage() {
   }, [activeSection])
 
   return (
-    <div className="docs">
+    <div className="docs peal-app-shell">
       <Header />
       <main className="docs-shell">
         <div className="docs-layout">

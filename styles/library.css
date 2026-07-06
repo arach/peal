@@ -10,6 +10,17 @@
    dark palette is retoned to Peal-neutral here via scoped overrides rather than by
    editing those shared files — keeping the change contained to `/library`. */
 
+.library .peal-nav {
+  --peal-nav-bg: #111113;
+  --peal-nav-text: rgba(255, 255, 255, 0.92);
+  --peal-nav-text-dim: rgba(255, 255, 255, 0.5);
+  --peal-nav-border: rgba(255, 255, 255, 0.06);
+  --peal-nav-border-lit: rgba(255, 255, 255, 0.1);
+  --peal-nav-accent: #4a9eff;
+  --peal-nav-accent-hi: #6bb0ff;
+  --peal-nav-accent-glow: rgba(74, 158, 255, 0.15);
+}
+
 .library {
   --library-bg: #111113;
   --library-surface: #1c1c1e;
@@ -32,7 +43,10 @@
     radial-gradient(ellipse 72% 42% at 50% 0%, rgba(255, 255, 255, 0.008), transparent 56%),
     linear-gradient(180deg, #121214 0%, #111113 32%, #0f0f11 100%);
   color: var(--library-text);
-  font-family: var(--font-space-grotesk), var(--font-figtree), system-ui, sans-serif;
+  font-family: var(--peal-font);
+  font-weight: var(--peal-font-weight);
+  letter-spacing: var(--peal-tracking);
+  line-height: var(--peal-leading);
 }
 
 /* The page <main> shouldn't paint its own surface over the shell gradient. */
@@ -110,39 +124,40 @@
 
 .library-welcome {
   max-width: 880px;
-  margin: 0 auto 40px;
-  padding: 8px 0 12px;
+  margin: 0 auto 28px;
+  padding: 4px 0 8px;
 }
 
 .library-welcome-header {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 18px;
 }
 
 .library-welcome-kicker {
   display: inline-flex;
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 10px;
   font-weight: 500;
   color: var(--library-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .library-welcome-header h1 {
-  font-size: clamp(1.5rem, 3.2vw, 1.65rem);
-  font-weight: 400;
-  letter-spacing: -0.025em;
-  line-height: 1.2;
-  margin: 0 0 10px;
+  font-size: clamp(1.25rem, 2.8vw, 1.45rem);
+  font-weight: var(--peal-font-weight);
+  letter-spacing: var(--peal-tracking-tight);
+  line-height: var(--peal-leading-tight);
+  margin: 0 0 6px;
   color: rgba(255, 255, 255, 0.96);
 }
 
 .library-welcome-lead {
-  font-size: 15px;
-  font-weight: 300;
-  line-height: 1.6;
+  font-size: 13px;
+  font-weight: var(--peal-font-weight);
+  line-height: var(--peal-leading);
+  letter-spacing: var(--peal-tracking);
   color: var(--library-text-dim);
   margin: 0 auto;
   max-width: 36ch;
@@ -151,7 +166,7 @@
 .library-welcome-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px 16px;
+  gap: 10px 12px;
 }
 
 .library-welcome-card {
@@ -162,7 +177,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 22px 18px 20px;
+  padding: 16px 14px 14px;
   border-radius: 12px;
   border: 1px solid var(--library-border);
   background: var(--library-surface);
@@ -207,7 +222,7 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
@@ -249,7 +264,7 @@
   align-items: center;
   gap: 4px;
   margin-top: auto;
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.04em;

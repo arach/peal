@@ -1,22 +1,18 @@
-/** Peal brand mark — compact app tile with a centered waveform. */
+/** Peal brand mark — compact tile with a centered waveform. */
 
-const WAVE = [0.38, 0.68, 1, 0.68, 0.38]
-
-function barFill(i: number, n: number) {
-  const t = 1 - Math.abs(i - (n - 1) / 2) / ((n - 1) / 2)
-  if (t > 0.75) return '#c8e4ff'
-  if (t > 0.4) return '#8ec2ff'
-  return '#5aa6ff'
-}
+const VIEW = 32
+const WAVE = [0.28, 0.48, 0.72, 1, 0.72, 0.48, 0.28]
 
 export function PealBrandMark({ size = 28 }: { size?: number }) {
-  const pad = size * 0.22
-  const gap = size * 0.08
+  const padY = 8
+  const gap = 2
+  const barW = 2
   const n = WAVE.length
-  const barWidth = (size - pad * 2 - gap * (n - 1)) / n
-  const cy = size / 2
-  const maxBarHeight = size - pad * 2
-  const radius = size * 0.28
+  const totalBarsW = n * barW + (n - 1) * gap
+  const startX = (VIEW - totalBarsW) / 2
+  const maxH = VIEW - padY * 2
+  const cy = VIEW / 2
+  const radius = 7.5
   const gid = `peal-mark-${size}`
 
   return (
@@ -24,44 +20,65 @@ export function PealBrandMark({ size = 28 }: { size?: number }) {
       aria-hidden="true"
       width={size}
       height={size}
-      viewBox={`0 0 ${size} ${size}`}
+      viewBox={`0 0 ${VIEW} ${VIEW}`}
       className="peal-brand-mark"
     >
       <defs>
-        <linearGradient id={`${gid}-tile`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#1a2a42" />
-          <stop offset="100%" stopColor="#121c2c" />
+        <linearGradient id={`${gid}-tile`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#1a2434" />
+          <stop offset="100%" stopColor="#121820" />
         </linearGradient>
-        <linearGradient id={`${gid}-rim`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(140, 196, 255, 0.9)" />
-          <stop offset="100%" stopColor="rgba(52, 108, 176, 0.55)" />
+        <linearGradient id={`${gid}-bars`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#d4e9ff" />
+          <stop offset="45%" stopColor="#8ec2ff" />
+          <stop offset="100%" stopColor="#4a9eff" />
         </linearGradient>
+        <filter id={`${gid}-glow`} x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="0.35" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
 
       <rect
-        x={0.75}
-        y={0.75}
-        width={size - 1.5}
-        height={size - 1.5}
-        rx={radius - 0.5}
+        x={0.5}
+        y={0.5}
+        width={VIEW - 1}
+        height={VIEW - 1}
+        rx={radius}
         fill={`url(#${gid}-tile)`}
-        stroke={`url(#${gid}-rim)`}
-        strokeWidth={1}
+        stroke="rgba(120, 176, 255, 0.28)"
+        strokeWidth={0.5}
+      />
+
+      <rect
+        x={1}
+        y={1}
+        width={VIEW - 2}
+        height={VIEW - 2}
+        rx={radius - 0.5}
+        fill="none"
+        stroke="rgba(255, 255, 255, 0.04)"
+        strokeWidth={0.5}
       />
 
       {WAVE.map((h, i) => {
-        const barH = Math.max(maxBarHeight * h, barWidth * 1.1)
-        const x = pad + i * (barWidth + gap)
+        const barH = Math.max(maxH * h, barW * 1.4)
+        const x = startX + i * (barW + gap)
         const y = cy - barH / 2
         return (
           <rect
             key={i}
             x={x}
             y={y}
-            width={barWidth}
+            width={barW}
             height={barH}
-            rx={barWidth / 2}
-            fill={barFill(i, n)}
+            rx={1}
+            fill={`url(#${gid}-bars)`}
+            filter={`url(#${gid}-glow)`}
+            opacity={0.92 - Math.abs(i - (n - 1) / 2) * 0.04}
           />
         )
       })}

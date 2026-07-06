@@ -2,11 +2,16 @@
 
 import { CodeIcon } from '@/components/icons/PealStudioIcon'
 import PealSfxCodeEditorSurface from '@/components/PealSfxCodeEditorSurface'
+import { PealMusicSidebar } from './music/PealMusicSidebar'
 import { PealDeck } from './voice/PealDeck'
 import { usePealStudioHudson } from './Provider'
 
 export function PealStudioLeftPanel() {
   const { currentTool, sfxSummary, sfxEditor } = usePealStudioHudson()
+
+  if (currentTool === 'music') {
+    return <PealMusicSidebar />
+  }
 
   if (currentTool === 'voice') {
     return <PealDeck compact />

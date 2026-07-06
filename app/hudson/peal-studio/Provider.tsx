@@ -17,6 +17,9 @@ import {
   parsePealStudioTool,
   type PealStudioTool,
 } from './routing'
+import { PealMusicAIProvider } from './music/PealMusicAIProvider'
+import { PealMusicEngineProvider } from './music/PealMusicEngineProvider'
+import { PealMusicProvider } from './music/PealMusicProvider'
 import { PealVoiceLayoutProvider } from './voice/PealVoiceLayout'
 import { PealVoiceAIProvider } from './voice/PealVoiceAIProvider'
 import { PealVoiceProvider } from './voice/PealVoiceProvider'
@@ -216,13 +219,19 @@ export function PealStudioProvider({ children }: { children: ReactNode; disabled
 
   return (
     <PealStudioHudsonContext.Provider value={value}>
-      <PealVoiceLayoutProvider>
-        <PealVoiceProvider>
-          <PealVoiceAIProvider>
-            {children}
-          </PealVoiceAIProvider>
-        </PealVoiceProvider>
-      </PealVoiceLayoutProvider>
+      <PealMusicProvider>
+        <PealMusicEngineProvider>
+        <PealMusicAIProvider>
+        <PealVoiceLayoutProvider>
+          <PealVoiceProvider>
+            <PealVoiceAIProvider>
+              {children}
+            </PealVoiceAIProvider>
+          </PealVoiceProvider>
+        </PealVoiceLayoutProvider>
+        </PealMusicAIProvider>
+        </PealMusicEngineProvider>
+      </PealMusicProvider>
     </PealStudioHudsonContext.Provider>
   )
 }

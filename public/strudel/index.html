@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Peal — Strudel not connected</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #0d0d0f;
+        color: #9ca3af;
+        padding: 2rem;
+        text-align: center;
+        line-height: 1.6;
+      }
+      h1 {
+        font-size: 0.75rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #4a9eff;
+        font-weight: 600;
+      }
+      code {
+        color: #e5e7eb;
+      }
+      #status {
+        margin-top: 1rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #6b7280;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>Strudel not connected</h1>
+      <p>
+        Strudel is managed outside Peal. Run your Strudel checkout and set
+        <code>STRUDEL_UPSTREAM</code> in <code>.env.local</code> (e.g.
+        <code>http://localhost:5173</code>).
+      </p>
+      <p>
+        Peal proxies <code>/strudel</code> to that instance. The Music studio editor routes patterns via
+        <code>peal-strudel</code> postMessage.
+      </p>
+      <p id="status">No upstream configured</p>
+    </div>
+    <script>
+      const CHANNEL = 'peal-strudel'
+
+      function postToParent(message) {
+        if (window.parent === window) return
+        window.parent.postMessage({ type: CHANNEL, ...message }, '*')
+      }
+
+      postToParent({ action: 'ready' })
+
+      window.addEventListener('message', (event) => {
+        if (!event.data || event.data.type !== CHANNEL) return
+
+        if (event.data.action === 'evaluate' && event.data.code) {
+          console.info('[peal-strudel] stub evaluate (configure STRUDEL_UPSTREAM)', event.data.code.slice(0, 80))
+          postToParent({ action: 'evaluated', ok: false, error: 'STRUDEL_UPSTREAM not configured' })
+        }
+
+        if (event.data.action === 'stop') {
+          postToParent({ action: 'playing', playing: false })
+        }
+      })
+    </script>
+  </body>
+</html>

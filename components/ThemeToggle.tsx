@@ -1,48 +1,53 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useSoundStore } from '@/store/soundStore'
 import { Sun, Moon, Monitor } from 'lucide-react'
 
+const themes = [
+  { id: 'light' as const, label: 'Light', icon: Sun },
+  { id: 'dark' as const, label: 'Dark', icon: Moon },
+  { id: 'system' as const, label: 'System', icon: Monitor },
+]
+
 export default function ThemeToggle() {
   const { theme, setTheme } = useSoundStore()
+  const [mounted, setMounted] = useState(false)
 
-  const cycleTheme = () => {
-    const themes = ['light', 'dark', 'system'] as const
-    const currentIndex = themes.indexOf(theme)
-    const nextIndex = (currentIndex + 1) % themes.length
-    setTheme(themes[nextIndex])
-  }
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
-  const getIcon = () => {
-    switch (theme) {
-      case 'light':
-        return <Sun size={16} />
-      case 'dark':
-        return <Moon size={16} />
-      case 'system':
-        return <Monitor size={16} />
-    }
-  }
-
-  const getLabel = () => {
-    switch (theme) {
-      case 'light':
-        return 'Light mode'
-      case 'dark':
-        return 'Dark mode'
-      case 'system':
-        return 'System theme'
-    }
+  if (!mounted) {
+    return (
+      <div className="peal-theme-toggle" aria-hidden="true">
+        {themes.map(({ id, icon: Icon }) => (
+          <span
+            key={id}
+            className={`peal-theme-toggle-btn${id === 'system' ? ' is-active' : ''}`}
+          >
+            <Icon size={14} strokeWidth={1.75} />
+          </span>
+        ))}
+      </div>
+    )
   }
 
   return (
-    <button
-      onClick={cycleTheme}
-      className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-200"
-      aria-label={getLabel()}
-      title={`${getLabel()} (click to change)`}
-    >
-      {getIcon()}
-    </button>
+    <div className="peal-theme-toggle" role="group" aria-label="Color theme">
+      {themes.map(({ id, label, icon: Icon }) => (
+        <button
+          key={id}
+          type="button"
+          className={`peal-theme-toggle-btn${theme === id ? ' is-active' : ''}`}
+          onClick={() => setTheme(id)}
+          aria-label={label}
+          aria-pressed={theme === id}
+          title={label}
+        >
+          <Icon size={14} strokeWidth={1.75} />
+        </button>
+      ))}
+    </div>
   )
 }

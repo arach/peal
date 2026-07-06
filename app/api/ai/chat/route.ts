@@ -11,7 +11,7 @@ import { loadToolset } from '@/lib/ai/toolsets'
 export const runtime = 'nodejs'
 export const dynamic = 'force-static'
 
-const PEAL_LOCAL_TOOLSETS = new Set(['peal-studio', 'peal-voice', 'intents'])
+const PEAL_LOCAL_TOOLSETS = new Set(['peal-studio', 'peal-voice', 'peal-music', 'intents'])
 
 function log(msg: string) {
   const ts = new Date().toISOString().slice(11, 23)
@@ -35,13 +35,16 @@ export async function POST(req: Request) {
       : {}
   const provider = typeof body.provider === 'string' ? body.provider : undefined
   const model = typeof body.model === 'string' ? body.model : undefined
+  const effort = body.effort === 'off' || body.effort === 'low' || body.effort === 'medium' || body.effort === 'high'
+    ? body.effort
+    : undefined
 
   if (toolset && !PEAL_LOCAL_TOOLSETS.has(toolset) && !defaultRegistry.resolve(toolset)) {
     log(`proxy → Hudson | toolset=${toolset}`)
     return proxyChatToHudson(req, rawBody)
   }
 
-  log(`${provider ?? 'default'}/${model ?? 'default'} | toolset=${toolset} | ${Array.isArray(messages) ? messages.length : 0} messages`)
+  log(`${provider ?? 'default'}/${model ?? 'default'}${effort ? ` effort=${effort}` : ''} | toolset=${toolset} | ${Array.isArray(messages) ? messages.length : 0} messages`)
 
   try {
     return piBackend.streamUI({
@@ -50,6 +53,7 @@ export async function POST(req: Request) {
       context,
       provider,
       model,
+      effort,
       loadToolset: loadToolset as never,
       loadCredentials,
       defaultModels: buildDefaultModels(),

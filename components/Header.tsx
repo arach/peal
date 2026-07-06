@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Sparkles } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import DynamicPealLogo from './DynamicPealLogo'
-import PealNav from './PealNav'
+import PealChrome from './PealChrome'
 import { useBasePath } from './BaseLink'
 
 type HeaderVariant = 'none' | 'minimal' | 'app' | 'studio' | 'standalone'
@@ -130,7 +130,7 @@ export default function Header({
     </header>
   )
 
-  const renderAppHeader = () => <PealNav />
+  const renderAppHeader = () => <PealChrome />
 
   // Render appropriate variant
   switch (variant) {

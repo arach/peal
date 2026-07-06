@@ -37,4 +37,11 @@ export const pealStudioIntents: AppIntent[] = [
     category: 'view',
     keywords: ['voice', 'tts', 'speech'],
   },
+  {
+    commandId: 'peal-studio:switch-music',
+    title: 'Switch to Music Studio',
+    description: 'Switch Peal Studio to live-coded music with Strudel.',
+    category: 'view',
+    keywords: ['music', 'strudel', 'live code', 'patterns', 'compose'],
+  },
 ]

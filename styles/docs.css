@@ -1,5 +1,16 @@
 /* Peal docs — dark shell aligned with landing + peal-nav */
 
+.docs .peal-nav {
+  --peal-nav-bg: #111113;
+  --peal-nav-text: rgba(255, 255, 255, 0.92);
+  --peal-nav-text-dim: rgba(255, 255, 255, 0.5);
+  --peal-nav-border: rgba(255, 255, 255, 0.06);
+  --peal-nav-border-lit: rgba(255, 255, 255, 0.1);
+  --peal-nav-accent: #4a9eff;
+  --peal-nav-accent-hi: #6bb0ff;
+  --peal-nav-accent-glow: rgba(74, 158, 255, 0.15);
+}
+
 .docs {
   --docs-bg: #111113;
   --docs-surface: #1c1c1e;
@@ -22,19 +33,21 @@
     radial-gradient(ellipse 105% 65% at 50% -12%, rgba(74, 158, 255, 0.02), transparent 64%),
     linear-gradient(180deg, #121214 0%, #111113 32%, #0f0f11 100%);
   color: var(--docs-text);
-  font-family: var(--font-space-grotesk), var(--font-figtree), system-ui, sans-serif;
-  font-weight: 400;
+  font-family: var(--peal-font);
+  font-weight: var(--peal-font-weight);
+  letter-spacing: var(--peal-tracking);
+  line-height: var(--peal-leading);
 }
 
 .docs-shell {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 20px 32px 88px;
+  padding: 12px 28px 52px;
 }
 
 .docs-page-header {
-  min-height: 128px;
-  margin-bottom: 24px;
+  min-height: 88px;
+  margin-bottom: 16px;
 }
 
 .docs-hero {
@@ -45,43 +58,44 @@
 
 .docs-kicker {
   display: inline-flex;
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 10px;
-  font-weight: 500;
+  font-weight: var(--peal-font-weight-ui);
   color: var(--docs-accent);
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: var(--peal-tracking-wide);
   margin-bottom: 12px;
 }
 
 .docs-hero h1 {
-  font-size: 1.65rem;
-  font-weight: 400;
-  letter-spacing: -0.025em;
-  line-height: 1.2;
+  font-size: clamp(1.35rem, 3vw, 1.55rem);
+  font-weight: var(--peal-font-weight);
+  letter-spacing: var(--peal-tracking-tight);
+  line-height: var(--peal-leading-tight);
   margin: 0 0 10px;
   color: rgba(255, 255, 255, 0.96);
 }
 
 .docs-hero p {
-  font-size: 16px;
-  font-weight: 300;
+  font-size: 14px;
+  font-weight: var(--peal-font-weight);
   color: var(--docs-text-dim);
-  line-height: 1.65;
-  max-width: 480px;
+  line-height: var(--peal-leading);
+  letter-spacing: var(--peal-tracking);
+  max-width: 52ch;
   margin: 0;
 }
 
 .docs-quick-links {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px 18px;
-  margin-top: 28px;
+  gap: 10px 14px;
+  margin-top: 18px;
 }
 
 .docs-quick-link {
   display: block;
-  padding: 18px 20px;
+  padding: 14px 16px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.04);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.022) 0%, rgba(255, 255, 255, 0.01) 100%);
@@ -125,7 +139,7 @@
 }
 
 .docs-quick-link p {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 11px;
   color: var(--docs-text-muted);
   margin: 0;
@@ -165,7 +179,7 @@
 }
 
 .docs-sidebar-label {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 10px;
   font-weight: 500;
   text-transform: uppercase;
@@ -185,7 +199,7 @@
   border: 1px solid transparent;
   border-radius: 6px;
   background: transparent;
-  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  font-family: var(--peal-font);
   font-size: 13px;
   font-weight: 400;
   color: var(--docs-text-dim);
@@ -257,7 +271,7 @@
 }
 
 .docs-content-panel {
-  padding: 28px 32px 32px;
+  padding: 20px 24px 24px;
   border-radius: 12px;
   border: 1px solid var(--docs-border);
   background: var(--docs-surface);
@@ -275,8 +289,8 @@
   font-size: 1.05rem;
   font-weight: 500;
   letter-spacing: -0.01em;
-  margin: 32px 0 12px;
-  padding-top: 20px;
+  margin: 22px 0 8px;
+  padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.94);
 }
@@ -288,10 +302,10 @@
 }
 
 .docs-prose h3 {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 11px;
   font-weight: 500;
-  margin: 24px 0 10px;
+  margin: 16px 0 8px;
   color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -318,7 +332,7 @@
 }
 
 .docs-prose code {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 0.9em;
   padding: 0;
   border: none;
@@ -350,7 +364,7 @@
 }
 
 .docs-method-sig {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 13px;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.86);
@@ -378,7 +392,7 @@
   padding: 14px 18px;
   padding-right: 44px;
   overflow-x: auto;
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 12px;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.8);
@@ -409,7 +423,7 @@
 }
 
 .docs-terminal-cmd code {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 12px;
   color: var(--docs-text);
   word-break: break-all;
@@ -453,11 +467,11 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 18px;
 }
 
 .docs-feature {
-  padding: 16px 18px;
+  padding: 12px 14px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.04);
   background: rgba(255, 255, 255, 0.015);
@@ -537,6 +551,6 @@
   .docs-code-block pre,
   .docs-code-block code,
   .docs-terminal-cmd code {
-    font-family: var(--font-jetbrains), ui-monospace, monospace !important;
+    font-family: var(--peal-font) !important;
   }
 }
