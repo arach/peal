@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Volume2, Sparkles, Code2, Package, Terminal, Music } from 'lucide-react'
+import { ArrowRight, Volume2, Sparkles, Code2, Package, Terminal, Music, Mic } from 'lucide-react'
 import HeroSoundGrid from './HeroSoundGrid'
 import { isStaticBuild } from '@/utils/build'
 import { getPublicUrl } from '@/utils/url'
@@ -57,9 +57,34 @@ export default function LandingHero() {
   }
 
   const libraryHref = isStaticBuild ? getPublicUrl('/docs') : '/library'
-  const studioHref = isStaticBuild ? getPublicUrl('/about') : '/studio'
+  const studioHref = isStaticBuild ? getPublicUrl('/about') : '/studio?tool=sfx'
+  const voiceHref = isStaticBuild ? getPublicUrl('/about') : '/studio?tool=voice'
   const musicHref = isStaticBuild ? getPublicUrl('/about') : '/studio?tool=music'
   const docsHref = isStaticBuild ? getPublicUrl('/docs') : '/docs'
+
+  const studioViews = [
+    {
+      id: 'sfx',
+      label: 'SFX',
+      hint: 'Web Audio + AI design',
+      href: studioHref,
+      image: getPublicUrl('/images/studio/sfx.png'),
+    },
+    {
+      id: 'voice',
+      label: 'Voice',
+      hint: 'Deck, mixer, TTS capture',
+      href: voiceHref,
+      image: getPublicUrl('/images/studio/voice.png'),
+    },
+    {
+      id: 'music',
+      label: 'Music',
+      hint: 'Strudel editor + copilot',
+      href: musicHref,
+      image: getPublicUrl('/images/studio/music.png'),
+    },
+  ] as const
 
   return (
     <div className="landing-shell">
@@ -284,11 +309,34 @@ export default function LandingHero() {
                 <Code2 size={16} />
                 Open SFX studio
               </a>
+              <a href={voiceHref} className="landing-btn landing-btn-secondary">
+                <Mic size={16} />
+                Voice deck
+              </a>
               <a href={musicHref} className="landing-btn landing-btn-secondary">
                 <Music size={16} />
                 Music beats
               </a>
             </div>
+          </div>
+
+          <div className="landing-studio-shots" aria-label="Studio views">
+            {studioViews.map((view) => (
+              <a key={view.id} href={view.href} className="landing-studio-shot">
+                <div className="landing-studio-shot-frame">
+                  <img
+                    src={view.image}
+                    alt={`Peal ${view.label} studio`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div className="landing-studio-shot-meta">
+                  <span className="landing-studio-shot-label">{view.label}</span>
+                  <span className="landing-studio-shot-hint">{view.hint}</span>
+                </div>
+              </a>
+            ))}
           </div>
 
           <div className="landing-bottom-rule" aria-hidden="true" />
