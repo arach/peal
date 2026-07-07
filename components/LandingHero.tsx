@@ -267,44 +267,61 @@ export default function LandingHero() {
         </div>
       </section>
 
-      <section className="landing-section fade-in fade-in-delay-2">
-        <div className="landing-integrate">
-          <div className="landing-kicker">Sound studio</div>
-          <h2 className="landing-integrate-title">Design audio like you design UI</h2>
-          <p className="landing-integrate-lead">
-            Three studio legs — SFX, Voice deck, and Music. Music ships a managed Strudel engine, editor +
-            live REPL, Minimax/Codex copilot with improv loop, and a grounded curriculum for lyricless
-            beats that evolve bar to bar.
-          </p>
-          <div className="landing-hero-links">
-            <a href={studioHref} className="landing-btn landing-btn-primary">
-              <Code2 size={16} />
-              Open SFX studio
-            </a>
-            <a href={musicHref} className="landing-btn landing-btn-secondary">
-              <Music size={16} />
-              Music beats
-            </a>
+      <section className="landing-bottom fade-in fade-in-delay-2">
+        <div className="landing-bottom-panel">
+          <div className="landing-bottom-studio">
+            <div className="landing-bottom-copy">
+              <div className="landing-kicker">Sound studio</div>
+              <h2 className="landing-bottom-title">Design audio like you design UI</h2>
+              <p className="landing-bottom-lead">
+                Three studio legs — SFX, Voice deck, and Music. Music ships a managed Strudel engine,
+                editor + live REPL, Minimax/Codex copilot with improv loop, and a grounded curriculum
+                for lyricless beats that evolve bar to bar.
+              </p>
+            </div>
+            <div className="landing-bottom-studio-actions">
+              <a href={studioHref} className="landing-btn landing-btn-primary">
+                <Code2 size={16} />
+                Open SFX studio
+              </a>
+              <a href={musicHref} className="landing-btn landing-btn-secondary">
+                <Music size={16} />
+                Music beats
+              </a>
+            </div>
           </div>
-        </div>
-      </section>
 
-      <section className="landing-cta">
-        <h2>Ready to ship better audio?</h2>
-        <p>Install the package, add sounds with the CLI, or open the studio to design your own.</p>
-        <div className="landing-cta-actions">
-          <a href={libraryHref} className="landing-btn landing-btn-primary">
-            Browse library
-            <ArrowRight size={16} />
-          </a>
-          <a href={studioHref} className="landing-btn landing-btn-secondary">
-            <Sparkles size={16} />
-            Open studio
-          </a>
-          <a href={docsHref} className="landing-btn landing-btn-secondary">
-            <Code2 size={16} />
-            Docs
-          </a>
+          <div className="landing-bottom-rule" aria-hidden="true" />
+
+          <div className="landing-bottom-ship">
+            <div className="landing-bottom-ship-copy">
+              <h3>Ready to ship better audio?</h3>
+              <p>Install the package, add sounds with the CLI, or open the studio to design your own.</p>
+            </div>
+            <div className="landing-bottom-paths">
+              <a href={libraryHref} className="landing-bottom-path landing-bottom-path--primary">
+                <span className="landing-bottom-path-label">
+                  Browse library
+                  <ArrowRight size={14} />
+                </span>
+                <span className="landing-bottom-path-hint">Signature sounds & presets</span>
+              </a>
+              <a href={studioHref} className="landing-bottom-path">
+                <span className="landing-bottom-path-label">
+                  Open studio
+                  <Sparkles size={14} />
+                </span>
+                <span className="landing-bottom-path-hint">SFX · Voice · Music</span>
+              </a>
+              <a href={docsHref} className="landing-bottom-path">
+                <span className="landing-bottom-path-label">
+                  Docs
+                  <Code2 size={14} />
+                </span>
+                <span className="landing-bottom-path-hint">CLI, API & guides</span>
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
