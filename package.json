@@ -19,6 +19,7 @@
     "build:web": "next build",
     "prebuild:static": "node scripts/prepare-static-build.js",
     "build:static": "BUILD_STATIC=true NEXT_PUBLIC_BUILD_STATIC=true next build",
+    "postbuild:static": "node scripts/restore-static-build.js",
     "predev": "node scripts/setup-directories.js",
     "dev": "next dev --port 3001",
     "dev:lib": "tsup src/index.ts --format cjs,esm --dts --watch",

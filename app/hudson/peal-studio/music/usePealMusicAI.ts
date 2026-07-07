@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useHudsonAI } from 'hudsonkit'
+import { useHudsonAI, type HudsonAIChat } from 'hudsonkit'
 import {
   buildMusicLastEdit,
   finalizeMusicLastEdit,
@@ -18,6 +18,24 @@ import {
 } from './usePealMusicImprovLoop'
 
 export type { PealMusicLastEdit } from '@/lib/ai/musicAiFollowUps'
+
+export interface PealMusicAIHook {
+  chat: HudsonAIChat
+  activity: PealMusicAIActivity[]
+  lastEdit: PealMusicLastEdit | null
+  clearLastEdit: () => void
+  log: (tool: string, summary: string) => void
+  improvLoop: PealMusicImprovLoopState
+  improvRuntime: {
+    tick: number
+    waiting: boolean
+    nextFireAt: number | null
+    clearTimer: () => void
+  }
+  setImprovEnabled: (enabled: boolean) => void
+  setImprovIntervalSec: (intervalSec: number) => void
+  setImprovStyle: (style: MusicImprovStyle) => void
+}
 
 export interface PealMusicAIActivity {
   id: string
@@ -52,7 +70,7 @@ function versionLabelForTool(tool: string): string {
   }
 }
 
-export function usePealMusicAI(session: PealAISession, options?: { visible?: boolean }) {
+export function usePealMusicAI(session: PealAISession, options?: { visible?: boolean }): PealMusicAIHook {
   const music = usePealMusic()
   const { config, id: sessionId } = session
   const visible = options?.visible ?? true
@@ -178,7 +196,7 @@ export function usePealMusicAI(session: PealAISession, options?: { visible?: boo
     context,
     provider: config.provider,
     model: config.model,
-    effort: config.effort,
+    ...(config.effort ? { effort: config.effort } : {}),
     mode: config.harness === 'pi-cli' ? 'cli' : 'api',
     agentTrace: {
       source: 'peal-music-ai',

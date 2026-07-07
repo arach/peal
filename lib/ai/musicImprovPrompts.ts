@@ -72,8 +72,9 @@ export function pickImprovPrompt(input: {
   let phase: string | null = null
 
   if (input.style === 'arc') {
-    phase = ARC_PHASES[(input.tick - 1) % ARC_PHASES.length] ?? 'build'
-    directive = arcPrompt(phase)
+    const arcPhase = ARC_PHASES[(input.tick - 1) % ARC_PHASES.length] ?? 'build'
+    phase = arcPhase
+    directive = arcPrompt(arcPhase)
   } else if (input.style === 'bold') {
     directive = BOLD_PROMPTS[(input.tick - 1) % BOLD_PROMPTS.length] ?? BOLD_PROMPTS[0]
   } else {

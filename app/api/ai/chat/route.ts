@@ -53,11 +53,11 @@ export async function POST(req: Request) {
       context,
       provider,
       model,
-      effort,
+      ...(effort ? { effort } : {}),
       loadToolset: loadToolset as never,
       loadCredentials,
       defaultModels: buildDefaultModels(),
-    })
+    } as Parameters<typeof piBackend.streamUI>[0])
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     log(`ERROR: ${message}`)

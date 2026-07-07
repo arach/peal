@@ -120,7 +120,8 @@ export function PealMusicProvider({ children }: { children: ReactNode }) {
     const storedVersions = readStoredVersions()
     if (storedVersions.versions.length > 0) {
       setPatternVersions(storedVersions.versions)
-      setActiveVersionId(storedVersions.activeId ?? storedVersions.versions.at(-1)?.id ?? null)
+      const lastVersion = storedVersions.versions[storedVersions.versions.length - 1]
+      setActiveVersionId(storedVersions.activeId ?? lastVersion?.id ?? null)
     } else if (storedPattern.trim()) {
       const seeded = pushPatternVersion([], {
         code: storedPattern,

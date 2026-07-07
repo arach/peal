@@ -86,11 +86,13 @@ export default function WelcomeModal({ variant = 'default' }: { variant?: Welcom
   const soundsRef = useRef<Record<string, Howl>>({})
 
   useEffect(() => {
+    if (variant === 'landing') return
+
     const hasSeenWelcome = localStorage.getItem('peal-welcome-seen')
     if (!hasSeenWelcome) {
       setIsOpen(true)
     }
-  }, [])
+  }, [variant])
 
   useEffect(() => {
     const loaded: Record<string, Howl> = {}
@@ -208,7 +210,7 @@ export default function WelcomeModal({ variant = 'default' }: { variant?: Welcom
                       </div>
                     </div>
                   ) : (
-                    step.icon && <StepIcon icon={step.icon} />
+                    ('icon' in step && step.icon) ? <StepIcon icon={step.icon} /> : null
                   )}
 
                   <p className="peal-welcome-kicker">{step.kicker}</p>
@@ -217,7 +219,7 @@ export default function WelcomeModal({ variant = 'default' }: { variant?: Welcom
                   </h2>
                   <p className="peal-welcome-copy">{step.content}</p>
 
-                  {step.showPreviews && (
+                  {'showPreviews' in step && step.showPreviews ? (
                     <div className="peal-welcome-previews" role="group" aria-label="Preview sounds">
                       {previewSounds.map((sound) => {
                         const isPlaying = playingId === sound.id
@@ -235,7 +237,7 @@ export default function WelcomeModal({ variant = 'default' }: { variant?: Welcom
                         )
                       })}
                     </div>
-                  )}
+                  ) : null}
                 </motion.div>
               </AnimatePresence>
 

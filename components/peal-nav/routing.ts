@@ -1,6 +1,5 @@
 import { studioHrefWithTool } from '@/app/hudson/peal-studio/routing'
 import { isStaticBuild } from '@/utils/build'
-import { getPublicUrl } from '@/utils/url'
 
 export type PealNavLayout = 'landing' | 'app' | 'studio'
 
@@ -85,12 +84,12 @@ export function getContextSectionConfig(
         {
           id: 'sounds' as const,
           label: 'Sounds',
-          href: isStaticBuild ? getPublicUrl('/docs') : '/library',
+          href: isStaticBuild ? '/docs' : '/library',
         },
         {
           id: 'presets' as const,
           label: 'Presets',
-          href: isStaticBuild ? getPublicUrl('/docs') : '/presets',
+          href: isStaticBuild ? '/docs' : '/presets',
         },
       ],
     }
@@ -102,26 +101,26 @@ export function getContextSectionConfig(
       {
         id: 'sfx' as const,
         label: 'SFX',
-        href: isStaticBuild ? getPublicUrl('/about') : studioHrefWithTool(searchParams, 'sfx'),
+        href: isStaticBuild ? '/about' : studioHrefWithTool(searchParams, 'sfx'),
       },
       {
         id: 'voice' as const,
         label: 'Voice',
-        href: isStaticBuild ? getPublicUrl('/about') : studioHrefWithTool(searchParams, 'voice'),
+        href: isStaticBuild ? '/about' : studioHrefWithTool(searchParams, 'voice'),
       },
       {
         id: 'music' as const,
         label: 'Music',
-        href: isStaticBuild ? getPublicUrl('/about') : studioHrefWithTool(searchParams, 'music'),
+        href: isStaticBuild ? '/about' : studioHrefWithTool(searchParams, 'music'),
       },
     ],
   }
 }
 
 export function getPrimaryLinks() {
-  const libraryHref = isStaticBuild ? getPublicUrl('/docs') : '/library'
-  const studioHref = isStaticBuild ? getPublicUrl('/about') : '/studio'
-  const docsHref = isStaticBuild ? getPublicUrl('/docs') : '/docs'
+  const libraryHref = isStaticBuild ? '/docs' : '/library'
+  const studioHref = isStaticBuild ? '/about' : '/studio'
+  const docsHref = '/docs'
 
   return {
     product: [

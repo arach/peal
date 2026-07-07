@@ -22,8 +22,37 @@ async function copyDirectory(src, dest) {
   }
 }
 
+const stashDir = path.join(rootDir, '.static-build-stash');
+const DEV_ROUTES = ['app/strudel', 'app/api/strudel'];
+
+async function stashDevRoutes() {
+  await fs.mkdir(stashDir, { recursive: true });
+  for (const rel of DEV_ROUTES) {
+    const src = path.join(rootDir, rel);
+    const dest = path.join(stashDir, rel);
+    try {
+      await fs.access(src);
+      await fs.mkdir(path.dirname(dest), { recursive: true });
+      await fs.rename(src, dest);
+      console.log(`📦 Stashed ${rel} for static export`);
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+        continue;
+      }
+      throw error;
+    }
+  }
+}
+
 async function prepareStaticBuild() {
   console.log('Preparing static build...');
+
+  try {
+    await stashDevRoutes();
+  } catch (error) {
+    console.error('❌ Failed to stash dev-only routes:', error);
+    process.exit(1);
+  }
   
   // Copy assets/sounds to public/sounds for static export
   const soundsSrc = path.join(rootDir, 'assets', 'sounds');

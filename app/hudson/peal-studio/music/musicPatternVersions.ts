@@ -61,7 +61,7 @@ export function pushPatternVersion(
 ): { versions: PealMusicPatternVersion[]; activeId: string; pushed: boolean } {
   const code = normalizeCode(input.code)
   if (!code) {
-    return { versions, activeId: versions.at(-1)?.id ?? '', pushed: false }
+    return { versions, activeId: versions[versions.length - 1]?.id ?? '', pushed: false }
   }
 
   const head = headPatternVersion(versions)

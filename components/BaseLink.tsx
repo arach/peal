@@ -2,24 +2,25 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import type { ComponentPropsWithoutRef } from 'react'
 import { isStaticBuild } from '@/utils/build'
 
-interface BaseLinkProps {
+type BaseLinkProps = {
   href: string
   children: React.ReactNode
-  className?: string
-  onClick?: (e: React.MouseEvent) => void
-}
+} & Omit<ComponentPropsWithoutRef<'a'>, 'href' | 'children'>
 
 // Component that handles base path for both Link and router.push
-export function BaseLink({ href, children, className, onClick }: BaseLinkProps) {
+export function BaseLink({ href, children, className, onClick, ...rest }: BaseLinkProps) {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
   
   // For static builds, use regular anchor tags with base path
   if (isStaticBuild) {
-    const fullPath = href.startsWith('/') ? `${basePath}${href}` : href
+    const fullPath = href.startsWith(basePath) || !href.startsWith('/')
+      ? href
+      : `${basePath}${href}`
     return (
-      <a href={fullPath} className={className} onClick={onClick}>
+      <a href={fullPath} className={className} onClick={onClick} {...rest}>
         {children}
       </a>
     )
@@ -27,7 +28,7 @@ export function BaseLink({ href, children, className, onClick }: BaseLinkProps) 
   
   // For regular builds, use Next.js Link
   return (
-    <Link href={href} className={className} onClick={onClick}>
+    <Link href={href} className={className} onClick={onClick} {...rest}>
       {children}
     </Link>
   )
