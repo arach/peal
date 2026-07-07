@@ -27,8 +27,8 @@ export function PealVoiceAIDesign() {
     : VOICE_CAPTURE_EXAMPLE_PROMPTS.slice(0, 3)
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[#111113] text-gray-200">
-      <div className="shrink-0 border-b border-[#2c2c2e] bg-[#0d0d0f] px-3 py-2.5 peal-instruments">
+    <div className="flex h-full min-h-0 flex-col bg-[var(--peal-surface-0)] text-[var(--peal-surface-text)]">
+      <div className="shrink-0 border-b border-[var(--peal-surface-3)] bg-[var(--peal-surface-1)] px-3 py-2.5 peal-instruments">
         <div className="flex items-center gap-2">
           <span className="peal-inst-led peal-inst-led--on" aria-hidden />
           <AiDesignIcon size={13} className="text-[#4a9eff]" />
@@ -54,7 +54,7 @@ export function PealVoiceAIDesign() {
       />
 
       {activity.length > 0 && (chat.status === 'streaming' || chat.status === 'submitted') ? (
-        <div className="shrink-0 border-t border-[#2c2c2e] px-3 py-2">
+        <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2">
           <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.14em] text-gray-600">Working</p>
           <p className="truncate font-mono text-[9px] text-gray-500">
             <span className="text-[#4a9eff]/80">{activity[activity.length - 1]?.tool}</span>
@@ -67,13 +67,13 @@ export function PealVoiceAIDesign() {
       <PealVoiceAILastEdit />
 
       {clip ? (
-        <div className="shrink-0 border-t border-[#2c2c2e] bg-[#111113] px-3 py-2 peal-instruments">
+        <div className="shrink-0 border-t border-[var(--peal-surface-3)] bg-[var(--peal-surface-0)] px-3 py-2 peal-instruments">
           <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-gray-600">Selected pad</p>
           <p className="mt-0.5 truncate font-mono text-[11px] text-gray-300">{clip.label}</p>
         </div>
       ) : null}
 
-      <div className="shrink-0 border-t border-[#2c2c2e] px-3 py-2 peal-instruments">
+      <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2 peal-instruments">
         <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-gray-500">
           {lastEdit ? 'Suggested next' : hasClips ? 'Try' : 'After capture'}
         </p>

@@ -27,7 +27,7 @@ export function PealVoiceConfig() {
       : voice.script
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto peal-instruments bg-transparent p-3 text-gray-200">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto peal-instruments bg-transparent p-3 text-[var(--peal-surface-text)]">
       <StudioRack label="Capture" className="space-y-3 p-3">
         <StudioPadTray className="w-full">
           <StudioPad

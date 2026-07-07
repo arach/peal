@@ -35,7 +35,7 @@ export function PealMusicEngineBar({
     : strudelMountIndexPath(patternCode)
 
   return (
-    <div className="sticky top-0 z-20 flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/6 bg-[#111113] px-3 py-2">
+    <div className="sticky top-0 z-20 flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[var(--peal-surface-border)] bg-[var(--peal-surface-0)] px-3 py-2">
       <div className="flex min-w-0 items-center gap-2">
         <span
           className={`h-2 w-2 shrink-0 rounded-full ${running ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-gray-600'}`}
@@ -75,7 +75,7 @@ export function PealMusicEngineBar({
             type="button"
             disabled={engineBusy}
             onClick={onStop}
-            className="inline-flex items-center gap-1 rounded border border-white/10 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-gray-400 hover:border-amber-400/30 hover:text-amber-300 disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded border border-[var(--peal-surface-border)] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-gray-400 hover:border-amber-400/30 hover:text-amber-300 disabled:opacity-40"
           >
             <StopIcon size={10} />
             Stop
@@ -94,7 +94,7 @@ export function PealMusicEngineBar({
           href={openHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded border border-white/10 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-gray-500 hover:border-[#4a9eff]/30 hover:text-[#4a9eff]"
+          className="rounded border border-[var(--peal-surface-border)] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-gray-500 hover:border-[#4a9eff]/30 hover:text-[#4a9eff]"
         >
           New tab
         </a>

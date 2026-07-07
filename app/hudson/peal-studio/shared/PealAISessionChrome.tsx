@@ -31,7 +31,7 @@ interface PealAISessionChromeProps {
 }
 
 function selectClassName(disabled?: boolean) {
-  return `max-w-full min-w-0 rounded border border-[#2c2c2e] bg-[#1c1c1e]/80 px-1.5 py-0.5 font-mono text-[9px] text-gray-300 outline-none hover:border-[#4a9eff]/25 focus:border-[#4a9eff]/40 disabled:cursor-not-allowed disabled:opacity-40`
+  return `max-w-full min-w-0 rounded border border-[var(--peal-surface-3)] bg-[var(--peal-surface-2)] px-1.5 py-0.5 font-mono text-[9px] text-gray-300 outline-none hover:border-[#4a9eff]/25 focus:border-[#4a9eff]/40 disabled:cursor-not-allowed disabled:opacity-40`
 }
 
 export function PealAISessionChrome({
@@ -56,7 +56,7 @@ export function PealAISessionChrome({
   const splitPartners = sessions.filter((s) => s.id !== activeId)
 
   return (
-    <div className="shrink-0 border-b border-white/6 bg-[#111113]">
+    <div className="shrink-0 border-b border-[var(--peal-surface-border)] bg-[var(--peal-surface-0)]">
       <div className="flex items-center gap-1 overflow-x-auto px-2 py-1.5">
         {sessions.map((session) => {
           const active = session.id === activeId
@@ -68,7 +68,7 @@ export function PealAISessionChrome({
                 className={`rounded-l border px-2 py-1 font-mono text-[9px] uppercase tracking-[0.08em] transition ${
                   active
                     ? 'border-[#4a9eff]/35 bg-[#4a9eff]/12 text-[#4a9eff]'
-                    : 'border-[#2c2c2e] bg-[#1c1c1e]/60 text-gray-500 hover:text-gray-300'
+                    : 'border-[var(--peal-surface-3)] bg-[var(--peal-surface-2)] text-gray-500 hover:text-gray-300'
                 }`}
               >
                 {session.label}
@@ -77,7 +77,7 @@ export function PealAISessionChrome({
                 <button
                   type="button"
                   onClick={() => onClose(session.id)}
-                  className="rounded-r border border-l-0 border-[#2c2c2e] bg-[#1c1c1e]/60 px-1 py-1 text-gray-600 hover:border-red-400/30 hover:text-red-300"
+                  className="rounded-r border border-l-0 border-[var(--peal-surface-3)] bg-[var(--peal-surface-2)] px-1 py-1 text-gray-600 hover:border-red-400/30 hover:text-red-300"
                   title="Close session"
                 >
                   <X size={10} />
@@ -89,7 +89,7 @@ export function PealAISessionChrome({
         <button
           type="button"
           onClick={onAdd}
-          className="shrink-0 rounded border border-dashed border-[#2c2c2e] px-1.5 py-1 text-gray-500 hover:border-[#4a9eff]/30 hover:text-[#4a9eff]"
+          className="shrink-0 rounded border border-dashed border-[var(--peal-surface-3)] px-1.5 py-1 text-gray-500 hover:border-[#4a9eff]/30 hover:text-[#4a9eff]"
           title="New session"
         >
           <Plus size={12} />
@@ -101,7 +101,7 @@ export function PealAISessionChrome({
             className={`ml-auto shrink-0 rounded border px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.1em] transition ${
               splitEnabled
                 ? 'border-[#4a9eff]/35 bg-[#4a9eff]/10 text-[#4a9eff]'
-                : 'border-[#2c2c2e] text-gray-500 hover:text-gray-300'
+                : 'border-[var(--peal-surface-3)] text-gray-500 hover:text-gray-300'
             }`}
             title="Side-by-side sessions"
           >

@@ -37,7 +37,7 @@ export function PealStudioAIDesign({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[#111113] text-gray-200">
+    <div className="flex h-full min-h-0 flex-col bg-[var(--peal-surface-0)] text-[var(--peal-surface-text)]">
       <div className="flex-1 min-h-0 overflow-hidden [&_.flex-col.h-full]:text-[11px]">
         <AI
           chat={chat}
@@ -46,14 +46,14 @@ export function PealStudioAIDesign({
       </div>
 
       {lastProposal && (
-        <div className="shrink-0 border-t border-[#2c2c2e] bg-[#0d0d0f] p-3 space-y-2 peal-instruments">
+        <div className="shrink-0 border-t border-[var(--peal-surface-3)] bg-[var(--peal-surface-1)] p-3 space-y-2 peal-instruments">
           <div className="flex items-center justify-between gap-2">
             <div>
               <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.14em] text-[#4a9eff]">
                 <span className="peal-inst-led peal-inst-led--on" aria-hidden />
                 Proposed sound
               </div>
-              <div className="text-sm text-gray-100">{lastProposal.input.summary}</div>
+              <div className="text-sm text-[var(--peal-surface-text-strong)]">{lastProposal.input.summary}</div>
               <div className="text-[11px] text-gray-500">
                 {lastProposal.sound.type} · {lastProposal.sound.duration}ms · {lastProposal.sound.frequency}Hz
               </div>
@@ -108,7 +108,7 @@ export function PealStudioAIDesign({
       )}
 
       {chat.messages.length === 0 && !lastProposal && (
-        <div className="shrink-0 border-t border-[#2c2c2e] p-3 space-y-2 peal-instruments">
+        <div className="shrink-0 border-t border-[var(--peal-surface-3)] p-3 space-y-2 peal-instruments">
           <p className="text-[10px] font-mono uppercase tracking-[0.14em] text-gray-500">Patch presets</p>
           <div className="flex flex-wrap gap-1.5">
             {STUDIO_EXAMPLE_PROMPTS.map((example) => (

@@ -1,0 +1,377 @@
+/* Reusable audio sample player — deck + bottom transport bar */
+
+.asp {
+  --asp-accent: #4a9eff;
+  --asp-accent-hi: #6bb0ff;
+  --asp-text: rgba(255, 255, 255, 0.92);
+  --asp-text-dim: rgba(255, 255, 255, 0.5);
+  --asp-text-muted: rgba(255, 255, 255, 0.3);
+  --asp-border: rgba(255, 255, 255, 0.05);
+  --asp-chrome: rgba(255, 255, 255, 0.022);
+  --asp-wave-well: rgba(255, 255, 255, 0.012);
+  --asp-rail-height: 24px;
+  --asp-wave-pad-y: 8px;
+  --asp-font: var(--peal-font, ui-monospace, monospace);
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--asp-border);
+  background: var(--asp-chrome);
+  transition: border-color 0.22s ease, background 0.22s ease;
+}
+
+.asp.is-hovered {
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+.asp.is-playing {
+  border-color: rgba(74, 158, 255, 0.32);
+  background: color-mix(in srgb, var(--asp-chrome) 88%, rgba(74, 158, 255, 0.14));
+  box-shadow: 0 0 0 1px rgba(74, 158, 255, 0.06) inset;
+}
+
+.asp-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px 10px;
+}
+
+.asp-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--asp-text);
+}
+
+.asp-head-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.asp-type {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--asp-font);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--asp-text-muted);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.asp-type--click {
+  color: rgba(180, 210, 255, 0.78);
+  border-color: rgba(74, 158, 255, 0.14);
+  background: rgba(74, 158, 255, 0.06);
+}
+
+.asp-type--success {
+  color: rgba(120, 220, 175, 0.88);
+  border-color: rgba(95, 212, 160, 0.18);
+  background: rgba(95, 212, 160, 0.07);
+}
+
+.asp-type--notification {
+  color: var(--asp-accent-hi);
+  border-color: rgba(74, 158, 255, 0.22);
+  background: rgba(74, 158, 255, 0.1);
+}
+
+.asp-duration,
+.asp-transport-meta {
+  font-family: var(--asp-font);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--asp-text-muted);
+}
+
+.asp-deck {
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  transition: border-color 0.2s ease;
+}
+
+.asp.is-hovered .asp-deck,
+.asp.is-playing .asp-deck {
+  border-top-color: rgba(74, 158, 255, 0.28);
+}
+
+.asp-wave-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--asp-wave-pad-y) 0;
+  background: var(--asp-wave-well);
+}
+
+.asp-wave-rail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--asp-rail-height);
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+
+.asp-wave-rail--bottom {
+  pointer-events: none;
+}
+
+.asp-deck.is-playing .asp-wave-canvas::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  z-index: 4;
+  background: linear-gradient(90deg, transparent, rgba(107, 176, 255, 0.65), transparent);
+  animation: aspScanline 2.4s ease-in-out infinite;
+}
+
+@keyframes aspScanline {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.85; }
+}
+
+.asp-wave-canvas {
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 15px,
+    rgba(255, 255, 255, 0.016) 15px,
+    rgba(255, 255, 255, 0.016) 16px
+  );
+}
+
+.asp-wave-canvas::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  z-index: 1;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.asp-wave-canvas canvas {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0.95;
+}
+
+.asp.is-hovered .asp-wave-stage,
+.asp.is-playing .asp-wave-stage {
+  background: color-mix(in srgb, var(--asp-wave-well) 90%, rgba(74, 158, 255, 0.08));
+}
+
+.asp-tags {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 100%;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(3px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  pointer-events: none;
+}
+
+.asp-wave-rail--top.is-visible .asp-tags {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.asp-tag {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
+  font-family: var(--asp-font);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  color: var(--asp-text-dim);
+  white-space: nowrap;
+}
+
+.asp-live {
+  position: absolute;
+  top: calc(var(--asp-wave-pad-y) + 4px);
+  right: 8px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  border: 1px solid rgba(74, 158, 255, 0.28);
+  background: rgba(9, 9, 11, 0.82);
+  font-family: var(--asp-font);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--asp-accent-hi);
+  backdrop-filter: blur(6px);
+}
+
+.asp-live::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--asp-accent-hi);
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.65);
+  animation: aspPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes aspPulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* Bottom transport — audio player bar */
+
+.asp-transport {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.asp-transport-side {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  min-width: 0;
+}
+
+.asp-transport-side--left {
+  justify-content: flex-start;
+}
+
+.asp-transport-side--right {
+  justify-content: flex-end;
+}
+
+.asp-transport-play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--asp-text);
+  cursor: pointer;
+  justify-self: center;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.22) inset;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.asp-play-glyph {
+  margin-left: 2px;
+}
+
+.asp.is-hovered .asp-transport-play,
+.asp.is-playing .asp-transport-play,
+.asp-transport-play:hover,
+.asp-transport-play.is-active {
+  border-color: rgba(74, 158, 255, 0.45);
+  background: rgba(74, 158, 255, 0.92);
+  color: #0a1628;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14) inset,
+    0 0 20px -10px rgba(74, 158, 255, 0.4);
+}
+
+.asp-transport-play:focus-visible {
+  outline: 2px solid rgba(74, 158, 255, 0.45);
+  outline-offset: 3px;
+}
+
+.asp-code-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-family: var(--asp-font);
+  font-size: 11px;
+  color: var(--asp-text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.asp-code-btn:hover {
+  color: var(--asp-accent);
+  background: rgba(74, 158, 255, 0.08);
+}
+
+/* Landing theme bridge */
+
+.landing .asp {
+  --asp-accent: var(--landing-accent, #4a9eff);
+  --asp-accent-hi: var(--landing-accent-hi, #6bb0ff);
+  --asp-text: var(--landing-text, rgba(255, 255, 255, 0.92));
+  --asp-text-dim: var(--landing-text-dim, rgba(255, 255, 255, 0.5));
+  --asp-text-muted: var(--landing-text-muted, rgba(255, 255, 255, 0.3));
+  --asp-border: rgba(255, 255, 255, 0.05);
+  --asp-chrome: rgba(255, 255, 255, 0.024);
+  --asp-wave-well: rgba(255, 255, 255, 0.013);
+}
+
+@media (max-width: 720px) {
+  .asp-transport-play {
+    width: 40px;
+    height: 40px;
+  }
+
+  .asp-code-btn {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asp-deck.is-playing .asp-wave-canvas::after,
+  .asp-live::before {
+    animation: none;
+  }
+}

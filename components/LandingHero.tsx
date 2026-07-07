@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Volume2, Sparkles, Code2, Package, Terminal, Music, Mic } from 'lucide-react'
+import { ArrowRight, Volume2, Sparkles, Code2, Package, Terminal, Music, Mic, Play } from 'lucide-react'
 import HeroSoundGrid from './HeroSoundGrid'
+import LandingStudioShots from './LandingStudioShots'
 import { isStaticBuild } from '@/utils/build'
 import { getPublicUrl } from '@/utils/url'
 
@@ -69,6 +70,7 @@ export default function LandingHero() {
       hint: 'Web Audio + AI design',
       href: studioHref,
       image: getPublicUrl('/images/studio/sfx.png'),
+      openLabel: 'Open SFX studio',
     },
     {
       id: 'voice',
@@ -76,6 +78,7 @@ export default function LandingHero() {
       hint: 'Deck, mixer, TTS capture',
       href: voiceHref,
       image: getPublicUrl('/images/studio/voice.png'),
+      openLabel: 'Open Voice deck',
     },
     {
       id: 'music',
@@ -83,12 +86,15 @@ export default function LandingHero() {
       hint: 'Strudel editor + copilot',
       href: musicHref,
       image: getPublicUrl('/images/studio/music.png'),
+      openLabel: 'Open Music beats',
     },
   ] as const
 
   return (
-    <div className="landing-shell">
-      <section className="landing-hero fade-in">
+    <>
+      <section className="landing-band landing-band--hero fade-in">
+        <div className="landing-band-inner">
+          <div className="landing-hero">
         <div className="landing-badge">
           <span className="landing-badge-dot" />
           UI sound library
@@ -189,22 +195,43 @@ export default function LandingHero() {
               <ArrowRight size={14} />
             </a>
           </div>
+          </div>
+          </div>
         </div>
       </section>
 
-      <section className="landing-section fade-in fade-in-delay-1" id="sounds">
-        <div className="landing-section-header">
-          <div className="landing-kicker">Signature sounds</div>
-          <h2>Click to preview</h2>
-          <p>
-            Six curated sounds from the Peal library. Play inline or view the integration code.
-          </p>
+      <section className="landing-band landing-band--sounds fade-in fade-in-delay-1" id="sounds">
+        <div className="landing-band-inner">
+          <div className="landing-sound-section">
+            <div className="landing-section-header landing-section-header--sounds">
+              <div className="landing-section-header-copy">
+                <div className="landing-kicker">Signature sounds</div>
+                <h2>Preview the library</h2>
+                <p>
+                  Six curated UI sounds from Peal. Use the player bar below each deck, or open the integration snippet.
+                </p>
+              </div>
+              <div className="landing-sound-legend" aria-hidden>
+                <span className="landing-sound-legend-item">
+                  <Play size={12} />
+                  Press play
+                </span>
+                <span className="landing-sound-legend-item">
+                  <Code2 size={12} />
+                  View code
+                </span>
+              </div>
+            </div>
+            <div className="landing-sound-shelf">
+              <HeroSoundGrid variant="landing" />
+            </div>
+          </div>
         </div>
-        <HeroSoundGrid variant="landing" />
       </section>
 
-      <section className="landing-section fade-in fade-in-delay-2" id="integrate">
-        <div className="landing-integrate">
+      <section className="landing-band landing-band--integrate fade-in fade-in-delay-2" id="integrate">
+        <div className="landing-band-inner landing-band-inner--narrow">
+          <div className="landing-integrate">
           <div className="landing-kicker">CLI</div>
           <h2 className="landing-integrate-title">Add sounds in one command</h2>
           <p className="landing-integrate-lead">
@@ -231,10 +258,13 @@ export default function LandingHero() {
             className="landing-code-snippet"
             dangerouslySetInnerHTML={{ __html: usageCode }}
           />
+          </div>
         </div>
       </section>
 
-      <section className="landing-features fade-in fade-in-delay-2">
+      <section className="landing-band landing-band--features fade-in fade-in-delay-2">
+        <div className="landing-band-inner">
+          <div className="landing-features">
         <div>
           <h3 className="landing-bucket-label">Library</h3>
           <div className="landing-bucket-cards">
@@ -290,11 +320,12 @@ export default function LandingHero() {
             </div>
           </div>
         </div>
+          </div>
+        </div>
       </section>
 
-      <section className="landing-bottom fade-in fade-in-delay-2">
-        <div className="landing-bottom-panel">
-          <div className="landing-bottom-studio">
+      <section className="landing-band landing-band--studio fade-in fade-in-delay-2">
+          <div className="landing-band-inner landing-bottom-studio">
             <div className="landing-bottom-copy">
               <div className="landing-kicker">Sound studio</div>
               <h2 className="landing-bottom-title">Design audio like you design UI</h2>
@@ -320,27 +351,11 @@ export default function LandingHero() {
             </div>
           </div>
 
-          <div className="landing-studio-shots" aria-label="Studio views">
-            {studioViews.map((view) => (
-              <a key={view.id} href={view.href} className="landing-studio-shot">
-                <div className="landing-studio-shot-frame">
-                  <img
-                    src={view.image}
-                    alt={`Peal ${view.label} studio`}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <div className="landing-studio-shot-meta">
-                  <span className="landing-studio-shot-label">{view.label}</span>
-                  <span className="landing-studio-shot-hint">{view.hint}</span>
-                </div>
-              </a>
-            ))}
+          <div className="landing-band-inner">
+            <LandingStudioShots views={studioViews} />
           </div>
 
-          <div className="landing-bottom-rule" aria-hidden="true" />
-
+          <div className="landing-band-inner landing-bottom-ship-wrap">
           <div className="landing-bottom-ship">
             <div className="landing-bottom-ship-copy">
               <h3>Ready to ship better audio?</h3>
@@ -370,17 +385,19 @@ export default function LandingHero() {
               </a>
             </div>
           </div>
-        </div>
+          </div>
       </section>
 
-      <footer className="landing-footer">
-        <span>Peal — tech sound designer by <a href="https://github.com/arach">@arach</a></span>
-        <nav className="landing-footer-links" aria-label="Footer">
-          <a href={docsHref}>Docs</a>
-          <a href="/about">About</a>
-          <a href="https://github.com/arach/peal" target="_blank" rel="noopener noreferrer">GitHub</a>
-        </nav>
+      <footer className="landing-band landing-band--footer">
+        <div className="landing-band-inner landing-footer">
+          <span>Peal — tech sound designer by <a href="https://github.com/arach">@arach</a></span>
+          <nav className="landing-footer-links" aria-label="Footer">
+            <a href={docsHref}>Docs</a>
+            <a href="/about">About</a>
+            <a href="https://github.com/arach/peal" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </nav>
+        </div>
       </footer>
-    </div>
+    </>
   )
 }

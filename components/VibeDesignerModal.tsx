@@ -5,6 +5,7 @@ import { X, Wand2, Sparkles, Play, Volume2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sound } from '@/store/soundStore'
 import { VibeParser } from '@/lib/vibeParser'
+import { useResolvedPealTheme } from '@/hooks/useResolvedPealTheme'
 
 interface VibeDesignerModalProps {
   isOpen: boolean
@@ -14,6 +15,7 @@ interface VibeDesignerModalProps {
 }
 
 export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, generator }: VibeDesignerModalProps) {
+  const resolvedTheme = useResolvedPealTheme()
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedSound, setGeneratedSound] = useState<Sound | null>(null)
@@ -177,8 +179,11 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
             exit={{ opacity: 0, scale: 0.95 }}
             className="fixed inset-0 flex items-center justify-center z-50 p-4"
           >
-            <div className="bg-[#1c1c1e] border border-[#2c2c2e] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden text-gray-100">
-              <div className="relative border-b border-[#2c2c2e] p-6">
+            <div
+              className="peal-studio-modal bg-[var(--peal-surface-2,#1c1c1e)] border border-[var(--peal-surface-3,#2c2c2e)] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden text-[var(--peal-surface-text-strong,#f3f4f6)]"
+              data-peal-theme={resolvedTheme}
+            >
+              <div className="relative border-b border-[var(--peal-surface-3,#2c2c2e)] p-6">
                 <button
                   onClick={handleClose}
                   className="absolute right-4 top-4 p-2 text-gray-400 hover:text-gray-200 transition-colors"
@@ -214,7 +219,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
                       onChange={(e) => setPrompt(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
                       placeholder="Try: 'a short high beep' or '3 quick clicks'"
-                      className="w-full px-4 py-3 pr-12 bg-[#111113] border border-[#2c2c2e] rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:border-transparent"
+                      className="w-full px-4 py-3 pr-12 bg-[var(--peal-surface-0,#111113)] border border-[var(--peal-surface-3,#2c2c2e)] rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:border-transparent"
                     />
                     <button
                       onClick={handleGenerate}
@@ -239,7 +244,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
                             setPrompt(suggestion)
                             setTimeout(handleGenerate, 100)
                           }}
-                          className="px-3 py-1.5 bg-[#232327] hover:bg-[#2c2c2e] text-sm text-gray-300 rounded-lg transition-colors"
+                          className="px-3 py-1.5 bg-[var(--peal-surface-4,#232327)] hover:bg-[var(--peal-surface-3,#2c2c2e)] text-sm text-gray-300 rounded-lg transition-colors"
                         >
                           {suggestion}
                         </button>
@@ -275,7 +280,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
                         className={`p-3 rounded-xl transition-all ${
                           isPlaying
                             ? 'bg-[#4a9eff] text-white'
-                            : 'bg-[#232327] text-gray-300 hover:bg-[#2c2c2e]'
+                            : 'bg-[var(--peal-surface-4,#232327)] text-gray-300 hover:bg-[var(--peal-surface-3,#2c2c2e)]'
                         }`}
                       >
                         {isPlaying ? <Volume2 size={20} /> : <Play size={20} />}
@@ -293,10 +298,10 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
                 )}
               </div>
 
-              <div className="border-t border-[#2c2c2e] p-6 flex justify-end gap-3">
+              <div className="border-t border-[var(--peal-surface-3,#2c2c2e)] p-6 flex justify-end gap-3">
                 <button
                   onClick={handleClose}
-                  className="px-4 py-2 text-gray-400 hover:text-gray-200 hover:bg-[#232327] rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-400 hover:text-gray-200 hover:bg-[var(--peal-surface-4,#232327)] rounded-lg transition-colors"
                 >
                   Cancel
                 </button>

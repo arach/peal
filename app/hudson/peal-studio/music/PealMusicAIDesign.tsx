@@ -46,13 +46,13 @@ export function PealMusicAIDesign() {
   )
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[#111113] text-gray-200">
+    <div className="flex h-full min-h-0 flex-col bg-[var(--peal-surface-0)] text-[var(--peal-surface-text)]">
       <PealMusicAIChat
         placeholder="Describe a groove, mood, or edit — AI writes Strudel into the pattern editor."
       />
 
       {activity.length > 0 && (chat.status === 'streaming' || chat.status === 'submitted') ? (
-        <div className="shrink-0 border-t border-[#2c2c2e] px-3 py-2">
+        <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2">
           <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.14em] text-gray-600">Working</p>
           <p className="truncate font-mono text-[9px] text-gray-500">
             <span className="text-[#4a9eff]/80">{activity[activity.length - 1]?.tool}</span>
@@ -63,7 +63,7 @@ export function PealMusicAIDesign() {
       ) : null}
 
       {lastEdit ? (
-        <div className="shrink-0 border-t border-[#2c2c2e] px-3 py-2">
+        <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2">
           <div className="mb-1 flex items-center justify-between gap-2">
             <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-gray-600">Last change</p>
             {canUndoLastEdit ? (
@@ -77,7 +77,7 @@ export function PealMusicAIDesign() {
                   summary: lastEdit.summary,
                   route: true,
                 })}
-                className="rounded border border-white/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-gray-400 transition hover:border-[#4a9eff]/30 hover:text-[#4a9eff] disabled:opacity-40"
+                className="rounded border border-[var(--peal-surface-border)] px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-gray-400 transition hover:border-[#4a9eff]/30 hover:text-[#4a9eff] disabled:opacity-40"
               >
                 Roll back
               </button>
@@ -93,7 +93,7 @@ export function PealMusicAIDesign() {
         </div>
       ) : null}
 
-      <div className="shrink-0 border-t border-[#2c2c2e] px-3 py-2">
+      <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2">
         <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-gray-600">{chipLabel}</p>
         <div className="flex flex-wrap gap-1.5">
           {starterChips.map((chip) => (
@@ -102,7 +102,7 @@ export function PealMusicAIDesign() {
               type="button"
               disabled={isBusy}
               onClick={() => sendPrompt(chip)}
-              className="rounded border border-[#2c2c2e] bg-[#1c1c1e]/60 px-2 py-1 font-mono text-[9px] text-gray-400 transition hover:border-[#4a9eff]/30 hover:text-gray-200 disabled:opacity-40"
+              className="rounded border border-[var(--peal-surface-3)] bg-[var(--peal-surface-2)] px-2 py-1 font-mono text-[9px] text-gray-400 transition hover:border-[#4a9eff]/30 hover:text-[var(--peal-surface-text)] disabled:opacity-40"
             >
               {chip}
             </button>

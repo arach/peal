@@ -52,7 +52,7 @@ export function PealMusicAICopilotShell() {
   if (!sessions.hydrated) {
     return (
       <div className="flex h-full min-h-0 flex-col overflow-hidden">
-        <div className="shrink-0 border-b border-white/6 bg-[#111113] px-2 py-5">
+        <div className="shrink-0 border-b border-[var(--peal-surface-border)] bg-[var(--peal-surface-0)] px-2 py-5">
           <div className="h-3 w-28 animate-pulse rounded bg-white/5" />
         </div>
         <div className="flex flex-1 items-center justify-center">

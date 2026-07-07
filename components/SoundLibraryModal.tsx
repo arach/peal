@@ -14,6 +14,7 @@ import {
 } from '@/lib/presets/presetSound'
 import SoundGridRenderer from './SoundGridRenderer'
 import '@/styles/studio-library-modal.css'
+import { useResolvedPealTheme } from '@/hooks/useResolvedPealTheme'
 
 interface SoundLibraryModalProps {
   isOpen: boolean
@@ -37,6 +38,7 @@ const categoryOptions = [
 
 export default function SoundLibraryModal({ isOpen, onClose, onSelectSound }: SoundLibraryModalProps) {
   const { sounds } = useSoundStore()
+  const resolvedTheme = useResolvedPealTheme()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectingId, setSelectingId] = useState<string | null>(null)
@@ -85,7 +87,7 @@ export default function SoundLibraryModal({ isOpen, onClose, onSelectSound }: So
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="peal-library-modal">
+        <div className="peal-library-modal" data-peal-theme={resolvedTheme}>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

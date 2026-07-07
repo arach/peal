@@ -2,12 +2,7 @@
 
 import { useEffect } from 'react'
 import { useSoundStore } from '@/store/soundStore'
-
-function resolveIsDark(theme: 'light' | 'dark' | 'system') {
-  if (theme === 'dark') return true
-  if (theme === 'light') return false
-  return window.matchMedia('(prefers-color-scheme: dark)').matches
-}
+import { resolvePealTheme } from '@/lib/pealTheme'
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const theme = useSoundStore((state) => state.theme)
@@ -16,7 +11,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     const root = document.documentElement
 
     const applyTheme = () => {
-      root.classList.toggle('dark', resolveIsDark(theme))
+      root.classList.toggle('dark', resolvePealTheme(theme) === 'dark')
     }
 
     applyTheme()

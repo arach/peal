@@ -31,7 +31,7 @@ export function PealVoiceAILastEdit() {
       className={`shrink-0 border-t peal-instruments transition-colors ${
         lastEditExpanded
           ? 'border-[#4a9eff]/40 bg-[#4a9eff]/[0.06]'
-          : 'border-[#2c2c2e] bg-[#0d0d0f]'
+          : 'border-[var(--peal-surface-3)] bg-[var(--peal-surface-1)]'
       }`}
     >
       <button
@@ -48,7 +48,7 @@ export function PealVoiceAILastEdit() {
                 {lastEditExpanded ? '▾' : '▸'}
               </span>
             </div>
-            <p className="mt-1 text-sm text-gray-100">{lastEdit.summary}</p>
+            <p className="mt-1 text-sm text-[var(--peal-surface-text-strong)]">{lastEdit.summary}</p>
             {appliedSummary ? (
               <p className="mt-1 line-clamp-2 font-mono text-[10px] leading-relaxed text-[#4a9eff]/85">
                 {appliedSummary}

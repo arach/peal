@@ -5,7 +5,7 @@ export default function StudioPage() {
   return (
     <Suspense
       fallback={
-        <div className="h-full bg-[#111113] flex items-center justify-center text-gray-400">
+        <div className="peal-studio-shell h-full flex items-center justify-center text-[var(--peal-surface-text-muted,#9ca3af)]">
           Loading Studio...
         </div>
       }

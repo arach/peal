@@ -2405,7 +2405,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
     <>
       <button 
         onClick={handleLoadProject}
-        className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-[#232327]/50 rounded-lg transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-100 hover:bg-[var(--peal-surface-4,#232327)]/50 rounded-lg transition-colors"
         title="Open a saved project"
       >
         <LibraryIcon size={16} />
@@ -2417,7 +2417,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
         className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
           currentSound 
             ? 'bg-[#4a9eff] hover:bg-[#4a9eff] text-white' 
-            : 'bg-[#2c2c2e] text-gray-400 cursor-not-allowed'
+            : 'bg-[var(--peal-surface-3,#2c2c2e)] text-gray-400 cursor-not-allowed'
         }`}
         title="Save current project"
       >
@@ -2429,8 +2429,8 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
 
   return (
     <div className={hudsonLayout
-      ? 'h-full flex flex-col bg-[#111113] text-gray-100'
-      : 'h-full flex flex-col bg-gray-50 dark:bg-[#111113] text-[#1c1c1e] dark:text-gray-100 transition-colors'}>
+      ? 'h-full flex flex-col bg-[var(--peal-surface-0,#111113)] text-[var(--peal-surface-text-strong,#f3f4f6)]'
+      : 'h-full flex flex-col bg-gray-50 dark:bg-[var(--peal-surface-0,#111113)] text-[#1c1c1e] dark:text-gray-100 transition-colors'}>
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Code Editor */}
@@ -2451,9 +2451,9 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
         )}
 
         {/* Center Panel - Main Canvas */}
-        <div className={`flex-1 flex flex-col bg-[#111113] ${hudsonLayout ? 'peal-instruments' : ''}`}>
+        <div className={`flex-1 flex flex-col bg-[var(--peal-surface-0,#111113)] ${hudsonLayout ? 'peal-instruments' : ''}`}>
           {/* Canvas Header */}
-          <div className="flex items-center justify-between px-6 py-2.5 bg-[#0d0d0f] border-b border-[#232327]">
+          <div className="flex items-center justify-between px-6 py-2.5 bg-[var(--peal-surface-1,#0d0d0f)] border-b border-[var(--peal-surface-4,#232327)]">
             <div className="flex items-center gap-3">
               <span className="peal-inst-led peal-inst-led--on" aria-hidden />
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-400">
@@ -2474,7 +2474,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
             {currentSound ? (
               <>
                 {/* Sound Info Header */}
-                <div className="px-6 py-4 border-b border-[#232327]">
+                <div className="px-6 py-4 border-b border-[var(--peal-surface-4,#232327)]">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-100">
@@ -2529,7 +2529,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
 
                     {/* Timeline & Trimmer */}
                     <StudioRack label="Timeline" className="overflow-hidden">
-                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#232327]/80">
+                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--peal-surface-4,#232327)]/80">
                         <StudioPadTray>
                             <StudioPad
                               active={editMode}
@@ -2688,7 +2688,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                   setTrimStart(0)
                                   setTrimEnd(1)
                                 }}
-                                className="px-2 py-0.5 bg-[#2c2c2e] hover:bg-[#3a3a3e] rounded text-[10px] text-gray-300 transition-colors"
+                                className="px-2 py-0.5 bg-[var(--peal-surface-3,#2c2c2e)] hover:bg-[var(--peal-surface-5,#3a3a3e)] rounded text-[10px] text-gray-300 transition-colors"
                               >
                                 Reset
                               </button>
@@ -2717,7 +2717,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                   setEditStart(0.3)
                                   setEditEnd(0.7)
                                 }}
-                                className="px-2 py-0.5 bg-[#2c2c2e] hover:bg-[#3a3a3e] rounded text-[10px] text-gray-300 transition-colors"
+                                className="px-2 py-0.5 bg-[var(--peal-surface-3,#2c2c2e)] hover:bg-[var(--peal-surface-5,#3a3a3e)] rounded text-[10px] text-gray-300 transition-colors"
                               >
                                 Reset
                               </button>
@@ -2736,7 +2736,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                   setEditStart(0.3)
                                   setEditEnd(0.7)
                                 }}
-                                className="px-2 py-0.5 bg-[#2c2c2e] hover:bg-[#3a3a3e] rounded text-[10px] text-gray-300 transition-colors"
+                                className="px-2 py-0.5 bg-[var(--peal-surface-3,#2c2c2e)] hover:bg-[var(--peal-surface-5,#3a3a3e)] rounded text-[10px] text-gray-300 transition-colors"
                               >
                                 Reset
                               </button>
@@ -2765,8 +2765,8 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                     
                     {/* Tracks Panel - Below transport controls */}
                     {showTracks && (
-                      <div className="bg-[#1c1c1e] rounded-xl border border-[#232327] transition-all duration-300 overflow-hidden">
-                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#232327] bg-[#1c1c1e]/50">
+                      <div className="bg-[var(--peal-surface-2,#1c1c1e)] rounded-xl border border-[var(--peal-surface-4,#232327)] transition-all duration-300 overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--peal-surface-4,#232327)] bg-[var(--peal-surface-2,#1c1c1e)]">
                         <h4 className="text-xs font-semibold text-gray-200 uppercase tracking-wider">Tracks</h4>
                       </div>
                       
@@ -2775,14 +2775,14 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                           No tracks yet. Use "Add Sound" to create tracks.
                         </div>
                       ) : (
-                        <div className="divide-y divide-[#232327]">
+                        <div className="divide-y divide-[var(--peal-surface-4,#232327)]">
                           {tracks.map((track, index) => (
                             <div
                               key={track.id}
                               className={`group relative transition-all cursor-pointer ${
                                 selectedTrackId === track.id 
                                   ? 'bg-[#4a9eff]/10 border-l-2 border-[#4a9eff]' 
-                                  : 'hover:bg-[#232327]/15 border-l-2 border-transparent'
+                                  : 'hover:bg-[var(--peal-surface-4,#232327)]/15 border-l-2 border-transparent'
                               }`}
                               onClick={() => setSelectedTrackId(track.id)}
                             >
@@ -2791,7 +2791,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                   <div className="flex items-center gap-2.5 flex-1 min-w-0">
                                     <div 
                                       className={`w-2 h-2 rounded-full flex-shrink-0 ring-2 ${
-                                        selectedTrackId === track.id ? 'ring-[#4a9eff]/50' : 'ring-[#232327]/50'
+                                        selectedTrackId === track.id ? 'ring-[#4a9eff]/50' : 'ring-[var(--peal-surface-4,#232327)]/50'
                                       }`}
                                       style={{ backgroundColor: track.color }}
                                     />
@@ -2840,7 +2840,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                       className={`w-6 h-6 text-[10px] font-semibold rounded transition-all ${
                                         track.solo 
                                           ? 'bg-yellow-500 text-white shadow-sm' 
-                                          : 'bg-[#2c2c2e]/50 text-gray-400 hover:text-gray-200 hover:bg-[#3a3a3e]'
+                                          : 'bg-[var(--peal-surface-3,#2c2c2e)]/50 text-gray-400 hover:text-gray-200 hover:bg-[var(--peal-surface-5,#3a3a3e)]'
                                       }`}
                                       title={track.solo ? 'Disable Solo - Hear all tracks' : 'Solo - Only hear this track'}
                                     >
@@ -2858,14 +2858,14 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                       className={`w-6 h-6 text-[10px] font-semibold rounded transition-all ${
                                         track.muted 
                                           ? 'bg-red-500 text-white shadow-sm' 
-                                          : 'bg-[#2c2c2e]/50 text-gray-400 hover:text-gray-200 hover:bg-[#3a3a3e]'
+                                          : 'bg-[var(--peal-surface-3,#2c2c2e)]/50 text-gray-400 hover:text-gray-200 hover:bg-[var(--peal-surface-5,#3a3a3e)]'
                                       }`}
                                       title={track.muted ? 'Unmute - Enable this track' : 'Mute - Silence this track'}
                                     >
                                       M
                                     </button>
                                     {track.name !== 'Main' && (
-                                      <div className="w-px h-4 bg-[#2c2c2e] mx-0.5" />
+                                      <div className="w-px h-4 bg-[var(--peal-surface-3,#2c2c2e)] mx-0.5" />
                                     )}
                                     {track.name !== 'Main' && (
                                       <button
@@ -2878,7 +2878,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                             }
                                           }
                                         }}
-                                        className="w-6 h-6 text-xs bg-[#2c2c2e]/50 text-gray-400 hover:bg-red-500 hover:text-white rounded transition-all"
+                                        className="w-6 h-6 text-xs bg-[var(--peal-surface-3,#2c2c2e)]/50 text-gray-400 hover:bg-red-500 hover:text-white rounded transition-all"
                                       >
                                         ×
                                       </button>
@@ -2888,7 +2888,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                               
                                 {track.audioBuffer && (
                                   <div className="mt-1.5">
-                                    <div className="h-6 bg-[#232327]/30 rounded overflow-hidden">
+                                    <div className="h-6 bg-[var(--peal-surface-4,#232327)]/30 rounded overflow-hidden">
                                       {/* Mini waveform preview */}
                                       <canvas
                                         width={300}
@@ -3003,9 +3003,9 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
             surface={hudsonLayout ? 'dark' : 'default'}
             className={hudsonLayout ? 'border-l-0' : ''}
           >
-            <div className={`h-full flex flex-col bg-[#111113] ${hudsonLayout ? 'peal-instruments' : ''}`}>
+            <div className={`h-full flex flex-col bg-[var(--peal-surface-0,#111113)] ${hudsonLayout ? 'peal-instruments' : ''}`}>
               {/* Panel Header with Tabs */}
-              <div className="border-b border-[#232327]/80">
+              <div className="border-b border-[var(--peal-surface-4,#232327)]/80">
                 {!hudsonLayout && (
                 <div className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-2">
@@ -3038,7 +3038,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                 )}
 
                 {hudsonLayout && (editMode || insertMode) && (
-                  <div className="flex items-center gap-2 px-4 py-2 border-b border-[#232327]/60">
+                  <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--peal-surface-4,#232327)]/60">
                     {editMode && (
                       <span className={`text-[10px] px-2 py-1 rounded font-mono uppercase tracking-wide ${
                         currentSound?.type === 'click' && currentSound?.tags.includes('vibe-generated')
@@ -3086,7 +3086,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                   <div className="p-4 space-y-4">
                     {/* Welcome message for empty state */}
                     {vibePrompt.length === 0 && vibeGeneratedSounds.length === 0 && (
-                      <div className="bg-[#1c1c1e]/50 border border-[#232327] rounded-lg p-4 mb-4">
+                      <div className="bg-[var(--peal-surface-2,#1c1c1e)] border border-[var(--peal-surface-4,#232327)] rounded-lg p-4 mb-4">
                         <p className="text-sm text-gray-300 leading-relaxed">
                           Describe sounds in plain English and let AI bring them to life. 
                           Try describing timing, pitch, or the feeling you want.
@@ -3106,7 +3106,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                           onChange={(e) => setVibePrompt(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleVibeGenerate()}
                           placeholder="Try: 'a short high beep' or '3 quick clicks'"
-                          className="w-full px-3 py-2 pr-10 bg-[#232327] border border-[#2c2c2e] rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4a9eff]"
+                          className="w-full px-3 py-2 pr-10 bg-[var(--peal-surface-4,#232327)] border border-[var(--peal-surface-3,#2c2c2e)] rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4a9eff]"
                         />
                         <button 
                           onClick={handleVibeGenerate}
@@ -3130,7 +3130,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                 setVibePrompt(suggestion)
                                 setTimeout(() => handleVibeGenerate(), 100)
                               }}
-                              className="block w-full text-left px-3 py-2 text-sm bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-gray-300 transition-colors group"
+                              className="block w-full text-left px-3 py-2 text-sm bg-[var(--peal-surface-4,#232327)] hover:bg-[var(--peal-surface-3,#2c2c2e)] rounded-lg text-gray-300 transition-colors group"
                             >
                               <span className="group-hover:text-[#4a9eff] transition-colors">{suggestion}</span>
                             </button>
@@ -3157,7 +3157,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                           {vibeGeneratedSounds.map((sound) => (
                             <div
                               key={sound.id}
-                              className="p-3 bg-[#232327] rounded-lg border border-[#2c2c2e]"
+                              className="p-3 bg-[var(--peal-surface-4,#232327)] rounded-lg border border-[var(--peal-surface-3,#2c2c2e)]"
                             >
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
@@ -3195,7 +3195,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                         handleVibeLoadToStudio(sound)
                                       }
                                     }}
-                                    className="px-3 py-2 bg-[#2c2c2e] hover:bg-[#3a3a3e] text-white text-sm rounded-lg transition-all"
+                                    className="px-3 py-2 bg-[var(--peal-surface-3,#2c2c2e)] hover:bg-[var(--peal-surface-5,#3a3a3e)] text-white text-sm rounded-lg transition-all"
                                     title="Replace current sound"
                                   >
                                     Replace
@@ -3247,7 +3247,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                 setVibePrompt(example)
                                 setTimeout(() => handleVibeGenerate(), 100)
                               }}
-                              className="block w-full text-left text-sm px-3 py-2 bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-gray-300 transition-colors"
+                              className="block w-full text-left text-sm px-3 py-2 bg-[var(--peal-surface-4,#232327)] hover:bg-[var(--peal-surface-3,#2c2c2e)] rounded-lg text-gray-300 transition-colors"
                             >
                               "{example}"
                             </button>
@@ -3281,7 +3281,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                             })
                             setHasUnappliedChanges(true)
                           }}
-                          className="px-3 py-2 bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-xs text-gray-300 transition-colors"
+                          className="px-3 py-2 bg-[var(--peal-surface-4,#232327)] hover:bg-[var(--peal-surface-3,#2c2c2e)] rounded-lg text-xs text-gray-300 transition-colors"
                         >
                           <div className="flex items-center gap-2">
                             <div className="w-4 h-4 bg-[#4a9eff]/20 rounded flex items-center justify-center">
@@ -3305,7 +3305,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                             })
                             setHasUnappliedChanges(true)
                           }}
-                          className="px-3 py-2 bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-xs text-gray-300 transition-colors"
+                          className="px-3 py-2 bg-[var(--peal-surface-4,#232327)] hover:bg-[var(--peal-surface-3,#2c2c2e)] rounded-lg text-xs text-gray-300 transition-colors"
                         >
                           <div className="flex items-center gap-2">
                             <div className="w-4 h-4 bg-green-500/20 rounded flex items-center justify-center">
@@ -3329,7 +3329,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                             })
                             setHasUnappliedChanges(true)
                           }}
-                          className="px-3 py-2 bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-xs text-gray-300 transition-colors"
+                          className="px-3 py-2 bg-[var(--peal-surface-4,#232327)] hover:bg-[var(--peal-surface-3,#2c2c2e)] rounded-lg text-xs text-gray-300 transition-colors"
                         >
                           <div className="flex items-center gap-2">
                             <div className="w-4 h-4 bg-[#4a9eff]/20 rounded flex items-center justify-center">
@@ -3353,7 +3353,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                             })
                             setHasUnappliedChanges(true)
                           }}
-                          className="px-3 py-2 bg-[#232327] hover:bg-[#2c2c2e] rounded-lg text-xs text-gray-300 transition-colors"
+                          className="px-3 py-2 bg-[var(--peal-surface-4,#232327)] hover:bg-[var(--peal-surface-3,#2c2c2e)] rounded-lg text-xs text-gray-300 transition-colors"
                         >
                           <div className="flex items-center gap-2">
                             <div className="w-4 h-4 bg-orange-500/20 rounded flex items-center justify-center">
@@ -3368,7 +3368,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                     {/* Insert Type Selector */}
                     <div className="space-y-3">
                       <h3 className="text-sm font-medium text-gray-300">Sound Character</h3>
-                      <div className="grid grid-cols-4 gap-1 bg-[#232327] p-1 rounded-lg">
+                      <div className="grid grid-cols-4 gap-1 bg-[var(--peal-surface-4,#232327)] p-1 rounded-lg">
                         {['sine', 'square', 'triangle', 'sawtooth'].map((waveform) => (
                           <button
                             key={waveform}
@@ -3376,7 +3376,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                             className={`px-2 py-1.5 rounded text-xs font-medium transition-colors ${
                               (editedParams?.waveform || 'sine') === waveform
                                 ? 'bg-[#4a9eff] text-white'
-                                : 'text-gray-400 hover:text-gray-200 hover:bg-[#2c2c2e]'
+                                : 'text-gray-400 hover:text-gray-200 hover:bg-[var(--peal-surface-3,#2c2c2e)]'
                             }`}
                           >
                             {waveform.charAt(0).toUpperCase() + waveform.slice(1)}
@@ -3453,14 +3453,14 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                     </div>
                     
                     {/* Visual Region Indicator */}
-                    <div className="bg-[#232327] rounded-lg p-4">
+                    <div className="bg-[var(--peal-surface-4,#232327)] rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs text-gray-400">Insert Region</span>
                         <span className="text-xs text-gray-500">
                           {Math.round(editStart * 100)}% - {Math.round(editEnd * 100)}%
                         </span>
                       </div>
-                      <div className="h-2 bg-[#2c2c2e] rounded-full overflow-hidden">
+                      <div className="h-2 bg-[var(--peal-surface-3,#2c2c2e)] rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-[#4a9eff]"
                           style={{
@@ -3478,10 +3478,10 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                         disabled={!hasUnappliedChanges || isGenerating}
                         className={`w-full px-4 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
                           isGenerating 
-                            ? 'bg-[#2c2c2e] text-gray-400 cursor-not-allowed'
+                            ? 'bg-[var(--peal-surface-3,#2c2c2e)] text-gray-400 cursor-not-allowed'
                             : hasUnappliedChanges
                               ? 'bg-[#4a9eff] hover:bg-[#6bb0ff] text-white shadow-lg transform hover:scale-[1.02]'
-                              : 'bg-[#232327] text-gray-500 cursor-not-allowed'
+                              : 'bg-[var(--peal-surface-4,#232327)] text-gray-500 cursor-not-allowed'
                         }`}
                       >
                         {isGenerating ? (
@@ -3507,13 +3507,13 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                   <>
                     {/* Apply Changes Button */}
                     {hasUnappliedChanges && (
-                      <div className="sticky top-0 z-10 bg-[#1c1c1e] -mx-4 px-4 pb-4 pt-2 border-b border-[#232327]">
+                      <div className="sticky top-0 z-10 bg-[var(--peal-surface-2,#1c1c1e)] -mx-4 px-4 pb-4 pt-2 border-b border-[var(--peal-surface-4,#232327)]">
                         <button
                           onClick={applyChanges}
                           disabled={isGenerating}
                           className={`w-full px-4 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
                             isGenerating 
-                              ? 'bg-[#2c2c2e] text-gray-400 cursor-not-allowed'
+                              ? 'bg-[var(--peal-surface-3,#2c2c2e)] text-gray-400 cursor-not-allowed'
                               : 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
                           }`}
                         >
@@ -3590,7 +3590,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                             <select
                               value={editedParams?.waveform || 'sine'}
                               onChange={(e) => updateParam('waveform', e.target.value)}
-                              className="w-full bg-[#232327] border border-[#2c2c2e] rounded px-2 py-1 text-gray-100 text-sm"
+                              className="w-full bg-[var(--peal-surface-4,#232327)] border border-[var(--peal-surface-3,#2c2c2e)] rounded px-2 py-1 text-gray-100 text-sm"
                             >
                               <option value="sine">Sine</option>
                               <option value="square">Square</option>
@@ -3707,13 +3707,13 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
       {/* Context Menu */}
       {contextMenu && trackSelection && (
         <div
-          className="fixed z-50 bg-[#1c1c1e] border border-[#2c2c2e] rounded-lg shadow-xl py-1 min-w-[160px]"
+          className="fixed z-50 bg-[var(--peal-surface-2,#1c1c1e)] border border-[var(--peal-surface-3,#2c2c2e)] rounded-lg shadow-xl py-1 min-w-[160px]"
           style={{ left: contextMenu.x, top: contextMenu.y }}
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={startMoveMode}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[#232327] hover:text-white transition-colors flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[var(--peal-surface-4,#232327)] hover:text-white transition-colors flex items-center gap-2"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
               <path d="M7 2L5 0v2H2v2h3v2l2-2 2 2V4h3V2H9V0L7 2zM2 7h2v3H2v2h2v2l2-2h4l2 2v-2h2v-2h-2V7h2V5H0v2h2z" opacity="0.5"/>
@@ -3726,7 +3726,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
               // TODO: Implement cut
               setContextMenu(null)
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[#232327] hover:text-white transition-colors flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[var(--peal-surface-4,#232327)] hover:text-white transition-colors flex items-center gap-2"
           >
             <ScissorsIcon size={14} />
             Cut
@@ -3766,7 +3766,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
               // Optionally auto-start move mode
               setTimeout(() => setMoveMode(true), 100)
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[#232327] hover:text-white transition-colors flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[var(--peal-surface-4,#232327)] hover:text-white transition-colors flex items-center gap-2"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
               <path d="M10 0H2C1.4 0 1 0.4 1 1v9h2V2h7V0zm2 3H5C4.4 3 4 3.4 4 4v9c0 0.6 0.4 1 1 1h7c0.6 0 1-0.4 1-1V4c0-0.6-0.4-1-1-1zm0 10H5V4h7v9z"/>
@@ -3778,20 +3778,20 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
               // TODO: Implement delete
               setContextMenu(null)
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[#232327] hover:text-white transition-colors flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[var(--peal-surface-4,#232327)] hover:text-white transition-colors flex items-center gap-2"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
               <path d="M11 2h-1V1c0-0.6-0.4-1-1-1H5C4.4 0 4 0.4 4 1v1H3C2.4 2 2 2.4 2 3v1h10V3c0-0.6-0.4-1-1-1zM5 1h4v1H5V1zm6 4H3l0.5 8.1c0 0.5 0.4 0.9 0.9 0.9h5.2c0.5 0 0.9-0.4 0.9-0.9L11 5z"/>
             </svg>
             Delete
           </button>
-          <div className="border-t border-[#232327] my-1"></div>
+          <div className="border-t border-[var(--peal-surface-4,#232327)] my-1"></div>
           <button
             onClick={() => {
               // TODO: Implement extract to new track
               setContextMenu(null)
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[#232327] hover:text-white transition-colors"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-[var(--peal-surface-4,#232327)] hover:text-white transition-colors"
           >
             Extract to New Track
           </button>
@@ -3824,7 +3824,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
           }}
         >
           <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]">
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#1c1c1e] px-4 py-2 rounded-lg shadow-xl">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[var(--peal-surface-2,#1c1c1e)] px-4 py-2 rounded-lg shadow-xl">
               <p className="text-sm text-gray-300">Click to place selection • Right-click to cancel</p>
             </div>
           </div>
@@ -3838,7 +3838,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
             className="absolute inset-0 bg-black/40 backdrop-blur-[3px]"
             onClick={() => setShowHelpModal(false)}
           />
-          <div className="relative bg-[#1c1c1e] rounded-xl shadow-2xl border border-[#232327] p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="relative bg-[var(--peal-surface-2,#1c1c1e)] rounded-xl shadow-2xl border border-[var(--peal-surface-4,#232327)] p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-100">Keyboard Shortcuts</h2>
               <button
@@ -3858,7 +3858,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Play/Stop</span>
-                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">Space</kbd>
+                    <kbd className="px-2 py-1 bg-[var(--peal-surface-4,#232327)] rounded text-xs font-mono">Space</kbd>
                   </div>
                 </div>
               </div>
@@ -3869,19 +3869,19 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Insert sound</span>
-                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">Enter</kbd>
+                    <kbd className="px-2 py-1 bg-[var(--peal-surface-4,#232327)] rounded text-xs font-mono">Enter</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Quick position: Start (0-10%)</span>
-                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">1</kbd>
+                    <kbd className="px-2 py-1 bg-[var(--peal-surface-4,#232327)] rounded text-xs font-mono">1</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Quick position: Middle (45-55%)</span>
-                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">2</kbd>
+                    <kbd className="px-2 py-1 bg-[var(--peal-surface-4,#232327)] rounded text-xs font-mono">2</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Quick position: End (90-100%)</span>
-                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">3</kbd>
+                    <kbd className="px-2 py-1 bg-[var(--peal-surface-4,#232327)] rounded text-xs font-mono">3</kbd>
                   </div>
                 </div>
               </div>
@@ -3907,13 +3907,13 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Show this help</span>
-                    <kbd className="px-2 py-1 bg-[#232327] rounded text-xs font-mono">?</kbd>
+                    <kbd className="px-2 py-1 bg-[var(--peal-surface-4,#232327)] rounded text-xs font-mono">?</kbd>
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="mt-6 pt-4 border-t border-[#232327]">
+            <div className="mt-6 pt-4 border-t border-[var(--peal-surface-4,#232327)]">
               <p className="text-xs text-gray-500 text-center">Press Esc to close</p>
             </div>
           </div>

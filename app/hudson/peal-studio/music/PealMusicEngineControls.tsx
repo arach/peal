@@ -23,7 +23,7 @@ export function PealMusicEngineControls() {
   const checkoutPath = status?.config?.checkoutPath
 
   return (
-    <div className="space-y-3 border-b border-white/6 pb-4">
+    <div className="space-y-3 border-b border-[var(--peal-surface-border)] pb-4">
       <div className="flex items-center justify-between gap-2">
         <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-gray-500">Strudel engine</p>
         <span
@@ -82,7 +82,7 @@ export function PealMusicEngineControls() {
             type="button"
             disabled={busy}
             onClick={() => void stop()}
-            className="inline-flex items-center gap-1 rounded border border-white/10 px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-gray-400 hover:border-amber-400/30 hover:text-amber-300 disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded border border-[var(--peal-surface-border)] px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-gray-400 hover:border-amber-400/30 hover:text-amber-300 disabled:opacity-40"
           >
             <StopIcon size={10} />
             Stop engine

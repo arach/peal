@@ -123,7 +123,7 @@ export function PealVoiceLayoutBar() {
   }))
 
   return (
-    <div className="shrink-0 border-b border-[var(--inst-line-lo)] bg-[#0d0d0f] peal-instruments">
+    <div className="shrink-0 border-b border-[var(--inst-line-lo)] bg-[var(--peal-surface-1)] peal-instruments">
       <div className="flex flex-wrap items-center gap-2 px-3 py-2">
         <span className="peal-inst-rack-label mr-1">Center</span>
         <StudioPadTray>

@@ -1,22 +1,21 @@
 'use client'
 
-import { useLayoutEffect } from 'react'
+import { useEffect } from 'react'
 import PealChrome from '@/components/PealChrome'
+import { useResolvedPealTheme } from '@/hooks/useResolvedPealTheme'
 
 export default function StudioChrome({ children }: { children: React.ReactNode }) {
-  useLayoutEffect(() => {
-    document.documentElement.classList.add('dark')
-    document.documentElement.dataset.hudsonTheme = 'dark'
+  const resolved = useResolvedPealTheme()
+
+  useEffect(() => {
     document.documentElement.dataset.hudsonTemplate = 'hudson'
     return () => {
-      document.documentElement.classList.remove('dark')
-      delete document.documentElement.dataset.hudsonTheme
       delete document.documentElement.dataset.hudsonTemplate
     }
   }, [])
 
   return (
-    <div className="peal-studio-chrome">
+    <div className="peal-studio-chrome" data-peal-theme={resolved}>
       <PealChrome layout="studio" />
       <div
         className="overflow-hidden"

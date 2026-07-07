@@ -66,7 +66,7 @@ export function PealMusicImprovLoopControls({
             : 'Off'
 
   return (
-    <div className="shrink-0 border-t border-[#2c2c2e] px-3 py-2.5">
+    <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2.5">
       <div className="mb-2 flex items-center justify-between gap-2">
         <div>
           <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#4a9eff]">Improv loop</p>
@@ -79,7 +79,7 @@ export function PealMusicImprovLoopControls({
           className={`rounded border px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] transition ${
             enabled
               ? 'border-[#4a9eff]/35 bg-[#4a9eff]/12 text-[#4a9eff]'
-              : 'border-[#2c2c2e] text-gray-500 hover:border-[#4a9eff]/25 hover:text-gray-300'
+              : 'border-[var(--peal-surface-3)] text-gray-500 hover:border-[#4a9eff]/25 hover:text-gray-300'
           } disabled:cursor-not-allowed disabled:opacity-40`}
         >
           {enabled ? 'Stop' : 'Start'}
@@ -94,7 +94,7 @@ export function PealMusicImprovLoopControls({
             value={intervalSec}
             disabled={enabled}
             onChange={(e) => onIntervalChange(Number.parseInt(e.target.value, 10))}
-            className="rounded border border-[#2c2c2e] bg-[#1c1c1e]/80 px-1.5 py-0.5 font-mono text-[9px] text-gray-300 outline-none hover:border-[#4a9eff]/25 focus:border-[#4a9eff]/40 disabled:opacity-50"
+            className="rounded border border-[var(--peal-surface-3)] bg-[var(--peal-surface-2)] px-1.5 py-0.5 font-mono text-[9px] text-gray-300 outline-none hover:border-[#4a9eff]/25 focus:border-[#4a9eff]/40 disabled:opacity-50"
           >
             {MUSIC_IMPROV_INTERVAL_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -111,7 +111,7 @@ export function PealMusicImprovLoopControls({
             value={style}
             disabled={enabled}
             onChange={(e) => onStyleChange(e.target.value as MusicImprovStyle)}
-            className="min-w-0 flex-1 rounded border border-[#2c2c2e] bg-[#1c1c1e]/80 px-1.5 py-0.5 font-mono text-[9px] text-gray-300 outline-none hover:border-[#4a9eff]/25 focus:border-[#4a9eff]/40 disabled:opacity-50"
+            className="min-w-0 flex-1 rounded border border-[var(--peal-surface-3)] bg-[var(--peal-surface-2)] px-1.5 py-0.5 font-mono text-[9px] text-gray-300 outline-none hover:border-[#4a9eff]/25 focus:border-[#4a9eff]/40 disabled:opacity-50"
           >
             <option value="subtle">Subtle</option>
             <option value="bold">Bold</option>

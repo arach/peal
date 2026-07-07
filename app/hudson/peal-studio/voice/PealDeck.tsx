@@ -19,7 +19,7 @@ export function PealDeck({ compact = false }: { compact?: boolean }) {
   const filledCount = voice.deckSlots.filter(Boolean).length
 
   return (
-    <div className={`flex h-full min-h-0 flex-col gap-3 p-3 peal-instruments text-gray-200${compact ? ' peal-inst-deck-panel' : ''}`}>
+    <div className={`flex h-full min-h-0 flex-col gap-3 p-3 peal-instruments text-[var(--peal-surface-text)]${compact ? ' peal-inst-deck-panel' : ''}`}>
       {(voice.providerBanner || voice.generateError) && (
         <div className="flex shrink-0 items-start gap-2 rounded border border-[rgba(232,163,23,0.35)] bg-[rgba(232,163,23,0.08)] px-3 py-2.5">
           <StudioLed tone="amber" on />

@@ -54,9 +54,9 @@ export function PealStrudelRepl({ engine, showHeader = false }: PealStrudelReplP
   }
 
   return (
-    <div className="peal-strudel-repl flex h-full min-h-0 flex-col overflow-hidden bg-[#0d0d0f]">
+    <div className="peal-strudel-repl flex h-full min-h-0 flex-col overflow-hidden bg-[var(--peal-surface-1)]">
       {showHeader ? (
-        <div className="flex shrink-0 items-center justify-between border-b border-white/6 px-3 py-1.5">
+        <div className="flex shrink-0 items-center justify-between border-b border-[var(--peal-surface-border)] px-3 py-1.5">
           <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#4a9eff]">
             Strudel REPL
           </p>
@@ -73,7 +73,7 @@ export function PealStrudelRepl({ engine, showHeader = false }: PealStrudelReplP
             title="Strudel REPL"
             src={replSrc}
             onLoad={handleLoad}
-            className="peal-strudel-repl-frame h-full min-h-0 w-full border-0 bg-[#0d0d0f]"
+            className="peal-strudel-repl-frame h-full min-h-0 w-full border-0 bg-[var(--peal-surface-1)]"
             allow="midi; microphone; autoplay"
           />
         ) : (

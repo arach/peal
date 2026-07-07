@@ -12,6 +12,17 @@
   --lib-modal-accent: #4a9eff;
 }
 
+.peal-library-modal[data-peal-theme='light'] {
+  --lib-modal-bg: #f3f5f8;
+  --lib-modal-surface: #ffffff;
+  --lib-modal-well: #e8ecf2;
+  --lib-modal-border: rgba(15, 23, 42, 0.1);
+  --lib-modal-border-lit: rgba(15, 23, 42, 0.14);
+  --lib-modal-text: rgba(15, 23, 42, 0.9);
+  --lib-modal-text-dim: rgba(15, 23, 42, 0.52);
+  --lib-modal-text-muted: rgba(15, 23, 42, 0.38);
+}
+
 .peal-library-modal__panel {
   background: var(--lib-modal-bg);
   border: 1px solid var(--lib-modal-border);

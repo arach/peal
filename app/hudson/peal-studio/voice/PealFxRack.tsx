@@ -27,7 +27,7 @@ export function PealFxRack() {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto peal-instruments p-3 text-gray-200">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto peal-instruments p-3 text-[var(--peal-surface-text)]">
       <StudioRack label="Insert chain" readout={voiceFxLabel(clip.fxPresetId)} className="mb-3 space-y-3 p-3">
         <p className="line-clamp-2 font-mono text-[10px] text-gray-400">{clip.label}</p>
         <select

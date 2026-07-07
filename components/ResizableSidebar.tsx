@@ -68,7 +68,7 @@ export default function ResizableSidebar({
   }
 
   const baseClasses = surface === 'dark'
-    ? `relative h-full bg-[#111113] ${side === 'left' ? 'border-r' : 'border-l'} border-gray-800/80`
+    ? `relative h-full bg-[var(--peal-surface-0,#111113)] ${side === 'left' ? 'border-r' : 'border-l'} border-[var(--peal-surface-border,rgba(255,255,255,0.06))]`
     : `relative h-full bg-gray-50 dark:bg-gray-900 ${side === 'left' ? 'border-r' : 'border-l'} border-gray-200 dark:border-gray-800`
 
   return (

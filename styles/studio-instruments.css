@@ -4,6 +4,19 @@
  */
 
 .peal-studio-shell {
+  --peal-surface-0: #111113;
+  --peal-surface-1: #0d0d0f;
+  --peal-surface-2: #1c1c1e;
+  --peal-surface-3: #2c2c2e;
+  --peal-surface-4: #232327;
+  --peal-surface-5: #3a3a3e;
+  --peal-surface-code: #0a0f12;
+  --peal-surface-code-header: #0d1317;
+  --peal-surface-border: rgba(255, 255, 255, 0.06);
+  --peal-surface-text: #e5e7eb;
+  --peal-surface-text-strong: #f3f4f6;
+  --peal-surface-text-muted: #6b7280;
+
   --inst-chassis: #0c0c0e;
   --inst-face: #16161a;
   --inst-face-raised: #1e1e22;
@@ -17,6 +30,49 @@
   --inst-amber-glow: rgba(232, 163, 23, 0.38);
   --inst-label: rgba(255, 255, 255, 0.42);
   --inst-engrave: rgba(255, 255, 255, 0.72);
+  --inst-readout: rgba(255, 255, 255, 0.38);
+  --inst-pad-fg: rgba(255, 255, 255, 0.45);
+  --inst-pad-fg-hover: rgba(255, 255, 255, 0.78);
+  --inst-pad-bg: linear-gradient(180deg, #242428 0%, #1a1a1e 100%);
+  --inst-pad-bg-hover: linear-gradient(180deg, #2a2a30 0%, #1f1f24 100%);
+  --inst-shadow-panel: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --inst-shadow-deck: 0 12px 32px rgba(0, 0, 0, 0.4);
+
+  background: var(--peal-surface-0);
+  color: var(--peal-surface-text);
+}
+
+.peal-studio-shell[data-peal-theme='light'] {
+  --peal-surface-0: #eef1f6;
+  --peal-surface-1: #e4e8ef;
+  --peal-surface-2: #ffffff;
+  --peal-surface-3: #d5dbe6;
+  --peal-surface-4: #e2e8f0;
+  --peal-surface-5: #cbd5e1;
+  --peal-surface-code: #f8fafc;
+  --peal-surface-code-header: #f1f5f9;
+  --peal-surface-border: rgba(15, 23, 42, 0.1);
+  --peal-surface-text: #334155;
+  --peal-surface-text-strong: #0f172a;
+  --peal-surface-text-muted: #64748b;
+
+  --inst-chassis: #dde2eb;
+  --inst-face: #f3f5f8;
+  --inst-face-raised: #ffffff;
+  --inst-well: #e8ecf2;
+  --inst-line-hi: rgba(255, 255, 255, 0.95);
+  --inst-line-lo: rgba(15, 23, 42, 0.1);
+  --inst-accent-glow: rgba(74, 158, 255, 0.28);
+  --inst-amber-glow: rgba(232, 163, 23, 0.28);
+  --inst-label: rgba(15, 23, 42, 0.46);
+  --inst-engrave: rgba(15, 23, 42, 0.78);
+  --inst-readout: rgba(15, 23, 42, 0.42);
+  --inst-pad-fg: rgba(15, 23, 42, 0.5);
+  --inst-pad-fg-hover: rgba(15, 23, 42, 0.82);
+  --inst-pad-bg: linear-gradient(180deg, #ffffff 0%, #e8ecf2 100%);
+  --inst-pad-bg-hover: linear-gradient(180deg, #ffffff 0%, #dfe5ee 100%);
+  --inst-shadow-panel: 0 1px 2px rgba(15, 23, 42, 0.05), 0 10px 24px -12px rgba(15, 23, 42, 0.12);
+  --inst-shadow-deck: 0 1px 2px rgba(15, 23, 42, 0.05), 0 14px 28px -14px rgba(15, 23, 42, 0.14);
 }
 
 /* ── Rack panels ─────────────────────────────────────────────── */
@@ -28,7 +84,7 @@
   border-radius: 6px;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 8px 24px rgba(0, 0, 0, 0.35);
+    var(--inst-shadow-panel);
 }
 
 .peal-inst-rack-header {
@@ -55,7 +111,7 @@
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 10px;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--inst-readout);
 }
 
 .peal-inst-scope-well {
@@ -122,8 +178,8 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
-  background: linear-gradient(180deg, #242428 0%, #1a1a1e 100%);
+  color: var(--inst-pad-fg);
+  background: var(--inst-pad-bg);
   border: 1px solid rgba(0, 0, 0, 0.5);
   border-top-color: rgba(255, 255, 255, 0.06);
   border-radius: 3px;
@@ -133,8 +189,8 @@
 }
 
 .peal-inst-pad:hover:not(:disabled) {
-  color: rgba(255, 255, 255, 0.78);
-  background: linear-gradient(180deg, #2a2a30 0%, #1f1f24 100%);
+  color: var(--inst-pad-fg-hover);
+  background: var(--inst-pad-bg-hover);
 }
 
 .peal-inst-pad:active:not(:disabled) {
@@ -182,7 +238,7 @@
   border: 1px solid var(--inst-line-lo);
   border-top-color: var(--inst-line-hi);
   border-radius: 8px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--inst-shadow-deck);
 }
 
 .peal-inst-transport {
@@ -1294,13 +1350,13 @@
   font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--peal-surface-text-strong);
 }
 
 .peal-studio-welcome-copy {
   font-size: 0.8rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.48);
+  color: var(--peal-surface-text-muted);
 }
 
 .peal-studio-welcome-actions {
@@ -1358,7 +1414,7 @@
 
 /* Secondary — recessed outlined pad: dual-tone hairline, inset rim light */
 .peal-studio-welcome-cta--secondary {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--peal-surface-text);
   background: linear-gradient(
     180deg,
     var(--inst-face-raised, #1e1e22) 0%,
@@ -1372,11 +1428,140 @@
 }
 
 .peal-studio-welcome-cta--secondary:hover {
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--peal-surface-text-strong);
   border-color: rgba(74, 158, 255, 0.4);
   border-top-color: rgba(255, 255, 255, 0.1);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.05) inset,
     0 0 12px rgba(74, 158, 255, 0.12),
     0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Light mode component tuning ─────────────────────────────── */
+
+.peal-studio-shell[data-peal-theme='light'] .peal-inst-module-tab {
+  color: rgba(15, 23, 42, 0.42);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-inst-module-tab:hover {
+  color: rgba(15, 23, 42, 0.68);
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-inst-module-tab--active {
+  background: linear-gradient(180deg, #ffffff 0%, #eef2f7 100%);
+  border-color: rgba(15, 23, 42, 0.1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-inst-transport--aux {
+  background: linear-gradient(145deg, #ffffff 0%, #e8ecf2 55%, #dde3ec 100%);
+  color: rgba(15, 23, 42, 0.62);
+  border-color: rgba(15, 23, 42, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 4px 12px rgba(15, 23, 42, 0.1);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-inst-scope-well {
+  border-color: rgba(15, 23, 42, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.65) inset,
+    0 2px 10px rgba(15, 23, 42, 0.06) inset;
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-inst-rack-header {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, transparent 100%);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-inst-rack-label {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+/* Welcome CTAs — flatter in light mode (less glow / machined depth) */
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-cta--primary {
+  color: #ffffff;
+  background: var(--inst-accent, #4a9eff);
+  border-color: rgba(45, 110, 184, 0.35);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-cta--primary:hover {
+  background: var(--inst-accent-hi, #6bb0ff);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-cta--secondary {
+  color: var(--peal-surface-text);
+  background: #ffffff;
+  border-color: var(--peal-surface-border);
+  border-top-color: var(--peal-surface-border);
+  box-shadow: none;
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-cta--secondary:hover {
+  color: var(--peal-surface-text-strong);
+  background: #f8fafc;
+  border-color: rgba(74, 158, 255, 0.28);
+  box-shadow: none;
+}
+
+/* Tailwind gray text inside studio — remap to surface tokens in light mode */
+.peal-studio-shell[data-peal-theme='light'] .peal-instruments :is(.text-gray-100, .text-gray-200, .text-gray-300) {
+  color: var(--peal-surface-text);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-instruments :is(.text-gray-400, .text-gray-500, .text-gray-600) {
+  color: var(--peal-surface-text-muted);
+}
+
+.peal-studio-shell[data-peal-theme='light'] :is(.text-gray-300, .text-gray-400) {
+  color: var(--peal-surface-text-muted);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .hover\:text-gray-100:hover,
+.peal-studio-shell[data-peal-theme='light'] .hover\:text-gray-200:hover,
+.peal-studio-shell[data-peal-theme='light'] .hover\:text-gray-300:hover {
+  color: var(--peal-surface-text-strong);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .placeholder-gray-400::placeholder,
+.peal-studio-shell[data-peal-theme='light'] .placeholder-gray-500::placeholder {
+  color: var(--peal-surface-text-muted);
+  opacity: 0.85;
+}
+
+/* Portaled studio modals (outside .peal-studio-shell) */
+.peal-studio-modal {
+  --peal-surface-0: #111113;
+  --peal-surface-1: #0d0d0f;
+  --peal-surface-2: #1c1c1e;
+  --peal-surface-3: #2c2c2e;
+  --peal-surface-4: #232327;
+  --peal-surface-5: #3a3a3e;
+  --peal-surface-border: rgba(255, 255, 255, 0.06);
+  --peal-surface-text: #e5e7eb;
+  --peal-surface-text-strong: #f3f4f6;
+  --peal-surface-text-muted: #6b7280;
+}
+
+.peal-studio-modal[data-peal-theme='light'] {
+  --peal-surface-0: #eef1f6;
+  --peal-surface-1: #e4e8ef;
+  --peal-surface-2: #ffffff;
+  --peal-surface-3: #d5dbe6;
+  --peal-surface-4: #e2e8f0;
+  --peal-surface-5: #cbd5e1;
+  --peal-surface-border: rgba(15, 23, 42, 0.1);
+  --peal-surface-text: #334155;
+  --peal-surface-text-strong: #0f172a;
+  --peal-surface-text-muted: #64748b;
+}
+
+.peal-studio-modal[data-peal-theme='light'] :is(.text-gray-100, .text-gray-200, .text-gray-300) {
+  color: var(--peal-surface-text);
+}
+
+.peal-studio-modal[data-peal-theme='light'] :is(.text-gray-400, .text-gray-500) {
+  color: var(--peal-surface-text-muted);
 }

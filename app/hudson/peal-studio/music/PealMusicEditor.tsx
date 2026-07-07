@@ -10,7 +10,7 @@ export function PealMusicEditor() {
   const engine = usePealMusicEngine()
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-[#0d0d0f]">
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-[var(--peal-surface-1)]">
       <PealMusicEngineBar
         engine={engine.status}
         engineBusy={engine.busy}

@@ -17,7 +17,7 @@ export function PealVoiceTakes() {
   const voice = usePealVoice()
 
   return (
-    <div className="flex h-full min-h-0 flex-col peal-instruments bg-transparent p-3 text-gray-200">
+    <div className="flex h-full min-h-0 flex-col peal-instruments bg-transparent p-3 text-[var(--peal-surface-text)]">
       <StudioRack
         label="Takes"
         readout={voice.takes.length ? `${voice.takes.length}` : 'empty'}

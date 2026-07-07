@@ -17,11 +17,11 @@
   --peal-space-lg: 20px;
   --peal-space-xl: 28px;
   --peal-space-2xl: 40px;
-  --peal-space-section: 52px;
+  --peal-space-section: 72px;
   --peal-nav-height: 46px;
   --peal-nav-height-studio: 40px;
-  --peal-nav-max-width-landing: 1000px;
-  --peal-nav-padding-x-landing: clamp(20px, 3vw, 32px);
+  --peal-nav-max-width-landing: 1200px;
+  --peal-nav-padding-x-landing: clamp(24px, 4vw, 48px);
   --peal-app-gutter: 16px;
 }
 

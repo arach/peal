@@ -35,8 +35,8 @@ export default function PealSfxCodeEditorSurface({
   })
 
   return (
-    <div className={`flex h-full min-h-0 flex-col overflow-hidden bg-[#0a0f12] text-gray-200 ${className}`}>
-      <div className="shrink-0 border-b border-white/10 bg-[#0d1317] px-3 py-2">
+    <div className={`flex h-full min-h-0 flex-col overflow-hidden bg-[var(--peal-surface-code,#0a0f12)] text-gray-200 ${className}`}>
+      <div className="shrink-0 border-b border-[var(--peal-surface-border,rgba(255,255,255,0.1))] bg-[var(--peal-surface-code-header,#0d1317)] px-3 py-2">
         <div className="flex items-center justify-between gap-2 min-w-0">
           <div className="flex min-w-0 items-center gap-2">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-[#4a9eff]/25 bg-[#4a9eff]/10 text-[#4a9eff]">
@@ -118,7 +118,7 @@ export default function PealSfxCodeEditorSurface({
       </div>
 
       {editor.showVersionControl && editor.versions.length > 0 ? (
-        <div className="max-h-44 shrink-0 overflow-y-auto border-b border-white/10 bg-white/[0.03] p-2">
+        <div className="max-h-44 shrink-0 overflow-y-auto border-b border-[var(--peal-surface-border,rgba(255,255,255,0.1))] bg-[var(--peal-surface-border,rgba(255,255,255,0.03))] p-2">
           <div className="space-y-1">
             {editor.versions.map((version, index) => (
               <button
@@ -126,7 +126,7 @@ export default function PealSfxCodeEditorSurface({
                 type="button"
                 onClick={() => void editor.switchToVersion(index)}
                 className={`flex w-full items-center justify-between gap-3 rounded px-2 py-1.5 text-left transition-colors ${
-                  index === editor.currentVersionIndex ? 'bg-[#4a9eff]/12' : 'hover:bg-white/5'
+                  index === editor.currentVersionIndex ? 'bg-[#4a9eff]/12' : 'hover:bg-[var(--peal-surface-border,rgba(255,255,255,0.05))]'
                 }`}
               >
                 <span className="flex min-w-0 items-center gap-2">

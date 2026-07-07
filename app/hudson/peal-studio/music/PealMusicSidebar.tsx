@@ -17,7 +17,7 @@ export function PealMusicSidebar() {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden bg-transparent text-gray-300">
-      <div className="shrink-0 border-b border-white/6 px-3 py-2">
+      <div className="shrink-0 border-b border-[var(--peal-surface-border)] px-3 py-2">
         <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-[#4a9eff]">
           <WaveformIcon size={13} />
           Transport
@@ -41,7 +41,7 @@ export function PealMusicSidebar() {
                 const value = Number.parseFloat(event.target.value)
                 if (Number.isFinite(value)) setTempo({ cps: value })
               }}
-              className="w-20 rounded border border-white/10 bg-[#0d0d0f] px-2 py-1 text-right font-mono text-[11px] text-gray-200 outline-none focus:border-[#4a9eff]/40"
+              className="w-20 rounded border border-[var(--peal-surface-border)] bg-[var(--peal-surface-1)] px-2 py-1 text-right font-mono text-[11px] text-[var(--peal-surface-text)] outline-none focus:border-[#4a9eff]/40"
             />
           </label>
           <label className="flex items-center justify-between gap-2">
@@ -56,12 +56,12 @@ export function PealMusicSidebar() {
                 const value = Number.parseFloat(event.target.value)
                 if (Number.isFinite(value)) setTempo({ bpm: value })
               }}
-              className="w-20 rounded border border-white/10 bg-[#0d0d0f] px-2 py-1 text-right font-mono text-[11px] text-gray-200 outline-none focus:border-[#4a9eff]/40"
+              className="w-20 rounded border border-[var(--peal-surface-border)] bg-[var(--peal-surface-1)] px-2 py-1 text-right font-mono text-[11px] text-[var(--peal-surface-text)] outline-none focus:border-[#4a9eff]/40"
             />
           </label>
         </div>
 
-        <div className="space-y-1.5 border-t border-white/6 pt-3">
+        <div className="space-y-1.5 border-t border-[var(--peal-surface-border)] pt-3">
           <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-gray-500">Pattern</p>
           <p className="font-mono text-[11px] text-gray-300">
             {isPlaying ? 'Playing' : isPatternDirty ? 'Edits pending' : strudelMountStatus === 'routed' ? 'Routed' : 'Ready'}

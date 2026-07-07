@@ -69,7 +69,7 @@ export function PealMusicCodePanel({
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden bg-transparent text-gray-300">
-      <div className="flex shrink-0 items-center justify-between border-b border-white/6 px-3 py-2">
+      <div className="flex shrink-0 items-center justify-between border-b border-[var(--peal-surface-border)] px-3 py-2">
         <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-[#4a9eff]">
           <CodeIcon size={13} />
           Strudel editor
@@ -89,7 +89,7 @@ export function PealMusicCodePanel({
             type="button"
             disabled={!canRollbackPattern}
             onClick={() => rollbackPatternVersion({ route: true })}
-            className="inline-flex items-center gap-1 rounded border border-white/10 px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-gray-400 hover:border-[#4a9eff]/30 hover:text-[#4a9eff] disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded border border-[var(--peal-surface-border)] px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-gray-400 hover:border-[#4a9eff]/30 hover:text-[#4a9eff] disabled:cursor-not-allowed disabled:opacity-40"
             title="Restore previous version"
           >
             Roll back
@@ -97,7 +97,7 @@ export function PealMusicCodePanel({
           <button
             type="button"
             onClick={resetPattern}
-            className="inline-flex items-center gap-1 rounded border border-white/10 px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-gray-400 hover:border-[#4a9eff]/30 hover:text-[#4a9eff]"
+            className="inline-flex items-center gap-1 rounded border border-[var(--peal-surface-border)] px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-gray-400 hover:border-[#4a9eff]/30 hover:text-[#4a9eff]"
           >
             <RefreshIcon size={11} />
             Reset
@@ -109,10 +109,10 @@ export function PealMusicCodePanel({
         onChange={(event) => setPatternCode(event.target.value)}
         onKeyDown={handleKeyDown}
         spellCheck={false}
-        className="min-h-0 flex-1 resize-none border-0 bg-[#0d0d0f] p-3 font-mono text-[11px] leading-relaxed text-gray-200 outline-none selection:bg-[#4a9eff]/25"
+        className="min-h-0 flex-1 resize-none border-0 bg-[var(--peal-surface-1)] p-3 font-mono text-[11px] leading-relaxed text-[var(--peal-surface-text)] outline-none selection:bg-[#4a9eff]/25"
         aria-label="Strudel pattern code"
       />
-      <p className="shrink-0 border-t border-white/6 px-3 py-2 text-[10px] leading-relaxed text-gray-500">
+      <p className="shrink-0 border-t border-[var(--peal-surface-border)] px-3 py-2 text-[10px] leading-relaxed text-gray-500">
         {footerStatus(isPatternDirty, strudelMountStatus, isPlaying, engineRunning)}
       </p>
     </div>

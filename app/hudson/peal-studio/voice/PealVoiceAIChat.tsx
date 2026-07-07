@@ -34,8 +34,8 @@ export function PealVoiceAIChat({ placeholder }: PealVoiceAIChatProps) {
             <div
               className={`max-w-[90%] rounded-lg px-3 py-2 whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed ${
                 msg.role === 'user'
-                  ? 'border border-[#4a9eff]/25 bg-[#4a9eff]/10 text-gray-100'
-                  : 'border border-[#2c2c2e] bg-[#1c1c1e]/80 text-gray-200'
+                  ? 'border border-[#4a9eff]/25 bg-[#4a9eff]/10 text-[var(--peal-surface-text-strong)]'
+                  : 'border border-[var(--peal-surface-3)] bg-[var(--peal-surface-2)] text-[var(--peal-surface-text)]'
               }`}
             >
               {(msg.parts ?? []).map((part, i) => {
@@ -63,7 +63,7 @@ export function PealVoiceAIChat({ placeholder }: PealVoiceAIChatProps) {
 
         {isStreaming && messages[messages.length - 1]?.role !== 'assistant' ? (
           <div className="flex justify-start">
-            <div className="rounded-lg border border-[#2c2c2e] bg-[#1c1c1e]/80 px-3 py-2 font-mono text-[11px] text-gray-500">
+            <div className="rounded-lg border border-[var(--peal-surface-3)] bg-[var(--peal-surface-2)] px-3 py-2 font-mono text-[11px] text-gray-500">
               <span className="animate-pulse">Applying to mixer…</span>
             </div>
           </div>
@@ -103,7 +103,7 @@ export function PealVoiceAIComposer({ placeholder }: { placeholder: string }) {
   return (
     <form
       onSubmit={onSubmit}
-      className="peal-voice-ai-composer shrink-0 border-t border-[#4a9eff]/25 bg-[#0d0d0f] p-3"
+      className="peal-voice-ai-composer shrink-0 border-t border-[#4a9eff]/25 bg-[var(--peal-surface-1)] p-3"
     >
       <label className="mb-1.5 block font-mono text-[9px] uppercase tracking-[0.14em] text-[#4a9eff]/90">
         Your idea

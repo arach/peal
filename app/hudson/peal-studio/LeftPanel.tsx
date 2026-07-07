@@ -18,7 +18,7 @@ export function PealStudioLeftPanel() {
   }
 
   return (
-    <div className="h-full min-h-0 overflow-hidden bg-transparent text-gray-300">
+    <div className="h-full min-h-0 overflow-hidden bg-transparent text-[var(--peal-surface-text,#d1d5db)]">
       {sfxSummary.mounted ? (
         <PealSfxCodeEditorSurface
           currentSound={sfxEditor.currentSound}
@@ -26,7 +26,7 @@ export function PealStudioLeftPanel() {
           onSoundChange={sfxEditor.onSoundChange}
         />
       ) : (
-        <div className="p-4 text-xs leading-5 text-gray-400">
+        <div className="p-4 text-xs leading-5 text-[var(--peal-surface-text-muted,#9ca3af)]">
           <div className="mb-3 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-[#4a9eff]">
             <CodeIcon size={13} />
             Live Web Audio code

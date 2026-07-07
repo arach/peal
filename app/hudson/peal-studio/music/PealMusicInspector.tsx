@@ -7,7 +7,7 @@ import { PealMusicAICopilotShell } from './PealMusicAIProvider'
 export function PealMusicInspector() {
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden bg-transparent text-gray-300">
-      <div className="shrink-0 border-b border-white/6 px-3 py-2.5">
+      <div className="shrink-0 border-b border-[var(--peal-surface-border)] px-3 py-2.5">
         <div className="flex items-center gap-2">
           <span className="peal-inst-led peal-inst-led--on" aria-hidden />
           <AiDesignIcon size={13} className="text-[#4a9eff]" />

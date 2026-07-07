@@ -4,11 +4,12 @@ import { useState, useRef, useEffect } from 'react'
 import { Howl } from 'howler'
 import { Play, Pause, Code2 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import AudioSamplePlayer from './AudioSamplePlayer'
 import SoundCodeModal from './SoundCodeModal'
 import { getPublicUrl } from '@/utils/url'
 
 const heroSounds = [
-  { 
+  {
     id: 'resonant-pulse',
     name: 'Resonant Pulse',
     file: getPublicUrl('/sounds/hero-sounds/resonant-pulse.wav'),
@@ -18,9 +19,9 @@ const heroSounds = [
     waveform: Array.from({ length: 45 }, (_, i) => {
       const resonance = Math.sin((i / 45) * Math.PI * 2) * Math.sin((i / 45) * Math.PI * 8)
       return Math.abs(resonance) * 0.8 + 0.2
-    })
+    }),
   },
-  { 
+  {
     id: 'ethereal-chime',
     name: 'Ethereal Chime',
     file: getPublicUrl('/sounds/hero-sounds/ethereal-chime.wav'),
@@ -28,12 +29,12 @@ const heroSounds = [
     type: 'success',
     tags: ['ethereal', 'ambient', 'chime'],
     waveform: Array.from({ length: 40 }, (_, i) => {
-      const envelope = Math.sin((i / 40) * Math.PI) 
+      const envelope = Math.sin((i / 40) * Math.PI)
       const harmonic = Math.sin(i * 0.5) * 0.3
       return envelope * (0.7 + harmonic) + 0.1
-    })
+    }),
   },
-  { 
+  {
     id: 'crystal-pulse',
     name: 'Crystal Pulse',
     file: getPublicUrl('/sounds/hero-sounds/crystal-pulse.wav'),
@@ -45,9 +46,9 @@ const heroSounds = [
       const decay = Math.exp(-i * 0.08)
       const oscillation = Math.sin(i * 0.7) * 0.2
       return decay * (0.6 + oscillation) + 0.1
-    })
+    }),
   },
-  { 
+  {
     id: 'ripple-cascade',
     name: 'Ripple Cascade',
     file: getPublicUrl('/sounds/signature-sounds/ripple_cascade.wav'),
@@ -58,9 +59,9 @@ const heroSounds = [
       const ripple = Math.sin((i / 42) * Math.PI * 4) * Math.exp(-i * 0.05)
       const cascade = Math.sin(i * 0.3) * 0.3
       return Math.abs(ripple + cascade) * 0.7 + 0.2
-    })
+    }),
   },
-  { 
+  {
     id: 'quantum-cascade',
     name: 'Quantum Cascade',
     file: getPublicUrl('/sounds/signature-sounds/quantum_cascade.wav'),
@@ -70,9 +71,9 @@ const heroSounds = [
     waveform: Array.from({ length: 40 }, (_, i) => {
       const phase = (i / 40) * Math.PI * 3
       return Math.abs(Math.sin(phase) * Math.sin(phase * 4) * 0.8) + 0.1
-    })
+    }),
   },
-  { 
+  {
     id: 'neural-pulse',
     name: 'Neural Pulse',
     file: getPublicUrl('/sounds/dots-patterns/neural_pulse.wav'),
@@ -85,20 +86,19 @@ const heroSounds = [
       if (i < 15) return 0.6 + Math.sin(i * 0.8) * 0.2
       if (i < 20) return 0.4 + Math.sin(i * 0.5) * 0.1
       return 0.1
-    })
-  }
+    }),
+  },
 ]
 
 interface SoundCardProps {
-  sound: typeof heroSounds[0]
+  sound: (typeof heroSounds)[0]
   isPlaying: boolean
   onPlay: () => void
   onStop: () => void
   onShowCode: () => void
-  variant?: 'default' | 'landing'
 }
 
-function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant = 'default' }: SoundCardProps) {
+function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)
   const progressRef = useRef(0)
@@ -106,21 +106,18 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
 
   useEffect(() => {
     if (!canvasRef.current) return
-    
+
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    // Set canvas size
     canvas.width = canvas.offsetWidth * 2
     canvas.height = canvas.offsetHeight * 2
     ctx.scale(2, 2)
 
     const draw = () => {
-      // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Draw waveform
       const width = canvas.offsetWidth
       const height = canvas.offsetHeight
       const barWidth = width / sound.waveform.length
@@ -131,8 +128,8 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
         const barHeight = value * height * 0.8
         const x = index * barWidth
         const y = centerY - barHeight / 2
-        
-        const isPlayed = isPlaying && (index / sound.waveform.length) < progressRef.current
+
+        const isPlayed = isPlaying && index / sound.waveform.length < progressRef.current
         const alpha = isPlayed ? 1 : isPlaying ? 0.72 : isHovered ? 0.58 : 0.38
 
         const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight)
@@ -146,77 +143,24 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
         ctx.fillStyle = isPlayed ? 'rgba(74, 158, 255, 0.18)' : 'rgba(74, 158, 255, 0.06)'
         ctx.fillRect(x + barGap / 2, centerY + barHeight / 2 + 2, barWidth - barGap, barHeight * 0.18)
       })
-      
+
       if (isPlaying) {
         progressRef.current += 0.02
         if (progressRef.current > 1) progressRef.current = 0
         animationRef.current = requestAnimationFrame(draw)
       }
     }
-    
+
     draw()
-    
+
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
     }
   }, [sound.waveform, isPlaying, isHovered])
-  
-  useEffect(() => {
-    if (!isPlaying) {
-      progressRef.current = 0
-    }
-  }, [isPlaying])
 
-  if (variant === 'landing') {
-    return (
-      <div
-        className={`landing-sound-card ${isPlaying ? 'is-playing' : ''}`}
-        onClick={onShowCode}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className="landing-sound-wave">
-          <canvas ref={canvasRef} className="w-full h-full" style={{ width: '100%', height: '100%' }} />
-        </div>
-        <div className="landing-sound-footer">
-          <div className="landing-sound-info">
-            <div className="landing-sound-name">{sound.name}</div>
-            <div className="landing-sound-meta">
-              <span>{sound.duration}</span>
-              <span className="landing-sound-sep">·</span>
-              <span>{sound.type}</span>
-            </div>
-          </div>
-          <div className="landing-sound-actions">
-            <button
-              type="button"
-              className={`landing-sound-play ${isPlaying ? 'is-active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation()
-                isPlaying ? onStop() : onPlay()
-              }}
-              aria-label={isPlaying ? 'Stop sound' : 'Play sound'}
-            >
-              {isPlaying ? <Pause size={14} /> : <Play size={14} />}
-            </button>
-            <button
-              type="button"
-              className="landing-sound-code-link"
-              onClick={(e) => {
-                e.stopPropagation()
-                onShowCode()
-              }}
-            >
-              <Code2 size={12} />
-              View code
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  useEffect(() => {
+    if (!isPlaying) progressRef.current = 0
+  }, [isPlaying])
 
   return (
     <motion.div
@@ -226,15 +170,11 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
       onClick={onShowCode}
     >
       <div className="h-16 mb-3 relative">
-        <canvas 
-          ref={canvasRef}
-          className="w-full h-full"
-          style={{ width: '100%', height: '100%' }}
-        />
+        <canvas ref={canvasRef} className="w-full h-full" style={{ width: '100%', height: '100%' }} />
       </div>
 
       <h3 className="font-medium text-gray-900 dark:text-white mb-2">{sound.name}</h3>
-      
+
       <div className="flex justify-between items-center mb-2 text-xs">
         <span className="text-gray-500 dark:text-gray-400">{sound.duration}</span>
         <span className="text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
@@ -243,7 +183,7 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
       </div>
 
       <div className="flex gap-2 flex-wrap mb-3">
-        {sound.tags.map(tag => (
+        {sound.tags.map((tag) => (
           <span
             key={tag}
             className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs"
@@ -260,15 +200,15 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
             isPlaying ? onStop() : onPlay()
           }}
           className={`p-2 rounded transition-colors ${
-            isPlaying 
-              ? 'bg-blue-600 text-white' 
+            isPlaying
+              ? 'bg-blue-600 text-white'
               : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
           }`}
         >
           {isPlaying ? <Pause size={16} /> : <Play size={16} />}
         </button>
-        
-        <button 
+
+        <button
           onClick={(e) => {
             e.stopPropagation()
             onShowCode()
@@ -286,47 +226,38 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode, variant =
 export default function HeroSoundGrid({ variant = 'default' }: { variant?: 'default' | 'landing' }) {
   const [playing, setPlaying] = useState<string | null>(null)
   const [sounds, setSounds] = useState<{ [key: string]: Howl }>({})
-  const [selectedSound, setSelectedSound] = useState<typeof heroSounds[0] | null>(null)
+  const [selectedSound, setSelectedSound] = useState<(typeof heroSounds)[0] | null>(null)
 
   useEffect(() => {
-    // Preload all sounds
     const loadedSounds: { [key: string]: Howl } = {}
-    heroSounds.forEach(sound => {
+    heroSounds.forEach((sound) => {
       loadedSounds[sound.id] = new Howl({
         src: [sound.file],
-        html5: true, // Force HTML5 Audio for better compatibility
+        html5: true,
         onend: () => setPlaying(null),
-        onloaderror: (id, error) => {
+        onloaderror: (_id, error) => {
           console.error(`Failed to load sound ${sound.id}:`, error)
         },
-        onplayerror: (id, error) => {
+        onplayerror: (_id, error) => {
           console.error(`Failed to play sound ${sound.id}:`, error)
-        }
+        },
       })
     })
     setSounds(loadedSounds)
 
     return () => {
-      // Cleanup
-      Object.values(loadedSounds).forEach(sound => sound.unload())
+      Object.values(loadedSounds).forEach((sound) => sound.unload())
     }
   }, [])
 
   const playSound = (soundId: string) => {
-    console.log('Attempting to play sound:', soundId)
-    
-    // Stop any currently playing sound
     if (playing && sounds[playing]) {
       sounds[playing].stop()
     }
-    
-    // Play new sound
+
     if (sounds[soundId]) {
-      console.log('Sound object found, playing:', soundId)
       sounds[soundId].play()
       setPlaying(soundId)
-    } else {
-      console.error('Sound not found:', soundId)
     }
   }
 
@@ -340,24 +271,51 @@ export default function HeroSoundGrid({ variant = 'default' }: { variant?: 'defa
   return (
     <>
       <div className={variant === 'landing' ? 'landing-sound-grid' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'}>
-        {heroSounds.map((sound) => (
-          <HeroSoundCard
-            key={sound.id}
-            sound={sound}
-            isPlaying={playing === sound.id}
-            onPlay={() => playSound(sound.id)}
-            onStop={stopSound}
-            onShowCode={() => setSelectedSound(sound)}
-            variant={variant}
-          />
-        ))}
+        {heroSounds.map((sound, index) => {
+          if (variant === 'landing') {
+            return (
+              <motion.div
+                key={sound.id}
+                className="landing-sound-grid-item"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.38, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <AudioSamplePlayer
+                  sample={{
+                    id: sound.id,
+                    title: sound.name,
+                    duration: sound.duration,
+                    type: sound.type,
+                    tags: sound.tags,
+                    waveform: sound.waveform,
+                  }}
+                  isPlaying={playing === sound.id}
+                  onTogglePlay={() => (playing === sound.id ? stopSound() : playSound(sound.id))}
+                  onCodeClick={() => setSelectedSound(sound)}
+                  showTags="hover"
+                  wavePreset="console"
+                />
+              </motion.div>
+            )
+          }
+
+          return (
+            <div key={sound.id}>
+              <HeroSoundCard
+                sound={sound}
+                isPlaying={playing === sound.id}
+                onPlay={() => playSound(sound.id)}
+                onStop={stopSound}
+                onShowCode={() => setSelectedSound(sound)}
+              />
+            </div>
+          )
+        })}
       </div>
-      
+
       {selectedSound && (
-        <SoundCodeModal
-          sound={selectedSound}
-          onClose={() => setSelectedSound(null)}
-        />
+        <SoundCodeModal sound={selectedSound} onClose={() => setSelectedSound(null)} />
       )}
     </>
   )
