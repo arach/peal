@@ -12,7 +12,6 @@ import {
   AudioWaveform,
   Gamepad2,
   Sparkles,
-  Heart,
   Mail,
   Copy,
   Check,
@@ -28,6 +27,7 @@ function GithubMark() {
 }
 import { isStaticBuild } from '@/utils/build'
 import Header from '@/components/Header'
+import PealAppShell from '@/components/PealAppShell'
 
 const reasons = [
   {
@@ -106,25 +106,25 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="about peal-app-shell">
+    <PealAppShell className="about peal-app-shell">
       <Header />
-      <main className="about-shell">
+      <main className="about-shell peal-content-gutter">
         <header className="about-hero">
-          <div className="about-kicker">About</div>
+          <div className="about-kicker">Why Peal</div>
           <h1>
-            Great interfaces deserve <span className="accent">great sound.</span>
+            Sound belongs in the <span className="accent">interface.</span>
           </h1>
           <p>
-            Peal is a lightweight sound-effect library for modern web and desktop apps — a small,
-            dependency-free toolkit and studio for crafting audio feedback that feels like part of the
-            product, not bolted on.
+            Most apps treat audio as an afterthought — a stock click here, a generic ding there. Peal
+            exists because UI feedback should feel considered: lightweight to ship, easy to customize,
+            and designed to match the product it lives in.
           </p>
         </header>
 
         <section className="about-section">
           <div className="about-section-head">
-            <h2>Why Peal?</h2>
-            <p>A focused toolkit that does one thing well: make your app sound considered.</p>
+            <h2>What makes it different</h2>
+            <p>A focused toolkit that does one thing well — make your app sound intentional.</p>
           </div>
           <div className="about-points">
             {reasons.map(({ icon: Icon, title, body }) => (
@@ -200,25 +200,6 @@ export default function AboutPage() {
           </section>
         )}
 
-        <section className="about-section">
-          <div className="about-section-head">
-            <h2>Made with Peal</h2>
-            <p>Shipped something that sounds great? We&apos;d love to feature it.</p>
-          </div>
-          <div className="about-callout">
-            <span className="about-callout-icon">
-              <Heart />
-            </span>
-            <div>
-              <h3>Use the credit badge</h3>
-              <p>
-                You&apos;re welcome to add <code>Audio by Peal</code> to your project&apos;s credits.
-                Tell us what you built and we may showcase it here.
-              </p>
-            </div>
-          </div>
-        </section>
-
         {!isStaticBuild && (
           <section className="about-section">
             <div className="about-section-head">
@@ -257,6 +238,6 @@ export default function AboutPage() {
           </span>
         </footer>
       </main>
-    </div>
+    </PealAppShell>
   )
 }

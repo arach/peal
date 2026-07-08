@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { Book, Library, Menu, Sparkles, X } from 'lucide-react'
+import { Library, Menu, Sparkles, X } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import { PealBrandMark, PealWordmark } from './PealBrandMark'
 import { BaseLink } from './BaseLink'
@@ -19,9 +19,9 @@ function PealNavShell({ layout: layoutOverride }: { layout?: PealNavLayout }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname() ?? ''
   const layout = resolveNavLayout(pathname, layoutOverride)
-  const { product, meta } = getPrimaryLinks()
+  const links = getPrimaryLinks()
 
-  const linkClass = (id: PealPrimaryId, variant: 'primary' | 'meta' | 'mobile' = 'primary') =>
+  const linkClass = (id: PealPrimaryId, variant: 'primary' | 'mobile' = 'primary') =>
     `peal-nav-link peal-nav-link--${variant}${primaryNavActive(pathname, id) ? ' is-active' : ''}`
 
   const closeMobile = () => setMobileOpen(false)
@@ -41,7 +41,7 @@ function PealNavShell({ layout: layoutOverride }: { layout?: PealNavLayout }) {
           </BaseLink>
 
           <div className="peal-nav-links" aria-label="Product">
-            {product.map((item) => (
+            {links.map((item) => (
               <BaseLink
                 key={item.id}
                 href={item.href}
@@ -60,21 +60,6 @@ function PealNavShell({ layout: layoutOverride }: { layout?: PealNavLayout }) {
 
         <div className="peal-nav-right">
           <div className="peal-nav-end">
-            <div className="peal-nav-meta" aria-label="Resources">
-              {meta.map((item) => (
-                <BaseLink
-                  key={item.id}
-                  href={item.href}
-                  className={linkClass(item.id, 'meta')}
-                  onClick={closeMobile}
-                >
-                  {item.label}
-                </BaseLink>
-              ))}
-            </div>
-
-            <span className="peal-nav-end-divider" aria-hidden />
-
             <div className="peal-nav-theme">
               <ThemeToggle />
             </div>
@@ -95,7 +80,7 @@ function PealNavShell({ layout: layoutOverride }: { layout?: PealNavLayout }) {
       {mobileOpen && (
         <div className="peal-nav-mobile">
           <div className="peal-nav-mobile-grid">
-            {product.map((item) => {
+            {links.map((item) => {
               const Icon = productIcons[item.id]
               return (
                 <BaseLink
@@ -109,17 +94,6 @@ function PealNavShell({ layout: layoutOverride }: { layout?: PealNavLayout }) {
                 </BaseLink>
               )
             })}
-            {meta.map((item) => (
-              <BaseLink
-                key={item.id}
-                href={item.href}
-                className={linkClass(item.id, 'mobile')}
-                onClick={closeMobile}
-              >
-                <Book size={14} />
-                {item.label}
-              </BaseLink>
-            ))}
           </div>
           <PealContextNavMobile />
         </div>

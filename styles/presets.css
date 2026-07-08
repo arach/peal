@@ -22,6 +22,10 @@
   --presets-accent: rgba(255, 255, 255, 0.78);
   --presets-accent-hi: rgba(255, 255, 255, 0.92);
   --presets-accent-tint: rgba(255, 255, 255, 0.06);
+  --presets-brand: #4a9eff;
+  --presets-brand-hi: #6bb0ff;
+  --presets-brand-muted: rgba(74, 158, 255, 0.1);
+  --presets-brand-border: rgba(74, 158, 255, 0.32);
 
   position: relative;
   isolation: isolate;
@@ -35,10 +39,31 @@
   line-height: var(--peal-leading);
 }
 
+.presets[data-peal-theme='light'] {
+  --presets-bg: #eef1f6;
+  --presets-surface: #ffffff;
+  --presets-border: rgba(15, 23, 42, 0.08);
+  --presets-border-lit: rgba(15, 23, 42, 0.12);
+  --presets-text: rgba(15, 23, 42, 0.9);
+  --presets-text-dim: rgba(15, 23, 42, 0.55);
+  --presets-text-muted: rgba(15, 23, 42, 0.4);
+  --presets-accent: rgba(15, 23, 42, 0.78);
+  --presets-accent-hi: rgba(15, 23, 42, 0.92);
+  --presets-accent-tint: rgba(15, 23, 42, 0.04);
+  --presets-brand-muted: rgba(74, 158, 255, 0.08);
+
+  background-image: linear-gradient(180deg, #f3f5f8 0%, #eef1f6 32%, #e8ecf2 100%);
+}
+
+.presets[data-peal-theme='light'] .presets-title-row h1 {
+  color: rgba(15, 23, 42, 0.92);
+}
+
 .presets-shell {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 20px 32px 88px;
+  padding-top: 20px;
+  padding-bottom: 88px;
 }
 
 .presets-page-header {
@@ -47,10 +72,10 @@
 
 .presets-kicker {
   display: inline-flex;
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--peal-font);
   font-size: 10px;
   font-weight: 500;
-  color: var(--presets-text-muted);
+  color: var(--presets-brand);
   text-transform: uppercase;
   letter-spacing: 0.18em;
   margin-bottom: 10px;
@@ -89,7 +114,7 @@
   padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid transparent;
-  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  font-family: var(--peal-font);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -97,18 +122,22 @@
   transition:
     color 0.15s ease,
     background 0.15s ease,
-    border-color 0.15s ease;
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .presets-btn-primary {
-  color: var(--presets-accent-hi);
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.12);
+  color: #0a1628;
+  background: var(--presets-brand);
+  border-color: rgba(74, 158, 255, 0.45);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset;
 }
 
 .presets-btn-primary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: var(--presets-brand-hi);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.15) inset,
+    0 6px 20px -8px rgba(74, 158, 255, 0.35);
 }
 
 .presets-btn-icon {
@@ -159,7 +188,7 @@
   border-radius: 8px;
   border: 1px solid transparent;
   background: transparent;
-  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  font-family: var(--peal-font);
   font-size: 13px;
   font-weight: 400;
   color: var(--presets-text-dim);
@@ -194,9 +223,9 @@
 }
 
 .presets-category.is-active {
-  color: var(--presets-accent-hi);
-  background: var(--presets-accent-tint);
-  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--presets-brand-hi);
+  background: var(--presets-brand-muted);
+  border-color: var(--presets-brand-border);
 }
 
 .presets-category-icon {
@@ -376,8 +405,7 @@
 }
 
 .presets-copied {
-  font-size: 11px;
-  color: var(--presets-accent);
+  color: var(--presets-brand-hi);
 }
 
 .presets-empty {
@@ -461,7 +489,7 @@
 
 @media (max-width: 900px) {
   .presets-shell {
-    padding: 20px 20px 64px;
+    padding-bottom: 64px;
   }
 
   .presets-grid,

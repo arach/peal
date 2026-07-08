@@ -7,6 +7,7 @@ import {
   Play,
   Sparkles,
   Copy,
+  Check,
   Volume2,
   MousePointerClick,
   CircleCheck,
@@ -17,6 +18,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import Header from '@/components/Header'
+import PealAppShell from '@/components/PealAppShell'
 import { modernAppPresets, soundCategories, getPresetsByCategory, type SoundPreset } from '@/lib/presets/modernAppSounds'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { useSoundStore } from '@/store/soundStore'
@@ -166,9 +168,9 @@ export default function PresetsPage() {
   }
 
   return (
-    <div className="presets peal-app-shell">
+    <PealAppShell className="presets peal-app-shell">
       <Header />
-      <main className="presets-shell">
+      <main className="presets-shell peal-content-gutter">
         <header className="presets-page-header">
           <div className="presets-kicker">Preset library</div>
           <div className="presets-title-row">
@@ -265,7 +267,7 @@ export default function PresetsPage() {
                   title="Copy parameters"
                 >
                   {copiedId === preset.id ? (
-                    <span className="presets-copied">✓</span>
+                    <Check size={15} className="presets-copied" />
                   ) : (
                     <Copy size={15} />
                   )}
@@ -319,6 +321,6 @@ export default function PresetsPage() {
           </div>
         </section>
       </main>
-    </div>
+    </PealAppShell>
   )
 }

@@ -45,7 +45,7 @@ export default function RootLayout({
           id="peal-theme-init"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=localStorage.getItem('peal-sound-store');if(!s)return;var p=JSON.parse(s);var t=p.state&&p.state.theme;var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d)}catch(e){}})();`,
+            __html: `(function(){try{var s=localStorage.getItem('peal-sound-store');if(!s)return;var p=JSON.parse(s);var t=p.state&&p.state.theme;var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);var r=d?'dark':'light';document.documentElement.classList.toggle('dark',d);document.documentElement.style.colorScheme=r}catch(e){}})();`,
           }}
         />
         <ThemeProvider>

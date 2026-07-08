@@ -1,9 +1,8 @@
 import { studioHrefWithTool } from '@/app/hudson/peal-studio/routing'
-import { isStaticBuild } from '@/utils/build'
 
 export type PealNavLayout = 'landing' | 'app' | 'studio'
 
-export type PealPrimaryId = 'library' | 'studio' | 'docs' | 'about'
+export type PealPrimaryId = 'library' | 'studio'
 
 export type PealContextId = 'sounds' | 'presets' | 'sfx' | 'voice' | 'music'
 
@@ -47,10 +46,6 @@ export function primaryNavActive(pathname: string, id: PealPrimaryId): boolean {
       return isLibrarySection(pathname)
     case 'studio':
       return isStudioSection(pathname)
-    case 'docs':
-      return pathname.startsWith('/docs')
-    case 'about':
-      return pathname.startsWith('/about')
     default:
       return false
   }
@@ -84,12 +79,12 @@ export function getContextSectionConfig(
         {
           id: 'sounds' as const,
           label: 'Sounds',
-          href: isStaticBuild ? '/docs' : '/library',
+          href: '/library',
         },
         {
           id: 'presets' as const,
           label: 'Presets',
-          href: isStaticBuild ? '/docs' : '/presets',
+          href: '/presets',
         },
       ],
     }
@@ -101,35 +96,25 @@ export function getContextSectionConfig(
       {
         id: 'sfx' as const,
         label: 'SFX',
-        href: isStaticBuild ? '/about' : studioHrefWithTool(searchParams, 'sfx'),
+        href: studioHrefWithTool(searchParams, 'sfx'),
       },
       {
         id: 'voice' as const,
         label: 'Voice',
-        href: isStaticBuild ? '/about' : studioHrefWithTool(searchParams, 'voice'),
+        href: studioHrefWithTool(searchParams, 'voice'),
       },
       {
         id: 'music' as const,
         label: 'Music',
-        href: isStaticBuild ? '/about' : studioHrefWithTool(searchParams, 'music'),
+        href: studioHrefWithTool(searchParams, 'music'),
       },
     ],
   }
 }
 
 export function getPrimaryLinks() {
-  const libraryHref = isStaticBuild ? '/docs' : '/library'
-  const studioHref = isStaticBuild ? '/about' : '/studio'
-  const docsHref = '/docs'
-
-  return {
-    product: [
-      { id: 'library' as const, label: 'Library', href: libraryHref },
-      { id: 'studio' as const, label: 'Studio', href: studioHref },
-    ],
-    meta: [
-      { id: 'docs' as const, label: 'Docs', href: docsHref },
-      { id: 'about' as const, label: 'About', href: '/about' },
-    ],
-  }
+  return [
+    { id: 'library' as const, label: 'Library', href: '/library' },
+    { id: 'studio' as const, label: 'Studio', href: '/studio' },
+  ]
 }

@@ -117,26 +117,24 @@ export default function SoundDesigner() {
   // Show loading until hydrated to avoid hydration mismatch
   if (!isHydrated) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-text-primary dark:text-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-border dark:border-gray-700 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-text-secondary dark:text-gray-400">Loading Peal...</p>
-        </div>
+      <div className="library-loading">
+        <span className="library-loading-spinner" aria-hidden />
+        <p>Loading library...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-text-primary dark:text-gray-100">
-      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="library-workspace">
+      <div className="library-workspace-inner peal-content-gutter">
         <LibraryWelcome />
         
         <SelectionBar />
         <SimpleStatsBar />
         
-        <div className="flex gap-8 mt-6">
+        <div className="library-layout">
           <SimpleSidebar />
-          <div className="flex-1">
+          <div className="library-layout-main">
             <SoundGrid />
           </div>
         </div>

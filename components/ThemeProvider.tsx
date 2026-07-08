@@ -11,7 +11,9 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     const root = document.documentElement
 
     const applyTheme = () => {
-      root.classList.toggle('dark', resolvePealTheme(theme) === 'dark')
+      const resolved = resolvePealTheme(theme)
+      root.classList.toggle('dark', resolved === 'dark')
+      root.style.colorScheme = resolved
     }
 
     applyTheme()

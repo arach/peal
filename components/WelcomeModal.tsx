@@ -79,20 +79,43 @@ function StepIcon({ icon: Icon }: { icon: typeof Sparkles }) {
   )
 }
 
-export default function WelcomeModal({ variant = 'default' }: { variant?: WelcomeVariant }) {
-  const [isOpen, setIsOpen] = useState(false)
+type WelcomeModalProps = {
+  variant?: WelcomeVariant
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  onComplete?: () => void
+}
+
+export default function WelcomeModal({
+  variant = 'default',
+  open: openProp,
+  onOpenChange,
+  onComplete,
+}: WelcomeModalProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [playingId, setPlayingId] = useState<string | null>(null)
   const soundsRef = useRef<Record<string, Howl>>({})
+  const isControlled = openProp !== undefined
+  const isOpen = isControlled ? openProp : internalOpen
+
+  const setOpen = useCallback((value: boolean) => {
+    if (isControlled) onOpenChange?.(value)
+    else setInternalOpen(value)
+  }, [isControlled, onOpenChange])
 
   useEffect(() => {
-    if (variant === 'landing') return
+    if (variant === 'landing' || isControlled) return
 
     const hasSeenWelcome = localStorage.getItem('peal-welcome-seen')
     if (!hasSeenWelcome) {
-      setIsOpen(true)
+      setInternalOpen(true)
     }
-  }, [variant])
+  }, [variant, isControlled])
+
+  useEffect(() => {
+    if (isOpen) setCurrentStep(0)
+  }, [isOpen])
 
   useEffect(() => {
     const loaded: Record<string, Howl> = {}
@@ -110,16 +133,28 @@ export default function WelcomeModal({ variant = 'default' }: { variant?: Welcom
     }
   }, [])
 
-  const handleClose = useCallback(() => {
+  const stopPreview = useCallback(() => {
     setPlayingId((current) => {
       if (current && soundsRef.current[current]) {
         soundsRef.current[current].stop()
       }
       return null
     })
-    localStorage.setItem('peal-welcome-seen', 'true')
-    setIsOpen(false)
   }, [])
+
+  const handleClose = useCallback(() => {
+    stopPreview()
+    if (variant !== 'landing') {
+      localStorage.setItem('peal-welcome-seen', 'true')
+    }
+    setOpen(false)
+  }, [stopPreview, setOpen, variant])
+
+  const handleComplete = useCallback(() => {
+    stopPreview()
+    setOpen(false)
+    onComplete?.()
+  }, [stopPreview, setOpen, onComplete])
 
   useEffect(() => {
     if (!isOpen) return
@@ -287,7 +322,7 @@ export default function WelcomeModal({ variant = 'default' }: { variant?: Welcom
                   ) : (
                     <button
                       type="button"
-                      onClick={handleClose}
+                      onClick={isLanding ? handleComplete : handleClose}
                       className="peal-welcome-btn peal-welcome-btn--primary"
                     >
                       Get started

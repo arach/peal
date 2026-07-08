@@ -30,6 +30,26 @@
   min-height: 100vh;
 }
 
+/* Horizontal gutters — match peal-nav app padding steps */
+.peal-content-gutter {
+  padding-left: var(--peal-app-gutter);
+  padding-right: var(--peal-app-gutter);
+}
+
+@media (min-width: 640px) {
+  .peal-content-gutter {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .peal-content-gutter {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
 .peal-wordmark {
   font-family: var(--peal-font);
   font-size: 13px;

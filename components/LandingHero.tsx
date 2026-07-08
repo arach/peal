@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { ArrowRight, Volume2, Sparkles, Code2, Package, Terminal, Music, Mic, Play } from 'lucide-react'
 import HeroSoundGrid from './HeroSoundGrid'
 import LandingStudioShots from './LandingStudioShots'
-import { isStaticBuild } from '@/utils/build'
 import { getPublicUrl } from '@/utils/url'
 
 type PkgManager = 'npm' | 'pnpm' | 'bun'
@@ -57,11 +56,11 @@ export default function LandingHero() {
     setTimeout(() => setCopied(null), 2000)
   }
 
-  const libraryHref = isStaticBuild ? getPublicUrl('/docs') : '/library'
-  const studioHref = isStaticBuild ? getPublicUrl('/about') : '/studio?tool=sfx'
-  const voiceHref = isStaticBuild ? getPublicUrl('/about') : '/studio?tool=voice'
-  const musicHref = isStaticBuild ? getPublicUrl('/about') : '/studio?tool=music'
-  const docsHref = isStaticBuild ? getPublicUrl('/docs') : '/docs'
+  const libraryHref = getPublicUrl('/library')
+  const studioHref = getPublicUrl('/studio?tool=sfx')
+  const voiceHref = getPublicUrl('/studio?tool=voice')
+  const musicHref = getPublicUrl('/studio?tool=music')
+  const docsHref = getPublicUrl('/docs')
 
   const studioViews = [
     {

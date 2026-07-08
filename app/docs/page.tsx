@@ -2,6 +2,7 @@
 
 import '@/styles/docs.css'
 import Header from '@/components/Header'
+import PealAppShell from '@/components/PealAppShell'
 import Link from 'next/link'
 import { useCallback, useLayoutEffect, useState } from 'react'
 import { isStaticBuild } from '@/utils/build'
@@ -380,10 +381,10 @@ DOMException: play() failed because the user didn't interact with the document f
 **Solution**: Sounds must be triggered by user interaction.
 
 \`\`\`javascript
-// ❌ Won't work - no user interaction
+// Won't work - no user interaction
 window.onload = () => peal.startup();
 
-// ✅ Works - user clicked
+// Works - user clicked
 button.onclick = () => peal.startup();
 \`\`\`
 
@@ -648,10 +649,17 @@ export default function DocsPage() {
     window.scrollTo(0, 0)
   }, [activeSection])
 
+  useLayoutEffect(() => {
+    const hash = window.location.hash.replace(/^#/, '')
+    if (sections.some((section) => section.id === hash)) {
+      setActiveSection(hash)
+    }
+  }, [])
+
   return (
-    <div className="docs peal-app-shell">
+    <PealAppShell className="docs peal-app-shell">
       <Header />
-      <main className="docs-shell">
+      <main className="docs-shell peal-content-gutter">
         <div className="docs-layout">
           <nav className="docs-sidebar" aria-label="Documentation sections">
             <div className="docs-sidebar-panel">
@@ -763,6 +771,6 @@ export default function DocsPage() {
           </div>
         </div>
       </main>
-    </div>
+    </PealAppShell>
   )
 }
