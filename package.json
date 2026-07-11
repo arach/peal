@@ -1,6 +1,6 @@
 {
   "name": "@peal-sounds/peal",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "bin": {
     "peal": "./cli/index.js"
   },
