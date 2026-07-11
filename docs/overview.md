@@ -202,8 +202,8 @@ Beyond the npm library, Peal ships a Next.js studio on port **3001**:
 | Leg | Route | Focus |
 | --- | --- | --- |
 | **SFX** | `/studio` | Web Audio sound design + AI |
-| **Voice** | `/studio?tool=voice` | TTS deck, mixer, capture |
-| **Music** | `/studio?tool=music` | Strudel editor + REPL, managed engine, Minimax/Codex copilot, auto-route, improv loop, version history, lyricless beat curriculum |
+| **Voice** | `/studio/voice` | TTS deck, mixer, capture |
+| **Music** | `/studio/music` | Strudel editor + REPL, managed engine, Minimax/Codex copilot, auto-route, improv loop, version history, lyricless beat curriculum |
 
 Music uses a managed [Strudel](https://strudel.cc/) process (AGPL, external checkout). See **[Music Studio guide](./music-studio.md)**.
 

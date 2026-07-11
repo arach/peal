@@ -57,9 +57,9 @@ export default function LandingHero() {
   }
 
   const libraryHref = getPublicUrl('/library')
-  const studioHref = getPublicUrl('/studio?tool=sfx')
-  const voiceHref = getPublicUrl('/studio?tool=voice')
-  const musicHref = getPublicUrl('/studio?tool=music')
+  const studioHref = getPublicUrl('/studio')
+  const voiceHref = getPublicUrl('/studio/voice')
+  const musicHref = getPublicUrl('/studio/music')
   const docsHref = getPublicUrl('/docs')
 
   const studioViews = [

@@ -13,8 +13,9 @@ import {
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { Sound } from '@/store/soundStore'
 import {
-  applyPealStudioToolParam,
-  parsePealStudioTool,
+  legacyToolQueryRedirectHref,
+  parsePealStudioToolFromPathname,
+  studioHrefWithTool,
   type PealStudioTool,
 } from './routing'
 import { PealMusicAIProvider } from './music/PealMusicAIProvider'
@@ -143,31 +144,23 @@ export function PealStudioProvider({ children }: { children: ReactNode; disabled
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const rawTool = searchParams.get('tool')
-  const currentTool = parsePealStudioTool(rawTool)
+  const currentTool = parsePealStudioToolFromPathname(pathname)
   const [inspectorElement, setInspectorElement] = useState<HTMLElement | null>(null)
   const [sfxSummary, setSfxSummary] = useState<PealSfxSummary>(EMPTY_SFX_SUMMARY)
   const [sfxEditor, setSfxEditor] = useState<PealSfxEditorRuntime>(EMPTY_SFX_EDITOR)
   const sfxActionsRef = useRef<PealSfxActions>({})
 
   const setCurrentTool = useCallback((tool: PealStudioTool) => {
-    const params = new URLSearchParams(searchParams.toString())
-    applyPealStudioToolParam(params, tool)
+    router.push(studioHrefWithTool(searchParams, tool), { scroll: false })
+  }, [router, searchParams])
 
-    const query = params.toString()
-    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false })
-  }, [pathname, router, searchParams])
-
+  // Migrate legacy `/studio?tool=voice|music` bookmarks to path routes.
   useEffect(() => {
-    if (!rawTool) return
-    if (rawTool === currentTool && currentTool !== 'sfx') return
-
-    const params = new URLSearchParams(searchParams.toString())
-    applyPealStudioToolParam(params, currentTool)
-
-    const query = params.toString()
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
-  }, [currentTool, pathname, rawTool, router, searchParams])
+    const target = legacyToolQueryRedirectHref(pathname, searchParams)
+    if (target) {
+      router.replace(target, { scroll: false })
+    }
+  }, [pathname, router, searchParams])
 
   const publishSfxRuntime = useCallback((runtime: PealSfxRuntimeUpdate) => {
     sfxActionsRef.current = runtime.actions

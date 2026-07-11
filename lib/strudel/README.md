@@ -37,7 +37,7 @@ NEXT_PUBLIC_STRUDEL_MOUNT=https://strudel.cc   # Open-in-Strudel deep links only
 
 Music → left **Transport** panel: path, Install, Start, Stop, live status (polls `GET /api/strudel`).
 
-Open: [`/studio?tool=music`](http://localhost:3001/studio?tool=music) · User guide: [`docs/music-studio.md`](../../docs/music-studio.md)
+Open: [`/studio/music`](http://localhost:3001/studio/music) · User guide: [`docs/music-studio.md`](../../docs/music-studio.md)
 
 ## What Peal owns (MIT)
 

@@ -1,16 +1,5 @@
-import { Suspense } from 'react'
-import PealStudioShell from '@/app/hudson/PealStudioShell'
+import StudioPageClient from './StudioPageClient'
 
 export default function StudioPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="peal-studio-shell h-full flex items-center justify-center text-[var(--peal-surface-text-muted,#9ca3af)]">
-          Loading Studio...
-        </div>
-      }
-    >
-      <PealStudioShell />
-    </Suspense>
-  )
+  return <StudioPageClient />
 }

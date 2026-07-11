@@ -4,7 +4,7 @@
   "bin": {
     "peal": "./cli/index.js"
   },
-  "description": "Curated UI sounds for web apps — CLI copies WAVs into your project and generates a Howler.js player. Web app: https://arach.github.io/peal/",
+  "description": "Curated UI sounds for web apps — CLI copies WAVs into your project and generates a Howler.js player. Web app: https://peal.app",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -55,7 +55,7 @@
     "type": "git",
     "url": "https://github.com/arach/peal.git"
   },
-  "homepage": "https://arach.github.io/peal/",
+  "homepage": "https://peal.app",
   "bugs": {
     "url": "https://github.com/arach/peal/issues"
   },

@@ -180,10 +180,22 @@ async function createJavaScriptHelper(targetDir, sounds) {
   return targetPath;
 }
 
+async function getPackageVersion() {
+  try {
+    const pkgPath = path.join(__dirname, '..', 'package.json');
+    const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf-8'));
+    return pkg.version || '0.0.0';
+  } catch {
+    return '0.0.0';
+  }
+}
+
+const packageVersion = await getPackageVersion();
+
 program
   .name('peal')
   .description('CLI for adding Peal sound effects to your project')
-  .version('0.1.0');
+  .version(packageVersion);
 
 program
   .command('add [sounds...]')

@@ -31,7 +31,7 @@ const toolConfig: Record<StudioTool, {
   voice: {
     label: 'Voice',
     icon: Mic,
-    path: '/studio?tool=voice',
+    path: '/studio/voice',
     description: 'Text-to-speech generation'
   }
 }

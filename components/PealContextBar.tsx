@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { ChevronRight } from 'lucide-react'
 import { BaseLink } from './BaseLink'
+import { parsePealStudioToolFromPathname } from '@/app/hudson/peal-studio/routing'
 import {
   contextNavActive,
   getContextSectionConfig,
@@ -11,16 +12,15 @@ import {
 } from './peal-nav/routing'
 
 function PealContextNavContent({
-  tool,
   searchParams,
   variant,
 }: {
-  tool: string | null
   searchParams: URLSearchParams
   variant: 'inline' | 'mobile'
 }) {
   const pathname = usePathname() ?? ''
   const section = resolveContextSection(pathname)
+  const tool = parsePealStudioToolFromPathname(pathname)
 
   if (!section) return null
 
@@ -63,7 +63,6 @@ function PealContextNavWithSearchParams({ variant }: { variant: 'inline' | 'mobi
   const searchParams = useSearchParams()
   return (
     <PealContextNavContent
-      tool={searchParams.get('tool')}
       searchParams={searchParams}
       variant={variant}
     />

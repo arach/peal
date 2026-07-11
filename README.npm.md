@@ -28,7 +28,7 @@ peal add \
 That writes something like:
 
 ```
-dev/
+your-project/
 ├── peal.js          # generated — import this in your app
 └── peal/
     ├── click.wav
@@ -65,6 +65,8 @@ npx @peal-sounds/peal add click
 
 Also published as `@arach/peal` (same package, older namespace).
 
+Requires **Node.js 20+**.
+
 ## Install
 
 ```bash
@@ -87,7 +89,7 @@ The `peal` binary is on your PATH after install.
 | Interactive | `hover`, `select`, `toggle` |
 | System | `startup`, `shutdown`, `unlock` |
 
-Run `peal list` for the full list in the terminal.
+19 sounds total. Run `peal list` for the full list in the terminal.
 
 ## CLI
 
@@ -98,7 +100,7 @@ peal add \                       # several sounds
   click \
   success \
   error
-peal add --dir ./sounds          # custom output folder
+peal add --dir ./sounds          # custom folder for WAV files
 peal add --typescript            # generate peal.ts instead of peal.js
 
 peal list                   # show available sounds
@@ -116,19 +118,30 @@ import { Peal } from '@peal-sounds/peal'
 
 const audio = new Peal()
 audio.load('click', '/sounds/click.wav')
-audio.play('click')
+audio.play('click', { volume: 0.5, loop: false })
+audio.volume(0.8)  // global volume (0–1)
+audio.mute(true)
 ```
 
 The generated `peal.js` is the usual path for CLI-added sounds. The `Peal` class is for custom loading and paths.
 
+Optional TTS (`OPENAI_API_KEY` or `GROQ_API_KEY`):
+
+```javascript
+const audio = new Peal({ openaiApiKey: process.env.OPENAI_API_KEY })
+await audio.speak('Saved successfully')
+```
+
 ## API (generated helper)
 
-- `peal.play(name, options?)` — play a sound by name
-- `peal.click()`, `peal.success()`, … — shortcuts for sounds you added
-- `peal.stop(name?)`, `peal.pause(name?)`, `peal.setVolume(0.5)`, `peal.mute(true)`
+- `peal.play(name, options?)` — play by name; options: `volume` (0–1), `loop`
+- `peal.click()`, `peal.success()`, … — shortcuts for sounds you added (**no options**)
+- `peal.stop(name?)`, `peal.pause(name?)`, `peal.resume(name?)`
+- `peal.setVolume(0.5)`, `peal.mute(true)`
 
 ```javascript
 peal.play('success', { volume: 0.5, loop: false })
+// not: peal.success({ volume: 0.5 }) — shortcuts take no arguments
 ```
 
 ## TypeScript
@@ -141,6 +154,13 @@ peal add --typescript
 import { peal } from './peal'
 
 peal.success()
+peal.play('success', { volume: 0.8 })
+```
+
+Library types:
+
+```typescript
+import { Peal, type PealOptions } from '@peal-sounds/peal'
 ```
 
 ## Web app
@@ -155,11 +175,12 @@ The npm package is the CLI + library. Peal also runs in the browser — browse p
   <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/sounds.png" alt="Signature sounds grid — click to preview UI sounds" width="900">
 </p>
 
-[Open the app](https://arach.github.io/peal/) · [GitHub](https://github.com/arach/peal)
+[Open the app](https://peal.app) · [GitHub Pages mirror](https://arach.github.io/peal/) · [GitHub](https://github.com/arach/peal)
 
 ## Links
 
+- [peal.app](https://peal.app)
 - [GitHub](https://github.com/arach/peal)
 - [Issues](https://github.com/arach/peal/issues)
 
-MIT
+MIT — see [LICENSE](https://github.com/arach/peal/blob/master/LICENSE)

@@ -1,4 +1,7 @@
-import { studioHrefWithTool } from '@/app/hudson/peal-studio/routing'
+import {
+  parsePealStudioToolFromPathname,
+  studioHrefWithTool,
+} from '@/app/hudson/peal-studio/routing'
 
 export type PealNavLayout = 'landing' | 'app' | 'studio'
 
@@ -51,18 +54,19 @@ export function primaryNavActive(pathname: string, id: PealPrimaryId): boolean {
   }
 }
 
-export function contextNavActive(pathname: string, tool: string | null, id: PealContextId): boolean {
+export function contextNavActive(pathname: string, _tool: string | null, id: PealContextId): boolean {
+  const studioTool = parsePealStudioToolFromPathname(pathname)
   switch (id) {
     case 'sounds':
       return pathname.startsWith('/library')
     case 'presets':
       return isPresetsRoute(pathname)
     case 'sfx':
-      return pathname.startsWith('/studio') && (!tool || tool === 'sfx')
+      return isStudioSection(pathname) && studioTool === 'sfx'
     case 'voice':
-      return pathname.startsWith('/voice') || (pathname.startsWith('/studio') && tool === 'voice')
+      return pathname.startsWith('/voice') || studioTool === 'voice'
     case 'music':
-      return pathname.startsWith('/studio') && tool === 'music'
+      return studioTool === 'music'
     default:
       return false
   }

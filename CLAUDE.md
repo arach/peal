@@ -77,7 +77,8 @@ Peal is both an npm library (`@peal-sounds/peal`) and a web app for designing UI
 - **Library** (`/library`) — browse, generate, and manage a personal sound collection
 - **Studio** (`/studio`) — dark IDE-style sound designer with live Web Audio API code, AI design, and parameter panels
 - **Presets** (`/presets`, `/premium`, `/mechanics`, `/keyboard`, `/brands`, `/signature`) — curated sound collections
-- **Voice** (`/voice`) — TTS studio for spoken UI feedback
+- **Voice** (`/studio/voice`) — TTS studio for spoken UI feedback (`/voice` redirects here)
+- **Music** (`/studio/music`) — Strudel live-coding studio
 - **CLI** (`peal add`, `peal play`, `peal list`) — drop sounds into any project via Howler.js
 
 ### Landing page (`/`)

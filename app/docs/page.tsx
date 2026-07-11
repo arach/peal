@@ -331,7 +331,7 @@ async function submitForm(data) {
 
 Live-code **lyricless, varied instrumental beats** — Strudel editor + REPL, grounded AI copilot, improv loop.
 
-**Open:** [\`/studio?tool=music\`](/studio?tool=music) · **Full guide:** [docs/music-studio.md](https://github.com/arach/peal/blob/master/docs/music-studio.md)
+**Open:** [\`/studio/music\`](/studio/music) · **Full guide:** [docs/music-studio.md](https://github.com/arach/peal/blob/master/docs/music-studio.md)
 
 ## Latest features
 

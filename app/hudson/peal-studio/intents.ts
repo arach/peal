@@ -33,7 +33,7 @@ export const pealStudioIntents: AppIntent[] = [
   {
     commandId: 'peal-studio:switch-voice',
     title: 'Switch to Voice Studio',
-    description: 'Switch Peal Studio to text-to-speech without leaving /studio.',
+    description: 'Switch Peal Studio to text-to-speech at /studio/voice.',
     category: 'view',
     keywords: ['voice', 'tts', 'speech'],
   },

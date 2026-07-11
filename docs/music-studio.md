@@ -2,7 +2,7 @@
 
 Live-code **lyricless, varied instrumental beats** in Peal Studio — Strudel patterns, a grounded AI copilot, improv loop, and managed engine.
 
-**Open:** [`/studio?tool=music`](http://localhost:3001/studio?tool=music)
+**Open:** [`/studio/music`](http://localhost:3001/studio/music)
 
 **Spec:** [`specs/peal-001-music-studio.md`](./specs/peal-001-music-studio.md)
 
@@ -51,7 +51,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3001/studio?tool=music](http://localhost:3001/studio?tool=music).
+Open [http://localhost:3001/studio/music](http://localhost:3001/studio/music).
 
 ### 2. Start Strudel
 

@@ -5,8 +5,12 @@
 </p>
 
 <p align="center">
+  <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/landing-hero.png" alt="Peal landing page" width="900">
+</p>
+
+<p align="center">
   <a href="#quick-start">Quick Start</a> •
-  <a href="#cli-commands">CLI Commands</a> •
+  <a href="#cli-commands">CLI</a> •
   <a href="#library-api">Library API</a> •
   <a href="#web-app">Web App</a> •
   <a href="#contributing">Contributing</a>
@@ -16,37 +20,36 @@
 
 ## Overview
 
-Peal is an npm package (`@peal-sounds/peal`) and a web app for designing and shipping UI sound effects — plus a **Music Studio** for live-coded instrumental beats.
+Peal is an npm package ([`@peal-sounds/peal`](https://www.npmjs.com/package/@peal-sounds/peal)) and a web app for designing and shipping UI sound effects.
 
-- **📦 Library** — Howler.js wrapper for playing sounds in web apps
-- **🎯 CLI** — Add curated UI sounds to any project and generate a typed helper
-- **🌐 Web App** — Browse, design, and manage sounds in the browser
-- **🎵 Music Studio** — Strudel live coding, AI copilot, improv loop, lyricless beat curriculum
+- **CLI** — Add curated UI sounds to any project and generate a typed Howler helper
+- **Library** — Thin `Peal` class for loading and playing your own audio paths
+- **Web app** — Browse presets, design custom sounds, Voice TTS, and Music Studio ([peal.app](https://peal.app))
 
 The CLI copies high-quality WAV files into your repo and generates a helper that handles paths for you. The web app lets you explore presets, design custom sounds, and export audio for use anywhere.
 
-## ✨ Features
+## Features
 
-### 📦 Library
-- **Lightweight**: Thin wrapper around Howler.js (~2KB gzipped)
-- **Cross-Platform**: Works in modern browsers and Node.js
-- **TypeScript First**: Full TypeScript support with generated types
-- **Performance**: Efficient sound loading and playback management
+### Library
+- **Lightweight** — Thin wrapper around Howler.js (~1KB gzipped, excluding Howler)
+- **Cross-platform** — Modern browsers; Node where Howler is supported
+- **TypeScript first** — Named exports and full type definitions
+- **Optional TTS** — `generateSpeech` / `speak` via OpenAI or Groq when API keys are set
 
-### 🎯 CLI Tool
-- **Instant Setup**: Add professional UI sounds to any project in seconds
-- **Curated Collection**: 15+ high-quality sounds designed for web interfaces
-- **Auto-Generated Helper**: Creates a typed helper file with all your sounds
-- **Zero Configuration**: Works out of the box, no setup required
+### CLI
+- **Instant setup** — Add professional UI sounds in seconds
+- **19 curated sounds** — Designed for web interfaces
+- **Auto-generated helper** — Creates `peal.js` or `peal.ts` with shortcuts for the sounds you added
+- **Zero config** — Works with `npx`; installs Howler if needed
 
-### 🌐 Web App
-- **Library** ([`/library`](http://localhost:3001/library)): Browse, generate, and manage your sound collection
-- **Studio** ([`/studio`](http://localhost:3001/studio)): IDE-style sound designer with live Web Audio API code, AI-assisted design, and parameter panels
-- **Voice** ([`/studio?tool=voice`](http://localhost:3001/studio?tool=voice)): TTS studio for spoken UI feedback (`/voice` redirects here)
-- **Music** ([`/studio?tool=music`](http://localhost:3001/studio?tool=music)): Strudel beats — managed engine, dual AI sessions (Minimax + Codex), auto-route, improv loop, version history, grounded curriculum for **lyricless varied grooves** ([docs](./docs/music-studio.md))
-- **Presets**: Curated collections at [`/presets`](http://localhost:3001/presets), `/premium`, `/mechanics`, `/keyboard`, `/brands`, and `/signature`
+### Web app
+- **Library** — Browse, generate, and manage your sound collection
+- **Studio** — IDE-style sound designer with live Web Audio code and AI-assisted design
+- **Voice** — TTS studio for spoken UI feedback
+- **Music** — Strudel live coding, AI copilot, improv loop, version history ([docs](./docs/music-studio.md))
+- **Presets** — Curated collections: Premium, Mechanics, Keyboard, Brands, Signature
 
-## 🚀 Quick Start
+## Quick Start
 
 Add professional UI sounds to your project in seconds:
 
@@ -54,40 +57,50 @@ Add professional UI sounds to your project in seconds:
 npx @peal-sounds/peal add success error notification
 ```
 
-This will:
-- Copy high-quality UI sounds to your project
-- Generate a helper file for easy playback
-- Automatically handle all file paths
+That writes something like:
 
-```javascript
-import { peal } from './peal';
-
-// Use the generated methods - paths handled automatically
-peal.success();
-peal.error();
-peal.notification();
-
-// Or use the generic play method with options
-peal.play('success', { volume: 0.5 });
+```
+your-project/
+├── peal.js              # generated helper — import this
+└── peal/
+    ├── success.wav
+    ├── error.wav
+    └── notification.wav
 ```
 
-## 📦 Installation
+```javascript
+import { peal } from './peal.js'
 
-### As a CLI tool (Recommended)
+// Shortcuts for sounds you added (no options — see play() below)
+peal.success()
+peal.error()
+peal.notification()
 
-Use Peal without installing it globally:
+// Options go through play()
+peal.play('success', { volume: 0.5 })
+```
+
+`./peal.js` is generated in your project root. Playback goes through that helper (Howler + local WAVs), not through an import of `@peal-sounds/peal` itself.
+
+## Installation
+
+### CLI (recommended)
 
 ```bash
 npx @peal-sounds/peal add [sounds...]
 ```
 
-Or install globally for frequent use:
+Or install for frequent use:
 
 ```bash
 npm install -g @peal-sounds/peal
+# or project-local:
+npm install @peal-sounds/peal
 ```
 
-### As a library
+Also published as [`@arach/peal`](https://www.npmjs.com/package/@arach/peal) (same package, older namespace).
+
+### Library only
 
 ```bash
 npm install @peal-sounds/peal
@@ -95,16 +108,19 @@ npm install @peal-sounds/peal
 pnpm add @peal-sounds/peal
 ```
 
-## 🎯 CLI Commands
+Requires **Node.js 20+**.
+
+## CLI Commands
 
 ### List available sounds
+
 ```bash
 npx @peal-sounds/peal list
 ```
 
 ### Play sounds
+
 ```bash
-# Play a specific sound
 npx @peal-sounds/peal play success
 npx @peal-sounds/peal play click
 
@@ -116,109 +132,147 @@ npx @peal-sounds/peal demo --delay 2000
 ```
 
 ### Add sounds to your project
+
 ```bash
 # Interactive selection
 npx @peal-sounds/peal add
 
-# Add specific sounds
+# Specific sounds
 npx @peal-sounds/peal add click success error
 
-# Add to custom directory
+# Custom directory for WAV files (helper still lands in project root)
 npx @peal-sounds/peal add --dir ./assets/sounds
 
-# Generate TypeScript helper
+# TypeScript helper (peal.ts)
 npx @peal-sounds/peal add --typescript
 ```
 
 ### Remove sounds
-```bash
-# Interactive removal
-npx @peal-sounds/peal remove
 
-# Remove specific sounds
+```bash
+npx @peal-sounds/peal remove
 npx @peal-sounds/peal remove click tap
 ```
 
-## 🔊 Available Sounds
+## Available Sounds
 
-- **UI Feedback**: `success`, `error`, `notification`, `click`, `tap`
-- **Transitions**: `transition`, `swoosh`
-- **Loading**: `loading`, `complete`
-- **Alerts**: `alert`, `warning`
-- **Messages**: `message`, `mention`
-- **Interactive**: `hover`, `select`, `toggle`
-- **System**: `startup`, `shutdown`, `unlock`
+| Group | Names |
+| --- | --- |
+| UI feedback | `success`, `error`, `notification`, `click`, `tap` |
+| Transitions | `transition`, `swoosh` |
+| Loading | `loading`, `complete` |
+| Alerts | `alert`, `warning` |
+| Messages | `message`, `mention` |
+| Interactive | `hover`, `select`, `toggle` |
+| System | `startup`, `shutdown`, `unlock` |
 
-## 📚 Library API
+19 sounds total. Run `peal list` for the terminal view.
 
-### Generated Helper (Recommended)
+## Library API
 
-After running `npx @peal-sounds/peal add`, use the generated helper:
+There are two surfaces. Most apps use the **generated helper**. Use the **`Peal` class** when you want to load arbitrary paths yourself.
 
-```javascript
-import { peal } from './peal';
+### Generated helper (recommended)
 
-// Direct methods for each sound you added
-peal.success();
-peal.error();
-peal.click();
-
-// With options
-peal.success({ volume: 0.8 });
-```
-
-### Core API
+After `npx @peal-sounds/peal add`:
 
 ```javascript
-import { peal } from './peal';
+import { peal } from './peal.js'
 
-// Play sounds
-peal.play('success', { volume: 0.5, loop: false, rate: 1.0 });
+// Shortcuts for each sound you added (no arguments)
+peal.success()
+peal.error()
+peal.click()
 
-// Control playback
-peal.stop('success');  // Stop specific sound
-peal.stop();           // Stop all sounds
-peal.pause('success'); // Pause specific sound
-peal.pause();          // Pause all sounds
+// Play by name with options
+peal.play('success', { volume: 0.8, loop: false })
 
-// Global controls
-peal.volume(0.8);      // Set global volume (0-1)
-peal.mute(true);       // Mute all sounds
+// Playback control
+peal.stop('success')  // one sound
+peal.stop()           // all
+peal.pause('success')
+peal.pause()
+
+// Volume and mute (helper API)
+peal.setVolume(0.5)
+peal.mute(true)
 ```
 
-### Advanced Usage
+| Method | Description |
+| --- | --- |
+| `play(name, options?)` | Play by name. Options: `volume` (0–1), `loop` |
+| `success()`, `click()`, … | Shortcuts for sounds you added — **no options** |
+| `stop(name?)`, `pause(name?)`, `resume(name?)` | Control one sound or all |
+| `setVolume(level)`, `mute(muted?)` | Global level and mute |
+
+### Core `Peal` class
 
 ```javascript
-import { Peal } from '@peal-sounds/peal';
+import { Peal } from '@peal-sounds/peal'
 
-const customPeal = new Peal();
-customPeal.load('mySound', '/path/to/sound.wav');
-customPeal.play('mySound');
+const audio = new Peal()
+audio.load('mySound', '/path/to/sound.wav')
+audio.play('mySound', { volume: 0.5, loop: false })
+
+audio.stop('mySound')
+audio.pause('mySound')
+audio.volume(0.8)   // global volume (0–1); different name than helper's setVolume
+audio.mute(true)
+audio.unload('mySound')
 ```
 
-## 💻 Usage Examples
+Optional TTS (needs `OPENAI_API_KEY` or `GROQ_API_KEY`, or pass keys in the constructor):
+
+```javascript
+const audio = new Peal({ openaiApiKey: process.env.OPENAI_API_KEY })
+await audio.speak('Saved successfully')
+```
+
+### TypeScript
+
+```bash
+npx @peal-sounds/peal add --typescript
+```
+
+```typescript
+import { peal } from './peal'
+
+peal.success()
+peal.play('success', { volume: 0.8 })
+```
+
+For the library class and its types:
+
+```typescript
+import { Peal, type PealOptions } from '@peal-sounds/peal'
+
+const options: PealOptions = { volume: 0.8, preload: true }
+const audio = new Peal(options)
+```
+
+## Usage Examples
 
 ### React
 
 ```jsx
-import { peal } from './peal';
+import { peal } from './peal'
 
 function SubmitButton({ onClick }) {
   const handleClick = async () => {
-    peal.click();
+    peal.click()
     try {
-      await onClick();
-      peal.success();
-    } catch (error) {
-      peal.error();
+      await onClick()
+      peal.success()
+    } catch {
+      peal.error()
     }
-  };
+  }
 
   return (
     <button onClick={handleClick} onMouseEnter={() => peal.hover()}>
       Submit
     </button>
-  );
+  )
 }
 ```
 
@@ -232,15 +286,15 @@ function SubmitButton({ onClick }) {
 </template>
 
 <script>
-import { peal } from './peal';
+import { peal } from './peal'
 
 export default {
   methods: {
     playHover() {
-      peal.hover();
+      peal.hover()
     },
     async handleSubmit() {
-      peal.click();
+      peal.click()
       // Your submit logic
     }
   }
@@ -248,30 +302,19 @@ export default {
 </script>
 ```
 
-### TypeScript
+## Web App
 
-```typescript
-import { peal, PealOptions } from './peal';
-
-const options: PealOptions = {
-  volume: 0.8,
-  loop: false
-};
-
-peal.play('success', options);
-```
-
-## 🌐 Web App
-
-Peal ships as a Next.js web app alongside the npm package. Use it to preview presets, design custom sounds, and manage your collection.
+Use the browser app to preview presets, design custom sounds, and manage a collection — then ship files into projects with the CLI.
 
 | Surface | Path | Description |
 | --- | --- | --- |
-| **Library** | [`/library`](http://localhost:3001/library) | Browse, generate, and manage sounds |
-| **Studio (SFX)** | [`/studio`](http://localhost:3001/studio) | Sound designer with live Web Audio code and AI-assisted parameters |
-| **Voice** | [`/studio?tool=voice`](http://localhost:3001/studio?tool=voice) | TTS studio for spoken UI feedback |
-| **Music** | [`/studio?tool=music`](http://localhost:3001/studio?tool=music) | Strudel editor + REPL, AI copilot (Minimax/Codex), improv loop, auto-route, versions |
-| **Presets** | [`/presets`](http://localhost:3001/presets) | Curated sound collections (`/premium`, `/mechanics`, `/keyboard`, `/brands`, `/signature`) |
+| **Library** | [/library](https://peal.app/library) | Browse, generate, and manage sounds |
+| **Studio (SFX)** | [/studio](https://peal.app/studio) | Sound designer with live Web Audio code and AI-assisted parameters |
+| **Voice** | [/studio/voice](https://peal.app/studio/voice) | TTS studio (`/voice` redirects here) |
+| **Music** | [/studio/music](https://peal.app/studio/music) | Strudel editor, AI copilot, improv loop, versions |
+| **Presets** | [/presets](https://peal.app/presets) | Curated collections (`/premium`, `/mechanics`, `/keyboard`, `/brands`, `/signature`) |
+
+Live app: [peal.app](https://peal.app) · static deploy: [arach.github.io/peal](https://arach.github.io/peal/)
 
 Studio uses **hudsonkit** for app chrome, with a material/instrument aesthetic for sound design controls.
 
@@ -284,61 +327,62 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) — the dev server runs on port **3001**.
+Open [http://localhost:3001](http://localhost:3001) — the Next.js dev server runs on port **3001**. Requires **Node.js 20+** and **pnpm**.
+
+Studio AI features need provider credentials; run `pnpm credentials` to check what is configured.
 
 ### Music Studio + Strudel
 
-Music uses a **managed Strudel checkout** (AGPL, not vendored):
+Music uses a **managed Strudel checkout** (AGPL, not vendored). Requires [Bun](https://bun.sh):
 
 ```bash
 bun run strudel:install
 bun run strudel:start
 ```
 
-Then open [`/studio?tool=music`](http://localhost:3001/studio?tool=music). Transport → **Start engine** → edit pattern → **Route** (⌘↵) or ask the copilot.
-
-**Latest:** dual AI sessions (Minimax + Codex), auto-route after AI edits, improv loop, 32-version history, smart follow-up chips, grounded lyricless-beat curriculum.
+With `pnpm dev` running, open [http://localhost:3001/studio/music](http://localhost:3001/studio/music). Transport → **Start engine** → edit pattern → **Route** (⌘↵) or ask the copilot.
 
 See [`docs/music-studio.md`](./docs/music-studio.md) and [`lib/strudel/README.md`](./lib/strudel/README.md).
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-### CLI & Library
+### CLI & library
 - **Language**: TypeScript
-- **Audio Engine**: [Howler.js](https://howlerjs.com/)
-- **Build Tool**: [tsup](https://tsup.egoist.dev/)
-- **CLI Framework**: [Commander.js](https://github.com/tj/commander.js/)
+- **Audio**: [Howler.js](https://howlerjs.com/)
+- **Build**: [tsup](https://tsup.egoist.dev/)
+- **CLI**: [Commander.js](https://github.com/tj/commander.js/)
 
-### Web App
-- **Framework**: Next.js with App Router
-- **Studio Shell**: hudsonkit
+### Web app
+- **Framework**: Next.js (App Router)
+- **Studio shell**: hudsonkit
 - **Styling**: Tailwind CSS
 - **Audio**: Web Audio API
 - **State**: Zustand
 
-## 🔗 Links
+## Links
 
-- **npm Package**: [@peal-sounds/peal](https://www.npmjs.com/package/@peal-sounds/peal)
+- **npm**: [@peal-sounds/peal](https://www.npmjs.com/package/@peal-sounds/peal)
 - **GitHub**: [github.com/arach/peal](https://github.com/arach/peal)
-- **Web App**: [peal.app](https://peal.app)
-- **Issues**: [Report bugs](https://github.com/arach/peal/issues)
+- **Web app**: [peal.app](https://peal.app)
+- **Issues**: [github.com/arach/peal/issues](https://github.com/arach/peal/issues)
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome. Open a pull request against `master`.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m '✨ Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork and clone the repo
+2. `pnpm install` then `pnpm dev` (port 3001 — do not kill an existing server if one is already running)
+3. Make your change; run `pnpm lint` and `pnpm test` where relevant
+4. Open a PR with a clear description of what changed and why
 
-## 📝 License
+For package-only work, `pnpm build:lib` builds `dist/`. Deeper product notes live in [`CLAUDE.md`](./CLAUDE.md) and [`docs/`](./docs/).
 
-MIT License - see [LICENSE](LICENSE) for details.
+## License
+
+MIT — see [LICENSE](LICENSE).
 
 ---
 
 <p align="center">
-  <strong>Made with 🎵 for better web experiences</strong>
+  <strong>Made for better web experiences</strong>
 </p>
