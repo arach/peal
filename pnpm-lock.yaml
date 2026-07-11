@@ -42,8 +42,8 @@ importers:
         specifier: ^0.74.0
         version: 0.74.2(@opentelemetry/api@1.9.0)(ws@8.21.0)(zod@4.4.3)
       '@hudsonkit/ai':
-        specifier: file:../hudson/packages/web/ai-backends
-        version: file:../hudson/packages/web/ai-backends(@earendil-works/pi-ai@0.74.2(@opentelemetry/api@1.9.0)(ws@8.21.0)(zod@4.4.3))(ai@7.0.6(zod@4.4.3))
+        specifier: ^0.2.2
+        version: 0.2.2(@earendil-works/pi-ai@0.74.2(@opentelemetry/api@1.9.0)(ws@8.21.0)(zod@4.4.3))(ai@7.0.6(zod@4.4.3))
       '@lezer/highlight':
         specifier: ^1.2.3
         version: 1.2.3
@@ -117,8 +117,8 @@ importers:
         specifier: ^2.2.4
         version: 2.2.4
       hudsonkit:
-        specifier: file:../hudson/packages/web/hudsonkit
-        version: file:../hudson/packages/web/hudsonkit(@codemirror/commands@6.10.4)(@codemirror/lang-css@6.3.1)(@codemirror/lang-html@6.4.11)(@codemirror/lang-javascript@6.2.5)(@codemirror/lang-json@6.0.2)(@codemirror/lang-markdown@6.5.0)(@codemirror/language@6.12.4)(@codemirror/state@6.7.0)(@codemirror/view@6.43.4)(@lezer/highlight@1.2.3)(@pierre/diffs@1.2.11(@shikijs/themes@4.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@types/react@19.2.17)(@voxd/client@0.3.4)(@xterm/addon-fit@0.11.0)(@xterm/addon-webgl@0.19.0)(@xterm/xterm@6.0.0)(lucide-react@1.22.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)
+        specifier: ^0.3.4
+        version: 0.3.4(@codemirror/commands@6.10.4)(@codemirror/lang-css@6.3.1)(@codemirror/lang-html@6.4.11)(@codemirror/lang-javascript@6.2.5)(@codemirror/lang-json@6.0.2)(@codemirror/lang-markdown@6.5.0)(@codemirror/language@6.12.4)(@codemirror/state@6.7.0)(@codemirror/view@6.43.4)(@lezer/highlight@1.2.3)(@pierre/diffs@1.2.11(@shikijs/themes@4.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@types/react@19.2.17)(@voxd/client@0.3.4)(@xterm/addon-fit@0.11.0)(@xterm/addon-webgl@0.19.0)(@xterm/xterm@6.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)
       inquirer:
         specifier: ^14.0.2
         version: 14.0.2(@types/node@26.0.1)
@@ -741,8 +741,8 @@ packages:
       '@modelcontextprotocol/sdk':
         optional: true
 
-  '@hudsonkit/ai@file:../hudson/packages/web/ai-backends':
-    resolution: {directory: ../hudson/packages/web/ai-backends, type: directory}
+  '@hudsonkit/ai@0.2.2':
+    resolution: {integrity: sha512-OwBMGvpf8OiQwj83Lws0o7AdW1/D1RPcGLc7v4p+PGf2H07cFS/L2W/PojAawntzb8sjdvf5HM/g5bFcKBJmVQ==}
     peerDependencies:
       '@earendil-works/pi-ai': '>=0.74.0'
       ai: '>=6.0.0'
@@ -3154,8 +3154,8 @@ packages:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
     engines: {node: '>= 14'}
 
-  hudsonkit@file:../hudson/packages/web/hudsonkit:
-    resolution: {directory: ../hudson/packages/web/hudsonkit, type: directory}
+  hudsonkit@0.3.4:
+    resolution: {integrity: sha512-xEBCGmt9aEDofM3wGCxcv1CHA5psescXpET4lGUOw2pfLCAEB/vfb2w+IkxSffi2tiAQqfkSXKTXz8kD7BzTKw==}
     hasBin: true
     peerDependencies:
       '@codemirror/commands': ^6.10.3
@@ -3175,7 +3175,6 @@ packages:
       '@xterm/xterm': ^6.0.0
       codemirror: ^6.0.2
       html2canvas-pro: ^2.0.0
-      lucide-react: ^0.564.0 || ^0.574.0
       react: ^19.0.0
       react-dom: ^19.0.0
       react-markdown: ^10.1.0
@@ -3223,6 +3222,11 @@ packages:
   human-signals@5.0.0:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}
     engines: {node: '>=16.17.0'}
+
+  iconoir-react@7.11.1:
+    resolution: {integrity: sha512-uUdoKZ5SvvleMWf+mJWbAxLt5WaEcvBAU3YmO5Ho+JA5JLxBKntT0KNXpJqQArq7b5DxiN5xobIVoDBIPAvA/w==}
+    peerDependencies:
+      react: 18 || 19
 
   iconv-lite@0.7.2:
     resolution: {integrity: sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==}
@@ -5468,7 +5472,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@hudsonkit/ai@file:../hudson/packages/web/ai-backends(@earendil-works/pi-ai@0.74.2(@opentelemetry/api@1.9.0)(ws@8.21.0)(zod@4.4.3))(ai@7.0.6(zod@4.4.3))':
+  '@hudsonkit/ai@0.2.2(@earendil-works/pi-ai@0.74.2(@opentelemetry/api@1.9.0)(ws@8.21.0)(zod@4.4.3))(ai@7.0.6(zod@4.4.3))':
     optionalDependencies:
       '@earendil-works/pi-ai': 0.74.2(@opentelemetry/api@1.9.0)(ws@8.21.0)(zod@4.4.3)
       ai: 7.0.6(zod@4.4.3)
@@ -7872,12 +7876,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  hudsonkit@file:../hudson/packages/web/hudsonkit(@codemirror/commands@6.10.4)(@codemirror/lang-css@6.3.1)(@codemirror/lang-html@6.4.11)(@codemirror/lang-javascript@6.2.5)(@codemirror/lang-json@6.0.2)(@codemirror/lang-markdown@6.5.0)(@codemirror/language@6.12.4)(@codemirror/state@6.7.0)(@codemirror/view@6.43.4)(@lezer/highlight@1.2.3)(@pierre/diffs@1.2.11(@shikijs/themes@4.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@types/react@19.2.17)(@voxd/client@0.3.4)(@xterm/addon-fit@0.11.0)(@xterm/addon-webgl@0.19.0)(@xterm/xterm@6.0.0)(lucide-react@1.22.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3):
+  hudsonkit@0.3.4(@codemirror/commands@6.10.4)(@codemirror/lang-css@6.3.1)(@codemirror/lang-html@6.4.11)(@codemirror/lang-javascript@6.2.5)(@codemirror/lang-json@6.0.2)(@codemirror/lang-markdown@6.5.0)(@codemirror/language@6.12.4)(@codemirror/state@6.7.0)(@codemirror/view@6.43.4)(@lezer/highlight@1.2.3)(@pierre/diffs@1.2.11(@shikijs/themes@4.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@types/react@19.2.17)(@voxd/client@0.3.4)(@xterm/addon-fit@0.11.0)(@xterm/addon-webgl@0.19.0)(@xterm/xterm@6.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3):
     dependencies:
       '@ai-sdk/react': 3.0.218(react@19.2.7)(zod@4.4.3)
       '@base-ui-components/react': 1.0.0-rc.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       ai: 6.0.216(zod@4.4.3)
-      lucide-react: 1.22.0(react@19.2.7)
+      iconoir-react: 7.11.1(react@19.2.7)
       motion: 12.42.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
@@ -7904,6 +7908,10 @@ snapshots:
       - zod
 
   human-signals@5.0.0: {}
+
+  iconoir-react@7.11.1(react@19.2.7):
+    dependencies:
+      react: 19.2.7
 
   iconv-lite@0.7.2:
     dependencies:
