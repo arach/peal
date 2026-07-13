@@ -1,11 +1,11 @@
 {
   "name": "@peal-sounds/peal",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "private": true,
   "bin": {
     "peal": "./cli/index.js"
   },
-  "description": "Curated UI sounds for web apps — copy WAVs into your project with a zero-dependency generated player. Web app: https://peal.app",
+  "description": "Curated UI sounds for web apps — copy WAVs into your project with a zero-dependency generated player. Web app: https://arach.github.io/peal/",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -64,7 +64,7 @@
     "type": "git",
     "url": "git+https://github.com/arach/peal.git"
   },
-  "homepage": "https://peal.app",
+  "homepage": "https://arach.github.io/peal/",
   "bugs": {
     "url": "https://github.com/arach/peal/issues"
   },

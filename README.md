@@ -314,7 +314,7 @@ Use the browser app to preview presets, design custom sounds, and manage a colle
 | **Music** | [/studio/music](https://arach.github.io/peal/studio/music) | Strudel editor, AI copilot, improv loop, versions |
 | **Presets** | [/presets](https://arach.github.io/peal/presets) | Curated collections (`/premium`, `/mechanics`, `/keyboard`, `/brands`, `/signature`) |
 
-Live app: [arach.github.io/peal](https://arach.github.io/peal/) · product site: [peal.app](https://peal.app)
+Live app: [arach.github.io/peal](https://arach.github.io/peal/)
 
 The npm CLI and Studio are separate surfaces: installing Peal does not bundle or launch the web app. Use the hosted links above, or run the repository locally.
 
