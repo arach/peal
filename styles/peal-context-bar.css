@@ -77,6 +77,11 @@
     border-color 0.15s ease;
 }
 
+.peal-context-toggle-btn:focus-visible {
+  outline: 2px solid var(--peal-nav-accent, #4a9eff);
+  outline-offset: 2px;
+}
+
 .peal-context-toggle-btn:hover {
   color: rgba(255, 255, 255, 0.78);
   background: rgba(255, 255, 255, 0.04);
@@ -94,6 +99,41 @@
 
 .peal-nav-context--library .peal-context-section {
   color: rgba(255, 255, 255, 0.48);
+}
+
+/* Light chrome needs opaque ink; translucent white disappears on the nav surface. */
+.peal-studio-chrome[data-peal-theme='light'] .peal-context-toggle,
+.peal-app-shell[data-peal-theme='light'] .peal-context-toggle {
+  border-color: rgba(15, 23, 42, 0.1);
+  background: rgba(15, 23, 42, 0.025);
+}
+
+.peal-studio-chrome[data-peal-theme='light'] .peal-context-toggle-btn,
+.peal-app-shell[data-peal-theme='light'] .peal-context-toggle-btn {
+  color: #475569;
+}
+
+.peal-studio-chrome[data-peal-theme='light'] .peal-context-toggle-btn:hover,
+.peal-app-shell[data-peal-theme='light'] .peal-context-toggle-btn:hover {
+  color: #0f172a;
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.peal-studio-chrome[data-peal-theme='light'] .peal-context-toggle-btn.is-active,
+.peal-app-shell[data-peal-theme='light'] .peal-context-toggle-btn.is-active {
+  color: #2d6eb8;
+  background: rgba(74, 158, 255, 0.11);
+  border-color: rgba(45, 110, 184, 0.28);
+}
+
+.peal-studio-chrome[data-peal-theme='light'] .peal-context-section,
+.peal-app-shell[data-peal-theme='light'] .peal-context-section {
+  color: #475569;
+}
+
+.peal-studio-chrome[data-peal-theme='light'] .peal-context-sep,
+.peal-app-shell[data-peal-theme='light'] .peal-context-sep {
+  color: rgba(15, 23, 42, 0.34);
 }
 
 /* Mobile — context toggle in drawer, not mixed into primary link grid */

@@ -80,24 +80,22 @@ When users run the CLI, it creates:
 
 ## Usage Flow
 
-1. User runs `npx peal add [sounds]`
-2. CLI checks for Howler.js, offers to install if missing
-3. User selects sounds (or uses interactive mode)
-4. CLI copies sound files to project
-5. CLI generates helper file with selected sounds
-6. User imports and uses the helper in their app
+1. User runs `npx @peal-sounds/peal add [sounds]`
+2. User selects sounds (or uses interactive mode)
+3. CLI copies sound files to the project
+4. CLI generates a dependency-free browser Audio helper
+5. User imports and uses the helper in their app
 
 ## Publishing
 
-To publish the CLI package:
+To publish the minimal CLI + library package:
 ```bash
-cd cli
-npm publish
+pnpm publish:npm
 ```
 
 Users can then use it with:
 ```bash
-npx peal-cli add success error
+npx @peal-sounds/peal add success error
 # or install globally
 npm install -g peal-cli
 peal add success error

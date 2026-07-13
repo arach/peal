@@ -47,7 +47,7 @@ export function PealFxDesigner() {
           className="flex min-h-0 flex-1 flex-col"
         >
           <PealVoiceAIEditBar />
-          <StudioScopeWell className="peal-inst-fx-scope mb-3 min-h-[9rem] flex-1 p-3">
+          <StudioScopeWell className={`peal-inst-fx-scope mb-3 shrink-0 p-3${clip ? ' peal-inst-fx-scope--loaded' : ''}`}>
             {clip ? (
               <>
                 <div className="mb-1 flex items-center gap-2 font-mono text-[9px] uppercase tracking-wider text-gray-500">
@@ -75,12 +75,24 @@ export function PealFxDesigner() {
                     </StudioPad>
                   </StudioPadTray>
                 </div>
-                <Waveform
-                  isPlaying={playing}
-                  audioUrl={clip.audioUrl}
-                  visualOnly
-                  className="h-16"
-                />
+                <div className="peal-inst-preview-wave-shell">
+                  <div className="peal-inst-preview-wave-readout" aria-hidden="true">
+                    <span>Signal</span>
+                    <span>{clip.source} / {clip.model}</span>
+                  </div>
+                  <Waveform
+                    isPlaying={playing}
+                    audioUrl={clip.audioUrl}
+                    visualOnly
+                    tone="studio"
+                    className="peal-inst-preview-waveform h-20"
+                  />
+                  <div className="peal-inst-preview-wave-scale" aria-hidden="true">
+                    <span>00:00</span>
+                    <span>{playing ? 'live' : 'ready'}</span>
+                    <span>end</span>
+                  </div>
+                </div>
               </>
             ) : (
               <div className="flex h-full min-h-[8rem] flex-col items-center justify-center gap-2 text-center">

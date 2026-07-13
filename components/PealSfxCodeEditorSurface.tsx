@@ -156,16 +156,7 @@ export default function PealSfxCodeEditorSurface({
             className="h-full"
           />
         ) : (
-          <div className="flex h-full items-center justify-center p-6 text-center">
-            <div className="max-w-xs space-y-2">
-              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#4a9eff]">
-                Code editor
-              </div>
-              <p className="text-sm leading-6 text-gray-400">
-                Load a library sound or design a new sound to see the live Web Audio API implementation.
-              </p>
-            </div>
-          </div>
+          <div className="h-full" aria-hidden="true" />
         )}
       </div>
     </div>

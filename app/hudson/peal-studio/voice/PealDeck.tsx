@@ -67,6 +67,7 @@ export function PealDeck({ compact = false }: { compact?: boolean }) {
                     key={slot}
                     type="button"
                     className={`peal-inst-deck-pad peal-inst-deck-pad--empty${targeted ? ' peal-inst-deck-pad--target' : ''}`}
+                    aria-pressed={targeted}
                     onClick={() => voice.setTargetSlot(targeted ? null : slot)}
                   >
                     <span className="peal-inst-deck-pad-slot">{slot + 1}</span>
@@ -87,6 +88,7 @@ export function PealDeck({ compact = false }: { compact?: boolean }) {
                   className={`peal-inst-deck-pad ${style.stripe}${playing ? ' peal-inst-deck-pad--playing' : ''}${selected ? ' peal-inst-deck-pad--selected' : ''}`}
                   role="button"
                   tabIndex={0}
+                  aria-pressed={selected}
                   onClick={() => voice.setSelectedTakeId(clip.id)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {

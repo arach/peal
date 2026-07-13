@@ -72,14 +72,30 @@
 }
 
 .library[data-peal-theme='light'] .library-welcome-card:hover {
-  background: #f8fafc;
+  background:
+    linear-gradient(145deg, rgba(74, 158, 255, 0.045), transparent 46%),
+    #ffffff;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 10px 32px -20px rgba(15, 23, 42, 0.12);
+    0 20px 42px -26px rgba(15, 23, 42, 0.35);
 }
 
 .library[data-peal-theme='light'] .library-welcome-card:hover .library-welcome-icon {
   color: var(--library-brand);
+}
+
+.library[data-peal-theme='light'] .library-welcome-card {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.9)),
+    var(--library-surface);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 14px 34px -30px rgba(15, 23, 42, 0.45);
+}
+
+.library[data-peal-theme='light'] .library-welcome-card-meta,
+.library[data-peal-theme='light'] .library-welcome-cta {
+  color: rgba(15, 23, 42, 0.52);
 }
 
 /* The page <main> shouldn't paint its own surface over the shell gradient. */
@@ -156,14 +172,14 @@
 /* ---- Library welcome (empty state) ------------------------------------- */
 
 .library-welcome {
-  max-width: 880px;
-  margin: 0 auto 28px;
-  padding: 4px 0 8px;
+  max-width: 960px;
+  margin: 0 auto 32px;
+  padding: 10px 0 8px;
 }
 
 .library-welcome-header {
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 22px;
 }
 
 .library-welcome-kicker {
@@ -199,7 +215,7 @@
 .library-welcome-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px 12px;
+  gap: 14px;
 }
 
 .library-welcome-card {
@@ -208,18 +224,26 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 16px 14px 14px;
-  border-radius: 12px;
+  align-items: stretch;
+  min-height: 196px;
+  padding: 18px;
+  text-align: left;
+  touch-action: manipulation;
+  border-radius: 14px;
   border: 1px solid var(--library-border);
-  background: var(--library-surface);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.035), transparent 46%),
+    var(--library-surface);
   color: inherit;
   cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    0 14px 34px -30px rgba(0, 0, 0, 0.9);
   transition:
     border-color 0.22s ease,
     background 0.22s ease,
-    box-shadow 0.22s ease;
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
 }
 
 .library-welcome-card::before {
@@ -236,15 +260,32 @@
 }
 
 .library-welcome-card:hover {
-  border-color: var(--library-border-lit);
-  background: #1e1e20;
+  border-color: var(--library-brand-border);
+  background:
+    linear-gradient(145deg, rgba(74, 158, 255, 0.06), transparent 46%),
+    #1e1e20;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 10px 32px -20px rgba(0, 0, 0, 0.65);
+    0 20px 42px -26px rgba(0, 0, 0, 0.9);
+  transform: translateY(-2px);
 }
 
 .library-welcome-card:hover::before {
   opacity: 1;
+}
+
+.library-welcome-card:focus-visible {
+  outline: 2px solid var(--library-brand);
+  outline-offset: 3px;
+}
+
+.library-welcome-card-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .library-welcome-icon {
@@ -253,14 +294,32 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-bottom: 10px;
-  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
   border: 1px solid var(--library-brand-border);
   background: var(--library-brand-muted);
   color: var(--library-brand-hi);
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.library-welcome-card-meta {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  padding-top: 2px;
+  color: rgba(255, 255, 255, 0.38);
+  font-family: var(--peal-font-mono);
+  font-size: 9px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.library-welcome-card-meta span:first-child {
+  color: var(--library-brand-hi);
+  font-size: 10px;
 }
 
 .library-welcome-card:hover .library-welcome-icon {
@@ -269,10 +328,17 @@
   background: rgba(74, 158, 255, 0.16);
 }
 
+.library-welcome-card-copy {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 24px;
+}
+
 .library-welcome-card h2 {
   position: relative;
   z-index: 1;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1.3;
@@ -283,37 +349,73 @@
 .library-welcome-card p {
   position: relative;
   z-index: 1;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 400;
   line-height: 1.55;
   color: var(--library-text-dim);
-  margin: 0 0 16px;
-  max-width: 22ch;
+  margin: 0;
+  max-width: 28ch;
 }
 
 .library-welcome-cta {
   position: relative;
   z-index: 1;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: space-between;
+  gap: 8px;
   margin-top: auto;
+  padding-top: 13px;
+  border-top: 1px solid var(--library-border);
   font-family: var(--peal-font);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.55);
-  transition: color 0.15s ease, gap 0.15s ease;
+  color: rgba(255, 255, 255, 0.58);
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .library-welcome-card:hover .library-welcome-cta {
   color: var(--library-brand-hi);
-  gap: 6px;
+  border-color: var(--library-brand-border);
+}
+
+.library-welcome-cta svg {
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+  border: 1px solid var(--library-border-lit);
+  border-radius: 7px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.library-welcome-card:hover .library-welcome-cta svg {
+  border-color: var(--library-brand-border);
+  transform: translateX(2px);
 }
 
 @media (max-width: 768px) {
   .library-welcome-grid {
     grid-template-columns: 1fr;
+  }
+
+  .library-welcome-card {
+    min-height: 176px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .library-welcome-card,
+  .library-welcome-card::before,
+  .library-welcome-icon,
+  .library-welcome-cta,
+  .library-welcome-cta svg {
+    transition: none;
+  }
+
+  .library-welcome-card:hover,
+  .library-welcome-card:hover .library-welcome-cta svg {
+    transform: none;
   }
 }
 
@@ -1105,4 +1207,3 @@
     grid-column: span 1;
   }
 }
-

@@ -76,7 +76,7 @@ peal.notification();
 
 // Control playback
 peal.stop('loading');
-peal.stopAll();
+peal.stop();
 peal.setVolume(0.8);
 peal.mute(true);
 ```
@@ -103,8 +103,9 @@ function Button({ onClick, children }) {
 
 ## Requirements
 
-- Node.js 16 or higher
-- Howler.js (will be prompted to install if not present)
+- Node.js 20 or higher
+
+The CLI and generated helper have no runtime dependencies. `peal add` never runs a package-manager install in your project.
 
 ## License
 

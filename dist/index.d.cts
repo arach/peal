@@ -1,5 +1,3 @@
-import { Howl } from 'howler';
-
 interface PealOptions {
     volume?: number;
     mute?: boolean;
@@ -16,11 +14,6 @@ interface TTSResult {
     id: string;
     audio: ArrayBuffer;
     mimeType: string;
-}
-interface Sound {
-    id: string;
-    howl: Howl;
-    loaded: boolean;
 }
 declare class Peal {
     private sounds;
@@ -84,4 +77,4 @@ declare class Peal {
     }, ttsOptions?: TTSOptions): Promise<number | undefined>;
 }
 
-export { Peal, type PealOptions, type Sound, type TTSOptions, type TTSResult, Peal as default };
+export { Peal, type PealOptions, type TTSOptions, type TTSResult, Peal as default };

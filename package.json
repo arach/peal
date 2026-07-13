@@ -1,30 +1,39 @@
 {
   "name": "@peal-sounds/peal",
-  "version": "0.3.3",
+  "version": "0.3.4",
+  "private": true,
   "bin": {
     "peal": "./cli/index.js"
   },
-  "description": "Curated UI sounds for web apps — CLI copies WAVs into your project and generates a Howler.js player. Web app: https://peal.app",
+  "description": "Curated UI sounds for web apps — copy WAVs into your project with a zero-dependency generated player. Web app: https://peal.app",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "files": [
     "dist",
     "cli"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
-    "build:lib": "tsup src/index.ts --format cjs,esm --dts --tsconfig tsconfig.lib.json",
+    "build": "tsup --config tsup.config.ts",
+    "build:lib": "tsup --config tsup.config.ts --tsconfig tsconfig.lib.json",
     "build:web": "next build",
     "prebuild:static": "node scripts/prepare-static-build.js",
     "build:static": "BUILD_STATIC=true NEXT_PUBLIC_BUILD_STATIC=true next build",
     "postbuild:static": "node scripts/restore-static-build.js",
     "predev": "node scripts/setup-directories.js",
     "dev": "next dev --port 3001",
-    "dev:lib": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "dev:lib": "tsup --config tsup.config.ts --watch",
     "start": "next start",
     "test": "vitest",
+    "test:package": "pnpm build:lib && node --test scripts/prepare-npm-package.test.mjs",
     "lint": "eslint .",
     "lint:lib": "eslint src",
     "prepublishOnly": "cp README.npm.md README.md && pnpm build:lib",
@@ -53,7 +62,7 @@
   "author": "arach",
   "repository": {
     "type": "git",
-    "url": "https://github.com/arach/peal.git"
+    "url": "git+https://github.com/arach/peal.git"
   },
   "homepage": "https://peal.app",
   "bugs": {

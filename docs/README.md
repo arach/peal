@@ -44,13 +44,10 @@ peal.success();
 ```bash
 # 1. Add sounds to your project
 npx @peal-sounds/peal add click success error
-
-# 2. Install the library
-npm install @peal-sounds/peal
 ```
 
 ```javascript
-// 3. Use in your code
+// 2. Use the dependency-free generated helper
 import { peal } from './peal';
 
 button.addEventListener('click', async () => {

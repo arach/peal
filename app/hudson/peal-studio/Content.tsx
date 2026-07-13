@@ -7,8 +7,10 @@ import { usePealStudioHudson } from './Provider'
 import { usePealStudioShellLayout } from './usePealStudioShellLayout'
 
 export function PealStudioContent() {
-  const { currentTool } = usePealStudioHudson()
-  usePealStudioShellLayout()
+  const { currentTool, sfxSummary } = usePealStudioHudson()
+  usePealStudioShellLayout(
+    currentTool === 'sfx' && sfxSummary.mounted && !sfxSummary.soundId
+  )
 
   if (currentTool === 'voice') {
     return <PealVoiceEditor />

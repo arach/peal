@@ -37,7 +37,17 @@ export default function PealStudioShell() {
         >
           <PlatformProvider adapter={WEB_ADAPTER}>
             <WorkspaceHostRoutesProvider routes={PEAL_HOST_ROUTES}>
-              <AppShell app={pealStudioApp} managedTheme={false} />
+              <AppShell
+                app={pealStudioApp}
+                managedTheme={false}
+                chrome={{
+                  panelBehavior: {
+                    mode: 'auto',
+                    centerMinWidth: 560,
+                    inspectorPin: true,
+                  },
+                }}
+              />
             </WorkspaceHostRoutesProvider>
           </PlatformProvider>
         </ThemeProvider>

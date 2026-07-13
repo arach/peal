@@ -1,7 +1,8 @@
 {
   "name": "peal-cli",
   "version": "0.1.0",
-  "description": "CLI for adding Peal sound effects to your project",
+  "private": true,
+  "description": "Zero-dependency CLI for adding Peal sound effects to your project",
   "bin": {
     "peal": "./index.js"
   },
@@ -33,12 +34,7 @@
   ],
   "author": "",
   "license": "MIT",
-  "dependencies": {
-    "chalk": "^5.6.2",
-    "commander": "^15.0.0",
-    "inquirer": "^14.0.2",
-    "ora": "^9.4.1"
-  },
+  "dependencies": {},
   "engines": {
     "node": ">=20.0.0"
   }

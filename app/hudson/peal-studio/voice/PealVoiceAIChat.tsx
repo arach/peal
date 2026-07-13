@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, type FormEvent, type KeyboardEvent } from 'react'
 import { isToolUIPart, getToolName } from 'ai'
-import { Square, AlertCircle } from 'lucide-react'
+import { Square } from 'lucide-react'
+import { PealAIErrorBanner } from '../shared/PealAIErrorBanner'
 import { usePealVoiceAIContext } from './PealVoiceAIProvider'
 
 interface PealVoiceAIChatProps {
@@ -71,10 +72,7 @@ export function PealVoiceAIChat({ placeholder }: PealVoiceAIChatProps) {
       </div>
 
       {error ? (
-        <div className="flex shrink-0 items-center gap-2 border-t border-red-500/30 bg-red-500/10 px-3 py-2 font-mono text-[10px] text-red-300">
-          <AlertCircle size={12} />
-          <span className="truncate">{error.message || 'An error occurred'}</span>
-        </div>
+        <PealAIErrorBanner error={error} />
       ) : null}
     </div>
   )
