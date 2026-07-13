@@ -9,7 +9,7 @@ Curated UI sounds for web apps — clicks, success chimes, errors, and the rest 
 ## What you get
 
 1. **CLI** — pick sounds from the built-in set and copy `.wav` files into your project
-2. **Generated `peal.js`** — a tiny Howler-based player that knows where those files live
+2. **Generated `peal.js`** — a tiny dependency-free player that knows where those files live
 3. **Library** (`Peal` class) — optional lower-level API if you want to wire up your own paths
 
 No sound hosting, no accounts. Files sit in your repo; you call `peal.click()` when something happens in the UI.
@@ -55,7 +55,9 @@ async function save() {
 }
 ```
 
-`./peal.js` is created by the CLI in your project root. You are not importing the npm package for playback — only the generated helper (which wraps Howler and points at `./peal/*.wav`).
+`./peal.js` is created by the CLI in your project root. You are not importing the npm package for playback — only the generated helper, which uses the browser's built-in Audio API and points at `./peal/*.wav`.
+
+The CLI does not install or modify any runtime dependencies in your project.
 
 Prefer a one-off without installing?
 
@@ -73,6 +75,7 @@ Requires **Node.js 20+**.
 npm install @peal-sounds/peal
 # pnpm add @peal-sounds/peal
 # yarn add @peal-sounds/peal
+# bun add @peal-sounds/peal
 ```
 
 The `peal` binary is on your PATH after install.
@@ -135,13 +138,13 @@ await audio.speak('Saved successfully')
 ## API (generated helper)
 
 - `peal.play(name, options?)` — play by name; options: `volume` (0–1), `loop`
-- `peal.click()`, `peal.success()`, … — shortcuts for sounds you added (**no options**)
+- `peal.click(options?)`, `peal.success(options?)`, … — shortcuts for sounds you added
 - `peal.stop(name?)`, `peal.pause(name?)`, `peal.resume(name?)`
 - `peal.setVolume(0.5)`, `peal.mute(true)`
 
 ```javascript
 peal.play('success', { volume: 0.5, loop: false })
-// not: peal.success({ volume: 0.5 }) — shortcuts take no arguments
+peal.success({ volume: 0.5 })
 ```
 
 ## TypeScript

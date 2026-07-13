@@ -20,7 +20,7 @@ export interface TTSResult {
   mimeType: string
 }
 
-export interface Sound {
+interface Sound {
   id: string
   howl: Howl
   loaded: boolean

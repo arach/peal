@@ -21,6 +21,7 @@ npx @peal-sounds/peal add click success error notification
 ```
 
 This downloads high-quality WAV files to `./peal/` and generates a helper file.
+The generated helper uses the browser's built-in Audio API and adds no runtime dependencies to your project.
 
 ### 2. Import and use
 

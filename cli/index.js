@@ -1,578 +1,420 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
-import { promises as fs } from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import chalk from 'chalk';
-import inquirer from 'inquirer';
-import ora from 'ora';
-import { execSync } from 'child_process';
+import { spawnSync } from 'node:child_process';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+import { createInterface } from 'node:readline/promises';
+import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const program = new Command();
-
-// Available sounds with their file paths
 const AVAILABLE_SOUNDS = {
-  // UI Feedback
   success: 'sounds/success.wav',
   error: 'sounds/error.wav',
   notification: 'sounds/notification.wav',
   click: 'sounds/click.wav',
   tap: 'sounds/tap.wav',
-  
-  // Transitions
   transition: 'sounds/transition.wav',
   swoosh: 'sounds/swoosh.wav',
-  
-  // Loading/Processing
   loading: 'sounds/loading.wav',
   complete: 'sounds/complete.wav',
-  
-  // Alerts
   alert: 'sounds/alert.wav',
   warning: 'sounds/warning.wav',
-  
-  // Messages
   message: 'sounds/message.wav',
   mention: 'sounds/mention.wav',
-  
-  // Interactive
   hover: 'sounds/hover.wav',
   select: 'sounds/select.wav',
   toggle: 'sounds/toggle.wav',
-  
-  // System
   startup: 'sounds/startup.wav',
   shutdown: 'sounds/shutdown.wav',
   unlock: 'sounds/unlock.wav'
 };
 
-// Sound categories for better organization
 const SOUND_CATEGORIES = {
   'UI Feedback': ['success', 'error', 'notification', 'click', 'tap'],
-  'Transitions': ['transition', 'swoosh'],
-  'Loading': ['loading', 'complete'],
-  'Alerts': ['alert', 'warning'],
-  'Messages': ['message', 'mention'],
-  'Interactive': ['hover', 'select', 'toggle'],
-  'System': ['startup', 'shutdown', 'unlock']
+  Transitions: ['transition', 'swoosh'],
+  Loading: ['loading', 'complete'],
+  Alerts: ['alert', 'warning'],
+  Messages: ['message', 'mention'],
+  Interactive: ['hover', 'select', 'toggle'],
+  System: ['startup', 'shutdown', 'unlock']
 };
 
-async function checkHowlerInstalled() {
-  try {
-    const packageJson = JSON.parse(await fs.readFile(path.join(process.cwd(), 'package.json'), 'utf-8'));
-    return packageJson.dependencies?.howler || packageJson.devDependencies?.howler;
-  } catch (error) {
-    return false;
-  }
-}
+const HELP = `Peal — add UI sounds to your project
 
-async function installHowler() {
-  const { shouldInstall } = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'shouldInstall',
-      message: 'Howler.js is required but not installed. Would you like to install it now?',
-      default: true
-    }
-  ]);
+Usage:
+  peal add [sounds...] [options]
+  peal remove [sounds...] [options]
+  peal list
+  peal play <sound> [options]
+  peal demo [options]
 
-  if (shouldInstall) {
-    const spinner = ora('Installing howler.js...').start();
-    try {
-      // Detect package manager
-      let packageManager = 'npm';
-      try {
-        await fs.access(path.join(process.cwd(), 'pnpm-lock.yaml'));
-        packageManager = 'pnpm';
-      } catch {
-        try {
-          await fs.access(path.join(process.cwd(), 'yarn.lock'));
-          packageManager = 'yarn';
-        } catch {
-          // Default to npm
-        }
-      }
+Add options:
+  -d, --dir <directory>  Sound directory (default: ./peal)
+  -t, --typescript       Generate peal.ts instead of peal.js
+      --no-helper        Copy sounds without generating a helper
 
-      execSync(`${packageManager} ${packageManager === 'yarn' ? 'add' : 'install'} howler`, { stdio: 'pipe' });
-      spinner.succeed('Howler.js installed successfully!');
-      return true;
-    } catch (error) {
-      spinner.fail('Failed to install howler.js');
-      console.error(chalk.red('Please install it manually with: npm install howler'));
-      return false;
-    }
-  }
-  return false;
-}
+Remove options:
+  -d, --dir <directory>  Sound directory (default: ./peal)
+  -y, --yes              Skip the confirmation prompt
 
-async function ensureDirectory(dir) {
-  try {
-    await fs.mkdir(dir, { recursive: true });
-  } catch (error) {
-    // Directory might already exist
-  }
-}
-
-async function copySoundFile(soundName, targetDir) {
-  const sourcePath = path.join(__dirname, AVAILABLE_SOUNDS[soundName]);
-  const targetPath = path.join(targetDir, `${soundName}.wav`);
-  
-  // Also support .mp3 format
-  const mp3SourcePath = sourcePath.replace('.wav', '.mp3');
-  const mp3TargetPath = targetPath.replace('.wav', '.mp3');
-  
-  try {
-    // Try WAV first
-    await fs.copyFile(sourcePath, targetPath);
-    return { format: 'wav', path: targetPath };
-  } catch (error) {
-    try {
-      // Try MP3 as fallback
-      await fs.copyFile(mp3SourcePath, mp3TargetPath);
-      return { format: 'mp3', path: mp3TargetPath };
-    } catch (mp3Error) {
-      throw new Error(`Sound file not found for ${soundName}`);
-    }
-  }
-}
-
-async function createPealHelper(targetDir, sounds) {
-  const templatePath = path.join(__dirname, 'templates', 'peal.ts.template');
-  const template = await fs.readFile(templatePath, 'utf-8');
-  
-  // Replace placeholders
-  const soundList = JSON.stringify(sounds, null, 4).split('\n').map((line, i) => 
-    i === 0 ? line : '    ' + line
-  ).join('\n');
-  
-  const convenienceMethods = sounds.map(s => `  ${s}() { return this.play('${s}'); }`).join('\n');
-  
-  const helperContent = template
-    .replace('{{SOUND_LIST}}', soundList)
-    .replace('{{CONVENIENCE_METHODS}}', convenienceMethods);
-
-  const targetPath = path.join(targetDir, 'peal.ts');
-  await fs.writeFile(targetPath, helperContent);
-  return targetPath;
-}
-
-async function createJavaScriptHelper(targetDir, sounds) {
-  const templatePath = path.join(__dirname, 'templates', 'peal.js.template');
-  const template = await fs.readFile(templatePath, 'utf-8');
-  
-  // Replace placeholders
-  const soundList = JSON.stringify(sounds, null, 4).split('\n').map((line, i) => 
-    i === 0 ? line : '    ' + line
-  ).join('\n');
-  
-  const convenienceMethods = sounds.map(s => `  ${s}() { return this.play('${s}'); }`).join('\n');
-  
-  const helperContent = template
-    .replace('{{SOUND_LIST}}', soundList)
-    .replace('{{CONVENIENCE_METHODS}}', convenienceMethods);
-
-  const targetPath = path.join(targetDir, 'peal.js');
-  await fs.writeFile(targetPath, helperContent);
-  return targetPath;
-}
+Other options:
+  -h, --help             Show help
+  -V, --version          Show version`;
 
 async function getPackageVersion() {
   try {
-    const pkgPath = path.join(__dirname, '..', 'package.json');
-    const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf-8'));
+    const pkg = JSON.parse(
+      await fs.readFile(path.join(__dirname, '..', 'package.json'), 'utf8')
+    );
     return pkg.version || '0.0.0';
   } catch {
     return '0.0.0';
   }
 }
 
-const packageVersion = await getPackageVersion();
+function printCatalog() {
+  console.log('\nAvailable Peal sounds:\n');
+  for (const [category, sounds] of Object.entries(SOUND_CATEGORIES)) {
+    console.log(`${category}: ${sounds.join(', ')}`);
+  }
+  console.log();
+}
 
-program
-  .name('peal')
-  .description('CLI for adding Peal sound effects to your project')
-  .version(packageVersion);
+async function prompt(question) {
+  if (!process.stdin.isTTY || !process.stdout.isTTY) {
+    throw new Error('Interactive input is unavailable. Pass sound names on the command line.');
+  }
 
-program
-  .command('add [sounds...]')
-  .description('Add sound effects to your project')
-  .option('-d, --dir <directory>', 'Target directory for sounds', './peal')
-  .option('-t, --typescript', 'Generate TypeScript helper instead of JavaScript')
-  .option('--no-helper', 'Skip generating the helper file')
-  .action(async (requestedSounds, options) => {
-    const spinner = ora();
-    
+  const readline = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    return (await readline.question(question)).trim();
+  } finally {
+    readline.close();
+  }
+}
+
+function parseSoundNames(answer) {
+  if (answer.toLowerCase() === 'all') return Object.keys(AVAILABLE_SOUNDS);
+  return answer.split(/[\s,]+/).filter(Boolean);
+}
+
+async function chooseSounds(message) {
+  printCatalog();
+  return parseSoundNames(await prompt(`${message} (comma-separated, or "all"): `));
+}
+
+async function confirm(message, defaultValue = false) {
+  const suffix = defaultValue ? '[Y/n]' : '[y/N]';
+  const answer = (await prompt(`${message} ${suffix} `)).toLowerCase();
+  if (!answer) return defaultValue;
+  return answer === 'y' || answer === 'yes';
+}
+
+async function copySoundFile(soundName, targetDir) {
+  const sourcePath = path.join(__dirname, AVAILABLE_SOUNDS[soundName]);
+  const wavTarget = path.join(targetDir, `${soundName}.wav`);
+
+  try {
+    await fs.copyFile(sourcePath, wavTarget);
+    return { name: soundName, format: 'wav' };
+  } catch {
+    const mp3Source = sourcePath.replace(/\.wav$/, '.mp3');
+    const mp3Target = path.join(targetDir, `${soundName}.mp3`);
     try {
-      // Check if howler is installed
-      const howlerInstalled = await checkHowlerInstalled();
-      if (!howlerInstalled) {
-        const installed = await installHowler();
-        if (!installed) {
-          console.error(chalk.red('Cannot proceed without howler.js'));
-          process.exit(1);
-        }
-      }
-
-      let soundsToAdd = requestedSounds;
-
-      // If no sounds specified, show interactive selection
-      if (!soundsToAdd || soundsToAdd.length === 0) {
-        const categoryChoices = Object.entries(SOUND_CATEGORIES).map(([category, sounds]) => ({
-          name: `${chalk.bold(category)} (${sounds.join(', ')})`,
-          value: sounds
-        }));
-
-        const { selectedCategories } = await inquirer.prompt([
-          {
-            type: 'checkbox',
-            name: 'selectedCategories',
-            message: 'Select sound categories to add:',
-            choices: [
-              { name: chalk.green('All sounds'), value: 'all' },
-              new inquirer.Separator(),
-              ...categoryChoices
-            ]
-          }
-        ]);
-
-        if (selectedCategories.includes('all')) {
-          soundsToAdd = Object.keys(AVAILABLE_SOUNDS);
-        } else {
-          soundsToAdd = selectedCategories.flat();
-        }
-
-        if (soundsToAdd.length === 0) {
-          const { individualSounds } = await inquirer.prompt([
-            {
-              type: 'checkbox',
-              name: 'individualSounds',
-              message: 'Or select individual sounds:',
-              choices: Object.keys(AVAILABLE_SOUNDS).map(sound => ({
-                name: `${sound} - ${AVAILABLE_SOUNDS[sound].split('/')[1]}`,
-                value: sound
-              }))
-            }
-          ]);
-          soundsToAdd = individualSounds;
-        }
-      }
-
-      // Validate sounds
-      const validSounds = soundsToAdd.filter(sound => AVAILABLE_SOUNDS[sound]);
-      const invalidSounds = soundsToAdd.filter(sound => !AVAILABLE_SOUNDS[sound]);
-
-      if (invalidSounds.length > 0) {
-        console.warn(chalk.yellow(`Unknown sounds will be skipped: ${invalidSounds.join(', ')}`));
-      }
-
-      if (validSounds.length === 0) {
-        console.error(chalk.red('No valid sounds selected'));
-        process.exit(1);
-      }
-
-      // Create target directory
-      const targetDir = path.join(process.cwd(), options.dir);
-      await ensureDirectory(targetDir);
-
-      // Copy sound files
-      spinner.start('Copying sound files...');
-      const copiedSounds = [];
-      
-      for (const sound of validSounds) {
-        try {
-          const result = await copySoundFile(sound, targetDir);
-          copiedSounds.push(sound);
-        } catch (error) {
-          spinner.warn(`Failed to copy ${sound}: ${error.message}`);
-        }
-      }
-      
-      spinner.succeed(`Copied ${copiedSounds.length} sound files to ${options.dir}/`);
-
-      // Create helper file
-      if (options.helper !== false && copiedSounds.length > 0) {
-        spinner.start('Creating helper file...');
-        
-        const helperPath = options.typescript
-          ? await createPealHelper(process.cwd(), copiedSounds)
-          : await createJavaScriptHelper(process.cwd(), copiedSounds);
-          
-        spinner.succeed(`Created helper file: ${path.basename(helperPath)}`);
-
-        // Show usage instructions
-        console.log('\n' + chalk.green('✨ Sounds added successfully!'));
-        console.log('\n' + chalk.bold('Usage:'));
-        console.log(chalk.gray('```' + (options.typescript ? 'typescript' : 'javascript')));
-        console.log(`import { peal } from './peal';
-
-// Play sounds
-peal.play('success');
-peal.play('error', { volume: 0.5 });
-
-// Or use convenience methods
-peal.success();
-peal.notification();`);
-        console.log(chalk.gray('```'));
-      }
-
-    } catch (error) {
-      spinner.fail('Failed to add sounds');
-      console.error(chalk.red(error.message));
-      process.exit(1);
-    }
-  });
-
-program
-  .command('list')
-  .description('List all available sounds')
-  .action(() => {
-    console.log(chalk.bold('\n🔊 Available Peal Sounds:\n'));
-    
-    Object.entries(SOUND_CATEGORIES).forEach(([category, sounds]) => {
-      console.log(chalk.blue.bold(`${category}:`));
-      sounds.forEach(sound => {
-        console.log(`  • ${sound}`);
-      });
-      console.log();
-    });
-  });
-
-// Remove command
-program
-  .command('remove [sounds...]')
-  .description('Remove sound effects from your project')
-  .option('-d, --dir <directory>', 'Directory where sounds are stored', './peal')
-  .action(async (soundsToRemove, options) => {
-    const targetDir = path.join(process.cwd(), options.dir);
-    
-    // Check if directory exists
-    try {
-      await fs.access(targetDir);
+      await fs.copyFile(mp3Source, mp3Target);
+      return { name: soundName, format: 'mp3' };
     } catch {
-      console.error(chalk.red(`Sound directory not found: ${options.dir}`));
-      console.log(chalk.yellow('Have you added sounds yet? Use: peal add'));
-      process.exit(1);
+      throw new Error(`Sound file not found for ${soundName}`);
     }
-    
-    // If no sounds specified, show interactive selection
-    if (!soundsToRemove || soundsToRemove.length === 0) {
-      // List existing sounds in the directory
-      const files = await fs.readdir(targetDir);
-      const existingSounds = files
-        .filter(f => f.endsWith('.wav') || f.endsWith('.mp3'))
-        .map(f => f.replace(/\.(wav|mp3)$/, ''));
-      
-      if (existingSounds.length === 0) {
-        console.log(chalk.yellow('No sounds found in ' + options.dir));
-        process.exit(0);
-      }
-      
-      const { selectedSounds } = await inquirer.prompt([
-        {
-          type: 'checkbox',
-          name: 'selectedSounds',
-          message: 'Select sounds to remove:',
-          choices: existingSounds
-        }
-      ]);
-      
-      soundsToRemove = selectedSounds;
+  }
+}
+
+function serializeSoundFiles(sounds) {
+  return JSON.stringify(
+    Object.fromEntries(sounds.map(({ name, format }) => [name, `${name}.${format}`])),
+    null,
+    2
+  );
+}
+
+function createConvenienceMethods(sounds, typescript) {
+  return sounds
+    .map(({ name }) => {
+      const options = typescript ? 'options?: PealPlayOptions' : 'options';
+      return `  ${name}(${options}) { return this.play('${name}', options); }`;
+    })
+    .join('\n');
+}
+
+async function createHelper(targetDir, sounds, typescript) {
+  const extension = typescript ? 'ts' : 'js';
+  const template = await fs.readFile(
+    path.join(__dirname, 'templates', `peal.${extension}.template`),
+    'utf8'
+  );
+  const content = template
+    .replace('{{SOUND_FILES}}', serializeSoundFiles(sounds))
+    .replace('{{CONVENIENCE_METHODS}}', createConvenienceMethods(sounds, typescript));
+  const targetPath = path.join(targetDir, `peal.${extension}`);
+  await fs.writeFile(targetPath, content);
+  return targetPath;
+}
+
+async function getExistingSounds(targetDir) {
+  const files = await fs.readdir(targetDir);
+  const sounds = new Map();
+
+  for (const file of files) {
+    const match = file.match(/^(.+)\.(wav|mp3)$/);
+    if (!match) continue;
+    const [, name, format] = match;
+    if (!sounds.has(name) || format === 'wav') sounds.set(name, { name, format });
+  }
+
+  return [...sounds.values()];
+}
+
+async function addCommand(args) {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    options: {
+      dir: { type: 'string', short: 'd', default: './peal' },
+      typescript: { type: 'boolean', short: 't', default: false },
+      'no-helper': { type: 'boolean', default: false },
+      help: { type: 'boolean', short: 'h', default: false }
     }
-    
-    if (soundsToRemove.length === 0) {
-      console.log(chalk.yellow('No sounds selected for removal'));
-      process.exit(0);
+  });
+
+  if (values.help) {
+    console.log(HELP);
+    return;
+  }
+
+  const requested = positionals.length > 0
+    ? positionals
+    : await chooseSounds('Sounds to add');
+  const valid = requested.filter((sound) => AVAILABLE_SOUNDS[sound]);
+  const invalid = requested.filter((sound) => !AVAILABLE_SOUNDS[sound]);
+
+  if (invalid.length > 0) console.warn(`Unknown sounds skipped: ${invalid.join(', ')}`);
+  if (valid.length === 0) throw new Error('No valid sounds selected. Run `peal list` to see the catalog.');
+
+  const targetDir = path.resolve(process.cwd(), values.dir);
+  await fs.mkdir(targetDir, { recursive: true });
+
+  const copied = [];
+  for (const sound of valid) {
+    try {
+      copied.push(await copySoundFile(sound, targetDir));
+    } catch (error) {
+      console.warn(`Could not copy ${sound}: ${error.message}`);
     }
-    
-    // Confirm removal
-    const { confirmRemove } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'confirmRemove',
-        message: `Remove ${soundsToRemove.length} sound(s)?`,
-        default: false
-      }
-    ]);
-    
-    if (!confirmRemove) {
-      console.log(chalk.gray('Removal cancelled'));
-      process.exit(0);
+  }
+
+  if (copied.length === 0) throw new Error('No sound files were copied.');
+  console.log(`✓ Copied ${copied.length} sound file${copied.length === 1 ? '' : 's'} to ${values.dir}/`);
+
+  if (!values['no-helper']) {
+    const helperPath = await createHelper(process.cwd(), copied, values.typescript);
+    console.log(`✓ Created ${path.basename(helperPath)} (no runtime dependencies)`);
+    const importPath = values.typescript ? './peal' : `./${path.basename(helperPath)}`;
+    console.log(`\nimport { peal } from '${importPath}';`);
+    console.log(`peal.${copied[0].name}();`);
+  }
+}
+
+async function removeCommand(args) {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    options: {
+      dir: { type: 'string', short: 'd', default: './peal' },
+      yes: { type: 'boolean', short: 'y', default: false },
+      help: { type: 'boolean', short: 'h', default: false }
     }
-    
-    // Remove sound files
-    const spinner = ora('Removing sounds...').start();
-    let removedCount = 0;
-    
-    for (const sound of soundsToRemove) {
-      const wavPath = path.join(targetDir, `${sound}.wav`);
-      const mp3Path = path.join(targetDir, `${sound}.mp3`);
-      
+  });
+
+  if (values.help) {
+    console.log(HELP);
+    return;
+  }
+
+  const targetDir = path.resolve(process.cwd(), values.dir);
+  let existing;
+  try {
+    existing = await getExistingSounds(targetDir);
+  } catch {
+    throw new Error(`Sound directory not found: ${values.dir}`);
+  }
+
+  if (existing.length === 0) {
+    console.log(`No sounds found in ${values.dir}`);
+    return;
+  }
+
+  const requested = positionals.length > 0
+    ? positionals
+    : await chooseSounds('Sounds to remove');
+  if (requested.length === 0) return;
+
+  if (!values.yes && !(await confirm(`Remove ${requested.length} sound(s)?`))) {
+    console.log('Removal cancelled.');
+    return;
+  }
+
+  let removed = 0;
+  for (const sound of requested) {
+    let didRemove = false;
+    for (const format of ['wav', 'mp3']) {
       try {
-        try {
-          await fs.unlink(wavPath);
-          removedCount++;
-        } catch {
-          // Try MP3
-          await fs.unlink(mp3Path);
-          removedCount++;
-        }
-      } catch {
-        spinner.warn(`Could not remove: ${sound}`);
-      }
+        await fs.unlink(path.join(targetDir, `${sound}.${format}`));
+        didRemove = true;
+      } catch {}
     }
-    
-    spinner.succeed(`Removed ${removedCount} sound(s)`);
-    
-    // Update helper file if it exists
-    const helperPath = path.join(process.cwd(), 'peal.js');
-    const tsHelperPath = path.join(process.cwd(), 'peal.ts');
-    
+    if (didRemove) removed += 1;
+    else console.warn(`Could not remove: ${sound}`);
+  }
+  console.log(`✓ Removed ${removed} sound${removed === 1 ? '' : 's'}`);
+
+  const remaining = await getExistingSounds(targetDir);
+  const jsHelper = path.join(process.cwd(), 'peal.js');
+  const tsHelper = path.join(process.cwd(), 'peal.ts');
+
+  if (remaining.length === 0) {
+    await Promise.all([fs.unlink(jsHelper).catch(() => {}), fs.unlink(tsHelper).catch(() => {})]);
+    return;
+  }
+
+  try {
+    await fs.access(tsHelper);
+    await createHelper(process.cwd(), remaining, true);
+    console.log('✓ Updated peal.ts');
+  } catch {
     try {
-      // Get remaining sounds
-      const files = await fs.readdir(targetDir);
-      const remainingSounds = files
-        .filter(f => f.endsWith('.wav') || f.endsWith('.mp3'))
-        .map(f => f.replace(/\.(wav|mp3)$/, ''));
-      
-      if (remainingSounds.length > 0) {
-        // Update helper with remaining sounds
-        try {
-          await fs.access(tsHelperPath);
-          await createPealHelper(process.cwd(), remainingSounds);
-          console.log(chalk.green('✓ Updated peal.ts'));
-        } catch {
-          try {
-            await fs.access(helperPath);
-            await createJavaScriptHelper(process.cwd(), remainingSounds);
-            console.log(chalk.green('✓ Updated peal.js'));
-          } catch {
-            // No helper file to update
-          }
-        }
-      } else {
-        // Remove helper if no sounds left
-        try {
-          await fs.unlink(helperPath);
-          console.log(chalk.gray('Removed peal.js (no sounds left)'));
-        } catch {}
-        try {
-          await fs.unlink(tsHelperPath);
-          console.log(chalk.gray('Removed peal.ts (no sounds left)'));
-        } catch {}
-      }
-    } catch {
-      // Could not update helper
+      await fs.access(jsHelper);
+      await createHelper(process.cwd(), remaining, false);
+      console.log('✓ Updated peal.js');
+    } catch {}
+  }
+}
+
+function commandExists(command) {
+  const lookup = process.platform === 'win32' ? 'where' : 'which';
+  return spawnSync(lookup, [command], { stdio: 'ignore' }).status === 0;
+}
+
+function playSoundFile(soundPath, volume = 1, stdio = 'inherit') {
+  let command;
+  let args;
+
+  if (process.platform === 'darwin') {
+    command = 'afplay';
+    args = ['-v', String(volume), soundPath];
+  } else if (process.platform === 'win32') {
+    command = 'powershell';
+    const escapedPath = soundPath.replaceAll("'", "''");
+    args = ['-NoProfile', '-Command', `(New-Object Media.SoundPlayer '${escapedPath}').PlaySync()`];
+  } else if (commandExists('paplay')) {
+    command = 'paplay';
+    args = [`--volume=${Math.round(65536 * volume)}`, soundPath];
+  } else if (commandExists('aplay')) {
+    command = 'aplay';
+    args = [soundPath];
+  } else if (commandExists('play')) {
+    command = 'play';
+    args = ['-v', String(volume), soundPath];
+  } else {
+    throw new Error('No audio player found. Install paplay, aplay, or sox.');
+  }
+
+  const result = spawnSync(command, args, { stdio });
+  if (result.error || result.status !== 0) {
+    throw new Error(result.error?.message || `${command} exited with status ${result.status}`);
+  }
+}
+
+async function playCommand(args) {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    options: {
+      volume: { type: 'string', short: 'v', default: '1' },
+      help: { type: 'boolean', short: 'h', default: false }
     }
   });
 
-// Play command
-program
-  .command('play <sound>')
-  .description('Play a sound effect')
-  .option('-v, --volume <level>', 'Volume level (0-1)', '1')
-  .action(async (soundName, options) => {
-    if (!AVAILABLE_SOUNDS[soundName]) {
-      console.error(chalk.red(`Sound "${soundName}" not found.`));
-      console.log(chalk.yellow('\nAvailable sounds:'));
-      console.log(Object.keys(AVAILABLE_SOUNDS).join(', '));
-      process.exit(1);
-    }
+  if (values.help) {
+    console.log('Usage: peal play <sound> [-v, --volume <0-1>]');
+    return;
+  }
 
-    const soundPath = path.join(__dirname, AVAILABLE_SOUNDS[soundName]);
-    
-    // Detect platform and use appropriate command
-    const platform = process.platform;
-    let command;
-    
-    if (platform === 'darwin') {
-      // macOS
-      command = `afplay "${soundPath}"`;
-    } else if (platform === 'win32') {
-      // Windows - use PowerShell
-      command = `powershell -c "(New-Object Media.SoundPlayer '${soundPath}').PlaySync()"`;
-    } else {
-      // Linux/Unix - try multiple commands
-      const players = ['aplay', 'paplay', 'play'];
-      let playerFound = false;
-      
-      for (const player of players) {
-        try {
-          execSync(`which ${player}`, { stdio: 'ignore' });
-          command = `${player} "${soundPath}"`;
-          playerFound = true;
-          break;
-        } catch {
-          // Continue to next player
-        }
-      }
-      
-      if (!playerFound) {
-        console.error(chalk.red('No audio player found. Please install aplay, paplay, or sox.'));
-        process.exit(1);
-      }
+  const [soundName] = positionals;
+  if (!soundName) throw new Error('A sound name is required.');
+  if (!AVAILABLE_SOUNDS[soundName]) throw new Error(`Sound "${soundName}" not found. Run \`peal list\`.`);
+
+  const volume = Number(values.volume);
+  if (!Number.isFinite(volume) || volume < 0 || volume > 1) {
+    throw new Error('Volume must be a number between 0 and 1.');
+  }
+
+  console.log(`▶ ${soundName}`);
+  playSoundFile(path.join(__dirname, AVAILABLE_SOUNDS[soundName]), volume);
+}
+
+async function demoCommand(args) {
+  const { values } = parseArgs({
+    args,
+    options: {
+      delay: { type: 'string', short: 'd', default: '500' },
+      help: { type: 'boolean', short: 'h', default: false }
     }
-    
+  });
+
+  if (values.help) {
+    console.log('Usage: peal demo [-d, --delay <milliseconds>]');
+    return;
+  }
+
+  const delay = Number(values.delay);
+  if (!Number.isFinite(delay) || delay < 0) throw new Error('Delay must be a positive number.');
+
+  for (const [name, relativePath] of Object.entries(AVAILABLE_SOUNDS)) {
+    console.log(`▶ ${name}`);
     try {
-      console.log(chalk.green(`🔊 Playing ${soundName}...`));
-      execSync(command, { stdio: 'inherit' });
+      playSoundFile(path.join(__dirname, relativePath), 1, 'ignore');
     } catch (error) {
-      console.error(chalk.red(`Failed to play sound: ${error.message}`));
-      process.exit(1);
+      console.warn(`Could not play ${name}: ${error.message}`);
     }
-  });
+    if (delay > 0) await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+}
 
-// Play all command - demo all sounds
-program
-  .command('demo')
-  .description('Play a demo of all available sounds')
-  .option('-d, --delay <ms>', 'Delay between sounds in milliseconds', '1000')
-  .action(async (options) => {
-    console.log(chalk.green('🎵 Playing demo of all Peal sounds...\n'));
-    
-    const delay = parseInt(options.delay);
-    const allSounds = Object.entries(AVAILABLE_SOUNDS);
-    
-    for (const [soundName, soundPath] of allSounds) {
-      console.log(chalk.blue(`▶ ${soundName}`));
-      
-      const fullPath = path.join(__dirname, soundPath);
-      const platform = process.platform;
-      let command;
-      
-      if (platform === 'darwin') {
-        command = `afplay "${fullPath}"`;
-      } else if (platform === 'win32') {
-        command = `powershell -c "(New-Object Media.SoundPlayer '${fullPath}').PlaySync()"`;
-      } else {
-        // Use the first available player on Linux
-        const players = ['aplay', 'paplay', 'play'];
-        for (const player of players) {
-          try {
-            execSync(`which ${player}`, { stdio: 'ignore' });
-            command = `${player} "${fullPath}"`;
-            break;
-          } catch {
-            // Continue
-          }
-        }
-      }
-      
-      if (command) {
-        try {
-          execSync(command, { stdio: 'ignore' });
-          // Wait before playing next sound
-          await new Promise(resolve => setTimeout(resolve, delay));
-        } catch {
-          console.log(chalk.yellow(`  ⚠ Could not play ${soundName}`));
-        }
-      }
-    }
-    
-    console.log(chalk.green('\n✨ Demo complete!'));
-  });
+async function main() {
+  const [command, ...args] = process.argv.slice(2);
 
-program.parse();
+  if (!command || command === 'help' || command === '--help' || command === '-h') {
+    console.log(HELP);
+    return;
+  }
+
+  if (command === '--version' || command === '-V') {
+    console.log(await getPackageVersion());
+    return;
+  }
+
+  if (command === 'add') await addCommand(args);
+  else if (command === 'remove') await removeCommand(args);
+  else if (command === 'list') printCatalog();
+  else if (command === 'play') await playCommand(args);
+  else if (command === 'demo') await demoCommand(args);
+  else throw new Error(`Unknown command: ${command}`);
+}
+
+main().catch((error) => {
+  console.error(`✖ ${error.message}`);
+  process.exitCode = 1;
+});
