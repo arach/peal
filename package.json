@@ -62,7 +62,7 @@
   "author": "arach",
   "repository": {
     "type": "git",
-    "url": "https://github.com/arach/peal.git"
+    "url": "git+https://github.com/arach/peal.git"
   },
   "homepage": "https://peal.app",
   "bugs": {

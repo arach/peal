@@ -25,7 +25,7 @@ export async function prepareNpmPackage({ name, outDir }) {
         require: './dist/index.cjs',
       },
     },
-    bin: { peal: './cli/index.js' },
+    bin: { peal: 'cli/index.js' },
     keywords: sourcePackage.keywords,
     author: sourcePackage.author,
     repository: sourcePackage.repository,

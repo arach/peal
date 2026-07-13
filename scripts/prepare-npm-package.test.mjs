@@ -21,6 +21,8 @@ test('prepares a self-contained package with a dependency-free CLI', async (cont
   assert.equal(pkg.dependencies, undefined)
   assert.equal(pkg.optionalDependencies, undefined)
   assert.equal(pkg.peerDependencies, undefined)
+  assert.equal(pkg.bin.peal, 'cli/index.js')
+  assert.equal(pkg.repository.url, 'git+https://github.com/arach/peal.git')
   assert.match(
     await readFile(path.join(packageDir, 'THIRD_PARTY_LICENSES.md'), 'utf8'),
     /howler\.js[\s\S]+MIT License|howler\.js[\s\S]+Permission is hereby granted/,
