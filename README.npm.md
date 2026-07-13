@@ -170,6 +170,13 @@ import { Peal, type PealOptions } from '@peal-sounds/peal'
 
 The npm package is the CLI + library. Peal also runs in the browser — browse presets, generate sounds, or design in the studio — then copy what you need into a project with `peal add`.
 
+The CLI does not launch or bundle Studio. Open the hosted app directly:
+
+- [SFX Studio](https://arach.github.io/peal/studio)
+- [Voice Studio](https://arach.github.io/peal/studio/voice)
+- [Music Studio](https://arach.github.io/peal/studio/music)
+- [Sound Library](https://arach.github.io/peal/library)
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/landing-hero.png" alt="Peal landing page with header navigation and hero" width="900">
 </p>
@@ -178,10 +185,11 @@ The npm package is the CLI + library. Peal also runs in the browser — browse p
   <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/sounds.png" alt="Signature sounds grid — click to preview UI sounds" width="900">
 </p>
 
-[Open the app](https://peal.app) · [GitHub Pages mirror](https://arach.github.io/peal/) · [GitHub](https://github.com/arach/peal)
+[Open the app](https://arach.github.io/peal/) · [Product site](https://peal.app) · [GitHub](https://github.com/arach/peal)
 
 ## Links
 
+- [Web app](https://arach.github.io/peal/)
 - [peal.app](https://peal.app)
 - [GitHub](https://github.com/arach/peal)
 - [Issues](https://github.com/arach/peal/issues)

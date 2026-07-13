@@ -22,17 +22,17 @@
 
 Peal is an npm package ([`@peal-sounds/peal`](https://www.npmjs.com/package/@peal-sounds/peal)) and a web app for designing and shipping UI sound effects.
 
-- **CLI** — Add curated UI sounds to any project and generate a typed Howler helper
+- **CLI** — Add curated UI sounds to any project and generate a dependency-free Audio helper
 - **Library** — Thin `Peal` class for loading and playing your own audio paths
-- **Web app** — Browse presets, design custom sounds, Voice TTS, and Music Studio ([peal.app](https://peal.app))
+- **Web app** — Browse presets, design custom sounds, Voice TTS, and Music Studio ([open the app](https://arach.github.io/peal/))
 
-The CLI copies high-quality WAV files into your repo and generates a helper that handles paths for you. The web app lets you explore presets, design custom sounds, and export audio for use anywhere.
+The CLI copies high-quality WAV files into your repo and generates a helper that handles paths with the browser's built-in Audio API. The web app lets you explore presets, design custom sounds, and export audio for use anywhere.
 
 ## Features
 
 ### Library
-- **Lightweight** — Thin wrapper around Howler.js (~1KB gzipped, excluding Howler)
-- **Cross-platform** — Modern browsers; Node where Howler is supported
+- **Self-contained** — The published library bundles its playback engine and installs with zero runtime dependencies
+- **Cross-platform** — Modern browsers; Node where browser-compatible audio is available
 - **TypeScript first** — Named exports and full type definitions
 - **Optional TTS** — `generateSpeech` / `speak` via OpenAI or Groq when API keys are set
 
@@ -40,7 +40,7 @@ The CLI copies high-quality WAV files into your repo and generates a helper that
 - **Instant setup** — Add professional UI sounds in seconds
 - **19 curated sounds** — Designed for web interfaces
 - **Auto-generated helper** — Creates `peal.js` or `peal.ts` with shortcuts for the sounds you added
-- **Zero config** — Works with `npx`; installs Howler if needed
+- **Zero config** — Works with `npx` and never installs runtime dependencies in your project
 
 ### Web app
 - **Library** — Browse, generate, and manage your sound collection
@@ -80,7 +80,7 @@ peal.notification()
 peal.play('success', { volume: 0.5 })
 ```
 
-`./peal.js` is generated in your project root. Playback goes through that helper (Howler + local WAVs), not through an import of `@peal-sounds/peal` itself.
+`./peal.js` is generated in your project root. Playback goes through that dependency-free helper and local WAVs, not through an import of `@peal-sounds/peal` itself.
 
 ## Installation
 
@@ -308,13 +308,15 @@ Use the browser app to preview presets, design custom sounds, and manage a colle
 
 | Surface | Path | Description |
 | --- | --- | --- |
-| **Library** | [/library](https://peal.app/library) | Browse, generate, and manage sounds |
-| **Studio (SFX)** | [/studio](https://peal.app/studio) | Sound designer with live Web Audio code and AI-assisted parameters |
-| **Voice** | [/studio/voice](https://peal.app/studio/voice) | TTS studio (`/voice` redirects here) |
-| **Music** | [/studio/music](https://peal.app/studio/music) | Strudel editor, AI copilot, improv loop, versions |
-| **Presets** | [/presets](https://peal.app/presets) | Curated collections (`/premium`, `/mechanics`, `/keyboard`, `/brands`, `/signature`) |
+| **Library** | [/library](https://arach.github.io/peal/library) | Browse, generate, and manage sounds |
+| **Studio (SFX)** | [/studio](https://arach.github.io/peal/studio) | Sound designer with live Web Audio code and AI-assisted parameters |
+| **Voice** | [/studio/voice](https://arach.github.io/peal/studio/voice) | TTS studio (`/voice` redirects here) |
+| **Music** | [/studio/music](https://arach.github.io/peal/studio/music) | Strudel editor, AI copilot, improv loop, versions |
+| **Presets** | [/presets](https://arach.github.io/peal/presets) | Curated collections (`/premium`, `/mechanics`, `/keyboard`, `/brands`, `/signature`) |
 
-Live app: [peal.app](https://peal.app) · static deploy: [arach.github.io/peal](https://arach.github.io/peal/)
+Live app: [arach.github.io/peal](https://arach.github.io/peal/) · product site: [peal.app](https://peal.app)
+
+The npm CLI and Studio are separate surfaces: installing Peal does not bundle or launch the web app. Use the hosted links above, or run the repository locally.
 
 Studio uses **hudsonkit** for app chrome, with a material/instrument aesthetic for sound design controls.
 
@@ -327,7 +329,15 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) — the Next.js dev server runs on port **3001**. Requires **Node.js 20+** and **pnpm**.
+The Next.js dev server runs on port **3001**. Open the surface you need:
+
+```bash
+open http://localhost:3001/studio        # SFX Studio
+open http://localhost:3001/studio/voice  # Voice Studio
+open http://localhost:3001/studio/music  # Music Studio
+```
+
+On Linux, use `xdg-open`; on Windows, use `start`, or paste the URLs into any browser. Local development requires **Node.js 20+** and **pnpm**.
 
 Studio AI features need provider credentials; run `pnpm credentials` to check what is configured.
 
@@ -350,7 +360,7 @@ See [`docs/music-studio.md`](./docs/music-studio.md) and [`lib/strudel/README.md
 - **Language**: TypeScript
 - **Audio**: [Howler.js](https://howlerjs.com/)
 - **Build**: [tsup](https://tsup.egoist.dev/)
-- **CLI**: [Commander.js](https://github.com/tj/commander.js/)
+- **CLI helper**: Browser Audio API; no generated runtime dependency
 
 ### Web app
 - **Framework**: Next.js (App Router)
@@ -363,7 +373,7 @@ See [`docs/music-studio.md`](./docs/music-studio.md) and [`lib/strudel/README.md
 
 - **npm**: [@peal-sounds/peal](https://www.npmjs.com/package/@peal-sounds/peal)
 - **GitHub**: [github.com/arach/peal](https://github.com/arach/peal)
-- **Web app**: [peal.app](https://peal.app)
+- **Web app**: [arach.github.io/peal](https://arach.github.io/peal/)
 - **Issues**: [github.com/arach/peal/issues](https://github.com/arach/peal/issues)
 
 ## Contributing
