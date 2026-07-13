@@ -9,6 +9,8 @@ interface WaveformProps {
   audioUrl?: string
   /** When true, only animates — does not spawn a second audio element (use when playback is driven elsewhere). */
   visualOnly?: boolean
+  /** Optional instrument treatment for dark scope displays. */
+  tone?: "default" | "studio"
   className?: string
 }
 
@@ -17,6 +19,7 @@ export function Waveform({
   isPlaying = false,
   audioUrl,
   visualOnly = false,
+  tone = "default",
   className,
 }: WaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -162,6 +165,10 @@ export function Waveform({
         gradient.addColorStop(0, "#34d399")
         gradient.addColorStop(0.5, "#10b981")
         gradient.addColorStop(1, "#059669")
+      } else if (tone === "studio") {
+        gradient.addColorStop(0, "#8cc4ff")
+        gradient.addColorStop(0.5, "#4a9eff")
+        gradient.addColorStop(1, "#275d91")
       } else {
         gradient.addColorStop(0, "#4b5563")
         gradient.addColorStop(0.5, "#374151")
@@ -200,7 +207,7 @@ export function Waveform({
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [isGenerating, isPlaying, waveformData])
+  }, [isGenerating, isPlaying, tone, waveformData])
 
   // Handle canvas resize
   useEffect(() => {
