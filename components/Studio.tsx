@@ -36,6 +36,21 @@ interface StudioProps {
   hudsonLayout?: boolean
 }
 
+const WELCOME_PROMPT_STARTERS = [
+  {
+    label: 'Success Chime',
+    prompt: 'A soft bright chime for success',
+  },
+  {
+    label: 'Mechanical Toggle',
+    prompt: 'A short metallic click for a mechanical toggle',
+  },
+  {
+    label: 'Error Pulse',
+    prompt: 'A low error buzz for failed validation',
+  },
+] as const
+
 function HudsonOptionalPortal({
   enabled,
   target,
@@ -149,6 +164,33 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
   // Modal states
   const [showVibeModal, setShowVibeModal] = useState(false)
   const [showLibraryModal, setShowLibraryModal] = useState(false)
+  const [welcomePrompt, setWelcomePrompt] = useState('')
+  const [vibeModalInitialPrompt, setVibeModalInitialPrompt] = useState('')
+  const [pendingHudsonPrompt, setPendingHudsonPrompt] = useState('')
+  const welcomePromptInputRef = useRef<HTMLInputElement>(null)
+
+  const openVibeDesigner = (prompt = '') => {
+    if (hudsonLayout) {
+      setPendingHudsonPrompt(prompt.trim())
+      setShowParametersPanel(true)
+      setShowVibePanel(true)
+      return
+    }
+
+    setVibeModalInitialPrompt(prompt.trim())
+    setShowVibeModal(true)
+  }
+
+  const handleWelcomePromptSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!welcomePrompt.trim()) return
+    openVibeDesigner(welcomePrompt)
+  }
+
+  const handleHudsonPromptConsumed = useCallback(() => {
+    setPendingHudsonPrompt('')
+    setWelcomePrompt('')
+  }, [])
   
   // Resize handlers
   const startResizing = useCallback((e: React.MouseEvent) => {
@@ -2955,30 +2997,90 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex items-center justify-center p-8">
+              <div className="peal-studio-welcome-stage">
                 <div className="peal-studio-welcome">
-                  <div>
+                  <div className="peal-studio-welcome-scope" aria-hidden="true">
+                    <div className="peal-studio-welcome-scope-meta">
+                      <span>Input Idle</span>
+                      <span>Ready</span>
+                    </div>
+                    <svg viewBox="0 0 420 76" preserveAspectRatio="none" focusable="false">
+                      <path
+                        className="peal-studio-welcome-trace peal-studio-welcome-trace--ghost"
+                        d="M0 38 H92 L108 37 L120 39 L132 36 L146 40 L158 37 L170 38 H420"
+                      />
+                      <path
+                        className="peal-studio-welcome-trace peal-studio-welcome-trace--live"
+                        d="M0 38 H108 L120 36 L130 42 L140 26 L151 51 L162 16 L174 60 L186 29 L198 46 L211 33 L224 40 L237 37 H420"
+                      />
+                    </svg>
+                    <span className="peal-studio-welcome-scope-led" />
+                  </div>
+
+                  <div className="peal-studio-welcome-intro">
                     <h2 className="peal-studio-welcome-title mb-2">
-                      Welcome to Sound Studio
+                      What should this sound like?
                     </h2>
                     <p className="peal-studio-welcome-copy">
-                      Create custom sounds with AI or browse our curated library.
-                      Start with a description of what you need, or pick from professional presets.
+                      Describe the moment, motion, or feeling. Peal will turn it into an editable sound patch.
                     </p>
                   </div>
+
+                  <form className="peal-studio-welcome-form" onSubmit={handleWelcomePromptSubmit}>
+                    <label className="sr-only" htmlFor="studio-welcome-prompt">
+                      Describe the sound you want to create
+                    </label>
+                    <div className="peal-studio-welcome-composer">
+                      <input
+                        ref={welcomePromptInputRef}
+                        id="studio-welcome-prompt"
+                        name="sound-description"
+                        type="text"
+                        value={welcomePrompt}
+                        onChange={(event) => setWelcomePrompt(event.target.value)}
+                        placeholder="A soft confirmation chime with a glassy tail…"
+                        autoComplete="off"
+                        className="peal-studio-welcome-input"
+                      />
+                      <button
+                        type="submit"
+                        disabled={!welcomePrompt.trim()}
+                        className="peal-studio-welcome-cta peal-studio-welcome-cta--primary"
+                      >
+                        <span aria-hidden="true">
+                          <AiDesignIcon size={16} />
+                        </span>
+                        Design Sound
+                      </button>
+                    </div>
+                  </form>
+
+                  <div className="peal-studio-welcome-starters" aria-label="Starter sound prompts">
+                    <span className="peal-studio-welcome-starters-label">Try</span>
+                    {WELCOME_PROMPT_STARTERS.map((starter) => (
+                      <button
+                        key={starter.label}
+                        type="button"
+                        onClick={() => {
+                          setWelcomePrompt(starter.prompt)
+                          welcomePromptInputRef.current?.focus()
+                        }}
+                        className="peal-studio-welcome-starter"
+                      >
+                        {starter.label}
+                      </button>
+                    ))}
+                  </div>
+
                   <div className="peal-studio-welcome-actions">
                     <button
-                      onClick={() => setShowVibeModal(true)}
-                      className="peal-studio-welcome-cta peal-studio-welcome-cta--primary"
-                    >
-                      <AiDesignIcon size={16} />
-                      Design your first sound
-                    </button>
-                    <button
+                      type="button"
                       onClick={() => setShowLibraryModal(true)}
-                      className="peal-studio-welcome-cta peal-studio-welcome-cta--secondary"
+                      className="peal-studio-welcome-library"
                     >
-                      <LibraryIcon size={16} />
+                      <span aria-hidden="true">
+                        <LibraryIcon size={15} />
+                      </span>
                       Browse Library
                     </button>
                   </div>
@@ -3080,6 +3182,8 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                       onPlaySound={handleVibePlaySound}
                       onAddAsTrack={handleVibeAddAsTrack}
                       onOpenLibrary={() => setShowLibraryModal(true)}
+                      initialPrompt={pendingHudsonPrompt}
+                      onInitialPromptConsumed={handleHudsonPromptConsumed}
                     />
                   ) : (
                   // AI Design Tab Content (legacy rule-based)
@@ -3692,7 +3796,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                   </>
                 ) : (
                   <div className="flex h-full items-center justify-center p-6 text-center text-sm text-gray-500">
-                    Select or create a sound to see parameters
+                    Parameters will appear after you load a sound.
                   </div>
                 )}
                   </div>
@@ -3923,9 +4027,13 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
       {/* Modals */}
       <VibeDesignerModal
         isOpen={showVibeModal}
-        onClose={() => setShowVibeModal(false)}
+        onClose={() => {
+          setShowVibeModal(false)
+          setVibeModalInitialPrompt('')
+        }}
         onSoundGenerated={handleVibeSoundGenerated}
         generator={generator}
+        initialPrompt={vibeModalInitialPrompt}
       />
       
       <SoundLibraryModal

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { X, Wand2, Sparkles, Play, Volume2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sound } from '@/store/soundStore'
@@ -12,9 +12,16 @@ interface VibeDesignerModalProps {
   onClose: () => void
   onSoundGenerated: (sound: Sound) => void
   generator: any
+  initialPrompt?: string
 }
 
-export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, generator }: VibeDesignerModalProps) {
+export default function VibeDesignerModal({
+  isOpen,
+  onClose,
+  onSoundGenerated,
+  generator,
+  initialPrompt = '',
+}: VibeDesignerModalProps) {
   const resolvedTheme = useResolvedPealTheme()
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
@@ -23,6 +30,9 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
   const inputRef = useRef<HTMLInputElement>(null)
   const audioRef = useRef<AudioBufferSourceNode | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
+  const didGenerateInitialPrompt = useRef(false)
+  const isGeneratingRef = useRef(false)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
 
   const suggestions = [
     'soft notification chime',
@@ -33,15 +43,12 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
     'bright achievement ding'
   ]
 
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 100)
-    }
-  }, [isOpen])
+  const generateSound = useCallback(async (promptText: string) => {
+    const nextPrompt = promptText.trim()
+    if (!nextPrompt || isGeneratingRef.current) return
 
-  const handleGenerate = async () => {
-    if (!prompt.trim() || isGenerating) return
-
+    isGeneratingRef.current = true
+    setPrompt(nextPrompt)
     setIsGenerating(true)
     setGeneratedSound(null)
 
@@ -68,7 +75,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
           },
           created: new Date(),
           favorite: false,
-          tags: ['vibe-generated', 'sequence', ...prompt.split(' ').filter(w => w.length > 3)],
+          tags: ['vibe-generated', 'sequence', ...nextPrompt.split(' ').filter(w => w.length > 3)],
           audioBuffer: null,
           waveformData: null
         }
@@ -100,7 +107,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
           },
           created: new Date(),
           favorite: false,
-          tags: ['vibe-generated', ...prompt.split(' ').filter(w => w.length > 3)],
+          tags: ['vibe-generated', ...nextPrompt.split(' ').filter(w => w.length > 3)],
           audioBuffer: null,
           waveformData: null
         }
@@ -111,9 +118,34 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
     } catch (error) {
       console.error('Error generating sound:', error)
     } finally {
+      isGeneratingRef.current = false
       setIsGenerating(false)
     }
-  }
+  }, [generator])
+
+  useEffect(() => {
+    if (!isOpen) {
+      didGenerateInitialPrompt.current = false
+      return
+    }
+
+    previousFocusRef.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null
+    setPrompt(initialPrompt)
+
+    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 100)
+
+    if (initialPrompt.trim() && !didGenerateInitialPrompt.current) {
+      didGenerateInitialPrompt.current = true
+      void generateSound(initialPrompt)
+    }
+
+    return () => {
+      window.clearTimeout(focusTimer)
+      previousFocusRef.current?.focus()
+    }
+  }, [generateSound, initialPrompt, isOpen])
 
   const handlePlay = async () => {
     if (!generatedSound?.audioBuffer) return
@@ -143,14 +175,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
     setIsPlaying(true)
   }
 
-  const handleUseSound = () => {
-    if (generatedSound) {
-      onSoundGenerated(generatedSound)
-      handleClose()
-    }
-  }
-
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.stop()
       audioRef.current = null
@@ -159,6 +184,42 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
     setPrompt('')
     setGeneratedSound(null)
     onClose()
+  }, [onClose])
+
+  const handleUseSound = () => {
+    if (generatedSound) {
+      onSoundGenerated(generatedSound)
+      handleClose()
+    }
+  }
+
+  const handleDialogKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      handleClose()
+      return
+    }
+
+    if (event.key !== 'Tab') return
+
+    const focusableElements = Array.from(
+      event.currentTarget.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
+      )
+    )
+
+    if (focusableElements.length === 0) return
+
+    const first = focusableElements[0]
+    const last = focusableElements[focusableElements.length - 1]
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
+    }
   }
 
   return (
@@ -170,6 +231,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
+            aria-hidden="true"
             className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-50"
           />
 
@@ -180,12 +242,18 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
             className="fixed inset-0 flex items-center justify-center z-50 p-4"
           >
             <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="vibe-designer-title"
+              onKeyDown={handleDialogKeyDown}
               className="peal-studio-modal bg-[var(--peal-surface-2,#1c1c1e)] border border-[var(--peal-surface-3,#2c2c2e)] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden text-[var(--peal-surface-text-strong,#f3f4f6)]"
               data-peal-theme={resolvedTheme}
             >
               <div className="relative border-b border-[var(--peal-surface-3,#2c2c2e)] p-6">
                 <button
+                  type="button"
                   onClick={handleClose}
+                  aria-label="Close AI Sound Designer"
                   className="absolute right-4 top-4 p-2 text-gray-400 hover:text-gray-200 transition-colors"
                 >
                   <X size={20} />
@@ -196,7 +264,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
                     <Sparkles className="text-[#4a9eff]" size={20} />
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-100">
+                    <h2 id="vibe-designer-title" className="text-xl font-semibold text-gray-100">
                       AI Sound Designer
                     </h2>
                     <p className="text-sm text-gray-400">
@@ -208,22 +276,27 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
 
               <div className="p-6 space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="vibe-designer-prompt" className="block text-sm font-medium text-gray-300 mb-2">
                     What sound do you need?
                   </label>
                   <div className="relative">
                     <input
+                      id="vibe-designer-prompt"
                       ref={inputRef}
+                      name="sound-description"
                       type="text"
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
-                      placeholder="Try: 'a short high beep' or '3 quick clicks'"
+                      onKeyDown={(e) => e.key === 'Enter' && void generateSound(prompt)}
+                      placeholder="Try: “a short high beep” or “3 quick clicks”…"
+                      autoComplete="off"
                       className="w-full px-4 py-3 pr-12 bg-[var(--peal-surface-0,#111113)] border border-[var(--peal-surface-3,#2c2c2e)] rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#4a9eff] focus:border-transparent"
                     />
                     <button
-                      onClick={handleGenerate}
+                      type="button"
+                      onClick={() => void generateSound(prompt)}
                       disabled={!prompt.trim() || isGenerating}
+                      aria-label="Generate sound"
                       className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-[#4a9eff] text-white rounded-lg hover:bg-[#6bb0ff] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <Wand2 size={18} />
@@ -239,10 +312,11 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
                     <div className="flex flex-wrap gap-2">
                       {suggestions.map((suggestion, i) => (
                         <button
-                          key={i}
+                          key={suggestion}
+                          type="button"
                           onClick={() => {
                             setPrompt(suggestion)
-                            setTimeout(handleGenerate, 100)
+                            void generateSound(suggestion)
                           }}
                           className="px-3 py-1.5 bg-[var(--peal-surface-4,#232327)] hover:bg-[var(--peal-surface-3,#2c2c2e)] text-sm text-gray-300 rounded-lg transition-colors"
                         >
@@ -276,7 +350,9 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
                         </p>
                       </div>
                       <button
+                        type="button"
                         onClick={handlePlay}
+                        aria-label={isPlaying ? 'Stop sound preview' : 'Play generated sound'}
                         className={`p-3 rounded-xl transition-all ${
                           isPlaying
                             ? 'bg-[#4a9eff] text-white'
@@ -300,6 +376,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
 
               <div className="border-t border-[var(--peal-surface-3,#2c2c2e)] p-6 flex justify-end gap-3">
                 <button
+                  type="button"
                   onClick={handleClose}
                   className="px-4 py-2 text-gray-400 hover:text-gray-200 hover:bg-[var(--peal-surface-4,#232327)] rounded-lg transition-colors"
                 >
@@ -307,6 +384,7 @@ export default function VibeDesignerModal({ isOpen, onClose, onSoundGenerated, g
                 </button>
                 {generatedSound && (
                   <button
+                    type="button"
                     onClick={handleUseSound}
                     className="px-4 py-2 bg-[#4a9eff] text-white rounded-lg hover:bg-[#6bb0ff] transition-colors flex items-center gap-2"
                   >

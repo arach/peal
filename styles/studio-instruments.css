@@ -1337,31 +1337,222 @@
 /* Self-contained (token fallbacks) so it renders identically whether
    mounted inside .peal-studio-shell or the legacy /studio layout. */
 
-.peal-studio-welcome {
+.peal-studio-welcome-stage {
+  position: relative;
+  isolation: isolate;
   display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 2rem 2rem clamp(5rem, 15vh, 11rem);
+}
+
+.peal-studio-welcome-stage::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  content: '';
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(circle at 50% 44%, black 0%, transparent 68%);
+}
+
+.peal-studio-welcome {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 34rem;
   flex-direction: column;
   align-items: center;
-  gap: 1.4rem;
-  max-width: 25rem;
+  gap: 1rem;
   text-align: center;
 }
 
+.peal-studio-welcome-scope {
+  position: relative;
+  width: min(100%, 28rem);
+  height: 5.25rem;
+  overflow: hidden;
+  border: 1px solid var(--inst-line-lo, rgba(255, 255, 255, 0.08));
+  border-top-color: var(--inst-line-hi, rgba(255, 255, 255, 0.12));
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(74, 158, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 158, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, var(--inst-face-raised, #1e1e22), var(--inst-well, #0c0c0f));
+  background-size: 12px 12px, 12px 12px, auto;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.035) inset,
+    0 10px 28px rgba(0, 0, 0, 0.2);
+}
+
+.peal-studio-welcome-scope-meta {
+  position: absolute;
+  z-index: 1;
+  top: 0.55rem;
+  right: 0.7rem;
+  left: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+  color: #9ca3af;
+  font-family: var(--font-jetbrains-mono, ui-monospace, monospace);
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.peal-studio-welcome-scope svg {
+  position: absolute;
+  inset: 1rem 0 0;
+  width: 100%;
+  height: calc(100% - 1rem);
+  overflow: visible;
+}
+
+.peal-studio-welcome-trace {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.peal-studio-welcome-trace--ghost {
+  stroke: var(--peal-surface-text-muted);
+  stroke-width: 0.75;
+  opacity: 0.2;
+}
+
+.peal-studio-welcome-trace--live {
+  stroke: var(--inst-accent, #4a9eff);
+  stroke-width: 1.35;
+  filter: drop-shadow(0 0 4px rgba(74, 158, 255, 0.4));
+  animation: peal-welcome-signal 3.2s ease-in-out infinite;
+}
+
+.peal-studio-welcome-scope-led {
+  position: absolute;
+  right: 0.72rem;
+  bottom: 0.68rem;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--inst-accent, #4a9eff);
+  box-shadow: 0 0 7px rgba(74, 158, 255, 0.8);
+  animation: peal-welcome-led 2.1s ease-in-out infinite;
+}
+
+@keyframes peal-welcome-signal {
+  0%, 100% { opacity: 0.48; }
+  50% { opacity: 1; }
+}
+
+@keyframes peal-welcome-led {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+.peal-studio-welcome-intro {
+  max-width: 29rem;
+}
+
 .peal-studio-welcome-title {
-  font-size: 1.05rem;
+  color: var(--peal-surface-text-strong);
+  font-size: 1.08rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--peal-surface-text-strong);
+  text-wrap: balance;
 }
 
 .peal-studio-welcome-copy {
+  color: #9ca3af;
   font-size: 0.8rem;
   line-height: 1.6;
-  color: var(--peal-surface-text-muted);
+  text-wrap: pretty;
+}
+
+.peal-studio-welcome-form {
+  width: 100%;
+}
+
+.peal-studio-welcome-composer {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border: 1px solid var(--peal-surface-border, rgba(255, 255, 255, 0.12));
+  border-radius: 9px;
+  background: var(--inst-well, #0c0c0f);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.035),
+    0 3px 12px rgba(0, 0, 0, 0.2) inset;
+  transition: border-color 0.14s, box-shadow 0.14s;
+}
+
+.peal-studio-welcome-composer:focus-within {
+  border-color: rgba(74, 158, 255, 0.72);
+  box-shadow:
+    0 0 0 2px rgba(74, 158, 255, 0.13),
+    0 3px 12px rgba(0, 0, 0, 0.2) inset;
+}
+
+.peal-studio-welcome-input {
+  min-width: 0;
+  flex: 1;
+  padding: 0 0.55rem;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--peal-surface-text-strong);
+  font: inherit;
+  font-size: 0.78rem;
+}
+
+.peal-studio-welcome-input::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+.peal-studio-welcome-starters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.peal-studio-welcome-starters-label {
+  margin-right: 0.1rem;
+  color: #9ca3af;
+  font-family: var(--font-jetbrains-mono, ui-monospace, monospace);
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.peal-studio-welcome-starter {
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--peal-surface-border, rgba(255, 255, 255, 0.1));
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.025);
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.64rem;
+  transition: border-color 0.14s, background 0.14s, color 0.14s;
+}
+
+.peal-studio-welcome-starter:hover {
+  border-color: rgba(74, 158, 255, 0.38);
+  background: rgba(74, 158, 255, 0.08);
+  color: var(--peal-surface-text-strong);
 }
 
 .peal-studio-welcome-actions {
   display: flex;
-  gap: 0.6rem;
+  justify-content: center;
 }
 
 .peal-studio-welcome-cta {
@@ -1377,6 +1568,19 @@
   cursor: pointer;
   transition: background 0.14s, color 0.14s, border-color 0.14s,
     box-shadow 0.14s, transform 0.08s;
+}
+
+.peal-studio-welcome-cta:focus-visible,
+.peal-studio-welcome-starter:focus-visible,
+.peal-studio-welcome-library:focus-visible {
+  outline: 2px solid var(--inst-accent, #4a9eff);
+  outline-offset: 2px;
+}
+
+.peal-studio-welcome-cta:disabled {
+  cursor: not-allowed;
+  filter: saturate(0.45);
+  opacity: 0.48;
 }
 
 .peal-studio-welcome-cta:active {
@@ -1437,6 +1641,61 @@
     0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
+.peal-studio-welcome-library {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem;
+  border: 0;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.7rem;
+  transition: color 0.14s;
+}
+
+.peal-studio-welcome-library:hover {
+  color: var(--inst-accent, #4a9eff);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peal-studio-welcome-trace--live,
+  .peal-studio-welcome-scope-led {
+    animation: none;
+  }
+}
+
+@media (max-height: 760px) {
+  .peal-studio-welcome-stage {
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
+  .peal-studio-welcome-scope {
+    height: 4.4rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .peal-studio-welcome-stage {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  .peal-studio-welcome-composer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .peal-studio-welcome-input {
+    min-height: 2.5rem;
+  }
+
+  .peal-studio-welcome-cta {
+    justify-content: center;
+  }
+}
+
 /* ── Light mode component tuning ─────────────────────────────── */
 
 .peal-studio-shell[data-peal-theme='light'] .peal-inst-module-tab {
@@ -1478,9 +1737,73 @@
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
 }
 
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-stage::before {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-scope {
+  border-color: rgba(15, 23, 42, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.85);
+  background:
+    linear-gradient(rgba(74, 158, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 158, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  background-size: 12px 12px, 12px 12px, auto;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-composer {
+  border-color: rgba(15, 23, 42, 0.14);
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 1px 5px rgba(15, 23, 42, 0.035) inset;
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-composer:focus-within {
+  border-color: #2d6eb8;
+  box-shadow: 0 0 0 2px rgba(45, 110, 184, 0.14);
+}
+
+.peal-studio-shell[data-peal-theme='light'] :is(
+  .peal-studio-welcome-scope-meta,
+  .peal-studio-welcome-copy,
+  .peal-studio-welcome-starters-label,
+  .peal-studio-welcome-starter,
+  .peal-studio-welcome-library
+) {
+  color: #475569;
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-input::placeholder {
+  color: #64748b;
+}
+
+.peal-studio-shell[data-peal-theme='light'] :is(
+  .peal-studio-welcome-cta,
+  .peal-studio-welcome-starter,
+  .peal-studio-welcome-library
+):focus-visible {
+  outline-color: #2d6eb8;
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-starter {
+  border-color: rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-starter:hover {
+  border-color: rgba(74, 158, 255, 0.35);
+  background: rgba(74, 158, 255, 0.07);
+}
+
 /* Welcome CTAs — flatter in light mode (less glow / machined depth) */
 .peal-studio-shell[data-peal-theme='light'] .peal-studio-welcome-cta--primary {
-  color: #ffffff;
+  color: #0a1628;
   background: var(--inst-accent, #4a9eff);
   border-color: rgba(45, 110, 184, 0.35);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);

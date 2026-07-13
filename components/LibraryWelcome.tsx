@@ -29,13 +29,21 @@ export default function LibraryWelcome() {
           onClick={() => setShowOptionsModal(true)}
           className="library-welcome-card"
         >
-          <span className="library-welcome-icon" aria-hidden="true">
-            <Zap size={18} />
+          <span className="library-welcome-card-top">
+            <span className="library-welcome-icon" aria-hidden="true">
+              <Zap size={18} />
+            </span>
+            <span className="library-welcome-card-meta" aria-hidden="true">
+              <span>01</span>
+              <span>Instant</span>
+            </span>
           </span>
-          <h2>Quick Generate</h2>
-          <p>Instantly create a set of polished sounds</p>
+          <span className="library-welcome-card-copy">
+            <h2>Quick Generate</h2>
+            <p>Create a polished starter set in one pass.</p>
+          </span>
           <span className="library-welcome-cta">
-            Start now
+            Generate set
             <ChevronRight size={14} />
           </span>
         </button>
@@ -45,11 +53,19 @@ export default function LibraryWelcome() {
           onClick={() => router.push('/studio')}
           className="library-welcome-card"
         >
-          <span className="library-welcome-icon" aria-hidden="true">
-            <Sliders size={18} />
+          <span className="library-welcome-card-top">
+            <span className="library-welcome-icon" aria-hidden="true">
+              <Sliders size={18} />
+            </span>
+            <span className="library-welcome-card-meta" aria-hidden="true">
+              <span>02</span>
+              <span>AI-assisted</span>
+            </span>
           </span>
-          <h2>AI Studio</h2>
-          <p>Describe sounds in natural language</p>
+          <span className="library-welcome-card-copy">
+            <h2>AI Studio</h2>
+            <p>Describe a sound, then shape every parameter.</p>
+          </span>
           <span className="library-welcome-cta">
             Open Studio
             <ChevronRight size={14} />
@@ -61,13 +77,21 @@ export default function LibraryWelcome() {
           onClick={() => router.push('/presets')}
           className="library-welcome-card"
         >
-          <span className="library-welcome-icon" aria-hidden="true">
-            <Sparkles size={18} />
+          <span className="library-welcome-card-top">
+            <span className="library-welcome-icon" aria-hidden="true">
+              <Sparkles size={18} />
+            </span>
+            <span className="library-welcome-card-meta" aria-hidden="true">
+              <span>03</span>
+              <span>Curated</span>
+            </span>
           </span>
-          <h2>Browse Presets</h2>
-          <p>Start with pre-made sound collections</p>
+          <span className="library-welcome-card-copy">
+            <h2>Browse Presets</h2>
+            <p>Start from sound packs made for real interfaces.</p>
+          </span>
           <span className="library-welcome-cta">
-            Explore
+            Explore presets
             <ChevronRight size={14} />
           </span>
         </button>

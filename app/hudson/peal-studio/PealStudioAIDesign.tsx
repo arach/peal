@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { AI } from 'hudsonkit'
 import type { Sound } from '@/store/soundStore'
 import type { ProposeSoundInput } from '@/lib/ai/soundProposal'
@@ -14,6 +15,8 @@ export interface PealStudioAIDesignProps {
   onPlaySound: (sound: Sound) => void | Promise<void>
   onAddAsTrack: (sound: Sound) => void | Promise<void>
   onOpenLibrary: () => void
+  initialPrompt?: string
+  onInitialPromptConsumed?: () => void
 }
 
 export function PealStudioAIDesign({
@@ -23,6 +26,8 @@ export function PealStudioAIDesign({
   onPlaySound,
   onAddAsTrack,
   onOpenLibrary,
+  initialPrompt = '',
+  onInitialPromptConsumed,
 }: PealStudioAIDesignProps) {
   const { sfxSummary } = usePealStudioHudson()
   const { chat, lastProposal, clearProposal } = usePealStudioAI({
@@ -30,6 +35,28 @@ export function PealStudioAIDesign({
     onProposeSound,
     onOpenLibrary,
   })
+  const consumedPrompt = useRef('')
+
+  useEffect(() => {
+    const prompt = initialPrompt.trim()
+
+    if (!prompt) {
+      consumedPrompt.current = ''
+      return
+    }
+
+    if (
+      consumedPrompt.current === prompt ||
+      chat.status === 'streaming' ||
+      chat.status === 'submitted'
+    ) {
+      return
+    }
+
+    consumedPrompt.current = prompt
+    chat.sendMessage({ text: prompt })
+    onInitialPromptConsumed?.()
+  }, [chat, initialPrompt, onInitialPromptConsumed])
 
   const sendExample = (text: string) => {
     if (chat.status === 'streaming' || chat.status === 'submitted') return
