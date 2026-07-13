@@ -185,12 +185,11 @@ The CLI does not launch or bundle Studio. Open the hosted app directly:
   <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/sounds.png" alt="Signature sounds grid — click to preview UI sounds" width="900">
 </p>
 
-[Open the app](https://arach.github.io/peal/) · [Product site](https://peal.app) · [GitHub](https://github.com/arach/peal)
+[Open the app](https://arach.github.io/peal/) · [GitHub](https://github.com/arach/peal)
 
 ## Links
 
 - [Web app](https://arach.github.io/peal/)
-- [peal.app](https://peal.app)
 - [GitHub](https://github.com/arach/peal)
 - [Issues](https://github.com/arach/peal/issues)
 

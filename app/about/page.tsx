@@ -12,7 +12,7 @@ import {
   AudioWaveform,
   Gamepad2,
   Sparkles,
-  Mail,
+  CircleDot,
   Copy,
   Check,
   Music,
@@ -208,11 +208,13 @@ export default function AboutPage() {
             </div>
             <div className="about-contact-actions">
               <a
-                href="mailto:hello@peal.app"
+                href="https://github.com/arach/peal/issues"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="about-btn about-btn-primary"
               >
-                <Mail size={16} />
-                Email us
+                <CircleDot size={16} />
+                Open an issue
               </a>
               <a
                 href="https://github.com/arach/peal"
