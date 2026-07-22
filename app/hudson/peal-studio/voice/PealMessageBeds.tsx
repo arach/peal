@@ -50,7 +50,7 @@ export function PealMessageBeds() {
                 onClick={() => applyBed(bed.id, true)}
                 disabled={voice.isGenerating || !voice.musicProviderReady}
               >
-                Capture bed
+                Add bed
               </StudioPad>
               <StudioPad
                 className="!text-[9px] peal-inst-pad--active"
@@ -62,7 +62,7 @@ export function PealMessageBeds() {
                   || !voice.activeProviderReady
                 }
               >
-                Capture pair
+                Add pair
               </StudioPad>
               <StudioPad
                 className="!text-[9px]"

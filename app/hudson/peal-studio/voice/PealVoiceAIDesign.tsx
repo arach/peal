@@ -18,7 +18,7 @@ export function PealVoiceAIDesign() {
   const hasClips = voice.takes.length > 0
   const composerPlaceholder = hasClips
     ? 'Describe the mood, genre, or strip tweak…'
-    : 'After capture: load a genre, tweak the strip…'
+    : 'Once created: load a genre, tweak the strip…'
 
   const starterChips = hasClips
     ? (lastEdit?.followUpSuggestions.length
@@ -39,7 +39,7 @@ export function PealVoiceAIDesign() {
             <p className="mt-0.5 font-mono text-[9px] leading-relaxed text-gray-500">
               {hasClips
                 ? 'Tap last edit to see what changed. Strip and genre pills highlight on the mixer.'
-                : 'Capture a clip first, then return here to shape it through the mixer.'}
+                : 'Create a clip first, then return here to shape it through the mixer.'}
             </p>
           </div>
         </div>
@@ -49,7 +49,7 @@ export function PealVoiceAIDesign() {
         placeholder={
           hasClips
             ? 'Ask AI to load a genre or tweak the strip — changes apply live to the selected pad.'
-            : 'Capture on the deck, then describe how clips should sound.'
+            : 'Create a clip, then describe how it should sound.'
         }
       />
 
@@ -75,7 +75,7 @@ export function PealVoiceAIDesign() {
 
       <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2 peal-instruments">
         <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-gray-500">
-          {lastEdit ? 'Suggested next' : hasClips ? 'Try' : 'After capture'}
+          {lastEdit ? 'Suggested next' : hasClips ? 'Try' : 'Once created'}
         </p>
         <div className="flex flex-wrap gap-1.5">
           {starterChips.map((example) => (

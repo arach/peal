@@ -72,7 +72,7 @@ export function PealDeck({ compact = false }: { compact?: boolean }) {
                   >
                     <span className="peal-inst-deck-pad-slot">{slot + 1}</span>
                     <span className="peal-inst-deck-pad-empty-label">
-                      {targeted ? 'Capture here' : 'Empty'}
+                      {targeted ? 'Add here' : 'Empty'}
                     </span>
                   </button>
                 )

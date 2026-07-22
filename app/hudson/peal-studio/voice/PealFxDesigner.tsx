@@ -104,7 +104,7 @@ export function PealFxDesigner() {
             )}
           </StudioScopeWell>
 
-          <div className="mb-3 border-b border-[var(--inst-line-lo)] pb-3">
+          <section className="peal-inst-genre-bank">
             <div className="mb-2 flex items-center justify-between gap-2">
               <p className="peal-inst-rack-label">Load genre</p>
               <span className="peal-inst-rack-readout">
@@ -144,32 +144,34 @@ export function PealFxDesigner() {
                 Dry — dial the strip below to program a chain from scratch.
               </p>
             )}
-          </div>
+          </section>
 
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <p className="peal-inst-rack-label">Channel strip</p>
-            <span className="peal-inst-rack-readout">{FX_KNOBS.length} knobs</span>
-          </div>
-          <p className="mb-3 font-mono text-[9px] leading-relaxed text-gray-500">
-            The mixer program — EQ, grit, hiss, presence, level. Changes apply to the selected pad in real time; keep preview playing to hear updates.
-          </p>
+          <section className="peal-inst-channel-strip min-h-0 flex-1">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <p className="peal-inst-rack-label">Channel strip</p>
+              <span className="peal-inst-rack-readout">{FX_KNOBS.length} knobs</span>
+            </div>
+            <p className="mb-3 font-mono text-[9px] leading-relaxed text-gray-500">
+              The mixer program — EQ, grit, hiss, presence, level. Changes apply to the selected pad in real time; keep preview playing to hear updates.
+            </p>
 
-          <div className="peal-inst-fx-knob-grid min-h-0 flex-1 overflow-y-auto px-1 py-2">
-            {FX_KNOBS.map((knob) => (
-              <StudioKnob
-                key={knob.key}
-                label={knob.label}
-                min={knob.min}
-                max={knob.max}
-                step={knob.step}
-                value={readMixerFxValue(mixer, knob.key)}
-                format={knob.format}
-                tweaked={isMixerKnobTweaked(mixer, knob.key)}
-                className={aiHighlights?.knobKeys.has(knob.key) ? 'peal-inst-knob--ai-highlight' : undefined}
-                onChange={(value) => setKnob(knob.key, value)}
-              />
-            ))}
-          </div>
+            <div className="peal-inst-fx-knob-grid min-h-0 flex-1 overflow-y-auto py-2">
+              {FX_KNOBS.map((knob) => (
+                <StudioKnob
+                  key={knob.key}
+                  label={knob.label}
+                  min={knob.min}
+                  max={knob.max}
+                  step={knob.step}
+                  value={readMixerFxValue(mixer, knob.key)}
+                  format={knob.format}
+                  tweaked={isMixerKnobTweaked(mixer, knob.key)}
+                  className={aiHighlights?.knobKeys.has(knob.key) ? 'peal-inst-knob--ai-highlight' : undefined}
+                  onChange={(value) => setKnob(knob.key, value)}
+                />
+              ))}
+            </div>
+          </section>
 
           <div className="mt-3 flex flex-wrap gap-2 border-t border-[var(--inst-line-lo)] pt-3">
             <StudioPad
@@ -183,7 +185,7 @@ export function PealFxDesigner() {
               onClick={voice.applySelectedFxAsDefault}
               className="!text-[9px]"
             >
-              Default for capture
+              Default for new clips
             </StudioPad>
           </div>
         </StudioRack>

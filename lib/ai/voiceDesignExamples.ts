@@ -1,8 +1,8 @@
 import type { DeckClip } from '@/app/hudson/peal-studio/voice/types'
 
 export const VOICE_CAPTURE_EXAMPLE_PROMPTS = [
-  'Write UI copy for “saved successfully” and capture it',
-  'Capture a 2s dark synth sting to bank A',
+  'Write UI copy for “saved successfully” and create the clip',
+  'Create a 2s dark synth sting in bank A',
   'Generate a lo-fi instrumental bed for a loading screen',
   'Record a calm dispatcher line for order confirmed',
 ] as const

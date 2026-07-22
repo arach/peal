@@ -1,4 +1,4 @@
-export type VoiceLayoutMode = 'panels' | 'tabs' | 'tile'
+export type VoiceLayoutMode = 'tabs' | 'tile'
 
 /** Modules that live in the center workspace (side panels stay fixed). */
 export type VoiceCenterModuleId = 'fx' | 'capture'
@@ -14,12 +14,12 @@ export interface VoiceLayoutState {
 export const VOICE_LAYOUT_STORAGE_KEY = 'peal-voice-layout-v1'
 
 export const VOICE_CENTER_MODULE_LABELS: Record<VoiceCenterModuleId, string> = {
-  fx: 'Programmable mixer',
-  capture: 'Capture',
+  fx: 'Mixer',
+  capture: 'Create',
 }
 
 export const DEFAULT_VOICE_LAYOUT: VoiceLayoutState = {
-  mode: 'panels',
+  mode: 'tile',
   activeTab: 'fx',
   tileLeft: 'fx',
   tileRight: 'capture',
@@ -43,7 +43,7 @@ export function loadVoiceLayout(): VoiceLayoutState {
     return {
       ...DEFAULT_VOICE_LAYOUT,
       ...parsed,
-      mode: parsed.mode ?? DEFAULT_VOICE_LAYOUT.mode,
+      mode: parsed.mode === 'tabs' ? 'tabs' : 'tile',
       activeTab: normalizeModule(parsed.activeTab, DEFAULT_VOICE_LAYOUT.activeTab),
       tileLeft: normalizeModule(parsed.tileLeft, DEFAULT_VOICE_LAYOUT.tileLeft),
       tileRight: normalizeModule(parsed.tileRight, DEFAULT_VOICE_LAYOUT.tileRight),

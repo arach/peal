@@ -856,6 +856,31 @@
   min-height: 12.75rem;
 }
 
+.peal-inst-genre-bank,
+.peal-inst-channel-strip {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+  padding: 0.65rem;
+  border: 1px solid var(--inst-line-lo);
+  border-top-color: var(--inst-line-hi);
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(0, 0, 0, 0.06));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.025) inset,
+    0 3px 10px rgba(0, 0, 0, 0.12) inset;
+}
+
+.peal-inst-genre-bank {
+  margin-bottom: 0.75rem;
+}
+
+.peal-inst-channel-strip {
+  display: flex;
+  flex-direction: column;
+}
+
 .peal-inst-preview-wave-shell {
   padding: 0.45rem 0.5rem 0.4rem;
   background: rgba(0, 0, 0, 0.22);
@@ -1133,6 +1158,42 @@
   overflow: hidden;
 }
 
+.peal-voice-tile-pane-bar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 1.75rem;
+  padding: 0.3rem 0.55rem;
+  border-bottom: 1px solid var(--inst-line-lo);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(0, 0, 0, 0.06));
+}
+
+.peal-voice-tile-focus {
+  padding: 0.18rem 0.4rem;
+  border: 1px solid var(--inst-line-lo);
+  border-top-color: var(--inst-line-hi);
+  border-radius: 2px;
+  background: var(--inst-pad-bg);
+  color: var(--inst-pad-fg);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.peal-voice-tile-focus:hover {
+  background: var(--inst-pad-bg-hover);
+  color: var(--inst-pad-fg-hover);
+}
+
+.peal-voice-tile-focus:focus-visible {
+  outline: 2px solid var(--inst-accent);
+  outline-offset: 2px;
+}
+
 .peal-voice-tile-divider {
   flex-shrink: 0;
   width: 5px;
@@ -1145,6 +1206,12 @@
 .peal-voice-tile-divider:hover,
 .peal-voice-tile-divider--active {
   background: rgba(74, 158, 255, 0.45);
+}
+
+.peal-voice-tile-divider:focus-visible {
+  outline: none;
+  background: var(--inst-accent);
+  box-shadow: 0 0 0 1px var(--inst-accent);
 }
 
 /* ── Music workspace: editor (top) + REPL (bottom) ─────────── */
@@ -1846,6 +1913,17 @@
   background:
     radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.5), transparent 34rem),
     linear-gradient(180deg, rgba(216, 224, 234, 0.34) 0%, transparent 28%);
+}
+
+.peal-studio-shell[data-peal-theme='light'] :is(.peal-inst-genre-bank, .peal-inst-channel-strip) {
+  border-color: rgba(30, 41, 59, 0.13);
+  border-top-color: rgba(255, 255, 255, 0.92);
+  background:
+    repeating-linear-gradient(0deg, rgba(30, 41, 59, 0.012) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, rgba(252, 253, 255, 0.78), rgba(218, 225, 234, 0.5));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.82) inset,
+    0 4px 12px rgba(30, 41, 59, 0.055) inset;
 }
 
 .peal-studio-shell[data-peal-theme='light'] .peal-inst-pad-tray {

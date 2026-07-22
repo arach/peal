@@ -25,7 +25,7 @@ export default function PealStudioShell() {
         shellRef.current = node
         setShellElement(node)
       }}
-      className="peal-studio-shell h-full overflow-hidden [--hud-accent:#4a9eff] [--hud-info:#4a9eff] [--hud-accent-soft:rgba(74,158,255,0.12)]"
+      className="peal-studio-shell relative h-full overflow-hidden [transform:translateZ(0)] [--hud-accent:#4a9eff] [--hud-info:#4a9eff] [--hud-accent-soft:rgba(74,158,255,0.12)]"
       data-hudson-template="hudson"
     >
       <StudioThemeBridge shellRef={shellRef} />
@@ -41,6 +41,7 @@ export default function PealStudioShell() {
                 app={pealStudioApp}
                 managedTheme={false}
                 chrome={{
+                  nav: false,
                   panelBehavior: {
                     mode: 'auto',
                     centerMinWidth: 560,
