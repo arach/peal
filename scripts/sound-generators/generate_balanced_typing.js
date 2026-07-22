@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const REPO_ROOT = path.resolve(__dirname, '../..');
 
 // Sample rate (Hz)
 const SAMPLE_RATE = 44100;
@@ -270,7 +271,7 @@ function generateSingleBalancedKey() {
 }
 
 // Create output directory
-const outputDir = path.join(__dirname, 'assets', 'sounds', 'balanced-typing');
+const outputDir = path.join(REPO_ROOT, 'assets', 'sounds', 'balanced-typing');
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
@@ -314,7 +315,7 @@ fs.writeFileSync(
 );
 
 // Also copy to public directory for web access
-const publicDir = path.join(__dirname, 'public', 'sounds', 'balanced-typing');
+const publicDir = path.join(REPO_ROOT, 'public', 'sounds', 'balanced-typing');
 if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }

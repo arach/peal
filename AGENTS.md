@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 ## Project Overview
 
@@ -37,7 +37,7 @@ node scripts/sound-generators/generate_signature_sounds.js
 
 *** IMPORTANT ***
 
-1. You must never add Claude as co-author, messes up our contributor pages on Github
+1. You must never add Codex as co-author, messes up our contributor pages on Github
 2. You must never kill our next server, we run the server on port 3001 and it always autocompiles. If there's an issue, ask for assistance
 
 
