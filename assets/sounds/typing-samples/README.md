@@ -1,6 +1,6 @@
 # Creamy Keys Typing Samples
 
-This directory contains extracted audio samples from the `creamy_keys.webm` video, which showcases the sound of creamy mechanical keyboard switches.
+This directory contains extracted audio samples from `creamy_keys.webm` (kept here as the source recording), which showcases the sound of creamy mechanical keyboard switches.
 
 ## Audio Specifications
 - **Format**: WAV (PCM signed 16-bit little-endian)

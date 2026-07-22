@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { GridIcon, LayersIcon, LayoutIcon } from '@/components/icons/PealStudioIcon'
+import { GridIcon, LayersIcon } from '@/components/icons/PealStudioIcon'
 import { StudioModuleTabs, StudioPad, StudioPadTray } from '@/components/studio/StudioInstruments'
 import { PealFxDesigner } from './PealFxDesigner'
 import { PealVoiceConfig } from './PealVoiceConfig'
@@ -125,22 +125,13 @@ export function PealVoiceLayoutBar() {
   return (
     <div className="shrink-0 border-b border-[var(--inst-line-lo)] bg-[var(--peal-surface-1)] peal-instruments">
       <div className="flex flex-wrap items-center gap-2 px-3 py-2">
-        <span className="peal-inst-rack-label mr-1">Center</span>
+        <span className="peal-inst-rack-label mr-1">Workspace</span>
         <StudioPadTray>
-          <StudioPad
-            active={layout.mode === 'panels'}
-            onClick={() => layout.setMode('panels')}
-            className="!text-[9px]"
-            title="Mixer only in center — deck left, AI edit right"
-          >
-            <LayoutIcon size={11} />
-            Single
-          </StudioPad>
           <StudioPad
             active={layout.mode === 'tabs'}
             onClick={() => layout.setMode('tabs')}
             className="!text-[9px]"
-            title="Tab the center panel between FX and capture"
+            title="Show one workspace at a time"
           >
             <LayersIcon size={11} />
             Tabs
@@ -149,16 +140,12 @@ export function PealVoiceLayoutBar() {
             active={layout.mode === 'tile'}
             onClick={() => layout.setMode('tile')}
             className="!text-[9px]"
-            title="Split the center panel — side panels stay put"
+            title="Show Mixer and Create side by side"
           >
             <GridIcon size={11} />
             Tile
           </StudioPad>
         </StudioPadTray>
-
-        <p className="hidden font-mono text-[9px] text-gray-600 sm:block">
-          Deck · AI edit panels stay open
-        </p>
 
         {layout.mode === 'tabs' ? (
           <div className="min-w-0 flex-1">
@@ -214,20 +201,56 @@ function PealVoiceTileWorkspace() {
   }, [dragging, layout])
 
   const leftWidth = `${(layout.tileRatio * 100).toFixed(1)}%`
+  const focusModule = (moduleId: VoiceCenterModuleId) => {
+    layout.setActiveTab(moduleId)
+    layout.setMode('tabs')
+  }
 
   return (
     <div id="peal-voice-tile-root" className="peal-voice-tile-root min-h-0 flex-1">
       <div className="peal-voice-tile-pane" style={{ width: leftWidth }}>
-        <VoiceCenterModule moduleId={layout.tileLeft} />
+        <div className="peal-voice-tile-pane-bar">
+          <span className="peal-inst-rack-label">{VOICE_CENTER_MODULE_LABELS[layout.tileLeft]}</span>
+          <button
+            type="button"
+            className="peal-voice-tile-focus"
+            onClick={() => focusModule(layout.tileLeft)}
+            aria-label={`Focus ${VOICE_CENTER_MODULE_LABELS[layout.tileLeft]} panel`}
+          >
+            Focus
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-hidden">
+          <VoiceCenterModule moduleId={layout.tileLeft} />
+        </div>
       </div>
       <button
         type="button"
         aria-label="Resize tiles"
+        title="Resize workspace tiles"
         className={`peal-voice-tile-divider${dragging ? ' peal-voice-tile-divider--active' : ''}`}
         onMouseDown={() => setDragging(true)}
+        onKeyDown={(event) => {
+          if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+          event.preventDefault()
+          layout.setTileRatio(layout.tileRatio + (event.key === 'ArrowLeft' ? -0.05 : 0.05))
+        }}
       />
       <div className="peal-voice-tile-pane min-w-0 flex-1">
-        <VoiceCenterModule moduleId={layout.tileRight} />
+        <div className="peal-voice-tile-pane-bar">
+          <span className="peal-inst-rack-label">{VOICE_CENTER_MODULE_LABELS[layout.tileRight]}</span>
+          <button
+            type="button"
+            className="peal-voice-tile-focus"
+            onClick={() => focusModule(layout.tileRight)}
+            aria-label={`Focus ${VOICE_CENTER_MODULE_LABELS[layout.tileRight]} panel`}
+          >
+            Focus
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-hidden">
+          <VoiceCenterModule moduleId={layout.tileRight} />
+        </div>
       </div>
     </div>
   )
@@ -235,10 +258,6 @@ function PealVoiceTileWorkspace() {
 
 export function PealVoiceWorkspace() {
   const layout = usePealVoiceLayout()
-
-  if (layout.mode === 'panels') {
-    return <PealFxDesigner />
-  }
 
   if (layout.mode === 'tile') {
     return <PealVoiceTileWorkspace />

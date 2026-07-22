@@ -235,7 +235,7 @@ export function getFollowUpSuggestions(edit: PealVoiceLastEdit, clip: DeckClip |
     suggestions.push('Slow it to dispatcher pacing')
   }
   if (clip?.source === 'music' && edit.knobChanges.some((c) => c.key === 'outputGain')) {
-    suggestions.push('Set this as default for capture')
+    suggestions.push('Set this as the new clip default')
   }
   if (clip?.source === 'sfx' && edit.knobChanges.length > 0) {
     suggestions.push('Make it punchier — presence up')

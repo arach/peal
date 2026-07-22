@@ -23,9 +23,9 @@ const eslintConfig = defineConfig([
     'assets/**',
     '*.config.js',
     '*.config.ts',
-    'generate_*.js',
-    'capture-screenshot.js',
-    'intelligent_sound_system.ts',
+    'scripts/sound-generators/**',
+    'scripts/capture-screenshot.js',
+    'docs/research/**',
   ]),
 ])
 

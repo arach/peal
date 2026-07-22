@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const REPO_ROOT = path.resolve(__dirname, '../..');
 
 // Sample rate (Hz)
 const SAMPLE_RATE = 44100;
@@ -330,9 +331,9 @@ function generate30SecondSampleSequence() {
   
   // Load reference samples
   const sampleFiles = [
-    '/Users/arach/dev/peal/assets/sounds/typing-samples/single_key_1.wav',
-    '/Users/arach/dev/peal/assets/sounds/typing-samples/single_key_2.wav',
-    '/Users/arach/dev/peal/assets/sounds/typing-samples/single_key_3.wav'
+    path.join(REPO_ROOT, 'assets', 'sounds', 'typing-samples', 'single_key_1.wav'),
+    path.join(REPO_ROOT, 'assets', 'sounds', 'typing-samples', 'single_key_2.wav'),
+    path.join(REPO_ROOT, 'assets', 'sounds', 'typing-samples', 'single_key_3.wav')
   ];
   
   const loadedSamples = [];
@@ -387,7 +388,7 @@ function generate30SecondSampleSequence() {
 }
 
 // Create output directory
-const outputDir = path.join(__dirname, 'assets', 'sounds', 'typing-sequences');
+const outputDir = path.join(REPO_ROOT, 'assets', 'sounds', 'typing-sequences');
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
@@ -449,7 +450,7 @@ fs.writeFileSync(
 );
 
 // Copy to public directory
-const publicDir = path.join(__dirname, 'public', 'sounds', 'typing-sequences');
+const publicDir = path.join(REPO_ROOT, 'public', 'sounds', 'typing-sequences');
 if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }

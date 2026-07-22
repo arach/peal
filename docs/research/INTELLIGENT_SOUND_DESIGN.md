@@ -69,7 +69,7 @@ Dynamic selection based on sound characteristics:
 ### Basic Usage
 
 ```typescript
-import { intelligentSoundFactory, smartPresetManager } from './intelligent_sound_system';
+import { intelligentSoundFactory, smartPresetManager } from './intelligent_sound_system.ts';
 
 // Generate a context-aware sound
 const clickSound = intelligentSoundFactory.generateSound('click', {
