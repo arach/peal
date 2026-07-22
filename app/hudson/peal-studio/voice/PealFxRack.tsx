@@ -20,7 +20,7 @@ export function PealFxRack() {
       <div className="flex h-full flex-col items-center justify-center p-6 text-center">
         <p className="peal-inst-rack-label">FX rack</p>
         <p className="mt-2 max-w-[14rem] font-mono text-[10px] leading-relaxed text-gray-500">
-          Select a pad on the deck. Inserts and knobs apply to that clip — then capture new audio with the same chain via default FX.
+          Select a pad on the deck. Inserts and knobs apply to that clip — then create new audio with the same chain via default FX.
         </p>
       </div>
     )
@@ -59,7 +59,7 @@ export function PealFxRack() {
           onClick={voice.applySelectedFxAsDefault}
           className="peal-inst-pad w-full py-2 text-[10px]"
         >
-          Use preset for new captures
+          Use preset for new clips
         </button>
       </StudioRack>
 

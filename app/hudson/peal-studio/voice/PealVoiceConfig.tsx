@@ -28,7 +28,7 @@ export function PealVoiceConfig() {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto peal-instruments bg-transparent p-3 text-[var(--peal-surface-text)]">
-      <StudioRack label="Capture" className="space-y-3 p-3">
+      <StudioRack label="Create clip" className="space-y-3 p-3">
         <StudioPadTray className="w-full">
           <StudioPad
             active={voice.captureSource === 'tts'}
@@ -130,12 +130,12 @@ export function PealVoiceConfig() {
           {voice.isGenerating ? (
             <>
               <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#0a0a0c]/30 border-t-[#0a0a0c]" />
-              Capturing…
+              Creating…
             </>
           ) : (
             <>
               <MagicWandIcon size={12} />
-              Capture to deck
+              Create clip
               <kbd className="rounded border border-black/40 bg-black/25 px-1.5 py-0.5 font-mono text-[9px] normal-case tracking-normal text-[#0a0a0c]/70">
                 {voice.isMac ? '⌘' : 'Ctrl'}+Enter
               </kbd>
@@ -227,7 +227,7 @@ export function PealVoiceConfig() {
         <div>
           <div className="mb-2 flex items-center justify-between gap-2">
             <label htmlFor="peal-voice-fx" className="peal-inst-rack-label">
-              {editingTake ? 'Pad genre' : 'Capture default'}
+              {editingTake ? 'Pad genre' : 'New clip default'}
             </label>
             <span className="peal-inst-rack-readout">{editingTake ? 'selected pad' : 'new clips'}</span>
           </div>
