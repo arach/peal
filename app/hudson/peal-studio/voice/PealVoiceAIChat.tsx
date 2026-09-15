@@ -80,7 +80,7 @@ export function PealVoiceAIChat({ placeholder }: PealVoiceAIChatProps) {
 
 export function PealVoiceAIComposer({ placeholder }: { placeholder: string }) {
   const { chat, sendPrompt, isBusy } = usePealVoiceAIContext()
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -107,9 +107,9 @@ export function PealVoiceAIComposer({ placeholder }: { placeholder: string }) {
         Your idea
       </label>
       <div className="flex items-center gap-2">
-        <input
+        <textarea
           ref={inputRef}
-          type="text"
+          rows={1}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
           disabled={isBusy}

@@ -1310,10 +1310,15 @@
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 12px;
   font-weight: 500;
+  line-height: 1.45;
   color: #f3f4f6;
   outline: none;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
   transition: border-color 0.12s, box-shadow 0.12s;
+  resize: none;
+  field-sizing: content;
+  max-height: 8.5rem;
+  overflow-y: auto;
 }
 
 .peal-voice-ai-composer-input::placeholder {

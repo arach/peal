@@ -76,7 +76,7 @@ export function PealMusicAIChat({ placeholder }: { placeholder: string }) {
 
 export function PealMusicAIComposer({ placeholder }: { placeholder: string }) {
   const { chat, sendPrompt, isBusy } = usePealMusicAIContext()
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -103,9 +103,9 @@ export function PealMusicAIComposer({ placeholder }: { placeholder: string }) {
         Live code
       </label>
       <div className="flex items-center gap-2">
-        <input
+        <textarea
           ref={inputRef}
-          type="text"
+          rows={1}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
           disabled={isBusy}
