@@ -23,7 +23,7 @@ import {
 } from './types'
 import { byokProviderForEnvVar } from '@/lib/byok'
 import { generateSpeech } from '@/lib/ai/generateSpeech'
-import { useByok } from '@/lib/useByok'
+import { useByok, useServerCredentialStatus } from '@/lib/useByok'
 import { playTakeWithVoiceFx } from './voiceFx'
 import type { VoiceFxHandle, VoiceFxParams } from '@voxd/client/fx'
 
@@ -136,7 +136,8 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
   const [currentlyPlayingId, setCurrentlyPlayingId] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [generateError, setGenerateError] = useState<string | null>(null)
-  const [providerStatus, setProviderStatus] = useState<Record<string, boolean>>({})
+  const serverProviderStatus = useServerCredentialStatus()
+  const providerStatus = serverProviderStatus ?? {}
   const [isMac, setIsMac] = useState(false)
   const [hydrated, setHydrated] = useState(false)
   const byok = useByok()
@@ -180,17 +181,11 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
   }, [hydrated, takes])
 
   useEffect(() => {
-    fetch('/api/check-providers')
-      .then((res) => res.json())
-      .then((status: Record<string, boolean>) => {
-        setProviderStatus(status)
-        if (!status.OPENAI_API_KEY && status.GROQ_API_KEY) {
-          setSelectedModelState('playai-tts')
-          setSelectedVoice('Fritz-PlayAI')
-        }
-      })
-      .catch(() => {})
-  }, [])
+    if (serverProviderStatus && !serverProviderStatus.OPENAI_API_KEY && serverProviderStatus.GROQ_API_KEY) {
+      setSelectedModelState('playai-tts')
+      setSelectedVoice('Fritz-PlayAI')
+    }
+  }, [serverProviderStatus])
 
   const setSelectedModel = useCallback((model: string) => {
     setSelectedModelState(model)

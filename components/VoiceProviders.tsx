@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Key, Check, X, Eye, EyeOff, Settings } from 'lucide-react'
+import { useServerCredentialStatus } from '@/lib/useByok'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -72,25 +73,15 @@ export default function VoiceProviders() {
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({})
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({})
 
-  useEffect(() => {
-    // Check configuration status from API
-    checkProviderStatus()
-  }, [])
+  const serverStatus = useServerCredentialStatus()
 
-  const checkProviderStatus = async () => {
-    try {
-      const response = await fetch('/api/check-providers')
-      if (response.ok) {
-        const data = await response.json()
-        setProviders(prev => prev.map(provider => ({
-          ...provider,
-          configured: data[provider.envKey] || false
-        })))
-      }
-    } catch (error) {
-      console.error('Failed to check provider status:', error)
-    }
-  }
+  useEffect(() => {
+    if (!serverStatus) return
+    setProviders(prev => prev.map(provider => ({
+      ...provider,
+      configured: serverStatus[provider.envKey] || false
+    })))
+  }, [serverStatus])
 
   const handleSaveKey = async (providerId: string, envKey: string) => {
     const key = apiKeys[providerId]

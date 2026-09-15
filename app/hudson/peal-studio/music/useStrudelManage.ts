@@ -2,6 +2,19 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { getPath } from '@/utils/navigation'
+import { isPealStaticRuntime } from '@/lib/ai/runtime'
+
+const STATIC_ENGINE_MESSAGE = 'Managed Strudel needs the hosted Peal app — the static build has no engine backend.'
+
+const STATIC_STATUS: StrudelManageStatusResponse = {
+  phase: 'unavailable',
+  config: null,
+  upstream: null,
+  reachable: false,
+  pidAlive: false,
+  message: STATIC_ENGINE_MESSAGE,
+  state: null,
+}
 
 export interface StrudelManageStatusResponse {
   phase: string
@@ -18,13 +31,19 @@ export interface StrudelManageStatusResponse {
 }
 
 export function useStrudelManage(pollMs = 5000) {
-  const [status, setStatus] = useState<StrudelManageStatusResponse | null>(null)
+  const isStatic = isPealStaticRuntime()
+  const [status, setStatus] = useState<StrudelManageStatusResponse | null>(
+    isStatic ? STATIC_STATUS : null,
+  )
   const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(
+    isStatic ? STATIC_ENGINE_MESSAGE : null,
+  )
 
   const apiUrl = getPath('/api/strudel')
 
   const refresh = useCallback(async () => {
+    if (isStatic) return
     try {
       const response = await fetch(apiUrl)
       if (!response.ok) {
@@ -36,9 +55,13 @@ export function useStrudelManage(pollMs = 5000) {
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
     }
-  }, [apiUrl])
+  }, [apiUrl, isStatic])
 
   const runAction = useCallback(async (action: string, payload?: Record<string, unknown>) => {
+    if (isStatic) {
+      setError(STATIC_ENGINE_MESSAGE)
+      return
+    }
     setBusy(true)
     setError(null)
     try {
@@ -65,13 +88,14 @@ export function useStrudelManage(pollMs = 5000) {
     } finally {
       setBusy(false)
     }
-  }, [apiUrl, refresh])
+  }, [apiUrl, refresh, isStatic])
 
   useEffect(() => {
+    if (isStatic) return
     void refresh()
     const timer = window.setInterval(() => void refresh(), pollMs)
     return () => window.clearInterval(timer)
-  }, [refresh, pollMs])
+  }, [refresh, pollMs, isStatic])
 
   return {
     status,

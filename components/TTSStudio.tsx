@@ -15,7 +15,7 @@ import ResizableSidebar from "./ResizableSidebar"
 import { styles } from "@/lib/styles"
 import { byokProviderForEnvVar } from "@/lib/byok"
 import { generateSpeech } from "@/lib/ai/generateSpeech"
-import { useByok } from "@/lib/useByok"
+import { useByok, useServerCredentialStatus } from "@/lib/useByok"
 
 interface GeneratedAudio {
   id: string
@@ -41,7 +41,8 @@ export default function TTSStudio() {
   const [isMac, setIsMac] = useState(false)
   const [selectedAudioId, setSelectedAudioId] = useState<string | null>(null)
   const [audioTracks, setAudioTracks] = useState<GeneratedAudio[]>([])
-  const [providerStatus, setProviderStatus] = useState<Record<string, boolean>>({})
+  const serverProviderStatus = useServerCredentialStatus()
+  const providerStatus = serverProviderStatus ?? {}
   const [generateError, setGenerateError] = useState<string | null>(null)
   const byok = useByok()
 
@@ -53,17 +54,11 @@ export default function TTSStudio() {
   }, [])
 
   useEffect(() => {
-    fetch('/api/check-providers')
-      .then((res) => res.json())
-      .then((status: Record<string, boolean>) => {
-        setProviderStatus(status)
-        if (!status.OPENAI_API_KEY && status.GROQ_API_KEY) {
-          setSelectedModel('playai-tts')
-          setSelectedVoice('Fritz-PlayAI')
-        }
-      })
-      .catch(() => {})
-  }, [])
+    if (serverProviderStatus && !serverProviderStatus.OPENAI_API_KEY && serverProviderStatus.GROQ_API_KEY) {
+      setSelectedModel('playai-tts')
+      setSelectedVoice('Fritz-PlayAI')
+    }
+  }, [serverProviderStatus])
 
   const models = [
     { id: "tts-1", name: "OpenAI TTS-1", provider: "OpenAI", tier: "Standard", envKey: "OPENAI_API_KEY" },
