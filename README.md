@@ -1,4 +1,6 @@
-# Peal — Design your own SFX library
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arach/peal/master/public/images/brand/peal-halftone-logo-banner.png" alt="Peal" width="560">
+</p>
 
 <p align="center">
   <strong>Curated UI sounds, a Web Audio studio, and a CLI — shape new effects or drop presets into any project</strong>
@@ -328,8 +330,9 @@ Use the browser app to preview presets, design custom sounds, and manage a colle
 Live app: [arach.github.io/peal](https://arach.github.io/peal/)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/sounds.png" alt="Signature sounds grid — click to preview UI sounds" width="440">
-  <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/library.png" alt="Peal library — start building your collection" width="440">
+  <img src="https://raw.githubusercontent.com/arach/peal/master/public/images/studio/sfx.png" alt="SFX Studio — Web Audio sound designer" width="288">
+  <img src="https://raw.githubusercontent.com/arach/peal/master/public/images/studio/voice.png" alt="Voice Studio — TTS deck" width="288">
+  <img src="https://raw.githubusercontent.com/arach/peal/master/public/images/studio/music.png" alt="Music Studio — Strudel live coding" width="288">
 </p>
 
 The npm CLI and Studio are separate surfaces: installing Peal does not bundle or launch the web app. Use the hosted links above, or run the repository locally.

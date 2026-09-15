@@ -1,6 +1,10 @@
-# Peal
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arach/peal/master/public/images/brand/peal-halftone-logo-banner.png" alt="Peal" width="480">
+</p>
 
-Curated UI sounds for web apps — clicks, success chimes, errors, and the rest — copied into your repo and played through a small generated helper.
+<p align="center">
+  <strong>Curated UI sounds for web apps — clicks, success chimes, errors, and the rest — copied into your repo and played through a small generated helper.</strong>
+</p>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/arach/peal/master/docs/screenshots/cli.png" alt="Peal CLI copying sound files and listing the built-in catalog" width="720">
