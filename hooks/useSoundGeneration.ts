@@ -142,8 +142,8 @@ export class SoundGenerator {
     if (!audioContext) return
 
     const sampleRate = 44100
-    const duration = sound.parameters.duration
-    const offlineContext = new OfflineAudioContext(1, sampleRate * duration, sampleRate)
+    const duration = Math.max(0.01, sound.parameters?.duration || 0.2)
+    const offlineContext = new OfflineAudioContext(1, Math.ceil(sampleRate * duration), sampleRate)
 
     try {
       // Create sound based on type
@@ -180,43 +180,53 @@ export class SoundGenerator {
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
 
-    osc.type = params.waveform || 'sine'
-    osc.frequency.value = params.frequency
+    const duration = Math.max(0.01, params.duration || 0.2)
+    const sustain = params.sustain ?? 0.5
+
+    const waveform = params.waveform || (params.type !== 'noise' ? params.type : null) || 'sine'
+    osc.type = waveform
+    osc.frequency.value = params.frequency || 440
 
     // ADSR envelope with safe timing
-    const safeAttack = Math.max(0.001, params.attack)
-    const safeDecay = Math.max(0.001, params.decay)
-    const safeRelease = Math.max(0.001, Math.min(params.release, params.duration - safeAttack - safeDecay))
+    const safeAttack = Math.max(0.001, params.attack ?? 0.01)
+    const safeDecay = Math.max(0.001, params.decay ?? 0.05)
+    const safeRelease = Math.max(0.001, Math.min(params.release ?? 0.08, duration - safeAttack - safeDecay))
     const sustainStart = Math.max(safeAttack + safeDecay, 0)
-    const releaseStart = Math.max(params.duration - safeRelease, sustainStart)
+    const releaseStart = Math.max(duration - safeRelease, sustainStart)
 
     gain.gain.setValueAtTime(0, now)
     gain.gain.linearRampToValueAtTime(0.5, now + safeAttack)
-    gain.gain.linearRampToValueAtTime(params.sustain * 0.5, now + safeAttack + safeDecay)
-    gain.gain.setValueAtTime(params.sustain * 0.5, now + releaseStart)
-    gain.gain.exponentialRampToValueAtTime(0.001, now + params.duration)
+    gain.gain.linearRampToValueAtTime(sustain * 0.5, now + safeAttack + safeDecay)
+    gain.gain.setValueAtTime(sustain * 0.5, now + releaseStart)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration)
 
     osc.connect(gain)
     gain.connect(ctx.destination)
 
     osc.start(now)
-    osc.stop(now + params.duration)
+    osc.stop(now + duration)
   }
 
   private createChime(ctx: OfflineAudioContext, params: any) {
     const now = 0
-    const fundamentalFreq = params.frequency
+    const fundamentalFreq = params.frequency || 440
+    // `harmonics` may be a count (generator) or a [{ratio, amplitude}] list
+    const harmonicCount = Array.isArray(params.harmonics)
+      ? params.harmonics.length
+      : (params.harmonics || 3)
+    const spread = params.spread || 0.05
+    const duration = Math.max(0.01, params.duration || 0.5)
 
-    for (let i = 0; i < params.harmonics; i++) {
+    for (let i = 0; i < harmonicCount; i++) {
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
-      const delay = i * params.spread
+      const delay = i * spread
 
       osc.frequency.value = fundamentalFreq * (i + 1)
       osc.type = 'sine'
 
       const safeDelay = Math.max(0, delay)
-      const safeDecay = Math.max(0.01, params.decay)
+      const safeDecay = Math.max(0.01, params.decay || 0.3)
       
       gain.gain.setValueAtTime(0, now + safeDelay)
       gain.gain.linearRampToValueAtTime(0.4 / (i + 1), now + safeDelay + 0.01)
@@ -226,7 +236,7 @@ export class SoundGenerator {
       gain.connect(ctx.destination)
 
       osc.start(now + delay)
-      osc.stop(now + params.duration)
+      osc.stop(now + duration)
     }
   }
 
@@ -319,19 +329,21 @@ export class SoundGenerator {
 
   private createPulse(ctx: OfflineAudioContext, params: any) {
     const now = 0
-    const pulseDuration = 1 / params.pulseRate
-    const numPulses = Math.floor(params.duration / pulseDuration)
+    const duration = Math.max(0.01, params.duration || 0.3)
+    const pulseDuration = 1 / (params.pulseRate || 5)
+    const pulseWidth = params.pulseWidth ?? 0.5
+    const numPulses = Math.floor(duration / pulseDuration)
 
     for (let i = 0; i < numPulses; i++) {
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
       const pulseStart = i * pulseDuration
-      const pulseLength = pulseDuration * params.pulseWidth
+      const pulseLength = pulseDuration * pulseWidth
 
-      osc.frequency.value = params.frequency
+      osc.frequency.value = params.frequency || 440
       osc.type = 'square'
 
-      const amplitude = 0.4 * Math.exp(-i * params.pulseDecay)
+      const amplitude = 0.4 * Math.exp(-i * (params.pulseDecay ?? 0.2))
       gain.gain.setValueAtTime(0, now + pulseStart)
       gain.gain.linearRampToValueAtTime(amplitude, now + pulseStart + 0.001)
       gain.gain.setValueAtTime(amplitude, now + pulseStart + pulseLength - 0.001)

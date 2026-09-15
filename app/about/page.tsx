@@ -76,7 +76,7 @@ const categories = [
   {
     icon: Music,
     title: 'Beats',
-    body: 'Managed Strudel, Minimax/Codex copilot, improv loop, auto-route, and version history for lyricless beats.',
+    body: 'Managed Strudel, AI copilot, improv loop, auto-route, and version history for lyricless beats.',
   },
 ]
 

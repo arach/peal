@@ -38,5 +38,5 @@ export interface PealVoiceModel {
   envKey: 'OPENAI_API_KEY' | 'GROQ_API_KEY'
 }
 
-export type DeckCaptureSource = 'tts' | 'music' | 'sfx'
+export type DeckCaptureSource = 'tts' | 'sfx'
 export type DeckSfxType = 'click' | 'tone' | 'noise' | 'sweep'

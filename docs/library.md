@@ -5,11 +5,13 @@ Peal is a lightweight sound effect library for web applications. It's a thin wra
 ## Installation
 
 ```bash
+bun add @peal-sounds/peal
+# or
 npm install @peal-sounds/peal
 # or
-yarn add @peal-sounds/peal
-# or
 pnpm add @peal-sounds/peal
+# or
+yarn add @peal-sounds/peal
 ```
 
 ## Quick Start
@@ -17,7 +19,7 @@ pnpm add @peal-sounds/peal
 ### 1. Add sounds using the CLI
 
 ```bash
-npx @peal-sounds/peal add click success error notification
+bunx @peal-sounds/peal add click success error notification
 ```
 
 This downloads high-quality WAV files to `./peal/` and generates a helper file.

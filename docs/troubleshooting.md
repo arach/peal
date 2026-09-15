@@ -35,7 +35,7 @@ ls -la peal/
 
 If missing, run:
 ```bash
-npx @peal-sounds/peal add click success error
+bunx @peal-sounds/peal add click success error
 ```
 
 #### Check Import Path
@@ -85,7 +85,7 @@ Make sure TypeScript helper was generated:
 
 ```bash
 # Generate TypeScript helper
-npx @peal-sounds/peal add --typescript
+bunx @peal-sounds/peal add --typescript
 ```
 
 Add to `tsconfig.json`:
@@ -177,10 +177,10 @@ Loading many sounds can impact performance:
 
 ```javascript
 // Bad - loads everything
-npx @peal-sounds/peal add  # Don't add all
+bunx @peal-sounds/peal add  # Don't add all
 
 // Good - only what you need
-npx @peal-sounds/peal add click success error
+bunx @peal-sounds/peal add click success error
 ```
 
 ### Volume Issues
@@ -226,7 +226,7 @@ Sound file not found. Check:
 1. **Open browser console** - Any errors?
 2. **Check network tab** - Are WAV files loading?
 3. **Verify file paths** - Do paths in peal.js match file locations?
-4. **Test with demo** - Does `npx @peal-sounds/peal demo` work?
+4. **Test with demo** - Does `bunx @peal-sounds/peal demo` work?
 5. **Try different browser** - Issue might be browser-specific
 6. **Check volume/mute** - System volume, browser tab not muted?
 7. **User interaction** - Sounds triggered by user action?

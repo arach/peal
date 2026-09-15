@@ -36,8 +36,6 @@ interface PealMusicContextValue {
   tempoCps: number | null
   tempoBpm: number | null
   setTempo: (input: { cps?: number; bpm?: number }) => void
-  musicPrompt: string
-  setMusicPrompt: (text: string) => void
   resetPattern: () => void
   strudelMountStatus: StrudelMountStatus
   isPatternDirty: boolean
@@ -104,7 +102,6 @@ export function PealMusicProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [tempoCps, setTempoCps] = useState<number | null>(1)
   const [tempoBpm, setTempoBpm] = useState<number | null>(60)
-  const [musicPrompt, setMusicPrompt] = useState('')
   const [strudelMountStatus, setStrudelMountStatus] = useState<StrudelMountStatus>('idle')
   const [lastRoutedCode, setLastRoutedCode] = useState('')
   const [routeGeneration, setRouteGeneration] = useState(0)
@@ -338,8 +335,6 @@ export function PealMusicProvider({ children }: { children: ReactNode }) {
     tempoCps,
     tempoBpm,
     setTempo,
-    musicPrompt,
-    setMusicPrompt,
     resetPattern,
     strudelMountStatus,
     isPatternDirty,
@@ -370,7 +365,6 @@ export function PealMusicProvider({ children }: { children: ReactNode }) {
     tempoCps,
     tempoBpm,
     setTempo,
-    musicPrompt,
     resetPattern,
     strudelMountStatus,
     isPatternDirty,

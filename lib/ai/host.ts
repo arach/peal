@@ -1,33 +1,56 @@
 /**
  * Hudson AI host adapter for Peal.
  *
- * Peal does not call provider APIs (Minimax, OpenAI, etc.) directly.
+ * Peal does not call provider APIs (OpenAI, OpenRouter, etc.) directly.
  * All inference goes through @hudsonkit/ai/pi-ai → createPiAiBackend → pi-ai.
- * Credentials resolve via pi-ai's getEnvApiKey (MINIMAX_API_KEY, etc.).
+ * Credentials resolve via pi-ai's getEnvApiKey (OPENAI_API_KEY, etc.).
  */
+import { getEnvApiKey } from '@earendil-works/pi-ai'
 import { createPiAiBackend, listAvailableModels } from '@hudsonkit/ai/pi-ai'
 import { resolveOpenAICodexAccessToken } from '@/lib/ai/codexCredentials'
 import { ensurePealCredentialsLoaded, resolvePealCredential } from '@/lib/credentials'
 
 export const piBackend = createPiAiBackend()
 
-/** First registered model per provider — sourced from pi-ai, not a Peal catalog. */
-export function buildDefaultModels(): Record<string, string> {
+/**
+ * First registered model per provider — sourced from pi-ai, not a Peal catalog.
+ * `credentials` carries the merged env+BYOK map so providers keyed only in the
+ * browser still resolve a default model.
+ */
+export function buildDefaultModels(
+  credentials?: Record<string, string | undefined>,
+): Record<string, string> {
+  ensurePealCredentialsLoaded()
   const out: Record<string, string> = {}
-  for (const entry of listAvailableModels()) {
+  for (const entry of listAvailableModels({
+    hasCredential: credentials
+      ? (p) => Boolean(credentials[p]) || Boolean(getEnvApiKey(p))
+      : undefined,
+  })) {
     if (!out[entry.provider]) out[entry.provider] = entry.model
   }
   return out
 }
 
-/** Credentials for pi-ai streamUI — env files + process.env + pi-ai fallbacks. */
-export function loadCredentials(): Record<string, string | undefined> {
+/**
+ * Credentials for pi-ai streamUI — env files + process.env + pi-ai fallbacks.
+ * `overrides` carries browser-supplied BYOK keys; they win over env.
+ */
+export function loadCredentials(
+  overrides?: Record<string, string | undefined>,
+): Record<string, string | undefined> {
   ensurePealCredentialsLoaded()
   return {
-    minimax: resolvePealCredential('MINIMAX_API_KEY'),
     openai: resolvePealCredential('OPENAI_API_KEY'),
     groq: resolvePealCredential('GROQ_API_KEY'),
+    anthropic: resolvePealCredential('ANTHROPIC_API_KEY'),
+    google: resolvePealCredential('GEMINI_API_KEY'),
+    openrouter: resolvePealCredential('OPENROUTER_API_KEY'),
+    xai: resolvePealCredential('XAI_API_KEY'),
+    deepseek: resolvePealCredential('DEEPSEEK_API_KEY'),
+    opencode: resolvePealCredential('OPENCODE_API_KEY'),
     'openai-codex': resolveOpenAICodexAccessToken(),
+    ...overrides,
   }
 }
 

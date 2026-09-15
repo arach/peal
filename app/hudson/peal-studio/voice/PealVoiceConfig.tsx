@@ -20,11 +20,9 @@ export function PealVoiceConfig() {
     else voice.setDefaultFxPresetId(presetId)
   }
 
-  const captureInput = voice.captureSource === 'music'
-    ? voice.musicPrompt
-    : voice.captureSource === 'sfx'
-      ? voice.sfxBrief
-      : voice.script
+  const captureInput = voice.captureSource === 'sfx'
+    ? voice.sfxBrief
+    : voice.script
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto peal-instruments bg-transparent p-3 text-[var(--peal-surface-text)]">
@@ -38,13 +36,6 @@ export function PealVoiceConfig() {
             Speech
           </StudioPad>
           <StudioPad
-            active={voice.captureSource === 'music'}
-            onClick={() => voice.setCaptureSource('music')}
-            className="flex-1"
-          >
-            Music
-          </StudioPad>
-          <StudioPad
             active={voice.captureSource === 'sfx'}
             onClick={() => voice.setCaptureSource('sfx')}
             className="flex-1"
@@ -54,7 +45,7 @@ export function PealVoiceConfig() {
         </StudioPadTray>
 
         <p className="font-mono text-[9px] leading-relaxed text-gray-500">
-          Three legs: spoken UI · Minimax instrumentals · Web Audio one-shots. Clips land on the deck; load a genre in the programmable mixer and apply to pads.
+          Spoken UI · Web Audio one-shots. Clips land on the deck; load a genre in the programmable mixer and apply to pads.
         </p>
 
         <p className="font-mono text-[9px] leading-relaxed text-gray-500">
@@ -67,15 +58,6 @@ export function PealVoiceConfig() {
             value={voice.script}
             onChange={(e) => voice.setScript(e.target.value)}
             placeholder="Spoken UI copy…"
-            rows={4}
-            className="peal-inst-field resize-none"
-          />
-        )}
-        {voice.captureSource === 'music' && (
-          <textarea
-            value={voice.musicPrompt}
-            onChange={(e) => voice.setMusicPrompt(e.target.value)}
-            placeholder="Violin melody, dramatic beat, ambient loading bed…"
             rows={4}
             className="peal-inst-field resize-none"
           />
@@ -203,18 +185,6 @@ export function PealVoiceConfig() {
         </StudioRack>
       )}
 
-      {voice.captureSource === 'music' && (
-        <>
-          <StudioRack label="Minimax music" className="mt-3 space-y-2 p-3">
-            <p className="font-mono text-[10px] text-gray-400">Model: {voice.musicModel}</p>
-            <p className="font-mono text-[9px] leading-relaxed text-gray-500">
-              Instrumentals — beds under spoken messages, violin lines, dramatic beats.
-            </p>
-          </StudioRack>
-          <PealMessageBeds />
-        </>
-      )}
-
       {voice.captureSource === 'sfx' && (
         <StudioRack label="Web Audio SFX" className="mt-3 space-y-2 p-3">
           <p className="font-mono text-[9px] leading-relaxed text-gray-500">
@@ -222,6 +192,8 @@ export function PealVoiceConfig() {
           </p>
         </StudioRack>
       )}
+
+      <PealMessageBeds />
 
       <StudioRack label="Default genre" className="mt-3 space-y-3 p-3">
         <div>

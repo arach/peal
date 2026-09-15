@@ -47,14 +47,14 @@ cli/
 
 1. **Add sounds to project**
    ```bash
-   npx peal add success error notification
-   npx peal add --typescript  # Interactive mode with TypeScript
-   npx peal add --dir ./sounds  # Custom directory
+   bunx peal add success error notification
+   bunx peal add --typescript  # Interactive mode with TypeScript
+   bunx peal add --dir ./sounds  # Custom directory
    ```
 
 2. **List available sounds**
    ```bash
-   npx peal list
+   bunx peal list
    ```
 
 ### Generated Files
@@ -80,7 +80,7 @@ When users run the CLI, it creates:
 
 ## Usage Flow
 
-1. User runs `npx @peal-sounds/peal add [sounds]`
+1. User runs `bunx @peal-sounds/peal add [sounds]`
 2. User selects sounds (or uses interactive mode)
 3. CLI copies sound files to the project
 4. CLI generates a dependency-free browser Audio helper
@@ -90,13 +90,13 @@ When users run the CLI, it creates:
 
 To publish the minimal CLI + library package:
 ```bash
-pnpm publish:npm
+bun run publish:npm
 ```
 
 Users can then use it with:
 ```bash
-npx @peal-sounds/peal add success error
+bunx @peal-sounds/peal add success error
 # or install globally
-npm install -g peal-cli
+bun add -g @peal-sounds/peal
 peal add success error
 ```

@@ -11,8 +11,8 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url))
 hydratePealCredentialsFromFiles()
 
 const nextConfig: NextConfig = {
-  // HMR websocket is blocked when the page is opened via 127.0.0.1 instead of localhost.
-  allowedDevOrigins: ['127.0.0.1', 'localhost'],
+  // HMR websocket is blocked when the page is opened via an unlisted origin.
+  allowedDevOrigins: ['127.0.0.1', 'localhost', 'peal-dev.exe.xyz'],
   transpilePackages: ['hudsonkit', '@hudsonkit/ai', '@voxd/client'],
   serverExternalPackages: ['@earendil-works/pi-ai'],
 

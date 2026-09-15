@@ -2,8 +2,10 @@
 
 import { Suspense, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { Library, Menu, Sparkles, X } from 'lucide-react'
+import { KeyRound, Library, Menu, Sparkles, X } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
+import { ByokSettingsHost } from './ByokSettings'
+import { openByokSettings } from '@/lib/byok'
 import { PealBrandMark, PealWordmark } from './PealBrandMark'
 import { BaseLink } from './BaseLink'
 import { PealContextNav, PealContextNavMobile } from './PealContextBar'
@@ -60,6 +62,15 @@ function PealNavShell({ layout: layoutOverride }: { layout?: PealNavLayout }) {
 
         <div className="peal-nav-right">
           <div className="peal-nav-end">
+            <button
+              type="button"
+              className="peal-nav-key"
+              onClick={openByokSettings}
+              aria-label="API keys"
+              title="API keys — bring your own, stored in this browser only"
+            >
+              <KeyRound size={15} />
+            </button>
             <div className="peal-nav-theme">
               <ThemeToggle />
             </div>
@@ -98,6 +109,7 @@ function PealNavShell({ layout: layoutOverride }: { layout?: PealNavLayout }) {
           <PealContextNavMobile />
         </div>
       )}
+      <ByokSettingsHost />
     </nav>
   )
 }

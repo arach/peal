@@ -54,12 +54,12 @@ peal.mute(true);
 
 1. Install Peal:
    ```bash
-   npm install @peal-sounds/peal
+   bun add @peal-sounds/peal
    ```
 
 2. Add your sounds:
    ```bash
-   npx @peal-sounds/peal add click success error
+   bunx @peal-sounds/peal add click success error
    ```
 
 3. Replace Howler imports with Peal:
@@ -232,12 +232,12 @@ find . -name "*.mp3" -o -name "*.wav" -o -name "*.ogg"
 ### 2. Add Equivalent Peal Sounds
 ```bash
 # Add the sounds you need
-npx @peal-sounds/peal add click success error notification
+bunx @peal-sounds/peal add click success error notification
 ```
 
 ### 3. Install Peal Library
 ```bash
-npm install @peal-sounds/peal
+bun add @peal-sounds/peal
 ```
 
 ### 4. Update Your Code
@@ -262,10 +262,10 @@ peal.click();
 ### 6. Test Everything
 ```bash
 # Test all sounds work
-npx @peal-sounds/peal demo
+bunx @peal-sounds/peal demo
 
 # Test in your app
-npm run dev
+bun dev
 ```
 
 ## Keeping Custom Sounds

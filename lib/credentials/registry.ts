@@ -2,7 +2,6 @@ import type { KnownProvider } from '@earendil-works/pi-ai'
 
 export type PealCredentialFeature =
   | 'ai-studio'
-  | 'music-generation'
   | 'tts'
   | 'tts-fallback'
   | 'voice-legacy'
@@ -23,23 +22,54 @@ export interface PealCredentialDef {
  * Add new keys here — routes and status checks read from this list.
  */
 export const PEAL_CREDENTIALS = {
-  MINIMAX_API_KEY: {
-    envVar: 'MINIMAX_API_KEY',
-    piProvider: 'minimax',
-    features: ['ai-studio', 'music-generation'],
-    label: 'Minimax (AI Sound Designer + Music)',
-  },
   OPENAI_API_KEY: {
     envVar: 'OPENAI_API_KEY',
     piProvider: 'openai',
-    features: ['tts'],
+    features: ['ai-studio', 'tts'],
     label: 'OpenAI (TTS)',
   },
   GROQ_API_KEY: {
     envVar: 'GROQ_API_KEY',
     piProvider: 'groq',
-    features: ['tts', 'tts-fallback'],
+    features: ['ai-studio', 'tts', 'tts-fallback'],
     label: 'Groq (PlayAI TTS)',
+  },
+  ANTHROPIC_API_KEY: {
+    envVar: 'ANTHROPIC_API_KEY',
+    aliases: ['ANTHROPIC_OAUTH_TOKEN'],
+    piProvider: 'anthropic',
+    features: ['ai-studio'],
+    label: 'Anthropic (AI Design)',
+  },
+  GEMINI_API_KEY: {
+    envVar: 'GEMINI_API_KEY',
+    piProvider: 'google',
+    features: ['ai-studio'],
+    label: 'Google Gemini (AI Design)',
+  },
+  OPENROUTER_API_KEY: {
+    envVar: 'OPENROUTER_API_KEY',
+    piProvider: 'openrouter',
+    features: ['ai-studio'],
+    label: 'OpenRouter (AI Design)',
+  },
+  XAI_API_KEY: {
+    envVar: 'XAI_API_KEY',
+    piProvider: 'xai',
+    features: ['ai-studio'],
+    label: 'xAI (AI Design)',
+  },
+  DEEPSEEK_API_KEY: {
+    envVar: 'DEEPSEEK_API_KEY',
+    piProvider: 'deepseek',
+    features: ['ai-studio'],
+    label: 'DeepSeek (AI Design)',
+  },
+  OPENCODE_API_KEY: {
+    envVar: 'OPENCODE_API_KEY',
+    piProvider: 'opencode',
+    features: ['ai-studio'],
+    label: 'Opencode (AI Design)',
   },
   ELEVENLABS_API_KEY: {
     envVar: 'ELEVENLABS_API_KEY',

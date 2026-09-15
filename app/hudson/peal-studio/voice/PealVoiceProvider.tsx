@@ -21,7 +21,9 @@ import {
   type DeckSfxType,
   type PealVoiceTake,
 } from './types'
-import { getMessageBedPreset, type MessageBedId } from '@/lib/deck/messageBeds'
+import { byokProviderForEnvVar } from '@/lib/byok'
+import { generateSpeech } from '@/lib/ai/generateSpeech'
+import { useByok } from '@/lib/useByok'
 import { playTakeWithVoiceFx } from './voiceFx'
 import type { VoiceFxHandle, VoiceFxParams } from '@voxd/client/fx'
 
@@ -48,9 +50,6 @@ interface PealVoiceContextValue {
   previewClipWithMixerState: (state: { genreId: string; knobOverrides?: Partial<VoiceFxParams> }, takeId?: string) => void
   captureSource: DeckCaptureSource
   setCaptureSource: (source: DeckCaptureSource) => void
-  musicPrompt: string
-  setMusicPrompt: (prompt: string) => void
-  musicModel: string
   sfxBrief: string
   setSfxBrief: (brief: string) => void
   sfxType: DeckSfxType
@@ -62,7 +61,6 @@ interface PealVoiceContextValue {
   targetSlot: number | null
   setTargetSlot: (slot: number | null) => void
   deckSlots: Array<DeckClip | null>
-  musicProviderReady: boolean
   captureReady: boolean
   takes: PealVoiceTake[]
   selectedTakeId: string | null
@@ -76,13 +74,9 @@ interface PealVoiceContextValue {
   selectedTake: PealVoiceTake | null
   generate: () => Promise<void>
   generateFromScript: (text?: string) => Promise<void>
-  generateMusic: (prompt?: string) => Promise<void>
   generateSfx: (brief?: string) => Promise<void>
   captureToDeck: () => Promise<void>
   importStarterMessageBeds: () => Promise<void>
-  captureMessagePair: (bedId: MessageBedId) => Promise<void>
-  previewMessagePair: (bedId: MessageBedId) => void
-  hasMessagePair: (bedId: MessageBedId) => boolean
   applySelectedFxAsDefault: () => void
   triggerTake: (takeId: string) => void
   togglePlay: (takeId: string) => void
@@ -105,11 +99,6 @@ function slugFragment(text: string) {
 function generateTtsFilename(projectName: string, script: string, model: string, voice: string) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
   return `${projectName}_${model}_${voice}_${slugFragment(script)}_${timestamp}.mp3`
-}
-
-function generateMusicFilename(projectName: string, prompt: string, model: string) {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
-  return `${projectName}_${model}_${slugFragment(prompt)}_${timestamp}.mp3`
 }
 
 function generateSfxFilename(projectName: string, summary: string, type: string) {
@@ -137,8 +126,6 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
   const [mixerGenreId, setMixerGenreId] = useState('')
   const [mixerKnobOverrides, setMixerKnobOverrides] = useState<Partial<VoiceFxParams> | undefined>(undefined)
   const [captureSource, setCaptureSource] = useState<DeckCaptureSource>('tts')
-  const [musicPrompt, setMusicPrompt] = useState('')
-  const [musicModel] = useState('music-2.6-free')
   const [sfxBrief, setSfxBrief] = useState('')
   const [sfxType, setSfxType] = useState<DeckSfxType>('click')
   const [sfxDuration, setSfxDuration] = useState(0.12)
@@ -152,10 +139,10 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
   const [providerStatus, setProviderStatus] = useState<Record<string, boolean>>({})
   const [isMac, setIsMac] = useState(false)
   const [hydrated, setHydrated] = useState(false)
+  const byok = useByok()
 
   const playbackAbortRef = useRef<AbortController | null>(null)
   const playbackHandleRef = useRef<VoiceFxHandle | null>(null)
-  const playbackBedHandleRef = useRef<VoiceFxHandle | null>(null)
   const playbackGenerationRef = useRef(0)
   const takesRef = useRef<DeckClip[]>([])
   const mixerGenreRef = useRef('')
@@ -213,18 +200,21 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
 
   const activeModel = PEAL_VOICE_MODELS.find((m) => m.id === selectedModel)
   const providersLoaded = Object.keys(providerStatus).length > 0
-  const activeProviderReady = !providersLoaded || !activeModel || providerStatus[activeModel.envKey] === true
-  const musicProviderReady = !providersLoaded || providerStatus.MINIMAX_API_KEY === true
-  const captureReady = captureSource === 'music'
-    ? musicProviderReady
-    : captureSource === 'sfx'
-      ? true
-      : activeProviderReady
+  // A browser-stored key satisfies a feature the same as a server env key.
+  const byokReadyFor = (envVar: string) => {
+    const provider = byokProviderForEnvVar(envVar)
+    return provider ? Boolean(byok.keys[provider]) : false
+  }
+  const activeProviderReady =
+    !providersLoaded || !activeModel
+    || providerStatus[activeModel.envKey] === true
+    || byokReadyFor(activeModel.envKey)
+  const captureReady = captureSource === 'sfx' ? true : activeProviderReady
   const providerBanner = providersLoaded && !captureReady
-    ? captureSource === 'music'
-      ? 'Minimax is not configured. Add MINIMAX_API_KEY to .env.local and restart the dev server on port 3001.'
-      : captureSource === 'tts' && activeModel
-        ? `${activeModel.provider} is not configured. Add ${activeModel.envKey} to .env.local and restart the dev server on port 3001.`
+    ? captureSource === 'tts' && activeModel
+        ? byokProviderForEnvVar(activeModel.envKey)
+          ? `${activeModel.provider} is not configured. Add your key in API Keys (key icon, top right) — it stays in this browser — or set ${activeModel.envKey} in .env.local.`
+          : `${activeModel.provider} is not configured. Set ${activeModel.envKey} in .env.local on the hosted app.`
         : null
     : null
 
@@ -264,8 +254,6 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
     playbackAbortRef.current = null
     playbackHandleRef.current?.stop()
     playbackHandleRef.current = null
-    playbackBedHandleRef.current?.stop()
-    playbackBedHandleRef.current = null
     setCurrentlyPlayingId(null)
   }, [])
 
@@ -521,24 +509,13 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
     setGenerateError(null)
 
     try {
-      const response = await fetch('/api/generate-tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: payload,
-          voice: selectedVoice,
-          model: selectedModel,
-          speed,
-        }),
+      const data = await generateSpeech({
+        text: payload,
+        voice: selectedVoice,
+        model: selectedModel,
+        speed,
+        byok: byok.keys,
       })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        const parts = [errorData.error || 'Generation failed', errorData.hint].filter(Boolean)
-        throw new Error(parts.join(' '))
-      }
-
-      const data = await response.json()
       const mimeType = data.mimeType ?? 'audio/mpeg'
       const audioBase64 = data.audio as string
       const audioBlob = new Blob(
@@ -589,78 +566,7 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
     activeBank,
     targetSlot,
     addClipToDeck,
-  ])
-
-  const generateMusic = useCallback(async (prompt?: string) => {
-    const payload = (prompt ?? musicPrompt).trim()
-    if (!payload || !musicProviderReady) return
-
-    setIsGenerating(true)
-    setGenerateError(null)
-
-    try {
-      const response = await fetch('/api/generate-music', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: payload,
-          model: musicModel,
-          isInstrumental: true,
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        const parts = [errorData.error || 'Music generation failed', errorData.hint].filter(Boolean)
-        throw new Error(parts.join(' '))
-      }
-
-      const data = await response.json()
-      const mimeType = data.mimeType ?? 'audio/mpeg'
-      const audioBase64 = data.audio as string
-      const audioBlob = new Blob(
-        [Uint8Array.from(atob(audioBase64), (c) => c.charCodeAt(0))],
-        { type: mimeType },
-      )
-      const audioUrl = URL.createObjectURL(audioBlob)
-      const slot = nextDeckSlot(takes, activeBank, targetSlot)
-      if (slot == null) throw new Error('This bank is full — switch banks or delete a clip.')
-
-      const newClip: DeckClip = {
-        id: Date.now().toString(),
-        source: 'music',
-        bank: activeBank,
-        slot,
-        label: soundboardLabel(payload),
-        prompt: payload,
-        model: data.model ?? musicModel,
-        filename: generateMusicFilename(projectName, payload, data.model ?? musicModel),
-        createdAt: new Date().toLocaleString(),
-        mimeType,
-        audioBase64,
-        audioUrl,
-        fxPresetId: defaultFxPresetId,
-        fxParamsOverride: undefined,
-      }
-
-      addClipToDeck(newClip)
-      setMusicPrompt('')
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Music generation failed'
-      setGenerateError(message)
-    } finally {
-      setIsGenerating(false)
-    }
-  }, [
-    musicPrompt,
-    musicModel,
-    musicProviderReady,
-    takes,
-    activeBank,
-    targetSlot,
-    projectName,
-    defaultFxPresetId,
-    addClipToDeck,
+    byok.keys,
   ])
 
   const generateSfx = useCallback(async (brief?: string) => {
@@ -735,7 +641,7 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
       const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
       const manifestRes = await fetch(`${basePath}/message-beds/manifest.json`)
       if (!manifestRes.ok) {
-        throw new Error('Starter beds not found. Run pnpm seed:message-beds from the repo root.')
+        throw new Error('Starter beds not found — the bundled message-bed audio is missing.')
       }
 
       const manifest = await manifestRes.json() as {
@@ -793,211 +699,10 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
     }
   }, [addClipToDeck])
 
-  const hasMessagePair = useCallback((bedId: MessageBedId) => {
-    const clips = takesRef.current
-    return clips.some((c) => c.messageBedId === bedId && c.source === 'music')
-      && clips.some((c) => c.messageBedId === bedId && c.source === 'tts')
-  }, [])
-
-  const captureMessagePair = useCallback(async (bedId: MessageBedId) => {
-    const preset = getMessageBedPreset(bedId)
-    if (!preset || !musicProviderReady || !activeProviderReady) return
-
-    setIsGenerating(true)
-    setGenerateError(null)
-
-    const fxPresetId = preset.suggestedFxPresetId || defaultFxPresetId
-    if (preset.suggestedFxPresetId) setDefaultFxPresetId(preset.suggestedFxPresetId)
-
-    try {
-      const bank = activeBank
-      const clips = takesRef.current
-      const bedSlot = nextDeckSlot(clips, bank, targetSlot)
-      if (bedSlot == null) throw new Error('This bank is full — switch banks or delete a clip.')
-
-      const speechSlot = bedSlot + 1
-      if (
-        speechSlot >= DECK_PADS_PER_BANK
-        || clips.some((c) => c.bank === bank && c.slot === speechSlot)
-      ) {
-        throw new Error('Need two adjacent empty pads for bed + speech.')
-      }
-
-      const musicResponse = await fetch('/api/generate-music', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: preset.musicPrompt,
-          model: musicModel,
-          isInstrumental: true,
-        }),
-      })
-
-      if (!musicResponse.ok) {
-        const errorData = await musicResponse.json().catch(() => ({}))
-        const parts = [errorData.error || 'Music generation failed', errorData.hint].filter(Boolean)
-        throw new Error(parts.join(' '))
-      }
-
-      const musicData = await musicResponse.json()
-      const musicMime = musicData.mimeType ?? 'audio/mpeg'
-      const musicBase64 = musicData.audio as string
-      const musicBlob = new Blob(
-        [Uint8Array.from(atob(musicBase64), (c) => c.charCodeAt(0))],
-        { type: musicMime },
-      )
-      const musicUrl = URL.createObjectURL(musicBlob)
-
-      const bedClip: DeckClip = {
-        id: `bed-${bedId}-${Date.now()}`,
-        source: 'music',
-        bank,
-        slot: bedSlot,
-        label: `${preset.label} bed`,
-        prompt: preset.musicPrompt,
-        script: preset.suggestedSpeech,
-        model: musicData.model ?? musicModel,
-        filename: `message-bed_${bedId}.mp3`,
-        createdAt: new Date().toLocaleString(),
-        mimeType: musicMime,
-        audioBase64: musicBase64,
-        audioUrl: musicUrl,
-        fxPresetId: '',
-        messageBedId: bedId,
-      }
-      addClipToDeck(bedClip)
-
-      const ttsResponse = await fetch('/api/generate-tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: preset.suggestedSpeech,
-          voice: selectedVoice,
-          model: selectedModel,
-          speed,
-        }),
-      })
-
-      if (!ttsResponse.ok) {
-        const errorData = await ttsResponse.json().catch(() => ({}))
-        const parts = [errorData.error || 'Speech generation failed', errorData.hint].filter(Boolean)
-        throw new Error(parts.join(' '))
-      }
-
-      const ttsData = await ttsResponse.json()
-      const ttsMime = ttsData.mimeType ?? 'audio/mpeg'
-      const ttsBase64 = ttsData.audio as string
-      const ttsBlob = new Blob(
-        [Uint8Array.from(atob(ttsBase64), (c) => c.charCodeAt(0))],
-        { type: ttsMime },
-      )
-      const ttsUrl = URL.createObjectURL(ttsBlob)
-
-      const speechClip: DeckClip = {
-        id: `speech-${bedId}-${Date.now()}`,
-        source: 'tts',
-        bank,
-        slot: speechSlot,
-        label: `${preset.label} voice`,
-        script: preset.suggestedSpeech,
-        model: selectedModel,
-        voice: selectedVoice,
-        speed,
-        filename: generateTtsFilename(projectName, preset.suggestedSpeech, selectedModel, selectedVoice),
-        createdAt: new Date().toLocaleString(),
-        mimeType: ttsMime,
-        audioBase64: ttsBase64,
-        audioUrl: ttsUrl,
-        fxPresetId,
-        messageBedId: bedId,
-      }
-      addClipToDeck(speechClip)
-      setScript('')
-      setMusicPrompt('')
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Message pair capture failed'
-      setGenerateError(message)
-    } finally {
-      setIsGenerating(false)
-    }
-  }, [
-    activeBank,
-    activeProviderReady,
-    addClipToDeck,
-    defaultFxPresetId,
-    musicModel,
-    musicProviderReady,
-    projectName,
-    selectedModel,
-    selectedVoice,
-    speed,
-    targetSlot,
-  ])
-
-  const previewMessagePair = useCallback((bedId: MessageBedId) => {
-    const clips = takesRef.current
-    const bedTake = clips.find((c) => c.messageBedId === bedId && c.source === 'music')
-    const speechTake = clips.find((c) => c.messageBedId === bedId && c.source === 'tts')
-    if (!bedTake || !speechTake) return
-
-    stopPlayback()
-    const generation = playbackGenerationRef.current
-    setCurrentlyPlayingId(speechTake.id)
-    setSelectedTakeId(speechTake.id)
-
-    const controller = new AbortController()
-    playbackAbortRef.current = controller
-
-    void (async () => {
-      try {
-        const bedHandle = await playTakeWithVoiceFx(bedTake.audioUrl, '', {
-          paramsOverride: { outputGain: 0.22, wetMix: 0 },
-          signal: controller.signal,
-        })
-        const speechHandle = await playTakeWithVoiceFx(speechTake.audioUrl, speechTake.fxPresetId, {
-          paramsOverride: speechTake.fxParamsOverride,
-          signal: controller.signal,
-          onEnded: () => {
-            if (
-              !controller.signal.aborted
-              && generation === playbackGenerationRef.current
-            ) {
-              setCurrentlyPlayingId(null)
-            }
-          },
-        })
-
-        if (controller.signal.aborted || generation !== playbackGenerationRef.current) {
-          bedHandle.stop()
-          speechHandle.stop()
-          return
-        }
-
-        playbackBedHandleRef.current = bedHandle
-        playbackHandleRef.current = speechHandle
-        await speechHandle.promise
-      } catch {
-        if (
-          !controller.signal.aborted
-          && generation === playbackGenerationRef.current
-        ) {
-          setCurrentlyPlayingId(null)
-        }
-      } finally {
-        if (playbackAbortRef.current === controller) {
-          playbackAbortRef.current = null
-          playbackHandleRef.current = null
-          playbackBedHandleRef.current = null
-        }
-      }
-    })()
-  }, [stopPlayback])
-
   const captureToDeck = useCallback(async () => {
-    if (captureSource === 'music') await generateMusic()
-    else if (captureSource === 'sfx') await generateSfx()
+    if (captureSource === 'sfx') await generateSfx()
     else await generateFromScript()
-  }, [captureSource, generateFromScript, generateMusic, generateSfx])
+  }, [captureSource, generateFromScript, generateSfx])
 
   const generate = useCallback(async () => {
     await captureToDeck()
@@ -1030,11 +735,7 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault()
         if (!isGenerating && captureReady) {
-          const hasInput = captureSource === 'music'
-            ? musicPrompt.trim()
-            : captureSource === 'sfx'
-              ? sfxBrief.trim()
-              : script.trim()
+          const hasInput = captureSource === 'sfx' ? sfxBrief.trim() : script.trim()
           if (hasInput) void captureToDeck()
         }
       }
@@ -1042,7 +743,7 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [captureReady, captureSource, captureToDeck, isGenerating, musicPrompt, script, sfxBrief])
+  }, [captureReady, captureSource, captureToDeck, isGenerating, script, sfxBrief])
 
   const value = useMemo<PealVoiceContextValue>(() => ({
     projectName,
@@ -1067,9 +768,6 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
     previewClipWithMixerState,
     captureSource,
     setCaptureSource,
-    musicPrompt,
-    setMusicPrompt,
-    musicModel,
     sfxBrief,
     setSfxBrief,
     sfxType,
@@ -1081,7 +779,6 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
     targetSlot,
     setTargetSlot,
     deckSlots,
-    musicProviderReady,
     captureReady,
     takes,
     selectedTakeId,
@@ -1095,13 +792,9 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
     selectedTake,
     generate,
     generateFromScript,
-    generateMusic,
     generateSfx,
     captureToDeck,
     importStarterMessageBeds,
-    captureMessagePair,
-    previewMessagePair,
-    hasMessagePair,
     applySelectedFxAsDefault,
     triggerTake,
     togglePlay,
@@ -1130,12 +823,9 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
     previewClipThroughMixer,
     previewClipWithMixerState,
     captureSource,
-    musicPrompt,
-    musicModel,
     activeBank,
     targetSlot,
     deckSlots,
-    musicProviderReady,
     captureReady,
     takes,
     selectedTakeId,
@@ -1148,13 +838,9 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
     selectedTake,
     generate,
     generateFromScript,
-    generateMusic,
     generateSfx,
     captureToDeck,
     importStarterMessageBeds,
-    captureMessagePair,
-    previewMessagePair,
-    hasMessagePair,
     applySelectedFxAsDefault,
     triggerTake,
     togglePlay,
@@ -1167,7 +853,6 @@ export function PealVoiceProvider({ children }: { children: ReactNode }) {
     copyFilename,
     deleteTake,
     setCaptureSource,
-    setMusicPrompt,
     setActiveBank,
     setTargetSlot,
   ])

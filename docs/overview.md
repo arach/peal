@@ -39,13 +39,13 @@ Unlike general audio libraries, Peal focuses on UI sound effects:
 
 ```bash
 # Add sounds like packages
-npx @peal-sounds/peal add click success
+bunx @peal-sounds/peal add click success
 
 # Remove when not needed
-npx @peal-sounds/peal remove click
+bunx @peal-sounds/peal remove click
 
 # See what you have
-npx @peal-sounds/peal list
+bunx @peal-sounds/peal list
 ```
 
 ### 🪶 Lightweight Runtime
@@ -203,7 +203,7 @@ Beyond the npm library, Peal ships a Next.js studio on port **3001**:
 | --- | --- | --- |
 | **SFX** | `/studio` | Web Audio sound design + AI |
 | **Voice** | `/studio/voice` | TTS deck, mixer, capture |
-| **Music** | `/studio/music` | Strudel editor + REPL, managed engine, Minimax/Codex copilot, auto-route, improv loop, version history, lyricless beat curriculum |
+| **Music** | `/studio/music` | Strudel editor + REPL, managed engine, OpenAI/Codex copilot, auto-route, improv loop, version history, lyricless beat curriculum |
 
 Music uses a managed [Strudel](https://strudel.cc/) process (AGPL, external checkout). See **[Music Studio guide](./music-studio.md)**.
 

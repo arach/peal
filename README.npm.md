@@ -17,7 +17,7 @@ No sound hosting, no accounts. Files sit in your repo; you call `peal.click()` w
 ## Quick start
 
 ```bash
-npm install @peal-sounds/peal
+bun add @peal-sounds/peal
 
 peal add \
   click \
@@ -62,20 +62,20 @@ The CLI does not install or modify any runtime dependencies in your project.
 Prefer a one-off without installing?
 
 ```bash
-npx @peal-sounds/peal add click
+bunx @peal-sounds/peal add click
 ```
 
 Also published as `@arach/peal` (same package, older namespace).
 
-Requires **Node.js 20+**.
+Requires **Bun 1.1+ or Node.js 20+** — `npx` works too if you don't have Bun.
 
 ## Install
 
 ```bash
-npm install @peal-sounds/peal
+bun add @peal-sounds/peal
+# npm install @peal-sounds/peal
 # pnpm add @peal-sounds/peal
 # yarn add @peal-sounds/peal
-# bun add @peal-sounds/peal
 ```
 
 The `peal` binary is on your PATH after install.

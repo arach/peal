@@ -480,6 +480,29 @@
   align-items: center;
 }
 
+.peal-nav-key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--peal-nav-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--peal-nav-text-dim);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.peal-nav-key:hover {
+  color: var(--peal-nav-text);
+  border-color: var(--peal-nav-border-lit);
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .peal-nav-menu-btn {
   display: flex;
   align-items: center;

@@ -7,8 +7,10 @@ Get Peal sounds working in your app in under 2 minutes.
 Run this command in your project:
 
 ```bash
-npx @peal-sounds/peal add click success error notification
+bunx @peal-sounds/peal add click success error notification
 ```
+
+(No Bun? `npx @peal-sounds/peal add …` works the same way.)
 
 This:
 - Downloads professional UI sounds to `./peal/`
@@ -18,7 +20,7 @@ This:
 ## 2. Install the Library (30 seconds)
 
 ```bash
-npm install @peal-sounds/peal
+bun add @peal-sounds/peal
 ```
 
 ## 3. Use It (1 minute)
@@ -47,19 +49,19 @@ That's it! You now have professional UI sounds in your app.
 
 See all available sounds:
 ```bash
-npx @peal-sounds/peal list
+bunx @peal-sounds/peal list
 ```
 
 Add specific sounds:
 ```bash
-npx @peal-sounds/peal add hover transition loading
+bunx @peal-sounds/peal add hover transition loading
 ```
 
 ### Try the Demo
 
 Hear all sounds:
 ```bash
-npx @peal-sounds/peal demo
+bunx @peal-sounds/peal demo
 ```
 
 ### Framework Examples

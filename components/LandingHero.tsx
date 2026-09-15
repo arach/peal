@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Volume2, Sparkles, Code2, Package, Terminal, Music, Mic, Play } from 'lucide-react'
+import { ArrowRight, Volume2, Sparkles, Code2, Folder, Music, Mic, Play } from 'lucide-react'
 import HeroSoundGrid from './HeroSoundGrid'
+import LandingSoundDeck from './LandingSoundDeck'
 import LandingStudioShots from './LandingStudioShots'
 import { getPublicUrl } from '@/utils/url'
 
@@ -47,13 +48,19 @@ function CheckIcon() {
 }
 
 export default function LandingHero() {
-  const [pm, setPm] = useState<PkgManager>('pnpm')
+  const [pm, setPm] = useState<PkgManager>('bun')
   const [copied, setCopied] = useState<'install' | 'cli' | null>(null)
+  const [copyStatus, setCopyStatus] = useState('')
 
   const copy = async (text: string, key: 'install' | 'cli') => {
-    await navigator.clipboard.writeText(text)
-    setCopied(key)
-    setTimeout(() => setCopied(null), 2000)
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(key)
+      setCopyStatus('Command copied.')
+      setTimeout(() => setCopied(null), 2000)
+    } catch {
+      setCopyStatus('Could not copy. Select the command and copy it manually.')
+    }
   }
 
   const libraryHref = getPublicUrl('/library')
@@ -91,111 +98,24 @@ export default function LandingHero() {
 
   return (
     <>
-      <section className="landing-band landing-band--hero fade-in">
-        <div className="landing-band-inner">
-          <div className="landing-hero">
-        <div className="landing-badge">
-          <span className="landing-badge-dot" />
-          UI sound library
-        </div>
-
-        <h1>
-          Design your own
-          <br />
-          <span className="accent">SFX library</span>
-        </h1>
-
-        <p className="landing-sub">
-          Curated library, Web Audio studio, live-code beats, and CLI — shape UI
-          audio or compose lyricless grooves in Strudel.
-        </p>
-
-        <div className="landing-pillars">
-          <div className="landing-pillar">
-            <span className="landing-pillar-icon">
-              <Package size={16} />
-            </span>
-            <h2>Drop-in library</h2>
-            <p>Howler.js wrapper with volume presets. One import, works in browser and Node.</p>
-          </div>
-          <div className="landing-pillar">
-            <span className="landing-pillar-icon">
-              <Sparkles size={16} />
-            </span>
-            <h2>Sound studio</h2>
-            <p>SFX, voice deck, and Music — AI-assisted design with live code and parameters.</p>
-          </div>
-          <div className="landing-pillar">
-            <span className="landing-pillar-icon">
-              <Music size={16} />
-            </span>
-            <h2>Music beats</h2>
-            <p>Managed Strudel, Minimax + Codex copilot, improv loop, auto-route, and lyricless groove curriculum.</p>
-          </div>
-          <div className="landing-pillar">
-            <span className="landing-pillar-icon">
-              <Terminal size={16} />
-            </span>
-            <h2>CLI workflow</h2>
-            <p>Add curated UI sounds to your repo with <code>npx @peal-sounds/peal add</code> — no manual wiring.</p>
-          </div>
-        </div>
-
-        <div className="landing-install fade-in fade-in-delay-1">
-          <div className="landing-install-surface">
-            <div className="landing-install-head">
-              <span>npm package</span>
-              <span>@peal-sounds/peal</span>
+      <section className="landing-band landing-band--hero">
+        <div className="landing-band-inner landing-hero-split">
+          <div className="landing-hero landing-hero--instrument">
+            <p className="landing-hero-eyebrow">UI sounds for the things you build</p>
+            <h1>A little sound.<br /><span className="accent">A little more life.</span></h1>
+            <p className="landing-sub">Find a sound you like, make it your own, and add it to your app. A small detail that makes the whole thing feel better.</p>
+            <div className="landing-hero-links">
+              <a href={libraryHref} className="landing-btn landing-btn-primary">Explore sounds <ArrowRight size={16} /></a>
+              <a href={studioHref} className="landing-btn landing-btn-secondary">Open studio</a>
             </div>
-            <div className="landing-install-body">
-              <div className="landing-install-tabs">
-                {(['npm', 'pnpm', 'bun'] as PkgManager[]).map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    className={`landing-install-tab ${pm === p ? 'active' : ''}`}
-                    onClick={() => setPm(p)}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-              <div className="landing-install-cmd landing-install-cmd--multiline">
-                <code>
-                  <span className="prompt">$</span>
-                  {installCommands[pm]}
-                  {'\n\n'}
-                  <span className="prompt">$</span>
-                  {addSoundsCommand}
-                </code>
-                <button
-                  type="button"
-                  className="landing-install-copy"
-                  onClick={() => copy(quickStartCommand(pm), 'install')}
-                  aria-label="Copy install and add commands"
-                >
-                  {copied === 'install' ? <CheckIcon /> : <CopyIcon />}
-                </button>
-              </div>
+            <div className="landing-quick-command">
+              <code><span>$</span> bunx @peal-sounds/peal add <b>success</b></code>
+              <button type="button" onClick={() => copy('bunx @peal-sounds/peal add success', 'install')} aria-label="Copy quick start command">{copied === 'install' ? <CheckIcon /> : <CopyIcon />}</button>
             </div>
+            <p className="landing-copy-status" role="status">{copyStatus}</p>
+            <div className="landing-hero-notes"><span><Code2 size={13} /> Open source</span><span><Folder size={13} /> Yours to keep</span><span><Volume2 size={13} /> Ready to play</span></div>
           </div>
-
-          <div className="landing-hero-links">
-            <a href={libraryHref} className="landing-btn landing-btn-primary">
-              <Volume2 size={16} />
-              Explore library
-            </a>
-            <a href={studioHref} className="landing-btn landing-btn-secondary">
-              <Sparkles size={16} />
-              Open studio
-            </a>
-            <a href={docsHref} className="landing-link">
-              Read docs
-              <ArrowRight size={14} />
-            </a>
-          </div>
-          </div>
-          </div>
+          <LandingSoundDeck />
         </div>
       </section>
 
@@ -204,10 +124,10 @@ export default function LandingHero() {
           <div className="landing-sound-section">
             <div className="landing-section-header landing-section-header--sounds">
               <div className="landing-section-header-copy">
-                <div className="landing-kicker">Signature sounds</div>
-                <h2>Preview the library</h2>
+                <div className="landing-kicker">From the collection</div>
+                <h2>A few favorites.</h2>
                 <p>
-                  Six curated UI sounds from Peal. Use the player bar below each deck, or open the integration snippet.
+                  A click, a chime, a little hello. Play a few and see what feels right.
                 </p>
               </div>
               <div className="landing-sound-legend" aria-hidden>
@@ -231,20 +151,23 @@ export default function LandingHero() {
       <section className="landing-band landing-band--integrate fade-in fade-in-delay-2" id="integrate">
         <div className="landing-band-inner landing-band-inner--narrow">
           <div className="landing-integrate">
-          <div className="landing-kicker">CLI</div>
-          <h2 className="landing-integrate-title">Add sounds in one command</h2>
+          <div className="landing-kicker">For developers</div>
+          <h2 className="landing-integrate-title">Make it part of your app.</h2>
           <p className="landing-integrate-lead">
             The Peal CLI copies WAV files and generates a ready-to-use module for your project.
           </p>
+          <div className="landing-install-tabs" aria-label="Package manager">
+            {(['bun', 'npm', 'pnpm'] as PkgManager[]).map(p => <button key={p} type="button" className={`landing-install-tab ${pm === p ? 'active' : ''}`} aria-pressed={pm === p} onClick={() => setPm(p)}>{p}</button>)}
+          </div>
           <div className="landing-install-cmd landing-install-cmd--multiline">
             <code>
               <span className="prompt">$</span>
-              {addSoundsCommand}
+              {quickStartCommand(pm)}
             </code>
             <button
               type="button"
               className="landing-install-copy"
-              onClick={() => copy(addSoundsCommand, 'cli')}
+              onClick={() => copy(quickStartCommand(pm), 'cli')}
               aria-label="Copy CLI command"
             >
               {copied === 'cli' ? <CheckIcon /> : <CopyIcon />}
@@ -330,7 +253,7 @@ export default function LandingHero() {
               <h2 className="landing-bottom-title">Design audio like you design UI</h2>
               <p className="landing-bottom-lead">
                 Three studio legs — SFX, Voice deck, and Music. Music ships a managed Strudel engine,
-                editor + live REPL, Minimax/Codex copilot with improv loop, and a grounded curriculum
+                editor + live REPL, AI copilot with improv loop, and a grounded curriculum
                 for lyricless beats that evolve bar to bar.
               </p>
             </div>

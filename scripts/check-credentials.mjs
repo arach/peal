@@ -10,8 +10,9 @@ import { fileURLToPath } from 'node:url'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
 const CREDENTIALS = [
-  { id: 'MINIMAX_API_KEY', label: 'Minimax (AI Sound Designer)', features: 'ai-studio' },
-  { id: 'OPENAI_API_KEY', label: 'OpenAI (TTS)', features: 'tts' },
+  { id: 'OPENAI_API_KEY', label: 'OpenAI (TTS)', features: 'ai-studio, tts' },
+  { id: 'OPENROUTER_API_KEY', label: 'OpenRouter (AI Design)', features: 'ai-studio' },
+  { id: 'OPENCODE_API_KEY', label: 'Opencode (AI Design)', features: 'ai-studio' },
   { id: 'GROQ_API_KEY', label: 'Groq (PlayAI TTS)', features: 'tts, tts-fallback' },
   { id: 'ELEVENLABS_API_KEY', label: 'ElevenLabs', features: 'voice-legacy' },
   { id: 'FAL_API_KEY', label: 'Fal', features: 'voice-legacy' },
@@ -68,5 +69,5 @@ const missing = CREDENTIALS.filter((c) => !process.env[c.id]?.trim())
 if (missing.length === 0) {
   console.log('\nAll registered credentials are configured.')
 } else {
-  console.log(`\n${missing.length} missing — add to peal/.env.local or ../.env.local, then restart pnpm dev.`)
+  console.log(`\n${missing.length} missing — add to peal/.env.local or ../.env.local, then restart bun dev.`)
 }

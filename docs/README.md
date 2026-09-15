@@ -21,7 +21,7 @@ Welcome to the Peal documentation! Peal is a lightweight sound effect library fo
 
 Peal has two parts that work together:
 
-- **CLI** (`npx @peal-sounds/peal`) - Manages sound files
+- **CLI** (`bunx @peal-sounds/peal`) - Manages sound files
 - **Library** (`@peal-sounds/peal`) - Plays sounds in your app
 
 ### 2. The Generated Helper
@@ -43,7 +43,7 @@ peal.success();
 
 ```bash
 # 1. Add sounds to your project
-npx @peal-sounds/peal add click success error
+bunx @peal-sounds/peal add click success error
 ```
 
 ```javascript

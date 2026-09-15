@@ -10,11 +10,10 @@ const system = `You are the Peal Music AI — a Strudel live-coding assistant in
 **Default goal:** lyricless, **varied instrumental beats** — drums, bass, chords, arps, texture. Not songs waiting
 for vocals. Use the variation toolkit in the curriculum so loops evolve across cycles.
 
-Peal Music has a **Strudel-compatible editor** (source of truth) and a separately mounted Strudel app at /strudel (iframe). You **manage patterns agentically**: write code into the editor, then route/evaluate into the mount, adjust tempo, stack layers, and send generative beds to Minimax when appropriate.
+Peal Music has a **Strudel-compatible editor** (source of truth) and a separately mounted Strudel app at /strudel (iframe). You **manage patterns agentically**: write code into the editor, then route/evaluate into the mount, adjust tempo, and stack layers.
 
-## When to use which path
-- **Live code (default):** deterministic Strudel patterns — drums, bass, arps, beds. Use \`describe_to_pattern\`, \`write_pattern\`, \`edit_pattern\`, \`layer_track\`.
-- **Generate:** timbre-rich instrumental stems when live samples are not enough — \`set_music_prompt\` + \`generate_music\` (Minimax). Switch lane to generate first.
+## Path
+- **Live code:** deterministic Strudel patterns — drums, bass, arps, beds. Use \`describe_to_pattern\`, \`write_pattern\`, \`edit_pattern\`, \`layer_track\`.
 
 ## Rules
 1. Use tools for every change — do not only describe code in prose.
@@ -50,26 +49,19 @@ interface PealMusicContext {
   isPlaying?: boolean
   strudelMountStatus?: string
   isPatternDirty?: boolean
-  minimaxAvailable?: boolean
-  musicPrompt?: string
   improvLoop?: PealMusicImprovLoopContext | null
 }
 
 function context(ctx: Record<string, unknown>): string {
   const c = ctx as PealMusicContext
   const sections: string[] = [
-    '## Studio\nPeal Music Studio — Strudel live code (iframe) + optional Minimax generate.',
+    '## Studio\nPeal Music Studio — Strudel live code (iframe).',
     `Lane: **${c.lane ?? 'live'}** · engine: **${c.engineId ?? 'strudel'}**`,
   ]
 
   if (c.tempoCps != null) sections.push(`Tempo: **${c.tempoCps} cps**${c.tempoBpm != null ? ` (~${c.tempoBpm} bpm)` : ''}`)
   sections.push(`Mount: **${c.strudelMountStatus ?? 'idle'}**${c.isPatternDirty ? ' · editor has unrouted edits' : ''}`)
   sections.push(`Playing: ${c.isPlaying ? 'yes' : 'no'}`)
-  sections.push(`Minimax generate: ${c.minimaxAvailable ? 'available' : 'unconfigured (no MINIMAX_API_KEY)'}`)
-
-  if (c.musicPrompt?.trim()) {
-    sections.push(`Generate prompt draft: "${c.musicPrompt.trim()}"`)
-  }
 
   if (c.improvLoop?.active) {
     sections.push(
@@ -160,24 +152,9 @@ function tools(_ctx: Record<string, unknown>) {
       execute: async (args) => ({ applied: true, ...args }),
     }),
     set_lane: tool({
-      description: 'Switch inspector lane: live (Strudel), generate (Minimax), or bridge (Sonic Pi desktop).',
+      description: 'Switch inspector lane: live (Strudel) or bridge (Sonic Pi desktop).',
       inputSchema: z.object({
-        lane: z.enum(['live', 'generate', 'bridge']),
-      }),
-      execute: async (args) => ({ applied: true, ...args }),
-    }),
-    set_music_prompt: tool({
-      description: 'Set the Minimax instrumental prompt (generate lane).',
-      inputSchema: z.object({
-        text: z.string().min(1),
-      }),
-      execute: async (args) => ({ applied: true, ...args }),
-    }),
-    generate_music: tool({
-      description:
-        'Request a generative instrumental via Minimax (Phase 2 deck capture). Logs intent until deck unification ships.',
-      inputSchema: z.object({
-        prompt: z.string().optional(),
+        lane: z.enum(['live', 'bridge']),
       }),
       execute: async (args) => ({ applied: true, ...args }),
     }),

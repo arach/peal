@@ -13,6 +13,9 @@ import { Waveform } from "@/components/waveform"
 import { AudioControls } from "@/components/audio-controls"
 import ResizableSidebar from "./ResizableSidebar"
 import { styles } from "@/lib/styles"
+import { byokProviderForEnvVar } from "@/lib/byok"
+import { generateSpeech } from "@/lib/ai/generateSpeech"
+import { useByok } from "@/lib/useByok"
 
 interface GeneratedAudio {
   id: string
@@ -40,6 +43,7 @@ export default function TTSStudio() {
   const [audioTracks, setAudioTracks] = useState<GeneratedAudio[]>([])
   const [providerStatus, setProviderStatus] = useState<Record<string, boolean>>({})
   const [generateError, setGenerateError] = useState<string | null>(null)
+  const byok = useByok()
 
   const audioRef = useRef<HTMLAudioElement>(null)
 
@@ -70,9 +74,14 @@ export default function TTSStudio() {
 
   const activeModel = models.find((m) => m.id === selectedModel)
   const providersLoaded = Object.keys(providerStatus).length > 0
-  const activeProviderReady = !providersLoaded || !activeModel || providerStatus[activeModel.envKey] === true
+  const byokProvider = activeModel ? byokProviderForEnvVar(activeModel.envKey) : undefined
+  const byokReady = byokProvider ? Boolean(byok.keys[byokProvider]) : false
+  const activeProviderReady =
+    !providersLoaded || !activeModel || providerStatus[activeModel.envKey] === true || byokReady
   const providerBanner = providersLoaded && !activeProviderReady && activeModel
-    ? `${activeModel.provider} is not configured. Add ${activeModel.envKey} to .env.local and restart the dev server on port 3001.`
+    ? byokProvider
+      ? `${activeModel.provider} is not configured. Add your key in the studio API Keys dialog — it stays in this browser — or set ${activeModel.envKey} in .env.local.`
+      : `${activeModel.provider} is not configured. Set ${activeModel.envKey} in .env.local on the hosted app.`
     : null
 
   const voices = {
@@ -98,27 +107,13 @@ export default function TTSStudio() {
     setGenerateError(null)
 
     try {
-      const response = await fetch("/api/generate-tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: script.trim(),
-          voice: selectedVoice,
-          model: selectedModel,
-          speed: speed[0],
-        }),
+      const data = await generateSpeech({
+        text: script.trim(),
+        voice: selectedVoice,
+        model: selectedModel,
+        speed: speed[0],
+        byok: byok.keys,
       })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        const parts = [
-          errorData.error || 'Generation failed',
-          errorData.hint,
-        ].filter(Boolean)
-        throw new Error(parts.join(' '))
-      }
-
-      const data = await response.json()
 
       // Create audio blob from base64
       const audioBlob = new Blob([Uint8Array.from(atob(data.audio), (c) => c.charCodeAt(0))], {
@@ -149,7 +144,7 @@ export default function TTSStudio() {
     } finally {
       setIsGenerating(false)
     }
-  }, [script, selectedModel, selectedVoice, speed, projectName])
+  }, [script, selectedModel, selectedVoice, speed, projectName, byok.keys])
 
   const handlePlay = (audioUrl: string, id: string) => {
     if (currentlyPlaying === id) {

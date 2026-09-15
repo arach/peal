@@ -15,7 +15,7 @@ Live-code **lyricless, varied instrumental beats** in Peal Studio — Strudel pa
 | **Managed Strudel engine** | Install / Start / Stop from Transport (left) or `bun run strudel:*` — no manual Vite setup |
 | **Editor + REPL** | Strudel code on top, live REPL iframe below; **Route** (⌘↵) or AI **auto-route** after each turn |
 | **Grounded AI curriculum** | Composition syllabus from Open Music Theory, Tidal course, Strudel workshop — **lyricless varied beats** by default |
-| **Dual AI sessions** | Default **Minimax** + **Codex** tabs; optional **split-pane** to compare models side by side |
+| **Dual AI sessions** | Default **OpenAI** + **Codex** tabs; optional **split-pane** to compare models side by side |
 | **Smart follow-ups** | Context chips after each edit (*alternate hats*, *breakdown mask*, *filter sweep*, etc.) |
 | **Improv loop** | Timed instrumental passes — Subtle / Bold / Build→twist→breathe→strip; 30s–2m interval |
 | **Version history** | Up to 32 pattern snapshots (localStorage); restore any version or roll back one step |
@@ -28,7 +28,7 @@ Live-code **lyricless, varied instrumental beats** in Peal Studio — Strudel pa
 
 ```
 ┌ Transport ──────────┬─ Strudel editor (pattern) ───┬─ Copilot ─────────┐
-│ Strudel install/    │                               │ Minimax │ Codex   │
+│ Strudel install/    │                               │ OpenAI │ Codex    │
 │ start/stop          ├─ Strudel REPL (iframe) ───────┤ Chat + improv loop │
 │ Tempo CPS/BPM       │                               │ Follow-up chips   │
 │ Version history     │                               │ Last edit / undo    │
@@ -47,8 +47,8 @@ Live-code **lyricless, varied instrumental beats** in Peal Studio — Strudel pa
 
 ```bash
 cd peal
-pnpm install
-pnpm dev
+bun install
+bun dev
 ```
 
 Open [http://localhost:3001/studio/music](http://localhost:3001/studio/music).
@@ -96,7 +96,7 @@ When the AI changes the pattern, Peal **auto-routes to Strudel** at end of turn 
 
 ### Sessions
 
-- **Minimax** — fast iteration (default tab)
+- **OpenAI** — fast iteration (default tab, GPT-5.4 Mini)
 - **Codex** — stronger Strudel/code reasoning (GPT-5.4, 5.5, Spark, etc.)
 - **+** add more sessions · **Split** icon for side-by-side panes
 - Settings persist in `peal-music-ai-sessions.v1`
@@ -106,7 +106,7 @@ When the AI changes the pattern, Peal **auto-routes to Strudel** at end of turn 
 | Setting | Value |
 | --- | --- |
 | **Harness** | **API** — `POST /api/ai/chat` via pi-ai (CLI harness placeholder) |
-| **Models** | MiniMax M2.7/M3, Codex GPT-5.4/5.5/Mini, Spark, GPT-4o Mini, Claude Sonnet 4 |
+| **Models** | Codex GPT-5.4/5.5/Mini, Spark, GPT-5.4 Mini, Claude Sonnet 4.6 |
 | **Effort** | Off / Low / Med / High (reasoning depth where supported) |
 
 ### Codex credentials
@@ -131,7 +131,6 @@ See `.env.local.example` and `lib/ai/codexCredentials.ts`.
 | Lane | Engine | Status |
 | --- | --- | --- |
 | **Live** | Strudel | Default — improv loop requires this |
-| **Generate** | Minimax `music_generation` | AI can `set_lane` + `generate_music` |
 | **Bridge** | Sonic Pi OSC | Future / desktop |
 
 ---
@@ -202,8 +201,7 @@ Samples: `s("bd sd")` — `n` is only for sample variant index.
 | `layer_track` | Add drums/bass/lead/pad via `stack()` |
 | `set_tempo` | CPS / BPM |
 | `explain_pattern` | Plain-English readback |
-| `set_lane` | live · generate · bridge |
-| `set_music_prompt` / `generate_music` | Minimax instrumental |
+| `set_lane` | live · bridge |
 | `evaluate_pattern` | Manual re-route (usually unnecessary — auto-route handles it) |
 
 Client execution: `usePealMusicAI.ts` · Server: `POST /api/ai/chat` · Toolset: `lib/ai/toolsets/peal-music.ts`

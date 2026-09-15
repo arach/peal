@@ -72,7 +72,7 @@ export function pealCredentialSetupHint(id: PealCredentialId): string {
     `Set ${def.envVar} in ${root}/.env.local,`,
     'or add it to the shared ../.env.local next to the Peal repo,',
     'or set PEAL_ENV_FILE to a dotenv file path.',
-    'Restart `pnpm dev` (port 3001) after changing env files.',
+    'Restart `bun dev` (port 3001) after changing env files.',
   ].join(' ')
 }
 

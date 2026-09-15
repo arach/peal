@@ -4,8 +4,10 @@ import {
   pealCredentialSetupHint,
   resolvePealCredential,
 } from '@/lib/credentials'
+import { type TtsProvider, ttsProviderForModel } from '@/lib/ttsModels'
 
-export type TtsProvider = 'openai' | 'groq'
+export type { TtsProvider }
+export { ttsProviderForModel }
 
 const PROVIDER_CREDENTIAL: Record<TtsProvider, 'OPENAI_API_KEY' | 'GROQ_API_KEY'> = {
   openai: 'OPENAI_API_KEY',
@@ -19,10 +21,6 @@ export function resolveTtsApiKey(provider: TtsProvider): string | undefined {
 
 export function isTtsProviderConfigured(provider: TtsProvider): boolean {
   return isPealCredentialConfigured(PROVIDER_CREDENTIAL[provider])
-}
-
-export function ttsProviderForModel(model: string): TtsProvider {
-  return model.startsWith('playai-') ? 'groq' : 'openai'
 }
 
 export function providerSetupHint(provider: TtsProvider): string {

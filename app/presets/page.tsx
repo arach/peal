@@ -20,6 +20,7 @@ import {
 import Header from '@/components/Header'
 import PealAppShell from '@/components/PealAppShell'
 import { modernAppPresets, soundCategories, getPresetsByCategory, type SoundPreset } from '@/lib/presets/modernAppSounds'
+import { presetToSound } from '@/lib/presets/presetSound'
 import { useSoundGeneration } from '@/hooks/useSoundGeneration'
 import { useSoundStore } from '@/store/soundStore'
 
@@ -43,47 +44,6 @@ export default function PresetsPage() {
 
   const filteredPresets = getPresetsByCategory(selectedCategory)
 
-  const generatePresetSound = async (preset: SoundPreset) => {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-    const sampleRate = 44100
-    const duration = preset.parameters.duration || 0.2
-    const offlineContext = new OfflineAudioContext(1, sampleRate * duration, sampleRate)
-
-    const osc = offlineContext.createOscillator()
-    const gain = offlineContext.createGain()
-
-    osc.type = preset.parameters.oscillator?.waveform || 'sine'
-    osc.frequency.value = preset.parameters.oscillator?.frequency || 440
-    if (preset.parameters.oscillator?.detune) {
-      osc.detune.value = preset.parameters.oscillator.detune
-    }
-
-    const env = preset.parameters.envelope || { attack: 0.01, decay: 0.05, sustain: 0.3, release: 0.1 }
-    const now = 0
-
-    const safeAttack = Math.min(env.attack, duration * 0.2)
-    const safeDecay = Math.min(env.decay, duration * 0.3)
-    const safeRelease = Math.min(env.release, duration * 0.3)
-    const sustainTime = Math.max(0, duration - safeAttack - safeDecay - safeRelease)
-
-    gain.gain.setValueAtTime(0, now)
-    gain.gain.linearRampToValueAtTime(0.5, now + safeAttack)
-    gain.gain.linearRampToValueAtTime(env.sustain * 0.5, now + safeAttack + safeDecay)
-
-    if (sustainTime > 0) {
-      gain.gain.setValueAtTime(env.sustain * 0.5, now + safeAttack + safeDecay + sustainTime)
-    }
-
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration)
-
-    osc.connect(gain)
-    gain.connect(offlineContext.destination)
-    osc.start(now)
-    osc.stop(now + duration)
-
-    return offlineContext.startRendering()
-  }
-
   const handlePlayPreset = async (preset: SoundPreset) => {
     if (playingId === preset.id) {
       setPlayingId(null)
@@ -93,23 +53,9 @@ export default function PresetsPage() {
     setPlayingId(preset.id)
 
     try {
-      const audioBuffer = await generatePresetSound(preset)
-
-      const tempSound = {
-        id: preset.id,
-        type: 'tone' as const,
-        duration: (preset.parameters.duration || 0.2) * 1000,
-        frequency: preset.parameters.oscillator?.frequency || 440,
-        brightness: 50,
-        created: new Date(),
-        favorite: false,
-        tags: [],
-        parameters: preset.parameters,
-        waveformData: null,
-        audioBuffer,
-      }
-
-      await playSound(tempSound)
+      // `preset-<id>` ids route through the preset renderer + cache inside
+      // playSound → ensureSoundAudioBuffer.
+      await playSound(presetToSound(preset))
 
       setTimeout(() => {
         setPlayingId(null)
@@ -124,20 +70,12 @@ export default function PresetsPage() {
     setGeneratingId(preset.id)
 
     try {
-      const audioBuffer = await generatePresetSound(preset)
-
+      // Keep the `preset-<id>-<rand>` id so the imported sound re-renders via
+      // the preset renderer after reload instead of the generic generators.
       const sound = {
-        id: Date.now() + Math.random().toString(36).substr(2, 9),
-        type: 'tone' as const,
-        duration: (preset.parameters.duration || 0.2) * 1000,
-        frequency: preset.parameters.oscillator?.frequency || 440,
-        brightness: 50,
+        ...presetToSound(preset),
+        id: `preset-${preset.id}-${Math.random().toString(36).slice(2, 8)}`,
         created: new Date(),
-        favorite: false,
-        tags: preset.tags,
-        parameters: preset.parameters,
-        waveformData: null,
-        audioBuffer,
       }
 
       addSounds([sound])

@@ -1,7 +1,9 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import { useHudsonAI } from 'hudsonkit'
+import type { HudsonAIChat } from 'hudsonkit'
+import { usePealChat } from '@/lib/ai/usePealChat'
+import { useByok, useByokChatTarget } from '@/lib/useByok'
 import type { VoiceFxParams } from '@voxd/client/fx'
 import { countMixerKnobTweaks } from './fxKnobs'
 import { PEAL_VOICE_OPTIONS } from './constants'
@@ -38,7 +40,7 @@ function nextId() {
 }
 
 export type UsePealVoiceAIResult = {
-  chat: ReturnType<typeof useHudsonAI>
+  chat: HudsonAIChat
   activity: PealVoiceAIActivity[]
   lastEdit: PealVoiceLastEdit | null
   lastEditExpanded: boolean
@@ -53,6 +55,9 @@ export type UsePealVoiceAIResult = {
 
 export function usePealVoiceAI(provider = 'openai', model?: string): UsePealVoiceAIResult {
   const voice = usePealVoice()
+  const byok = useByok()
+  // BYOK selection (provider+model) wins when its key exists.
+  const target = useByokChatTarget(provider)
   const [activity, setActivity] = useState<PealVoiceAIActivity[]>([])
   const [lastEdit, setLastEdit] = useState<PealVoiceLastEdit | null>(null)
   const [lastEditExpanded, setLastEditExpanded] = useState(false)
@@ -111,9 +116,9 @@ export function usePealVoiceAI(provider = 'openai', model?: string): UsePealVoic
     activeBank: voice.activeBank,
     captureSource: voice.captureSource,
     script: voice.script,
-    musicPrompt: voice.musicPrompt,
     isGenerating: voice.isGenerating,
     currentlyPlayingId: voice.currentlyPlayingId,
+    ...(byok.hasAny ? { byok: byok.keys } : {}),
   }), [
     voice.selectedModel,
     voice.selectedVoice,
@@ -127,17 +132,18 @@ export function usePealVoiceAI(provider = 'openai', model?: string): UsePealVoic
     voice.activeBank,
     voice.captureSource,
     voice.script,
-    voice.musicPrompt,
     voice.isGenerating,
     voice.currentlyPlayingId,
+    byok.hasAny,
+    byok.keys,
   ])
 
-  const chat = useHudsonAI({
+  const chat = usePealChat({
     toolset: 'peal-voice',
     chatId: 'peal-voice-ai-design',
     context,
-    provider,
-    model,
+    provider: target.provider,
+    model: model ?? target.model,
     agentTrace: {
       source: 'peal-voice-ai-design',
       appId: 'peal-studio',
@@ -263,14 +269,6 @@ export function usePealVoiceAI(provider = 'openai', model?: string): UsePealVoic
             log('set_voice_defaults', 'updated generation defaults')
             break
           }
-          case 'set_music_prompt': {
-            const text = String(record.text ?? '').trim()
-            if (!text) break
-            voice.setMusicPrompt(text)
-            voice.setCaptureSource('music')
-            log('set_music_prompt', text.slice(0, 48))
-            break
-          }
           case 'generate_voice': {
             const text = typeof record.text === 'string' ? record.text.trim() : ''
             if (!text && !voice.script.trim()) {
@@ -295,18 +293,6 @@ export function usePealVoiceAI(provider = 'openai', model?: string): UsePealVoic
             voice.setCaptureSource('sfx')
             log('generate_sfx', 'capturing one-shot…')
             await voice.generateSfx(summary || undefined)
-            break
-          }
-          case 'generate_music': {
-            const prompt = typeof record.prompt === 'string' ? record.prompt.trim() : ''
-            if (!prompt && !voice.musicPrompt.trim()) {
-              log('generate_music', 'ignored — empty prompt')
-              break
-            }
-            if (prompt) voice.setMusicPrompt(prompt)
-            voice.setCaptureSource('music')
-            log('generate_music', 'capturing instrumental…')
-            await voice.generateMusic(prompt || undefined)
             break
           }
           case 'preview_clip': {

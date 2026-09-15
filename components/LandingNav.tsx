@@ -7,8 +7,8 @@ import WelcomeModal from './WelcomeModal'
 import { getPublicUrl } from '@/utils/url'
 
 const metaLinks = [
-  { href: '/about', label: 'About' },
-  { href: '/docs#troubleshooting', label: 'FAQ' },
+  { href: '/library', label: 'Library' },
+  { href: '/studio', label: 'Studio' },
   { href: '/docs', label: 'Docs' },
 ] as const
 

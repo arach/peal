@@ -42,6 +42,7 @@ import {
   FolderOpen,
   GearSix,
   GitBranch,
+  Key,
   MagicWand,
   Microphone,
   Pause,
@@ -84,6 +85,7 @@ export const LibraryIcon = studioIcon(FolderOpen, 'LibraryIcon')
 // Panels / tabs
 export const ParametersIcon = studioIcon(SlidersHorizontal, 'ParametersIcon')
 export const SettingsIcon = studioIcon(GearSix, 'SettingsIcon')
+export const KeyIcon = studioIcon(Key, 'KeyIcon')
 export const AiDesignIcon = studioIcon(Sparkle, 'AiDesignIcon')
 export const CodeIcon = studioIcon(Code, 'CodeIcon')
 export const LayersIcon = studioIcon(StackSimple, 'LayersIcon')

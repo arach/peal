@@ -4,17 +4,19 @@ The official CLI for adding Peal sound effects to your project.
 
 ## Installation
 
-You can use Peal without installing it globally using npx:
+You can use Peal without installing it globally using bunx:
 
 ```bash
-npx @peal-sounds/peal add success error notification
+bunx @peal-sounds/peal add success error notification
 ```
 
 Or install it globally:
 
 ```bash
-npm install -g @peal-sounds/peal
+bun add -g @peal-sounds/peal
 ```
+
+(`npx` / `npm install -g` work the same if you don't have Bun.)
 
 ## Usage
 
@@ -103,7 +105,7 @@ function Button({ onClick, children }) {
 
 ## Requirements
 
-- Node.js 20 or higher
+- Bun 1.1+ or Node.js 20 or higher
 
 The CLI and generated helper have no runtime dependencies. `peal add` never runs a package-manager install in your project.
 
@@ -115,7 +117,7 @@ The CLI does not bundle or launch Peal Studio. Use the hosted web app:
 - [Voice Studio](https://arach.github.io/peal/studio/voice)
 - [Music Studio](https://arach.github.io/peal/studio/music)
 
-When developing this repository locally, run `pnpm dev`, then open the same routes on `http://localhost:3001`.
+When developing this repository locally, run `bun dev`, then open the same routes on `http://localhost:3001`.
 
 ## License
 

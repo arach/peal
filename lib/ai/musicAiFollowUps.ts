@@ -174,9 +174,8 @@ export function getMusicFollowUpSuggestions(edit: PealMusicLastEdit): string[] {
     }
   }
 
-  if (tool === 'set_lane' || tool === 'set_music_prompt' || tool === 'generate_music') {
+  if (tool === 'set_lane') {
     suggestions.push('Return to live code and refine the opening')
-    suggestions.push('Match the generate prompt to the current tempo')
   }
 
   if (suggestions.length === 0) {

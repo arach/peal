@@ -1,6 +1,6 @@
 import type { Sound } from '@/store/soundStore'
 import { extractWaveformData } from '@/lib/audioUtils'
-import { getPreset, type SoundPreset } from './modernAppSounds'
+import { getPreset, modernAppPresets, type SoundPreset } from './modernAppSounds'
 import { renderPresetAudioBuffer } from './renderPresetSound'
 
 export { renderPresetAudioBuffer }
@@ -36,7 +36,17 @@ export function isPresetSoundId(id: string): boolean {
 }
 
 export function presetIdFromSoundId(id: string): string {
-  return id.replace(/^preset-/, '')
+  const rest = id.replace(/^preset-/, '')
+  if (getPreset(rest)) return rest
+  // Imported copies carry a uniqueness suffix: `preset-<id>-<rand>`. Resolve
+  // the longest preset id that prefixes the remainder.
+  let best = ''
+  for (const preset of modernAppPresets) {
+    if (rest.startsWith(`${preset.id}-`) && preset.id.length > best.length) {
+      best = preset.id
+    }
+  }
+  return best || rest
 }
 
 const presetWaveformCache = new Map<string, number[]>()

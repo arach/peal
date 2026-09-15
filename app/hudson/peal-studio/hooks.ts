@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { CommandOption, StatusColor } from 'hudsonkit'
 import {
   AiDesignIcon,
+  KeyIcon,
   LibraryIcon,
   ParametersIcon,
   PauseIcon,
@@ -14,6 +15,7 @@ import {
   MusicIcon,
   VolumeIcon,
 } from '@/components/icons/PealStudioIcon'
+import { openByokSettings } from '@/lib/byok'
 import { usePealStudioHudson, type PealStudioTool } from './Provider'
 import { useOptionalPealMusicEngine } from './music/PealMusicEngineProvider'
 import { useOptionalPealMusic } from './music/PealMusicProvider'
@@ -85,6 +87,12 @@ export function usePealStudioCommands(): CommandOption[] {
         setCurrentTool('sfx')
         window.setTimeout(() => runSfxAction('openAIDesigner'), 0)
       },
+    },
+    {
+      id: 'peal-studio:api-keys',
+      label: 'API Keys — bring your own key',
+      icon: createElement(KeyIcon, { size: 14 }),
+      action: openByokSettings,
     },
     {
       id: 'peal-studio:show-parameters',
@@ -231,6 +239,15 @@ function PealNavActions() {
         : currentTool === 'music'
           ? musicIsPlaying
           : sfxSummary.isPlaying) ? 'Pause' : 'Play',
+    ),
+    createElement('button', {
+      type: 'button',
+      onClick: openByokSettings,
+      className: 'peal-inst-nav-transport',
+      title: 'API keys — bring your own key, stored in this browser only',
+    },
+      createElement(KeyIcon, { size: 12 }),
+      'Keys',
     ),
   )
 }

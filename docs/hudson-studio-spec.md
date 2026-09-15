@@ -70,7 +70,7 @@ Prefer **nav actions / commands** for tool switching in v1; optional `tools[]` a
 
 ## Dependency setup
 
-Peal uses **pnpm**. Add HudsonKit via file dependency (mirror Atelier):
+Peal uses **bun**. Add HudsonKit via file dependency (mirror Atelier):
 
 ```json
 "hudsonkit": "file:../hudson/packages/web/hudsonkit"
@@ -132,15 +132,15 @@ If Peal has no `/api/ai/chat`, omit `WorkspaceHostRoutesProvider` AI routes or s
 3. Tool switcher reaches Audio Lab and Voice studio without leaving `/studio`
 4. Command palette (Cmd+K) exposes at least: Play, Pause, Open Library, Switch tool
 5. Status bar shows playing/ready state
-6. `pnpm build:web` passes
+6. `bun run build:web` passes
 7. No regression on `/library` or landing page
 
 ## Verification
 
 ```bash
 cd /Users/art/dev/peal
-pnpm install
-pnpm build:web
+bun install
+bun run build:web
 # dev already on :3001 — do not restart unless broken
 ```
 

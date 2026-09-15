@@ -1,7 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useHudsonAI, type HudsonAIChat } from 'hudsonkit'
+import type { HudsonAIChat } from 'hudsonkit'
+import { usePealChat } from '@/lib/ai/usePealChat'
+import { useByok, useByokChatTarget } from '@/lib/useByok'
 import {
   buildMusicLastEdit,
   finalizeMusicLastEdit,
@@ -72,7 +74,15 @@ function versionLabelForTool(tool: string): string {
 
 export function usePealMusicAI(session: PealAISession, options?: { visible?: boolean }): PealMusicAIHook {
   const music = usePealMusic()
+  const byok = useByok()
   const { config, id: sessionId } = session
+  // BYOK selection (provider+model) wins when its key exists; if the resolved
+  // provider differs from the session's, drop the session's model id — it's
+  // keyed to that provider's registry.
+  const target = useByokChatTarget(config.provider)
+  const effectiveProvider = target.provider
+  const effectiveModel =
+    effectiveProvider === config.provider ? (config.model ?? target.model) : target.model
   const visible = options?.visible ?? true
   const [activity, setActivity] = useState<PealMusicAIActivity[]>([])
   const [lastEdit, setLastEdit] = useState<PealMusicLastEdit | null>(null)
@@ -164,8 +174,6 @@ export function usePealMusicAI(session: PealAISession, options?: { visible?: boo
     isPlaying: music.isPlaying,
     strudelMountStatus: music.strudelMountStatus,
     isPatternDirty: music.isPatternDirty,
-    minimaxAvailable: false,
-    musicPrompt: music.musicPrompt,
     improvLoop: improvLoop.enabled
       ? {
           active: true,
@@ -174,6 +182,7 @@ export function usePealMusicAI(session: PealAISession, options?: { visible?: boo
           intervalSec: improvLoop.intervalSec,
         }
       : null,
+    ...(byok.hasAny ? { byok: byok.keys } : {}),
   }), [
     music.patternCode,
     music.lane,
@@ -183,19 +192,20 @@ export function usePealMusicAI(session: PealAISession, options?: { visible?: boo
     music.isPlaying,
     music.strudelMountStatus,
     music.isPatternDirty,
-    music.musicPrompt,
     improvLoop.enabled,
     improvLoop.style,
     improvLoop.intervalSec,
     improvTick,
+    byok.hasAny,
+    byok.keys,
   ])
 
-  const chat = useHudsonAI({
+  const chat = usePealChat({
     toolset: 'peal-music',
     chatId: `peal-music-ai-${sessionId}`,
     context,
-    provider: config.provider,
-    model: config.model,
+    provider: effectiveProvider,
+    model: effectiveModel,
     ...(config.effort ? { effort: config.effort } : {}),
     mode: config.harness === 'pi-cli' ? 'cli' : 'api',
     agentTrace: {
@@ -300,37 +310,6 @@ export function usePealMusicAI(session: PealAISession, options?: { visible?: boo
             commitEdit({
               tool: name,
               summary: `lane → ${lane}`,
-              patternBefore,
-              patternAfter: patternBefore,
-            })
-            break
-          }
-          case 'set_music_prompt': {
-            const text = String(record.text ?? '').trim()
-            if (!text) break
-            music.setMusicPrompt(text)
-            music.setLane('generate')
-            log('set_music_prompt', text.slice(0, 48))
-            commitEdit({
-              tool: name,
-              summary: text.slice(0, 64),
-              patternBefore,
-              patternAfter: patternBefore,
-            })
-            break
-          }
-          case 'generate_music': {
-            const prompt = typeof record.prompt === 'string' ? record.prompt.trim() : music.musicPrompt.trim()
-            if (!prompt) {
-              log('generate_music', 'ignored — empty prompt')
-              break
-            }
-            music.setMusicPrompt(prompt)
-            music.setLane('generate')
-            log('generate_music', 'queued — deck capture ships in Phase 2')
-            commitEdit({
-              tool: name,
-              summary: prompt.slice(0, 64),
               patternBefore,
               patternAfter: patternBefore,
             })

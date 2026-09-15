@@ -9,23 +9,23 @@ Peal is a lightweight sound effect library for web and desktop applications, pro
 ## Common Development Commands
 
 ```bash
-# Install dependencies (prefer pnpm)
-pnpm install
+# Install dependencies (bun)
+bun install
 
 # Development with watch mode
-pnpm dev
+bun dev
 
 # Build library (outputs to dist/)
-pnpm build
+bun run build
 
 # Run tests
-pnpm test
+bun run test
 
 # Run a single test
-pnpm test path/to/test.spec.ts
+bun run test path/to/test.spec.ts
 
 # Lint code
-pnpm lint
+bun run lint
 
 # Generate Scout custom set (start/stop/error/success)
 node assets/sounds/generate-sounds.cjs
@@ -95,7 +95,7 @@ The homepage is the marketing entry point. It should match the product surfaces 
 - Terminal-chic details also live in `lib/terminal-styles.ts` and `/terminal-styleguide`
 
 ### Dev server
-- Runs on **port 3001** (`pnpm dev` → `next dev --port 3001`)
+- Runs on **port 3001** (`bun dev` → `next dev --port 3001`)
 - Do not kill the running Next server; ask the user if restart is needed
 
 ### Hudson Studio (in progress)

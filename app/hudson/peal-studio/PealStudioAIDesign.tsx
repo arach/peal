@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 import { AI } from 'hudsonkit'
+import { BYOK_PROVIDERS, BYOK_PROVIDER_IDS, openByokSettings } from '@/lib/byok'
+import { useByok, useServerCredentialStatus } from '@/lib/useByok'
+import { KeyIcon } from '@/components/icons/PealStudioIcon'
 import type { Sound } from '@/store/soundStore'
 import type { ProposeSoundInput } from '@/lib/ai/soundProposal'
 import { usePealStudioHudson } from './Provider'
@@ -30,6 +33,8 @@ export function PealStudioAIDesign({
   onInitialPromptConsumed,
 }: PealStudioAIDesignProps) {
   const { sfxSummary } = usePealStudioHudson()
+  const byok = useByok()
+  const serverStatus = useServerCredentialStatus()
   const { chat, lastProposal, clearProposal } = usePealStudioAI({
     sfxSummary,
     onProposeSound,
@@ -63,8 +68,30 @@ export function PealStudioAIDesign({
     chat.sendMessage({ text })
   }
 
+  // Any browser-stored key can drive AI Design (provider is auto-picked);
+  // otherwise it needs a chat-capable server env key.
+  const aiReady = byok.hasAny
+    || BYOK_PROVIDER_IDS.some((id) => serverStatus?.[BYOK_PROVIDERS[id].envVar] === true)
+
   return (
     <div className="flex h-full min-h-0 flex-col bg-[var(--peal-surface-0)] text-[var(--peal-surface-text)]">
+      {serverStatus !== null && !aiReady && (
+        <div className="shrink-0 border-b border-[var(--peal-surface-3)] bg-[var(--peal-surface-1)] px-3 py-2.5 peal-instruments">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[11px] leading-snug text-gray-400">
+              AI Design needs an API key — add your own and it stays in this browser.
+            </p>
+            <button
+              type="button"
+              onClick={openByokSettings}
+              className="peal-inst-pad peal-inst-pad--active shrink-0 px-3 py-1.5 text-[10px] inline-flex items-center gap-1.5"
+            >
+              <KeyIcon size={11} />
+              Add key
+            </button>
+          </div>
+        </div>
+      )}
       <div className="flex-1 min-h-0 overflow-hidden [&_.flex-col.h-full]:text-[11px]">
         <AI
           chat={chat}

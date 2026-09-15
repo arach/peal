@@ -1,7 +1,9 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import { useHudsonAI } from 'hudsonkit'
+import type { HudsonAIChat } from 'hudsonkit'
+import { usePealChat } from '@/lib/ai/usePealChat'
+import { useByok, useByokChatTarget } from '@/lib/useByok'
 import type { Sound } from '@/store/soundStore'
 import { coerceProposeSoundInput, type ProposeSoundInput } from '@/lib/ai/soundProposal'
 import type { PealSfxSummary } from './Provider'
@@ -23,7 +25,7 @@ export interface UsePealStudioAIOptions {
 }
 
 export type UsePealStudioAIResult = {
-  chat: ReturnType<typeof useHudsonAI>
+  chat: HudsonAIChat
   activity: PealStudioAIActivity[]
   lastProposal: { input: ProposeSoundInput; sound: Sound } | null
   clearProposal: () => void
@@ -39,11 +41,18 @@ export function usePealStudioAI({
   onProposeSound,
   onOpenLibrary,
   onFocusAIDesign,
-  provider = 'minimax',
+  provider,
   model,
 }: UsePealStudioAIOptions): UsePealStudioAIResult {
   const [activity, setActivity] = useState<PealStudioAIActivity[]>([])
   const [lastProposal, setLastProposal] = useState<{ input: ProposeSoundInput; sound: Sound } | null>(null)
+  const byok = useByok()
+
+  // BYOK: visitor-selected provider+model wins; else any stored key's provider;
+  // else the server-env default (openai).
+  const target = useByokChatTarget(provider ?? 'openai')
+  const resolvedProvider = provider ?? target.provider
+  const resolvedModel = model ?? target.model
 
   const log = useCallback((tool: string, summary: string) => {
     setActivity((prev) => [...prev.slice(-9), { id: nextId(), tool, summary, timestamp: Date.now() }])
@@ -55,14 +64,15 @@ export function usePealStudioAI({
     soundType: sfxSummary.soundType,
     isPlaying: sfxSummary.isPlaying,
     prompt: lastProposal?.input.summary,
-  }), [sfxSummary.soundId, sfxSummary.soundType, sfxSummary.isPlaying, lastProposal?.input.summary])
+    ...(byok.hasAny ? { byok: byok.keys } : {}),
+  }), [sfxSummary.soundId, sfxSummary.soundType, sfxSummary.isPlaying, lastProposal?.input.summary, byok.hasAny, byok.keys])
 
-  const chat = useHudsonAI({
+  const chat = usePealChat({
     toolset: 'peal-studio',
     chatId: 'peal-studio-ai-design',
     context,
-    provider,
-    model,
+    provider: resolvedProvider,
+    model: resolvedModel,
     agentTrace: {
       source: 'peal-studio-ai-design',
       appId: 'peal-studio',

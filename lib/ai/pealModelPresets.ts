@@ -21,16 +21,14 @@ export const PEAL_AI_EFFORT_OPTIONS: { value: PealAIEffort; label: string }[] = 
   { value: 'high', label: 'High' },
 ]
 
-/** Curated presets — Codex for code/debug, MiniMax for fast iteration. */
+/** Curated presets — Codex for code/debug, current-gen OpenAI/Anthropic for everything else. */
 export const PEAL_AI_MODEL_PRESETS: PealAIModelPreset[] = [
-  { label: 'MiniMax M2.7', value: 'minimax:MiniMax-M2.7', provider: 'minimax', model: 'MiniMax-M2.7' },
-  { label: 'MiniMax M3', value: 'minimax:MiniMax-M3', provider: 'minimax', model: 'MiniMax-M3' },
   { label: 'Codex GPT-5.4', value: 'openai-codex:gpt-5.4', provider: 'openai-codex', model: 'gpt-5.4' },
   { label: 'Codex GPT-5.5', value: 'openai-codex:gpt-5.5', provider: 'openai-codex', model: 'gpt-5.5' },
   { label: 'Codex GPT-5.4 Mini', value: 'openai-codex:gpt-5.4-mini', provider: 'openai-codex', model: 'gpt-5.4-mini' },
   { label: 'Codex Spark', value: 'openai-codex:gpt-5.3-codex-spark', provider: 'openai-codex', model: 'gpt-5.3-codex-spark' },
-  { label: 'GPT-4o Mini', value: 'openai:gpt-4o-mini', provider: 'openai', model: 'gpt-4o-mini' },
-  { label: 'Claude Sonnet 4', value: 'anthropic:claude-sonnet-4-20250514', provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
+  { label: 'GPT-5.4 Mini', value: 'openai:gpt-5.4-mini', provider: 'openai', model: 'gpt-5.4-mini' },
+  { label: 'Claude Sonnet 4.6', value: 'anthropic:claude-sonnet-4-6', provider: 'anthropic', model: 'claude-sonnet-4-6' },
 ]
 
 export const DEFAULT_PEAL_AI_PRESET = PEAL_AI_MODEL_PRESETS[0]

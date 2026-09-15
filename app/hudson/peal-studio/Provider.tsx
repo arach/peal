@@ -24,6 +24,7 @@ import { PealMusicProvider } from './music/PealMusicProvider'
 import { PealVoiceLayoutProvider } from './voice/PealVoiceLayout'
 import { PealVoiceAIProvider } from './voice/PealVoiceAIProvider'
 import { PealVoiceProvider } from './voice/PealVoiceProvider'
+import { ByokSettingsHost } from '@/components/ByokSettings'
 
 export type { PealStudioTool } from './routing'
 
@@ -219,6 +220,7 @@ export function PealStudioProvider({ children }: { children: ReactNode; disabled
           <PealVoiceProvider>
             <PealVoiceAIProvider>
               {children}
+              <ByokSettingsHost />
             </PealVoiceAIProvider>
           </PealVoiceProvider>
         </PealVoiceLayoutProvider>

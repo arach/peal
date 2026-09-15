@@ -1,3 +1,3 @@
-export type MusicLane = 'live' | 'generate' | 'bridge'
+export type MusicLane = 'live' | 'bridge'
 
-export type MusicEngineId = 'strudel' | 'minimax' | 'sonic-pi'
+export type MusicEngineId = 'strudel' | 'sonic-pi'

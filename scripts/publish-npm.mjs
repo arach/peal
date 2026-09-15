@@ -27,7 +27,7 @@ const stagingRoot = await mkdtemp(path.join(tmpdir(), 'peal-publish-'))
 const npmrcPath = path.join(stagingRoot, '.npmrc')
 
 try {
-  execFileSync('pnpm', ['build:lib'], { cwd: rootDir, stdio: 'inherit' })
+  execFileSync('bun', ['run', 'build:lib'], { cwd: rootDir, stdio: 'inherit' })
   await writeFile(npmrcPath, `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`)
 
   for (const name of targets) {

@@ -39,7 +39,7 @@ Get Peal sounds working in your app in under 2 minutes.
 ## 1. Add Sounds (30 seconds)
 
 \`\`\`bash
-npx @peal-sounds/peal add click success error notification
+bunx @peal-sounds/peal add click success error notification
 \`\`\`
 
 This downloads professional UI sounds and generates a helper file.
@@ -47,7 +47,7 @@ This downloads professional UI sounds and generates a helper file.
 ## 2. Install the Library (30 seconds)
 
 \`\`\`bash
-npm install @peal-sounds/peal
+bun add @peal-sounds/peal
 \`\`\``
 
 const sections = [
@@ -165,46 +165,46 @@ const isMuted = peal.mute(); // Get mute state
 
 ## List All Sounds
 \`\`\`bash
-npx @peal-sounds/peal list
+bunx @peal-sounds/peal list
 \`\`\`
 
 ## Add Sounds
 \`\`\`bash
 # Interactive selection
-npx @peal-sounds/peal add
+bunx @peal-sounds/peal add
 
 # Add specific sounds
-npx @peal-sounds/peal add click success error
+bunx @peal-sounds/peal add click success error
 
 # Add to custom directory
-npx @peal-sounds/peal add --dir ./sounds
+bunx @peal-sounds/peal add --dir ./sounds
 
 # Generate TypeScript helper
-npx @peal-sounds/peal add --typescript
+bunx @peal-sounds/peal add --typescript
 \`\`\`
 
 ## Remove Sounds
 \`\`\`bash
 # Interactive removal
-npx @peal-sounds/peal remove
+bunx @peal-sounds/peal remove
 
 # Remove specific sounds
-npx @peal-sounds/peal remove click tap
+bunx @peal-sounds/peal remove click tap
 
 # Remove from custom directory
-npx @peal-sounds/peal remove --dir ./sounds
+bunx @peal-sounds/peal remove --dir ./sounds
 \`\`\`
 
 ## Play Sounds
 \`\`\`bash
 # Play a specific sound
-npx @peal-sounds/peal play click
+bunx @peal-sounds/peal play click
 
 # Play a demo of all sounds
-npx @peal-sounds/peal demo
+bunx @peal-sounds/peal demo
 
 # Demo with custom delay
-npx @peal-sounds/peal demo --delay 2000
+bunx @peal-sounds/peal demo --delay 2000
 \`\`\`
     `
   },
@@ -337,7 +337,7 @@ Live-code **lyricless, varied instrumental beats** — Strudel editor + REPL, gr
 
 - **Managed Strudel** — Install / Start / Stop in Transport (left) or \`bun run strudel:*\`
 - **Editor + REPL** — code on top, Strudel iframe below; **Route** (⌘↵) or **auto-route** after AI edits
-- **Dual AI sessions** — default **Minimax** + **Codex** tabs; optional split-pane compare
+- **Dual AI sessions** — default **OpenAI** + **Codex** tabs; optional split-pane compare
 - **Grounded curriculum** — OMT2, Tidal course, Strudel workshop; lyricless evolving grooves
 - **Improv loop** — Subtle / Bold / arc; timed passes, one variation per cycle
 - **Version history** — 32 snapshots, roll back, last-edit undo
@@ -346,7 +346,7 @@ Live-code **lyricless, varied instrumental beats** — Strudel editor + REPL, gr
 ## Quick start
 
 \`\`\`bash
-pnpm dev
+bun dev
 bun run strudel:install
 bun run strudel:start
 \`\`\`
@@ -423,7 +423,7 @@ peal.load('click', '/peal/click.wav');
 1. **Open browser console** - Any errors?
 2. **Check network tab** - Are WAV files loading?
 3. **Verify file paths** - Do paths in peal.js match file locations?
-4. **Test with demo** - Does \`npx @peal-sounds/peal demo\` work?
+4. **Test with demo** - Does \`bunx @peal-sounds/peal demo\` work?
 5. **Check volume/mute** - System volume, browser tab not muted?
 6. **User interaction** - Sounds triggered by user action?
     `

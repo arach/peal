@@ -2053,3 +2053,125 @@
   }
 
 }
+/* A little instrument: warm metal, open space, and Peal's blue. */
+.landing {
+  --landing-content-max: 1480px;
+  --font-sans: var(--font-space-grotesk), sans-serif;
+  --peal-font: var(--font-space-grotesk), sans-serif;
+  --landing-text-dim: #a4a6a8;
+  --landing-text-muted: #8c9094;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-weight: 400;
+}
+.landing .landing-header-inner { min-height: 84px; }
+.landing .landing-header-brand .peal-wordmark { font-family: var(--font-space-grotesk), sans-serif; font-size: 28px; font-weight: 600; letter-spacing: -0.04em; }
+.landing .landing-header-link { font-size: 13px; }
+.landing .landing-header-cta { padding: 11px 20px; }
+.landing .landing-hero-split { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); align-items: center; gap: clamp(30px, 4vw, 64px); padding-top: 68px; padding-bottom: 64px; }
+.landing .landing-hero--instrument { padding: 0; text-align: left; }
+.landing .landing-hero--instrument::before, .landing .landing-hero--instrument::after { display: none; }
+.landing .landing-hero-eyebrow { margin: 0 0 23px; color: #b5b7b9; font-size: 13px; }
+.landing .landing-hero--instrument h1 { font-size: clamp(38px, 4.4vw, 64px); line-height: 1.09; letter-spacing: -0.04em; font-weight: 600; margin: 0 0 26px; }
+.landing .landing-hero--instrument .landing-sub { margin: 0 0 26px; max-width: 43ch; font-size: 17px; line-height: 1.65; }
+.landing .landing-hero--instrument .landing-hero-links { justify-content: flex-start; margin: 0 0 24px; gap: 12px; }
+.landing .landing-hero--instrument .landing-btn { min-height: 46px; padding: 0 21px; border-radius: 10px; gap: 20px; font-size: 13px; }
+.landing .landing-quick-command { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 9px 8px 16px; background: #232628; border: 1px solid #34383a; border-radius: 9px; max-width: 490px; }
+.landing .landing-quick-command code { font: 11px/1.6 var(--font-jetbrains), monospace; overflow-wrap: anywhere; }
+.landing .landing-quick-command code > span { color: #969c9f; margin-right: 10px; }
+.landing .landing-quick-command b { color: var(--landing-accent-hi); font-weight: 400; }
+.landing .landing-quick-command button { display: grid; place-items: center; color: #a8afb1; flex-shrink: 0; width: 32px; height: 32px; border-radius: 5px; cursor: pointer; }
+.landing .landing-quick-command button:hover { color: white; background: #353a3d; }
+.landing .landing-hero-notes { display: flex; flex-wrap: wrap; gap: 12px 18px; margin-top: 19px; color: #a6aaad; font-size: 11px; }
+.landing .landing-hero-notes span { display: inline-flex; align-items: center; gap: 7px; }
+.landing .landing-section-header h2 { font-family: var(--font-space-grotesk), sans-serif; font-weight: 500; font-size: 29px; }
+.landing .landing-band--sounds { padding-top: 36px; padding-bottom: 44px; }
+.landing .landing-install-tabs { margin-bottom: 12px; }
+.landing :is(a, button, input):focus-visible { outline: 2px solid var(--landing-accent-hi); outline-offset: 4px; }
+
+.landing .sound-deck-wrap { min-width: 0; padding-top: 10px; }
+.landing .sound-deck {
+  color: #30332f; padding: 20px; border-radius: 20px; position: relative;
+  border: 1px solid #a8a89f;
+  background: repeating-linear-gradient(0deg, #ffffff10 0px, #ffffff10 1px, #64675b08 1px, #64675b08 3px), linear-gradient(135deg, #e7e6dd, #c9c8be 65%, #dcdad1);
+  box-shadow: inset 0 0 0 3px #efeee6, inset 0 0 0 5px #b5b6ad, 0 18px 32px -10px #0009;
+}
+.landing .sound-deck-head { display: flex; align-items: center; gap: 14px; margin: 0 2px 20px; }
+.landing .sound-deck-brand { display: inline-flex; align-items: center; gap: 8px; font-size: 26px; letter-spacing: -0.04em; font-weight: 600; }
+.landing .sound-deck-brand > span { font: 13px var(--font-jetbrains), monospace; color: #717469; letter-spacing: -0.08em; }
+.landing .sound-deck-caption { margin-left: auto; font: 8px var(--font-jetbrains), monospace; text-transform: uppercase; letter-spacing: 0.13em; color: #555a50; }
+.landing .sound-deck-save { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; padding: 0 10px; border: 1px solid #989b91; box-shadow: 0 1px 0 #ffffff8c; border-radius: 20px; font-size: 10px; cursor: pointer; white-space: nowrap; }
+.landing .sound-deck-save:hover { background: #ecece5; }
+.landing .sound-deck button:disabled { opacity: 0.45; cursor: wait; }
+.landing .sound-deck-screen { display: grid; grid-template-columns: minmax(0, 1fr) 112px; min-height: 178px; border-radius: 10px; padding: 12px; color: #e8eae5; background: linear-gradient(120deg, #292e2c, #1b201f); border: 1px solid #161b17; box-shadow: inset 0 2px 5px #000b, 0 1px 0 1px #f6f7ed; }
+.landing .sound-deck-scope { position: relative; min-width: 0; overflow: hidden; background: repeating-linear-gradient(90deg, transparent 0, transparent calc(25% - 1px), #ffffff0c calc(25% - 1px), #ffffff0c 25%); }
+.landing .sound-deck-ruler { display: flex; justify-content: space-between; color: #bfc5bd; font: 8px var(--font-jetbrains), monospace; }
+.landing .sound-deck-scope svg { display: block; width: 100%; height: 138px; color: #68b4f9; }
+.landing .sound-deck-description { border-left: 1px solid #ffffff0e; margin-left: 12px; padding: 26px 0 0 13px; }
+.landing .sound-deck-description h2 { font-size: 15px; font-weight: 500; letter-spacing: -0.03em; margin: 0 0 8px; overflow-wrap: anywhere; }
+.landing .sound-deck-description p { font-size: 10px; line-height: 1.6; color: #c4cac1; margin: 0 0 12px; }
+.landing .sound-deck-description > span { font: 8px/1.6 var(--font-jetbrains), monospace; color: #bdc4bb; }
+.landing .sound-deck-controls { display: grid; grid-template-columns: 1.1fr repeat(3, 1fr); align-items: center; gap: 14px; padding: 27px 6px 22px; }
+.landing .sound-deck-play { width: 74px; height: 74px; margin: 0 auto 14px; display: grid; place-items: center; color: #14283a; border-radius: 50%; border: 1px solid #54798e; background: linear-gradient(150deg, #83c5fc, #4899e8); box-shadow: 0 0 0 5px #dbdcd2, 0 0 0 6px #8c9288, inset 0 2px 2px #d3eeff, 0 5px 8px 4px #55594e66; cursor: pointer; }
+.landing .sound-deck-play:hover { background: #89ccff; }
+.landing .sound-deck-play:active { box-shadow: 0 0 0 5px #dbdcd2, 0 0 0 6px #8c9288, inset 0 2px 6px #274f6a77; }
+.landing .sound-deck-knob { display: flex; align-items: center; flex-direction: column; font-size: 11px; line-height: 1.5; gap: 1px; cursor: ew-resize; }
+.landing .sound-deck-dial { display: block; width: 54px; height: 54px; position: relative; border-radius: 50%; border: 1px solid #92958a; background: conic-gradient(from 25deg, #f3f3e9, #a9aca0 12%, #e3e3d8 25%, #fafbef 40%, #a7aa9e 53%, #dddfd4 65%, #f3f3e8 78%, #b7b9ac 90%, #f3f3e9); box-shadow: inset 0 0 0 2px #e7e8df, 0 3px 5px #55594e66, 0 0 0 4px #bfc1b61f; margin-bottom: 9px; }
+.landing .sound-deck-pointer { position: absolute; inset: 4px; transform: rotate(var(--dial-angle)); border-radius: 50%; }
+.landing .sound-deck-pointer::before { content: ''; position: absolute; left: calc(50% - 1px); top: 1px; height: 16px; width: 2px; border-radius: 1px; background: #525b4e; box-shadow: 1px 0 0 #ffffffb0; }
+.landing .sound-deck-dial input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; }
+.landing .sound-deck-dial:focus-within { outline: 2px solid #1c629e; outline-offset: 5px; }
+.landing .sound-deck-knob output { font: 9px var(--font-jetbrains), monospace; color: #53594d; }
+.landing .sound-deck-presets { display: flex; border-top: 1px solid #a0a69777; padding-top: 12px; gap: 8px; }
+.landing .sound-deck-presets button { display: flex; justify-content: center; align-items: center; gap: 7px; flex: 1; border: 1px solid transparent; padding: 8px 5px; border-radius: 5px; font-size: 10px; cursor: pointer; color: #4d5548; }
+.landing .sound-deck-presets button[aria-pressed='true'] { background: #e7e9e0; border-color: #aeb5a5; color: #263021; }
+.landing .sound-deck-presets button:hover { background: #eff0e877; }
+.landing .sound-deck-led { width: 4px; height: 4px; border-radius: 50%; background: #8c9584; }
+.landing .sound-deck-presets button[aria-pressed='true'] .sound-deck-led { background: #226fa7; }
+.landing .sound-deck-foot { display: flex; justify-content: space-between; gap: 12px; padding: 15px 5px 0; color: #a9aca7; font: 9px/1.6 var(--font-jetbrains), monospace; }
+.landing .sound-deck-foot p { margin: 0; }
+.landing .sound-deck-foot button { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; min-height: 24px; margin-top: -4px; }
+.landing .sound-deck-foot button:hover { color: white; }
+.landing .sound-deck-playhead { position: absolute; top: 16px; bottom: 0; width: 1px; background: #e7f4ff; animation: deck-scan linear forwards; }
+@keyframes deck-scan { from { left: 0; } to { left: 100%; } }
+@media (max-width: 1100px) {
+  .landing .landing-hero-split { gap: 30px; padding-top: 44px; padding-bottom: 48px; }
+  .landing .landing-hero--instrument h1 { font-size: clamp(34px, 4vw, 48px); }
+  .landing .landing-hero--instrument .landing-sub { font-size: 15px; }
+  .landing .sound-deck { padding: 16px; }
+  .landing .sound-deck-caption { display: none; }
+  .landing .sound-deck-save { margin-left: auto; }
+  .landing .sound-deck-controls { gap: 8px; }
+}
+@media (max-width: 820px) {
+  .landing .landing-hero-split { grid-template-columns: 1fr; gap: 35px; max-width: 650px; }
+  .landing .landing-hero--instrument h1 { font-size: clamp(40px, 7.4vw, 58px); }
+  .landing .landing-hero--instrument .landing-sub { max-width: 48ch; }
+  .landing .landing-hero-notes { margin-top: 16px; }
+  .landing .sound-deck-caption { display: block; }
+}
+@media (max-width: 480px) {
+  .landing .landing-header-inner { min-height: 70px; gap: 8px; }
+  .landing .landing-header-link { padding: 6px; font-size: 11px; }
+  .landing .landing-header-cta { padding: 9px 11px; font-size: 11px; }
+  .landing .landing-header-brand { gap: 7px; }
+  .landing .landing-header-brand .peal-wordmark { font-size: 23px; }
+  .landing .landing-hero-split { padding-top: 32px; padding-bottom: 32px; }
+  .landing .landing-hero-eyebrow { margin-bottom: 19px; font-size: 12px; }
+  .landing .landing-hero--instrument h1 { font-size: 39px; }
+  .landing .landing-quick-command { padding-left: 10px; gap: 5px; }
+  .landing .landing-quick-command code { font-size: 10px; }
+  .landing .sound-deck { padding: 14px; border-radius: 16px; }
+  .landing .sound-deck-caption { display: none; }
+  .landing .sound-deck-screen { grid-template-columns: minmax(0, 1fr) 93px; }
+  .landing .sound-deck-description { margin-left: 7px; padding-left: 8px; }
+  .landing .sound-deck-description h2 { font-size: 13px; }
+  .landing .sound-deck-play { width: 55px; height: 55px; }
+  .landing .sound-deck-dial { width: 45px; height: 45px; }
+  .landing .sound-deck-controls { gap: 8px; padding-left: 0; padding-right: 0; }
+  .landing .sound-deck-presets { gap: 3px; }
+  .landing .sound-deck-presets button { font-size: 9px; }
+  .landing .sound-deck-foot { font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .landing .sound-deck-playhead { animation: none; display: none; } }
+.landing .landing-copy-status { font-size: 11px; color: var(--landing-text-dim); margin: 6px 0 0; }
+.landing .landing-copy-status:empty { display: none; }

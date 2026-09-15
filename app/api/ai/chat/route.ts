@@ -7,6 +7,7 @@ import {
   proxyChatToHudson,
 } from '@/lib/ai/host'
 import { loadToolset } from '@/lib/ai/toolsets'
+import { sanitizeByok } from '@/lib/byok'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-static'
@@ -33,6 +34,9 @@ export async function POST(req: Request) {
     body.context && typeof body.context === 'object' && !Array.isArray(body.context)
       ? (body.context as Record<string, unknown>)
       : {}
+  // BYOK: client keys ride in context.byok — strip before the toolset sees it.
+  const byok = sanitizeByok(context.byok)
+  delete context.byok
   const provider = typeof body.provider === 'string' ? body.provider : undefined
   const model = typeof body.model === 'string' ? body.model : undefined
   const effort = body.effort === 'off' || body.effort === 'low' || body.effort === 'medium' || body.effort === 'high'
@@ -46,6 +50,7 @@ export async function POST(req: Request) {
 
   log(`${provider ?? 'default'}/${model ?? 'default'}${effort ? ` effort=${effort}` : ''} | toolset=${toolset} | ${Array.isArray(messages) ? messages.length : 0} messages`)
 
+  const credentials = loadCredentials(byok)
   try {
     return piBackend.streamUI({
       messages,
@@ -55,8 +60,8 @@ export async function POST(req: Request) {
       model,
       ...(effort ? { effort } : {}),
       loadToolset: loadToolset as never,
-      loadCredentials,
-      defaultModels: buildDefaultModels(),
+      loadCredentials: () => credentials,
+      defaultModels: buildDefaultModels(credentials),
     } as Parameters<typeof piBackend.streamUI>[0])
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)

@@ -37,10 +37,10 @@ const fxParamFields = {
 
 const system = `You are the Peal Voice AI Editor — an in-studio assistant for shaping clips after capture.
 
-Peal Deck is a multi-source soundboard. Users **capture** speech (TTS), instrumentals (Minimax), and one-shots (SFX) onto deck pads, then **edit** them through the programmable mixer.
+Peal Deck is a multi-source soundboard. Users **capture** speech (TTS) and one-shots (SFX) onto deck pads, then **edit** them through the programmable mixer.
 
 ## Workflow
-1. **Capture** — set script/prompt and call generate_voice, generate_music, or generate_sfx (Capture panel).
+1. **Capture** — set script/prompt and call generate_voice or generate_sfx (Capture panel).
 2. **AI Edit** — after a clip lands on a pad, load **genres** (named FX chains) into the mixer and **tweak strip knobs** for the selected clip. Changes apply live to the pad.
 3. Use tools for every edit — do not only describe settings in prose.
 4. After tool calls, summarize what changed in one short sentence.
@@ -85,7 +85,6 @@ interface PealVoiceContext {
   activeBank?: number
   captureSource?: string
   script?: string
-  musicPrompt?: string
   isGenerating?: boolean
   currentlyPlayingId?: string | null
 }
@@ -162,13 +161,6 @@ function tools(_ctx: Record<string, unknown>) {
       }),
       execute: async (args) => ({ applied: true, ...args }),
     }),
-    set_music_prompt: tool({
-      description: 'Set the instrumental capture prompt for Minimax music generation.',
-      inputSchema: z.object({
-        text: z.string().min(1),
-      }),
-      execute: async (args) => ({ applied: true, ...args }),
-    }),
     generate_voice: tool({
       description: 'Capture TTS speech to the active deck bank.',
       inputSchema: z.object({
@@ -182,13 +174,6 @@ function tools(_ctx: Record<string, unknown>) {
         summary: z.string().min(1),
         type: z.enum(['click', 'tone', 'noise', 'sweep']).optional(),
         duration: z.number().min(0.03).max(1.5).optional(),
-      }),
-      execute: async (args) => ({ applied: true, ...args }),
-    }),
-    generate_music: tool({
-      description: 'Capture an instrumental clip via Minimax to the active deck bank.',
-      inputSchema: z.object({
-        prompt: z.string().optional().describe('Override music prompt'),
       }),
       execute: async (args) => ({ applied: true, ...args }),
     }),

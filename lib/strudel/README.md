@@ -43,7 +43,7 @@ Open: [`/studio/music`](http://localhost:3001/studio/music) · User guide: [`doc
 
 - **Editor + REPL** — pattern editor (top), Strudel iframe (bottom); Route ⌘↵ or AI auto-route
 - **Managed engine UI** — Install / Start / Stop in Transport; polls `GET /api/strudel`
-- **`peal-music` AI toolset** — Minimax + Codex sessions, split-pane, smart follow-up chips
+- **`peal-music` AI toolset** — OpenAI + Codex sessions, split-pane, smart follow-up chips
 - **Grounded curriculum** — lyricless varied beats (`lib/ai/musicCurriculum.ts`)
 - **Improv loop** — Subtle / Bold / arc; 30s–2m interval; one variation dimension per pass
 - **Version history** — 32 snapshots, roll back, last-edit undo in copilot

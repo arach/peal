@@ -1,16 +1,18 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import {
-  isTtsProviderConfigured,
   providerSetupHint,
   resolveTtsApiKey,
   ttsProviderForModel,
 } from '@/lib/ttsCredentials'
+import { sanitizeByok } from '@/lib/byok'
 
 export const dynamic = 'force-static'
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, model, voice, speed } = await request.json()
+    const body = await request.json()
+    const { text, model, voice, speed } = body
+    const byok = sanitizeByok(body.byok)
 
     if (!text) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 })
@@ -18,20 +20,25 @@ export async function POST(request: NextRequest) {
 
     const provider = ttsProviderForModel(model ?? 'tts-1')
 
-    if (!isTtsProviderConfigured(provider)) {
+    // BYOK first — the visitor's browser-stored OpenAI key wins over server
+    // env. Groq is not a BYOK provider, so PlayAI always uses server env.
+    const apiKey = (provider === 'openai' ? byok.openai : undefined) ?? resolveTtsApiKey(provider)
+
+    if (!apiKey) {
       const envVar = provider === 'groq' ? 'GROQ_API_KEY' : 'OPENAI_API_KEY'
       return NextResponse.json(
         {
           error: `${provider === 'groq' ? 'Groq' : 'OpenAI'} API key not configured`,
           provider,
           envVar,
-          hint: providerSetupHint(provider),
+          hint:
+            (provider === 'openai'
+              ? 'Add your key in the studio API Keys dialog, or '
+              : '') + providerSetupHint(provider),
         },
         { status: 500 },
       )
     }
-
-    const apiKey = resolveTtsApiKey(provider)!
 
     if (provider === 'groq') {
       const response = await fetch('https://api.groq.com/openai/v1/audio/speech', {

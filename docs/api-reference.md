@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-npm install @peal-sounds/peal
+bun add @peal-sounds/peal
 ```
 
 ## Basic Usage
