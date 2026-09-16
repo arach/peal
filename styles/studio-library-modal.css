@@ -12,7 +12,7 @@
   --lib-modal-accent: #4a9eff;
 }
 
-.peal-library-modal[data-peal-theme='light'] {
+html:not(.dark) .peal-library-modal {
   --lib-modal-bg: #f3f5f8;
   --lib-modal-surface: #ffffff;
   --lib-modal-well: #e8ecf2;

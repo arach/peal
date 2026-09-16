@@ -45,6 +45,7 @@ export default function SoundCardRedesign({ sound, index, variant = 'default' }:
   const [newTag, setNewTag] = useState('')
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const currentSource = useRef<AudioBufferSourceNode | null>(null)
+  const playbackRef = useRef<{ ctx: BaseAudioContext; startedAt: number; duration: number } | null>(null)
   const animationRef = useRef<number | null>(null)
   const progressRef = useRef(0)
 
@@ -158,10 +159,10 @@ export default function SoundCardRedesign({ sound, index, variant = 'default' }:
       }
       
       if (isPlaying) {
-        progressRef.current += 0.02
-        if (progressRef.current > 1) {
-          progressRef.current = 0
-        }
+        const pb = playbackRef.current
+        progressRef.current = pb && pb.duration > 0
+          ? Math.min(1, (pb.ctx.currentTime - pb.startedAt) / pb.duration)
+          : Math.min(1, progressRef.current + 0.02)
         animationRef.current = requestAnimationFrame(animate)
       }
     }
@@ -200,6 +201,7 @@ export default function SoundCardRedesign({ sound, index, variant = 'default' }:
     if (currentlyPlaying === sound.id) {
       setCurrentlyPlaying(null)
       setIsPlaying(false)
+      playbackRef.current = null
       return
     }
 
@@ -207,13 +209,19 @@ export default function SoundCardRedesign({ sound, index, variant = 'default' }:
       const source = await playSound(sound)
       if (source) {
         currentSource.current = source
+        playbackRef.current = {
+          ctx: source.context,
+          startedAt: source.context.currentTime,
+          duration: source.buffer?.duration ?? 0,
+        }
         setIsPlaying(true)
         setCurrentlyPlaying(sound.id)
-        
+
         source.onended = () => {
           setIsPlaying(false)
           setCurrentlyPlaying(null)
           currentSource.current = null
+          playbackRef.current = null
           progressRef.current = 0
           if (animationRef.current) {
             cancelAnimationFrame(animationRef.current)

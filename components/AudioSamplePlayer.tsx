@@ -18,6 +18,7 @@ export type AudioSamplePlayerSample = {
 export type AudioSamplePlayerProps = {
   sample: AudioSamplePlayerSample
   isPlaying?: boolean
+  getProgress?: () => number
   onTogglePlay?: () => void
   onCodeClick?: () => void
   showType?: boolean
@@ -58,6 +59,7 @@ const WAVE_PRESETS: Record<
 export default function AudioSamplePlayer({
   sample,
   isPlaying = false,
+  getProgress,
   onTogglePlay,
   onCodeClick,
   showType = true,
@@ -79,6 +81,8 @@ export default function AudioSamplePlayer({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)
   const progressRef = useRef(0)
+  const getProgressRef = useRef(getProgress)
+  getProgressRef.current = getProgress
   const [isHovered, setIsHovered] = useState(false)
 
   const preset = WAVE_PRESETS[wavePreset]
@@ -138,8 +142,10 @@ export default function AudioSamplePlayer({
       })
 
       if (isPlaying) {
-        progressRef.current += 0.02
-        if (progressRef.current > 1) progressRef.current = 0
+        const p = getProgressRef.current?.()
+        progressRef.current = p != null
+          ? Math.max(0, Math.min(1, p))
+          : Math.min(1, progressRef.current + 0.02)
         animationRef.current = requestAnimationFrame(draw)
       }
     }

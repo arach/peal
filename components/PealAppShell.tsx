@@ -11,7 +11,7 @@ export default function PealAppShell({ className, children }: PealAppShellProps)
   const resolved = useResolvedPealTheme()
 
   return (
-    <div className={className} data-peal-theme={resolved}>
+    <div className={className} data-peal-theme={resolved} suppressHydrationWarning>
       {children}
     </div>
   )

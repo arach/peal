@@ -39,7 +39,7 @@
   line-height: var(--peal-leading);
 }
 
-.presets[data-peal-theme='light'] {
+html:not(.dark) .presets {
   --presets-bg: #eef1f6;
   --presets-surface: #ffffff;
   --presets-border: rgba(15, 23, 42, 0.08);
@@ -55,7 +55,7 @@
   background-image: linear-gradient(180deg, #f3f5f8 0%, #eef1f6 32%, #e8ecf2 100%);
 }
 
-.presets[data-peal-theme='light'] .presets-title-row h1 {
+html:not(.dark) .presets .presets-title-row h1 {
   color: rgba(15, 23, 42, 0.92);
 }
 

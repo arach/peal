@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import { Figtree, Space_Grotesk, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import '@/styles/peal-type.css'
@@ -38,16 +37,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${figtree.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
       <head>
+        {/* Raw inline script — must run at parse time, before first paint.
+            next/script beforeInteractive is serialized into the RSC payload on
+            static export and only executes at hydration, which flashes the
+            wrong theme on every full page load. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('peal-sound-store');var t=s?(JSON.parse(s).state||{}).theme:null;var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);var r=d?'dark':'light';var e=document.documentElement;e.classList.toggle('dark',d);e.style.colorScheme=r;e.dataset.pealTheme=r}catch(e){}})();`,
+          }}
+        />
         <GoogleAnalytics />
       </head>
       <body className="bg-background dark:bg-gray-950 text-text-primary dark:text-gray-100 transition-colors">
-        <Script
-          id="peal-theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=localStorage.getItem('peal-sound-store');if(!s)return;var p=JSON.parse(s);var t=p.state&&p.state.theme;var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);var r=d?'dark':'light';document.documentElement.classList.toggle('dark',d);document.documentElement.style.colorScheme=r}catch(e){}})();`,
-          }}
-        />
         <ThemeProvider>
           {children}
         </ThemeProvider>

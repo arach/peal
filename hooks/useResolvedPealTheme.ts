@@ -6,7 +6,10 @@ import { resolvePealTheme, type ResolvedPealTheme } from '@/lib/pealTheme'
 
 export function useResolvedPealTheme(): ResolvedPealTheme {
   const theme = useSoundStore((state) => state.theme)
-  const [resolved, setResolved] = useState<ResolvedPealTheme>('dark')
+  const [resolved, setResolved] = useState<ResolvedPealTheme>(() => {
+    if (typeof document === 'undefined') return 'dark'
+    return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+  })
 
   useEffect(() => {
     const apply = () => setResolved(resolvePealTheme(theme))

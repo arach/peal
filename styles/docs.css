@@ -39,7 +39,7 @@
   line-height: var(--peal-leading);
 }
 
-.docs[data-peal-theme='light'] {
+html:not(.dark) .docs {
   --docs-bg: #eef1f6;
   --docs-surface: #ffffff;
   --docs-border: rgba(15, 23, 42, 0.08);
@@ -51,8 +51,8 @@
   background-image: linear-gradient(180deg, #f3f5f8 0%, #eef1f6 32%, #e8ecf2 100%);
 }
 
-.docs[data-peal-theme='light'] .docs-hero h1,
-.docs[data-peal-theme='light'] .docs-article-title h1 {
+html:not(.dark) .docs .docs-hero h1,
+html:not(.dark) .docs .docs-article-title h1 {
   color: rgba(15, 23, 42, 0.92);
 }
 

@@ -15,7 +15,7 @@ export default function StudioChrome({ children }: { children: React.ReactNode }
   }, [])
 
   return (
-    <div className="peal-studio-chrome" data-peal-theme={resolved}>
+    <div className="peal-studio-chrome" data-peal-theme={resolved} suppressHydrationWarning>
       <PealChrome layout="studio" />
       <div
         className="overflow-hidden"

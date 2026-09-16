@@ -93,15 +93,18 @@ const heroSounds = [
 interface SoundCardProps {
   sound: (typeof heroSounds)[0]
   isPlaying: boolean
+  getProgress?: () => number
   onPlay: () => void
   onStop: () => void
   onShowCode: () => void
 }
 
-function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCardProps) {
+function HeroSoundCard({ sound, isPlaying, getProgress, onPlay, onStop, onShowCode }: SoundCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)
   const progressRef = useRef(0)
+  const getProgressRef = useRef(getProgress)
+  getProgressRef.current = getProgress
   const [isHovered, setIsHovered] = useState(false)
 
   useEffect(() => {
@@ -145,8 +148,10 @@ function HeroSoundCard({ sound, isPlaying, onPlay, onStop, onShowCode }: SoundCa
       })
 
       if (isPlaying) {
-        progressRef.current += 0.02
-        if (progressRef.current > 1) progressRef.current = 0
+        const p = getProgressRef.current?.()
+        progressRef.current = p != null
+          ? Math.max(0, Math.min(1, p))
+          : Math.min(1, progressRef.current + 0.02)
         animationRef.current = requestAnimationFrame(draw)
       }
     }
@@ -268,6 +273,14 @@ export default function HeroSoundGrid({ variant = 'default' }: { variant?: 'defa
     }
   }
 
+  const getProgress = (soundId: string) => () => {
+    const h = sounds[soundId]
+    if (!h) return 0
+    const d = h.duration()
+    const s = h.seek()
+    return d > 0 && typeof s === 'number' ? s / d : 0
+  }
+
   return (
     <>
       <div className={variant === 'landing' ? 'landing-sound-grid' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'}>
@@ -291,6 +304,7 @@ export default function HeroSoundGrid({ variant = 'default' }: { variant?: 'defa
                     waveform: sound.waveform,
                   }}
                   isPlaying={playing === sound.id}
+                  getProgress={getProgress(sound.id)}
                   onTogglePlay={() => (playing === sound.id ? stopSound() : playSound(sound.id))}
                   onCodeClick={() => setSelectedSound(sound)}
                   showTags="hover"
@@ -305,6 +319,7 @@ export default function HeroSoundGrid({ variant = 'default' }: { variant?: 'defa
               <HeroSoundCard
                 sound={sound}
                 isPlaying={playing === sound.id}
+                getProgress={getProgress(sound.id)}
                 onPlay={() => playSound(sound.id)}
                 onStop={stopSound}
                 onShowCode={() => setSelectedSound(sound)}
