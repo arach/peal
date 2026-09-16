@@ -23,7 +23,7 @@ export function PealDeck({ compact = false }: { compact?: boolean }) {
       {(voice.providerBanner || voice.generateError) && (
         <div className="flex shrink-0 items-start gap-2 rounded border border-[rgba(232,163,23,0.35)] bg-[rgba(232,163,23,0.08)] px-3 py-2.5">
           <StudioLed tone="amber" on />
-          <p className="font-mono text-[11px] leading-relaxed text-[rgba(255,255,255,0.82)]">
+          <p className="font-mono text-[11px] leading-relaxed text-[var(--peal-surface-text)]">
             {voice.generateError ?? voice.providerBanner}
           </p>
         </div>
