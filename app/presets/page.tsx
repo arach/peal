@@ -1,7 +1,7 @@
 'use client'
 
 import '@/styles/presets.css'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Play,
@@ -44,25 +44,64 @@ export default function PresetsPage() {
 
   const filteredPresets = getPresetsByCategory(selectedCategory)
 
+  const playSource = useRef<AudioBufferSourceNode | null>(null)
+  const playToken = useRef(0)
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const stopPreview = () => {
+    playToken.current++
+    const source = playSource.current
+    playSource.current = null
+    if (source) {
+      try {
+        source.stop()
+      } catch {
+        // already finished
+      }
+    }
+    setPlayingId(null)
+  }
+
+  useEffect(() => stopPreview, [])
+
   const handlePlayPreset = async (preset: SoundPreset) => {
     if (playingId === preset.id) {
-      setPlayingId(null)
+      stopPreview()
       return
     }
 
+    stopPreview()
+    const token = playToken.current
     setPlayingId(preset.id)
 
     try {
       // `preset-<id>` ids route through the preset renderer + cache inside
       // playSound → ensureSoundAudioBuffer.
-      await playSound(presetToSound(preset))
-
-      setTimeout(() => {
-        setPlayingId(null)
-      }, (preset.parameters.duration || 0.2) * 1000)
+      const source = await playSound(presetToSound(preset))
+      if (token !== playToken.current) {
+        try {
+          source?.stop()
+        } catch {
+          // already finished
+        }
+        return
+      }
+      if (!source) {
+        if (token === playToken.current) setPlayingId(null)
+        return
+      }
+      playSource.current = source
+      // Clear the indicator on real playback end — a fixed timer loses the
+      // visible state to AudioContext resume + first-render latency.
+      source.onended = () => {
+        if (playSource.current === source) {
+          playSource.current = null
+          setPlayingId(null)
+        }
+      }
     } catch (error) {
       console.error('Error playing preset:', error)
-      setPlayingId(null)
+      if (token === playToken.current) stopPreview()
     }
   }
 
@@ -86,10 +125,24 @@ export default function PresetsPage() {
     }
   }
 
-  const handleCopyParameters = (preset: SoundPreset) => {
-    navigator.clipboard.writeText(JSON.stringify(preset.parameters, null, 2))
+  const handleCopyParameters = async (preset: SoundPreset) => {
+    const text = JSON.stringify(preset.parameters, null, 2)
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch {
+      // Clipboard API needs a secure context — fall back for edge cases.
+      const area = document.createElement('textarea')
+      area.value = text
+      area.style.position = 'fixed'
+      area.style.opacity = '0'
+      document.body.appendChild(area)
+      area.select()
+      document.execCommand('copy')
+      area.remove()
+    }
     setCopiedId(preset.id)
-    setTimeout(() => setCopiedId(null), 1000)
+    if (copiedTimer.current) clearTimeout(copiedTimer.current)
+    copiedTimer.current = setTimeout(() => setCopiedId(null), 1500)
   }
 
   const getDurationLabel = (duration: string) => {
@@ -136,6 +189,7 @@ export default function PresetsPage() {
                 key={key}
                 type="button"
                 onClick={() => setSelectedCategory(key)}
+                aria-pressed={selectedCategory === key}
                 className={`presets-category${selectedCategory === key ? ' is-active' : ''}`}
               >
                 {Icon ? <Icon size={14} className="presets-category-icon" /> : null}
@@ -168,7 +222,7 @@ export default function PresetsPage() {
                 <button
                   type="button"
                   onClick={() => handlePlayPreset(preset)}
-                  disabled={playingId !== null && playingId !== preset.id}
+                  aria-pressed={playingId === preset.id}
                   className={`presets-preview${playingId === preset.id ? ' is-playing' : ''}`}
                 >
                   {playingId === preset.id ? (
