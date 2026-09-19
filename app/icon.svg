@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a2434"/>
+      <stop offset="100%" stop-color="#121820"/>
+    </linearGradient>
+    <linearGradient id="bars" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4e9ff"/>
+      <stop offset="45%" stop-color="#8ec2ff"/>
+      <stop offset="100%" stop-color="#4a9eff"/>
+    </linearGradient>
+  </defs>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="7.5" fill="url(#tile)" stroke="rgba(120,176,255,0.28)" stroke-width="0.5"/>
+  <rect x="1" y="1" width="30" height="30" rx="7" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+  <rect x="3"  y="13.76" width="2" height="4.48"  rx="1" fill="url(#bars)" opacity="0.80"/>
+  <rect x="7"  y="12.16" width="2" height="7.68"  rx="1" fill="url(#bars)" opacity="0.84"/>
+  <rect x="11" y="10.24" width="2" height="11.52" rx="1" fill="url(#bars)" opacity="0.88"/>
+  <rect x="15" y="8"     width="2" height="16"    rx="1" fill="url(#bars)" opacity="0.92"/>
+  <rect x="19" y="10.24" width="2" height="11.52" rx="1" fill="url(#bars)" opacity="0.88"/>
+  <rect x="23" y="12.16" width="2" height="7.68"  rx="1" fill="url(#bars)" opacity="0.84"/>
+  <rect x="27" y="13.76" width="2" height="4.48"  rx="1" fill="url(#bars)" opacity="0.80"/>
+</svg>

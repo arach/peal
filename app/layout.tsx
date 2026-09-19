@@ -25,8 +25,19 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Peal - Tech Sound Designer',
-  description: 'Create unique tech-oriented notification sounds with visual feedback',
+  // Origin only: emitted asset paths already include the /peal basePath.
+  metadataBase: new URL('https://arach.github.io'),
+  title: {
+    default: 'Peal — UI sounds for the things you build',
+    template: '%s · Peal',
+  },
+  description:
+    'Find a sound you like, make it your own, and add it to your app. Curated UI sound effects, a sound design studio, and a CLI that drops sounds into any project.',
+  openGraph: {
+    siteName: 'Peal',
+    type: 'website',
+  },
+  twitter: { card: 'summary_large_image' },
 }
 
 export default function RootLayout({
