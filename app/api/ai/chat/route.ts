@@ -6,6 +6,7 @@ import {
   piBackend,
   proxyChatToHudson,
 } from '@/lib/ai/host'
+import { pealAIBackend, scoutHarnessFor, streamScoutChat } from '@/lib/ai/scout'
 import { loadToolset } from '@/lib/ai/toolsets'
 import { sanitizeByok } from '@/lib/byok'
 
@@ -51,6 +52,21 @@ export async function POST(req: Request) {
   log(`${provider ?? 'default'}/${model ?? 'default'}${effort ? ` effort=${effort}` : ''} | toolset=${toolset} | ${Array.isArray(messages) ? messages.length : 0} messages`)
 
   const credentials = loadCredentials(byok)
+
+  // Scout: explicit `scout` provider, PEAL_AI_BACKEND=scout, or (auto) no key for the provider.
+  const backend = pealAIBackend()
+  const useScout = backend !== 'pi' && (
+    backend === 'scout'
+    || provider === 'scout'
+    || !(provider ? credentials[provider] : Object.values(credentials).some(Boolean))
+  )
+  if (useScout) {
+    const harness = scoutHarnessFor(provider, model)
+    log(`route → Scout | harness=${harness}`)
+    const { system, tools } = loadToolset(toolset, context)
+    return streamScoutChat({ messages, toolset, system, tools: tools as Parameters<typeof streamScoutChat>[0]['tools'], harness, log })
+  }
+
   try {
     return piBackend.streamUI({
       messages,

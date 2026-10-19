@@ -1,38 +1,28 @@
 import { tool } from 'ai'
 import { z } from 'zod'
 import type { ToolsetDefinition } from '@hudsonkit/ai/toolsets'
-import { formatSoundDesignExamplesForPrompt } from '@/lib/ai/soundDesignExamples'
+import { sfxPatchSchema } from '@/lib/sfx/patch'
+import { formatSfxDesignGuideForPrompt } from '@/lib/ai/sfxDesignGuide'
 
-const SOUND_DESIGN_REFERENCE = formatSoundDesignExamplesForPrompt()
+const DESIGN_GUIDE = formatSfxDesignGuideForPrompt()
 
-const system = `You are the Peal Sound Designer — an in-studio assistant for crafting UI notification audio.
+const system = `You are the Peal Sound Designer — an in-studio sound designer for UI and product audio.
 
-You work inside Peal Sound Studio. Users describe sounds in plain language; you translate intent into concrete synthesis parameters via the propose_sound tool.
+You work inside Peal Sound Studio. Users describe a moment or a material in plain language; you compose a layered sound with the compose_sound tool. Every compose_sound call replaces the whole composition in the studio — the user can step back and forward through your versions.
 
 ## How to work
 1. Ask one clarifying question only when the request is genuinely ambiguous.
-2. When you have enough detail, call propose_sound — do not only describe parameters in prose.
-3. After propose_sound, summarize what you proposed in one short sentence.
-4. Use open_library when the user wants presets; use open_ai_design only if they ask to focus this panel.
-
-## Design rules
-- Never use purple in your language or metaphors — Peal accent is blue (#4a9eff).
-- UI sounds are short: typically 50–800ms. Clicks often 30–120ms.
-- One propose_sound per distinct sound. For sequences (e.g. "3 clicks"), propose the composite feel in one call or explain you'd need multiple passes.
-- Coerce numeric fields as numbers, not strings.
-
-## Sound craft
-- Clicks: type click, short duration (0.03–0.08s), square or noise, sharp attack, little sustain.
-- Success / achievement: brighter frequency, sine or triangle, gentle decay, upward feel.
-- Error / warning: lower frequency, slightly longer decay, avoid harsh clipping.
-- Notifications: soft attack (0.02+), moderate release, sine or triangle.
-- Swoosh / transition: type sweep or noise, longer duration (0.2–0.6s).
+2. Otherwise call compose_sound with the complete patch — do not only describe it in prose.
+3. When a current composition is shown below and the user asks for a change ("warmer", "add a click", "shorter"), start from it: keep what works, change what they asked, and return the full updated patch.
+4. After compose_sound, say in one short sentence what you built and which layer does what.
+5. Use open_library when the user wants presets; use open_ai_design only if they ask to focus this panel.
 
 ## Response style
-- Brief, direct, craft-focused — like a sound engineer, not a marketer.
-- No apologies, no filler.
+- Brief, direct, craft-focused — like a sound engineer, not a marketer. No apologies, no filler.
+- Never use purple in your language or metaphors — Peal accent is blue (#4a9eff).
+- Numbers as numbers, not strings.
 
-${SOUND_DESIGN_REFERENCE}`
+${DESIGN_GUIDE}`
 
 interface PealStudioContext {
   currentTool?: string
@@ -40,6 +30,7 @@ interface PealStudioContext {
   soundType?: string | null
   isPlaying?: boolean
   prompt?: string
+  composition?: unknown
 }
 
 function context(ctx: Record<string, unknown>): string {
@@ -47,9 +38,13 @@ function context(ctx: Record<string, unknown>): string {
   const sections: string[] = ['## Studio\nPeal Sound Studio — SFX design with live Web Audio code.']
 
   if (c.currentTool) sections.push(`Tool: **${c.currentTool}**`)
-  if (c.soundId) sections.push(`Active sound: \`${c.soundId}\` (${c.soundType ?? 'unknown'})`)
-  else sections.push('No sound loaded — propose a new design or suggest opening the library.')
-  if (c.prompt) sections.push(`User prompt: "${c.prompt}"`)
+  if (c.composition) {
+    sections.push(`## Current composition (edit this when the user asks for changes)\n${JSON.stringify(c.composition)}`)
+  } else if (c.soundId) {
+    sections.push(`Active sound: \`${c.soundId}\` (${c.soundType ?? 'unknown'}) — not an AI composition; compose a new one from the request.`)
+  } else {
+    sections.push('No sound loaded — compose a new one from the request.')
+  }
   if (c.isPlaying) sections.push('Playback: playing')
 
   return sections.join('\n\n')
@@ -57,21 +52,10 @@ function context(ctx: Record<string, unknown>): string {
 
 function tools(_ctx: Record<string, unknown>) {
   return {
-    propose_sound: tool({
-      description: 'Propose structured parameters for a UI sound the studio can synthesize.',
-      inputSchema: z.object({
-        summary: z.string().describe('Short label for the sound, e.g. "soft success chime"'),
-        type: z.enum(['click', 'tone', 'noise', 'sweep']).describe('Primary oscillator/noise type'),
-        frequency: z.number().optional().describe('Base frequency in Hz'),
-        duration: z.number().describe('Duration in seconds (e.g. 0.15)'),
-        waveform: z.enum(['sine', 'square', 'sawtooth', 'triangle']).optional(),
-        attack: z.number().optional(),
-        decay: z.number().optional(),
-        sustain: z.number().optional(),
-        release: z.number().optional(),
-        notes: z.string().optional().describe('Extra craft notes for the user'),
-      }),
-      execute: async (args) => ({ applied: true, ...args }),
+    compose_sound: tool({
+      description: 'Compose (or recompose) the whole sound as a layered patch. Replaces the current composition in the studio.',
+      inputSchema: sfxPatchSchema,
+      execute: async (args) => ({ applied: true, summary: args.summary, layers: args.layers.length }),
     }),
     open_ai_design: tool({
       description: 'Focus the studio AI Design inspector panel.',

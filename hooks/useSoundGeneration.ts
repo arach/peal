@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import { renderSfxPatch, varySfxPatch, type SfxPatch } from '@/lib/sfx/patch'
 import { useSoundStore, Sound } from '@/store/soundStore'
 import { playPresetSound } from '@/lib/presets/playPresetSound'
 import { ensureSoundAudioBuffer, isPresetSoundId } from '@/lib/presets/presetSound'
@@ -138,6 +139,18 @@ export class SoundGenerator {
   }
 
   private async renderSound(sound: Sound) {
+    // Layered patches (AI compositions) render through the patch engine.
+    if (sound.parameters?.patch) {
+      try {
+        const buffer = await renderSfxPatch(sound.parameters.patch as SfxPatch)
+        sound.audioBuffer = buffer
+        sound.waveformData = this.extractWaveformData(buffer)
+      } catch (error) {
+        console.error('Error rendering patch:', sound.id, error)
+      }
+      return
+    }
+
     const audioContext = await this.getAudioContext()
     if (!audioContext) return
 
@@ -386,6 +399,16 @@ export class SoundGenerator {
 
     if (audioContext.state === 'suspended') {
       await audioContext.resume()
+    }
+
+    // Patches with variation re-render per play so repeats never sound identical.
+    const patch = sound.parameters?.patch as SfxPatch | undefined
+    if (patch?.variation && patch.variation > 0) {
+      try {
+        sound.audioBuffer = await renderSfxPatch(varySfxPatch(patch))
+      } catch (error) {
+        console.error('Error rendering patch variation:', sound.id, error)
+      }
     }
 
     if (!sound.audioBuffer) {

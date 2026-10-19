@@ -157,7 +157,7 @@ export default function SoundCodeModal({ sound, onClose }: SoundCodeModalProps) 
           </div>
 
           <footer className="landing-sound-modal-foot">
-            <a href={`/studio?sound=${encodeURIComponent(sound.id)}&type=${sound.type}`}>
+            <a href={`/studio/editor?sound=${encodeURIComponent(sound.id)}&type=${sound.type}`}>
               Customize in studio
             </a>
             <a href="/library">Browse library</a>

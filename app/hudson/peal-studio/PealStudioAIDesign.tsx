@@ -1,46 +1,60 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { AI } from 'hudsonkit'
-import { BYOK_PROVIDERS, BYOK_PROVIDER_IDS, openByokSettings } from '@/lib/byok'
-import { useByok, useServerCredentialStatus } from '@/lib/useByok'
+import { useEffect, useRef, useState } from 'react'
+import { openByokSettings } from '@/lib/byok'
+import { useByok } from '@/lib/useByok'
+import { isPealStaticRuntime } from '@/lib/ai/runtime'
 import { KeyIcon } from '@/components/icons/PealStudioIcon'
 import type { Sound } from '@/store/soundStore'
-import type { ProposeSoundInput } from '@/lib/ai/soundProposal'
 import { usePealStudioHudson } from './Provider'
 import { usePealStudioAI } from './usePealStudioAI'
 import { STUDIO_EXAMPLE_PROMPTS } from '@/lib/ai/soundDesignExamples'
+import { renderSfxPatch } from '@/lib/sfx/patch'
+import { downloadBlob, encodeWav, slugify } from '@/lib/sfx/wav'
+import { useSoundSetStore } from '@/store/soundSetStore'
+import { PealSoundSets } from './PealSoundSets'
+import {
+  PealAIChips,
+  PealAIComposer,
+  PealAIHeader,
+  PealAIPanel,
+  PealAISection,
+  PealAIThread,
+} from './shared/PealAIPanel'
 
 export interface PealStudioAIDesignProps {
-  currentSound: Sound | null
-  onProposeSound: (input: ProposeSoundInput) => Promise<Sound | null>
-  onLoadSound: (sound: Sound) => void
-  onPlaySound: (sound: Sound) => void | Promise<void>
-  onAddAsTrack: (sound: Sound) => void | Promise<void>
+  /** Load a composition in place, replacing the current sound and tracks. */
+  onApplyComposition: (sound: Sound) => void | Promise<void>
   onOpenLibrary: () => void
   initialPrompt?: string
   onInitialPromptConsumed?: () => void
 }
 
 export function PealStudioAIDesign({
-  currentSound,
-  onProposeSound,
-  onLoadSound,
-  onPlaySound,
-  onAddAsTrack,
+  onApplyComposition,
   onOpenLibrary,
   initialPrompt = '',
   onInitialPromptConsumed,
 }: PealStudioAIDesignProps) {
   const { sfxSummary } = usePealStudioHudson()
   const byok = useByok()
-  const serverStatus = useServerCredentialStatus()
-  const { chat, lastProposal, clearProposal } = usePealStudioAI({
+  const {
+    chat,
+    composition,
+    canBack,
+    canForward,
+    position,
+    stepComposition,
+    replayComposition,
+  } = usePealStudioAI({
     sfxSummary,
-    onProposeSound,
+    onApplyComposition,
     onOpenLibrary,
   })
   const consumedPrompt = useRef('')
+  const [savedNote, setSavedNote] = useState<string | null>(null)
+  // The note belongs to the version it was saved from.
+  useEffect(() => setSavedNote(null), [position.index])
 
   useEffect(() => {
     const prompt = initialPrompt.trim()
@@ -63,121 +77,136 @@ export function PealStudioAIDesign({
     onInitialPromptConsumed?.()
   }, [chat, initialPrompt, onInitialPromptConsumed])
 
-  const sendExample = (text: string) => {
-    if (chat.status === 'streaming' || chat.status === 'submitted') return
+  const isBusy = chat.status === 'streaming' || chat.status === 'submitted'
+  const sendText = (text: string) => {
+    if (isBusy) return
     chat.sendMessage({ text })
   }
 
-  // Any browser-stored key can drive AI Design (provider is auto-picked);
-  // otherwise it needs a chat-capable server env key.
-  const aiReady = byok.hasAny
-    || BYOK_PROVIDER_IDS.some((id) => serverStatus?.[BYOK_PROVIDERS[id].envVar] === true)
+  // The hosted app routes keyless requests through Scout; only the static
+  // GitHub Pages build (in-browser inference) needs a visitor key.
+  const needsKey = isPealStaticRuntime() && !byok.hasAny
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[var(--peal-surface-0)] text-[var(--peal-surface-text)]">
-      {serverStatus !== null && !aiReady && (
-        <div className="shrink-0 border-b border-[var(--peal-surface-3)] bg-[var(--peal-surface-1)] px-3 py-2.5 peal-instruments">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-[11px] leading-snug text-gray-400">
-              AI Design needs an API key — add your own and it stays in this browser.
-            </p>
-            <button
-              type="button"
-              onClick={openByokSettings}
-              className="peal-inst-pad peal-inst-pad--active shrink-0 px-3 py-1.5 text-[10px] inline-flex items-center gap-1.5"
-            >
-              <KeyIcon size={11} />
-              Add key
-            </button>
-          </div>
-        </div>
-      )}
-      <div className="flex-1 min-h-0 overflow-hidden [&_.flex-col.h-full]:text-[11px]">
-        <AI
-          chat={chat}
-          placeholder="Describe a UI sound — the designer will propose parameters you can load into the studio."
-        />
-      </div>
+    <PealAIPanel>
+      <PealAIHeader
+        title="AI Design"
+        hint="Each turn recomposes the sound in place — step back and forward through versions."
+        action={needsKey ? (
+          <button type="button" onClick={openByokSettings} className="peal-ai-text-btn inline-flex items-center gap-1">
+            <KeyIcon size={10} />
+            Add key
+          </button>
+        ) : undefined}
+      />
 
-      {lastProposal && (
-        <div className="shrink-0 border-t border-[var(--peal-surface-3)] bg-[var(--peal-surface-1)] p-3 space-y-2 peal-instruments">
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.14em] text-[#4a9eff]">
-                <span className="peal-inst-led peal-inst-led--on" aria-hidden />
-                Proposed sound
-              </div>
-              <div className="text-sm text-[var(--peal-surface-text-strong)]">{lastProposal.input.summary}</div>
-              <div className="text-[11px] text-gray-500">
-                {lastProposal.sound.type} · {lastProposal.sound.duration}ms · {lastProposal.sound.frequency}Hz
-              </div>
-              {lastProposal.input.notes ? (
-                <div className="text-[11px] text-gray-400 mt-1">{lastProposal.input.notes}</div>
-              ) : null}
-            </div>
-            <button
-              type="button"
-              onClick={() => onPlaySound(lastProposal.sound)}
-              className="peal-inst-pad peal-inst-pad--active"
-            >
-              Test
-            </button>
-          </div>
+      <PealAIThread
+        chat={chat}
+        placeholder="Describe a sound or a moment — the designer composes it right into the studio."
+        pendingLabel="Designing…"
+      />
 
-          {currentSound ? (
-            <div className="flex gap-2">
+      {composition ? (
+        <PealAISection
+          label={`Composition · v${position.index + 1} of ${position.total}`}
+          action={(
+            <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => onAddAsTrack(lastProposal.sound)}
-                className="peal-inst-pad peal-inst-pad--active flex-1 py-2 text-[10px]"
+                disabled={!canBack || isBusy}
+                onClick={() => void stepComposition(-1)}
+                className="peal-ai-text-btn"
+                title="Previous version"
+                aria-label="Previous version"
               >
-                Add as Track
+                ‹
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  if (confirm('Replace the current sound with this proposal?')) {
-                    onLoadSound(lastProposal.sound)
-                    clearProposal()
-                  }
-                }}
-                className="peal-inst-pad py-2 text-[10px]"
+                disabled={!canForward || isBusy}
+                onClick={() => void stepComposition(1)}
+                className="peal-ai-text-btn"
+                title="Next version"
+                aria-label="Next version"
               >
-                Replace
+                ›
+              </button>
+              <button
+                type="button"
+                onClick={() => void replayComposition()}
+                className="peal-ai-text-btn"
+                title="Reload this version into the studio"
+              >
+                Reload
               </button>
             </div>
-          ) : (
+          )}
+        >
+          <p className="text-sm text-[var(--peal-surface-text-strong)]">{composition.summary}</p>
+          <p className="peal-ai-activity mt-0.5">
+            {Math.round(composition.duration * 1000)}ms · {composition.layers.length} layer{composition.layers.length === 1 ? '' : 's'}
+            {composition.room ? ` · room ${composition.room.size.toFixed(2)}` : ''}
+            {composition.variation ? ` · varies ${Math.round(composition.variation * 100)}%` : ''}
+          </p>
+          <ul className="mt-2 space-y-0.5">
+            {composition.layers.map((layer, i) => (
+              <li key={`${layer.name}-${i}`} className="peal-ai-activity">
+                <span className="peal-ai-activity-tool">{layer.name}</span>
+                {' · '}
+                {layer.source === 'noise' ? `${layer.noiseColor ?? 'white'} noise` : `${layer.waveform ?? 'sine'} ${Math.round(layer.frequency ?? 0)}Hz`}
+                {layer.filter ? ` · ${layer.filter.type} ${Math.round(layer.filter.frequency)}${layer.filter.frequencyEnd ? `→${Math.round(layer.filter.frequencyEnd)}` : ''}Hz` : ''}
+                {layer.grains ? ` · ${layer.grains.count} grains` : ''}
+                {layer.flutter ? ` · flutter ${Math.round(layer.flutter.rate)}Hz` : ''}
+                {layer.pan !== undefined || layer.panEnd !== undefined ? ` · pan ${(layer.pan ?? 0).toFixed(1)}${layer.panEnd !== undefined ? `→${layer.panEnd.toFixed(1)}` : ''}` : ''}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={async () => {
+                const buffer = await renderSfxPatch(composition)
+                downloadBlob(encodeWav(buffer), `${slugify(composition.summary)}.wav`)
+              }}
+              className="peal-ai-text-btn"
+              title="Download this version as a WAV"
+            >
+              WAV
+            </button>
             <button
               type="button"
               onClick={() => {
-                onLoadSound(lastProposal.sound)
-                clearProposal()
+                const { setName, replaced } = useSoundSetStore.getState().saveToActive(composition)
+                setSavedNote(`${replaced ? 'Updated in' : 'Saved to'} ${setName}`)
               }}
-              className="peal-inst-pad peal-inst-pad--active w-full py-2 text-[10px]"
+              className="peal-ai-text-btn"
+              title="Save this version to the active sound set"
             >
-              Load to Studio
+              Save to set
             </button>
-          )}
-        </div>
-      )}
-
-      {chat.messages.length === 0 && !lastProposal && (
-        <div className="shrink-0 border-t border-[var(--peal-surface-3)] p-3 space-y-2 peal-instruments">
-          <p className="text-[10px] font-mono uppercase tracking-[0.14em] text-gray-500">Patch presets</p>
-          <div className="flex flex-wrap gap-1.5">
-            {STUDIO_EXAMPLE_PROMPTS.map((example) => (
-              <button
-                key={example}
-                type="button"
-                onClick={() => sendExample(example)}
-                className="peal-inst-pad text-[9px] normal-case tracking-normal"
-              >
-                {example}
-              </button>
-            ))}
+            {savedNote ? <span className="peal-ai-activity self-center">{savedNote}</span> : null}
           </div>
-        </div>
-      )}
-    </div>
+          {composition.notes ? (
+            <p className="mt-1.5 font-mono text-[10px] leading-relaxed text-[var(--peal-surface-text-muted)]">
+              {composition.notes}
+            </p>
+          ) : null}
+        </PealAISection>
+      ) : null}
+
+      <PealSoundSets />
+
+      {chat.messages.length === 0 && !composition ? (
+        <PealAIChips label="Try" chips={STUDIO_EXAMPLE_PROMPTS.slice(0, 3)} onPick={sendText} disabled={isBusy} />
+      ) : null}
+
+      <PealAIComposer
+        label="Describe a sound"
+        placeholder="e.g. glassy confirmation chime, 200ms"
+        isBusy={isBusy}
+        onSend={sendText}
+        onStop={() => chat.stop()}
+      />
+    </PealAIPanel>
   )
 }

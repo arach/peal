@@ -155,6 +155,14 @@ export function PealStudioProvider({ children }: { children: ReactNode; disabled
     router.push(studioHrefWithTool(searchParams, tool), { scroll: false })
   }, [router, searchParams])
 
+  // `/studio?sound=…` predates the conversation-first SFX tool: a specific
+  // sound opens in the editor.
+  useEffect(() => {
+    if (currentTool === 'sfx' && searchParams.get('sound')) {
+      router.replace(`/studio/editor?${searchParams.toString()}`, { scroll: false })
+    }
+  }, [currentTool, router, searchParams])
+
   // Migrate legacy `/studio?tool=voice|music` bookmarks to path routes.
   useEffect(() => {
     const target = legacyToolQueryRedirectHref(pathname, searchParams)

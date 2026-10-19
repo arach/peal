@@ -8,6 +8,7 @@ import { usePealMusic } from './PealMusicProvider'
 import { usePealMusicAIContext } from './PealMusicAIContext'
 import { PealMusicAIChat, PealMusicAIComposer } from './PealMusicAIChat'
 import { PealMusicImprovLoopControls } from './PealMusicImprovLoop'
+import { PealAIActivity, PealAIChips, PealAIPanel } from '../shared/PealAIPanel'
 
 export function PealMusicAIDesign() {
   const music = usePealMusic()
@@ -45,70 +46,46 @@ export function PealMusicAIDesign() {
     && lastEdit.patternBefore.trim() !== lastEdit.patternAfter.trim(),
   )
 
+  const latest = activity[activity.length - 1]
+  const working = latest && (chat.status === 'streaming' || chat.status === 'submitted')
+
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[var(--peal-surface-0)] text-[var(--peal-surface-text)]">
+    <PealAIPanel>
       <PealMusicAIChat
         placeholder="Describe a groove, mood, or edit — AI writes Strudel into the pattern editor."
       />
 
-      {activity.length > 0 && (chat.status === 'streaming' || chat.status === 'submitted') ? (
-        <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2">
-          <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.14em] text-gray-600">Working</p>
-          <p className="truncate font-mono text-[9px] text-gray-500">
-            <span className="text-[#4a9eff]/80">{activity[activity.length - 1]?.tool}</span>
-            {' · '}
-            {activity[activity.length - 1]?.summary}
-          </p>
-        </div>
-      ) : null}
+      {working ? <PealAIActivity label="Working" tool={latest.tool} summary={latest.summary} /> : null}
 
       {lastEdit ? (
-        <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2">
-          <div className="mb-1 flex items-center justify-between gap-2">
-            <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-gray-600">Last change</p>
-            {canUndoLastEdit ? (
-              <button
-                type="button"
-                disabled={isBusy}
-                onClick={() => music.applyPatternSnapshot(lastEdit.patternBefore, {
-                  label: 'Undo AI edit',
-                  source: 'restore',
-                  tool: lastEdit.tool,
-                  summary: lastEdit.summary,
-                  route: true,
-                })}
-                className="rounded border border-[var(--peal-surface-border)] px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-gray-400 transition hover:border-[#4a9eff]/30 hover:text-[#4a9eff] disabled:opacity-40"
-              >
-                Roll back
-              </button>
-            ) : null}
-          </div>
-          <p className="truncate font-mono text-[9px] text-gray-500">
-            <span className="text-[#4a9eff]/80">{lastEdit.tool}</span>
-            {' · '}
-            {lastEdit.summary}
-            {lastEdit.routed && !lastEdit.isDirty ? ' · playing in Strudel' : ''}
-            {lastEdit.start.firstLayerHint ? ` · ${lastEdit.start.firstLayerHint}` : ''}
-          </p>
-        </div>
-      ) : null}
-
-      <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2">
-        <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-gray-600">{chipLabel}</p>
-        <div className="flex flex-wrap gap-1.5">
-          {starterChips.map((chip) => (
+        <PealAIActivity
+          label="Last change"
+          tool={lastEdit.tool}
+          summary={[
+            lastEdit.summary,
+            lastEdit.routed && !lastEdit.isDirty ? 'playing in Strudel' : '',
+            lastEdit.start.firstLayerHint ?? '',
+          ].filter(Boolean).join(' · ')}
+          action={canUndoLastEdit ? (
             <button
-              key={chip}
               type="button"
               disabled={isBusy}
-              onClick={() => sendPrompt(chip)}
-              className="rounded border border-[var(--peal-surface-3)] bg-[var(--peal-surface-2)] px-2 py-1 font-mono text-[9px] text-gray-400 transition hover:border-[#4a9eff]/30 hover:text-[var(--peal-surface-text)] disabled:opacity-40"
+              onClick={() => music.applyPatternSnapshot(lastEdit.patternBefore, {
+                label: 'Undo AI edit',
+                source: 'restore',
+                tool: lastEdit.tool,
+                summary: lastEdit.summary,
+                route: true,
+              })}
+              className="peal-ai-text-btn"
             >
-              {chip}
+              Roll back
             </button>
-          ))}
-        </div>
-      </div>
+          ) : undefined}
+        />
+      ) : null}
+
+      <PealAIChips label={chipLabel} chips={starterChips} onPick={sendPrompt} disabled={isBusy} />
 
       <PealMusicImprovLoopControls
         enabled={improvLoop.enabled}
@@ -125,6 +102,6 @@ export function PealMusicAIDesign() {
       />
 
       <PealMusicAIComposer placeholder="e.g. dusty lo-fi drums at 82 bpm" />
-    </div>
+    </PealAIPanel>
   )
 }

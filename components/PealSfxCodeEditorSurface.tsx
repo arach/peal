@@ -153,7 +153,7 @@ export default function PealSfxCodeEditorSurface({
             onChange={editor.handleEditorChange}
             onSave={editor.applyCode}
             showLineNumbers
-            className="h-full"
+            className="peal-code-editor h-full"
           />
         ) : (
           <div className="h-full" aria-hidden="true" />

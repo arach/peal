@@ -5,7 +5,9 @@ import type { HudsonAIChat } from 'hudsonkit'
 import { usePealChat } from '@/lib/ai/usePealChat'
 import { useByok, useByokChatTarget } from '@/lib/useByok'
 import type { Sound } from '@/store/soundStore'
-import { coerceProposeSoundInput, type ProposeSoundInput } from '@/lib/ai/soundProposal'
+import { soundFromPatch } from '@/lib/ai/soundProposal'
+import { sfxPatchSchema, type SfxPatch } from '@/lib/sfx/patch'
+import { useCompositionStore } from '@/store/compositionStore'
 import type { PealSfxSummary } from './Provider'
 
 export interface PealStudioAIActivity {
@@ -17,7 +19,8 @@ export interface PealStudioAIActivity {
 
 export interface UsePealStudioAIOptions {
   sfxSummary: PealSfxSummary
-  onProposeSound: (input: ProposeSoundInput) => Promise<Sound | null>
+  /** Render + load a composition in place (replaces the current sound). */
+  onApplyComposition: (sound: Sound) => void | Promise<void>
   onOpenLibrary: () => void
   onFocusAIDesign?: () => void
   provider?: string
@@ -27,8 +30,12 @@ export interface UsePealStudioAIOptions {
 export type UsePealStudioAIResult = {
   chat: HudsonAIChat
   activity: PealStudioAIActivity[]
-  lastProposal: { input: ProposeSoundInput; sound: Sound } | null
-  clearProposal: () => void
+  composition: SfxPatch | null
+  canBack: boolean
+  canForward: boolean
+  position: { index: number; total: number }
+  stepComposition: (delta: -1 | 1) => Promise<void>
+  replayComposition: () => Promise<void>
   log: (tool: string, summary: string) => void
 }
 
@@ -38,14 +45,16 @@ function nextId() {
 
 export function usePealStudioAI({
   sfxSummary,
-  onProposeSound,
+  onApplyComposition,
   onOpenLibrary,
   onFocusAIDesign,
   provider,
   model,
 }: UsePealStudioAIOptions): UsePealStudioAIResult {
   const [activity, setActivity] = useState<PealStudioAIActivity[]>([])
-  const [lastProposal, setLastProposal] = useState<{ input: ProposeSoundInput; sound: Sound } | null>(null)
+  const history = useCompositionStore((s) => s.history)
+  const index = useCompositionStore((s) => s.index)
+  const composition = history[index] ?? null
   const byok = useByok()
 
   // BYOK: visitor-selected provider+model wins; else any stored key's provider;
@@ -63,9 +72,13 @@ export function usePealStudioAI({
     soundId: sfxSummary.soundId,
     soundType: sfxSummary.soundType,
     isPlaying: sfxSummary.isPlaying,
-    prompt: lastProposal?.input.summary,
+    composition,
     ...(byok.hasAny ? { byok: byok.keys } : {}),
-  }), [sfxSummary.soundId, sfxSummary.soundType, sfxSummary.isPlaying, lastProposal?.input.summary, byok.hasAny, byok.keys])
+  }), [sfxSummary.soundId, sfxSummary.soundType, sfxSummary.isPlaying, composition, byok.hasAny, byok.keys])
+
+  const apply = useCallback(async (patch: SfxPatch) => {
+    await onApplyComposition(soundFromPatch(patch))
+  }, [onApplyComposition])
 
   const chat = usePealChat({
     toolset: 'peal-studio',
@@ -81,15 +94,17 @@ export function usePealStudioAI({
     onToolCall: async (name, args) => {
       try {
         switch (name) {
-          case 'propose_sound': {
-            const input = coerceProposeSoundInput(args as Record<string, unknown>)
-            if (!input) {
-              log('propose_sound', 'ignored — invalid parameters')
+          case 'compose_sound': {
+            const parsed = sfxPatchSchema.safeParse(args)
+            if (!parsed.success) {
+              log('compose_sound', 'ignored — invalid patch')
               break
             }
-            log('propose_sound', input.summary)
-            const sound = await onProposeSound(input)
-            if (sound) setLastProposal({ input, sound })
+            // Pin a seed so back/forward re-render the exact same take.
+            const patch = { ...parsed.data, seed: parsed.data.seed ?? Math.floor(Math.random() * 1e6) }
+            useCompositionStore.getState().push(patch)
+            log('compose_sound', patch.summary)
+            await apply(patch)
             break
           }
           case 'open_library':
@@ -109,13 +124,24 @@ export function usePealStudioAI({
     },
   })
 
-  const clearProposal = useCallback(() => setLastProposal(null), [])
+  const stepComposition = useCallback(async (delta: -1 | 1) => {
+    const patch = useCompositionStore.getState().go(delta)
+    if (patch) await apply(patch)
+  }, [apply])
+
+  const replayComposition = useCallback(async () => {
+    if (composition) await apply(composition)
+  }, [apply, composition])
 
   return {
     chat,
     activity,
-    lastProposal,
-    clearProposal,
+    composition,
+    canBack: index > 0,
+    canForward: index >= 0 && index < history.length - 1,
+    position: { index, total: history.length },
+    stepComposition,
+    replayComposition,
     log,
   }
 }

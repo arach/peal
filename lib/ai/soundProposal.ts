@@ -1,4 +1,5 @@
 import type { Sound } from '@/store/soundStore'
+import type { SfxPatch } from '@/lib/sfx/patch'
 
 export interface ProposeSoundInput {
   summary: string
@@ -70,6 +71,29 @@ export function soundFromProposal(input: ProposeSoundInput, idSuffix = Date.now(
     created: new Date(),
     favorite: false,
     tags: ['ai-designed', input.summary.toLowerCase().replace(/\s+/g, '-')],
+    audioBuffer: null,
+    waveformData: null,
+  }
+}
+/** A layered AI composition as a studio Sound; renderSound routes it through the patch engine. */
+export function soundFromPatch(patch: SfxPatch, idSuffix = Date.now()): Sound {
+  const tonal = patch.layers.find((l) => l.source === 'tone')
+  const frequency = Math.round(tonal?.frequency ?? 0)
+  const durationSec = Math.max(0.03, Math.min(patch.duration, 3))
+  return {
+    id: `ai-${idSuffix}`,
+    type: tonal ? 'tone' : 'click',
+    frequency,
+    duration: Math.round(durationSec * 1000),
+    parameters: {
+      duration: durationSec,
+      frequency,
+      patch: { ...patch, seed: patch.seed ?? idSuffix % 100000 },
+      effects: { reverb: false, delay: false, filter: false, distortion: false, compression: false },
+    },
+    created: new Date(),
+    favorite: false,
+    tags: ['ai-composed', patch.summary.toLowerCase().replace(/\s+/g, '-')],
     audioBuffer: null,
     waveformData: null,
   }

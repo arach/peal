@@ -1,0 +1,12 @@
+{
+  "name": "Ebook reader",
+  "sounds": [
+    { "key": "open", "prompt": "Ebook reader: opening a hardcover book — cover lifts, spine gives a little, first pages settle. Natural paper foley, no musical tones, under 1s." },
+    { "key": "page-forward", "prompt": "Ebook reader: flipping one page forward — quick paper flick and swish, crisp but soft, about 350ms. This will repeat a lot, so keep it unfatiguing." },
+    { "key": "page-back", "prompt": "Same reader: flipping one page backward. Same paper as the forward flip but the motion reversed — swish sweeps the other way, slightly softer." },
+    { "key": "close", "prompt": "Ebook reader: closing the book — pages compress, then a soft muted cover thud. Satisfying, not loud." },
+    { "key": "bookmark", "prompt": "Ebook reader: adding a bookmark — a satin ribbon laid across the page plus a tiny soft paper tap. Very short and quiet." },
+    { "key": "highlight", "prompt": "Ebook reader: dragging a highlighter / pen stroke across paper — a felt-tip drawing sound with fine grainy texture, about 600ms, slight pitch of motion." },
+    { "key": "chapter-complete", "prompt": "Ebook reader: finishing a chapter — a gentle warm cue, maybe a soft page settle with one quiet wooden or glassy tone. Calm, under 900ms." }
+  ]
+}

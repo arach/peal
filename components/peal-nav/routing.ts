@@ -62,7 +62,8 @@ export function contextNavActive(pathname: string, _tool: string | null, id: Pea
     case 'presets':
       return isPresetsRoute(pathname)
     case 'sfx':
-      return isStudioSection(pathname) && studioTool === 'sfx'
+      // The editor is where an SFX sound goes for deep edits — same tab.
+      return isStudioSection(pathname) && (studioTool === 'sfx' || studioTool === 'editor')
     case 'voice':
       return pathname.startsWith('/voice') || studioTool === 'voice'
     case 'music':

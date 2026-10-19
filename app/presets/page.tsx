@@ -118,7 +118,7 @@ export default function PresetsPage() {
       }
 
       addSounds([sound])
-      router.push(`/studio?sound=${encodeURIComponent(sound.id)}&type=${sound.type}`)
+      router.push(`/studio/editor?sound=${encodeURIComponent(sound.id)}&type=${sound.type}`)
     } catch (error) {
       console.error('Error generating preset:', error)
       setGeneratingId(null)

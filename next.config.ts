@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
   // HMR websocket is blocked when the page is opened via an unlisted origin.
   allowedDevOrigins: ['127.0.0.1', 'localhost', 'peal-dev.exe.xyz'],
   transpilePackages: ['hudsonkit', '@hudsonkit/ai', '@voxd/client'],
-  serverExternalPackages: ['@earendil-works/pi-ai'],
+  serverExternalPackages: ['@earendil-works/pi-ai', '@openscout/agent-sessions'],
 
   // Tree-shake the Phosphor SSR icon barrel (used by the Sound Studio icon set).
   // Studio icons import from /ssr so server + client share the same glyph paths.

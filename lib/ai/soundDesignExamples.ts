@@ -116,6 +116,7 @@ export const SOUND_DESIGN_EXAMPLES = [
 /** Natural-language starters shown in the AI Design panel empty state. */
 export const STUDIO_EXAMPLE_PROMPTS = [
   'A soft notification chime for a toast',
+  'A hardcover book opening, pages fanning',
   'Quick punchy click for a primary button',
   'Bright success ding when a form submits',
   'Low subtle error buzz for validation failure',

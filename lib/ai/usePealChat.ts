@@ -52,6 +52,12 @@ export interface UsePealChatOptions {
 
 const DEFAULT_API = '/api/ai/chat'
 
+/**
+ * Threads outlive the component: panels collapse and remount (narrow layouts,
+ * tab switches), and the conversation should still be there when they return.
+ */
+const threadCache = new Map<string, UIMessage[]>()
+
 function emitToolEvent(input: {
   status: 'started' | 'completed' | 'failed'
   toolset: string
@@ -165,11 +171,16 @@ export function usePealChat({
 
   const chat = useChat({
     id: chatId,
+    messages: ((chatId ? threadCache.get(chatId) : undefined) ?? []) as never,
     transport: transport as never,
     onToolCall: handleToolCall as never,
     onFinish: (event) => onFinishRef.current?.(event as never),
     onError: (error) => onErrorRef.current?.(error),
   })
+
+  useEffect(() => {
+    if (chatId) threadCache.set(chatId, chat.messages as UIMessage[])
+  }, [chatId, chat.messages])
 
   const clearChat = useCallback(() => {
     chat.setMessages([])

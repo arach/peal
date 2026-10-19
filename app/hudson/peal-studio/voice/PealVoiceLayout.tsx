@@ -123,9 +123,9 @@ export function PealVoiceLayoutBar() {
   }))
 
   return (
-    <div className="shrink-0 border-b border-[var(--inst-line-lo)] bg-[var(--peal-surface-1)] peal-instruments">
-      <div className="flex flex-wrap items-center gap-2 px-3 py-2">
-        <span className="peal-inst-rack-label mr-1">Workspace</span>
+    <div className="peal-pane-bar peal-instruments">
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2 py-1">
+        <span className="peal-pane-bar-title mr-1">Workspace</span>
         <StudioPadTray>
           <StudioPad
             active={layout.mode === 'tabs'}

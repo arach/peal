@@ -19,6 +19,7 @@
         "@earendil-works/pi-ai": "^0.74.0",
         "@hudsonkit/ai": "^0.2.2",
         "@lezer/highlight": "^1.2.3",
+        "@openscout/agent-sessions": "0.2.78",
         "@phosphor-icons/react": "^2.1.10",
         "@pierre/diffs": "^1.2.11",
         "@radix-ui/react-dialog": "^1.1.17",
@@ -450,6 +451,8 @@
     "@nodelib/fs.walk": ["@nodelib/fs.walk@1.2.8", "", { "dependencies": { "@nodelib/fs.scandir": "2.1.5", "fastq": "1.19.1" } }, "sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg=="],
 
     "@nolyfill/is-core-module": ["@nolyfill/is-core-module@1.0.39", "", {}, "sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA=="],
+
+    "@openscout/agent-sessions": ["@openscout/agent-sessions@0.2.78", "", {}, "sha512-XoMo62rqd8nV3LruQIljkfCbdj3nHDzpdlJGCAX3tYa9Hpo6oXDs3l2i/lV+8Owge+dnCKuDYXamihaRqcB5Hg=="],
 
     "@opentelemetry/api": ["@opentelemetry/api@1.9.0", "", {}, "sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg=="],
 

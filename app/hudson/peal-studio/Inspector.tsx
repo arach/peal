@@ -4,6 +4,7 @@ import { useCallback } from 'react'
 import { ParametersIcon } from '@/components/icons/PealStudioIcon'
 import { PealMusicInspector } from './music/PealMusicInspector'
 import { PealVoiceInspector } from './voice/PealVoiceInspector'
+import { PealSetsInspector } from './sets/PealSetsSlots'
 import { usePealStudioHudson } from './Provider'
 
 export function PealStudioInspector() {
@@ -11,6 +12,10 @@ export function PealStudioInspector() {
   const setRef = useCallback((node: HTMLDivElement | null) => {
     setInspectorElement(node)
   }, [setInspectorElement])
+
+  if (currentTool === 'sfx') {
+    return <PealSetsInspector />
+  }
 
   if (currentTool === 'music') {
     return <PealMusicInspector />

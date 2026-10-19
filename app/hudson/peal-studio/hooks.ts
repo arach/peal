@@ -20,23 +20,26 @@ import { usePealStudioHudson, type PealStudioTool } from './Provider'
 import { useOptionalPealMusicEngine } from './music/PealMusicEngineProvider'
 import { useOptionalPealMusic } from './music/PealMusicProvider'
 import { useOptionalPealVoice } from './voice/PealVoiceProvider'
+import { SET_PROJECT, toggleSetsPlayback, useSets } from '@/design/sets/store'
 
 const TOOL_LABELS: Record<PealStudioTool, string> = {
   sfx: 'SFX',
+  editor: 'Editor',
   voice: 'Deck',
   music: 'Music',
 }
 
 const TOOL_DESCRIPTIONS: Record<PealStudioTool, string> = {
-  sfx: 'Sound effects creation',
+  sfx: 'Design sounds in conversation',
+  editor: 'Timeline · parameters · code',
   voice: 'Deck · mixer · capture',
   music: 'Live code · generate · bridge',
 }
 
-const TOOL_ORDER: PealStudioTool[] = ['sfx', 'voice', 'music']
+const TOOL_ORDER: PealStudioTool[] = ['sfx', 'voice', 'music', 'editor']
 
 function toolSwitchIcon(tool: PealStudioTool) {
-  if (tool === 'sfx') return VolumeIcon
+  if (tool === 'sfx' || tool === 'editor') return VolumeIcon
   if (tool === 'voice') return MicIcon
   return MusicIcon
 }
@@ -71,7 +74,7 @@ export function usePealStudioCommands(): CommandOption[] {
       label: 'Open Library',
       icon: createElement(LibraryIcon, { size: 14 }),
       action: () => {
-        if (currentTool === 'sfx') runSfxAction('openLibrary')
+        if (currentTool === 'editor') runSfxAction('openLibrary')
         else router.push('/library')
       },
     },
@@ -138,7 +141,7 @@ export function usePealStudioStatus(): { label: string; color: StatusColor } {
     return { label: 'strudel', color: 'neutral' }
   }
 
-  if (currentTool !== 'sfx') {
+  if (currentTool !== 'editor') {
     return { label: `${TOOL_LABELS[currentTool]} ready`, color: 'neutral' }
   }
 
@@ -153,13 +156,18 @@ export function usePealStudioStatus(): { label: string; color: StatusColor } {
 
 function PealNavCenter() {
   const { currentTool, sfxSummary } = usePealStudioHudson()
+  const setsReady = useSets((s) => s.ready.size)
+  const setsStage = useSets((s) => s.stage)
+  const setsDetail = setsReady ? `${SET_PROJECT} · ${setsReady} sounds · ${setsStage}` : TOOL_DESCRIPTIONS.sfx
   const voice = useOptionalPealVoice()
   const music = useOptionalPealMusic()
-  const detail = currentTool === 'sfx'
+  const detail = currentTool === 'editor'
     ? sfxSummary.soundId
       ? `${sfxSummary.soundType ?? 'sound'} · ${sfxSummary.durationMs ?? 0}ms · ${sfxSummary.frequencyHz ?? 0}Hz`
       : 'design UI sounds'
-    : currentTool === 'voice' && voice
+    : currentTool === 'sfx'
+      ? setsDetail
+      : currentTool === 'voice' && voice
       ? `${voice.selectedVoice} · ${voice.selectedModel} · ${voice.speed}x`
       : currentTool === 'music' && music
         ? `strudel · ${music.lane}${music.isPlaying ? ' · playing' : music.isPatternDirty ? ' · edits pending' : music.strudelMountStatus === 'routed' ? ' · routed' : ''}`
@@ -209,6 +217,10 @@ function PealNavActions() {
           }
           return
         }
+        if (currentTool === 'sfx') {
+          void toggleSetsPlayback()
+          return
+        }
         if (currentTool === 'voice' && voice && voicePlayTarget) {
           voice.togglePlay(voicePlayTarget)
           return
@@ -216,7 +228,7 @@ function PealNavActions() {
         runSfxAction(sfxSummary.isPlaying ? 'pause' : 'play')
       },
       className: 'peal-inst-nav-transport',
-      disabled: currentTool === 'sfx'
+      disabled: currentTool === 'editor'
         ? !sfxSummary.mounted
         : currentTool === 'voice'
           ? !voicePlayTarget
@@ -267,7 +279,7 @@ export function usePealStudioStatusLeft() {
     return voice.takes.length ? `deck ${voice.takes.length} clips` : 'Deck · HudsonApp'
   }
   if (currentTool === 'music') return 'Music · Transport · editor + REPL'
-  if (currentTool !== 'sfx') return `${TOOL_LABELS[currentTool]} · HudsonApp`
+  if (currentTool !== 'editor') return `${TOOL_LABELS[currentTool]} · HudsonApp`
   return sfxSummary.soundId ? `tracks ${sfxSummary.trackCount} · ${sfxSummary.mode}` : 'SFX · HudsonApp'
 }
 

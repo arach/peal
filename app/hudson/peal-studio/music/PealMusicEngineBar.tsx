@@ -35,17 +35,14 @@ export function PealMusicEngineBar({
     : strudelMountIndexPath(patternCode)
 
   return (
-    <div className="sticky top-0 z-20 flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[var(--peal-surface-border)] bg-[var(--peal-surface-0)] px-3 py-2">
-      <div className="flex min-w-0 items-center gap-2">
-        <span
-          className={`h-2 w-2 shrink-0 rounded-full ${running ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-gray-600'}`}
-          aria-hidden
-        />
-        <div className="min-w-0">
-          <p className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-gray-300">
+    <div className="peal-pane-bar sticky top-0 z-20 flex-wrap justify-between">
+      <div className="flex min-w-0 flex-1 items-center gap-2.5">
+        <span className={`peal-inst-led ${running ? 'peal-inst-led--green' : ''}`} aria-hidden />
+        <div className="flex min-w-0 items-baseline gap-2.5">
+          <p className="peal-pane-bar-title">
             {running ? 'Strudel engine running' : engine?.phase === 'installed' ? 'Installed — start engine' : 'Engine stopped'}
           </p>
-          <p className="truncate font-mono text-[9px] text-gray-500">
+          <p className="peal-pane-bar-meta">
             {engineBusy
               ? 'Starting Strudel — this can take up to 30s…'
               : engineError

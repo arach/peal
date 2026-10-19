@@ -1,11 +1,13 @@
-export type PealStudioTool = 'sfx' | 'voice' | 'music'
+/** `sfx` is the conversation-first designer; `editor` the timeline/parameters studio. */
+export type PealStudioTool = 'sfx' | 'editor' | 'voice' | 'music'
 
 export type LegacyStudioSearchParams = Record<string, string | string[] | undefined>
 
-export const PEAL_STUDIO_TOOLS: PealStudioTool[] = ['sfx', 'voice', 'music']
+export const PEAL_STUDIO_TOOLS: PealStudioTool[] = ['sfx', 'voice', 'music', 'editor']
 
 /** Path segment for each tool. SFX lives at `/studio` (no segment). */
 export function studioPathForTool(tool: PealStudioTool): string {
+  if (tool === 'editor') return '/studio/editor'
   if (tool === 'voice') return '/studio/voice'
   if (tool === 'music') return '/studio/music'
   return '/studio'
@@ -16,6 +18,7 @@ export function parsePealStudioToolFromPathname(pathname: string | null | undefi
   if (!pathname) return 'sfx'
   // Strip optional basePath and trailing slashes for matching
   const path = pathname.replace(/\/+$/, '') || '/'
+  if (path === '/studio/editor' || path.endsWith('/studio/editor')) return 'editor'
   if (path === '/studio/voice' || path.endsWith('/studio/voice')) return 'voice'
   if (path === '/studio/music' || path.endsWith('/studio/music')) return 'music'
   if (path === '/studio/sfx' || path.endsWith('/studio/sfx')) return 'sfx'
@@ -24,6 +27,7 @@ export function parsePealStudioToolFromPathname(pathname: string | null | undefi
 
 /** Parse tool from a legacy `?tool=` query value. */
 export function parsePealStudioTool(value: string | null | undefined): PealStudioTool {
+  if (value === 'editor') return 'editor'
   if (value === 'voice') return 'voice'
   if (value === 'music') return 'music'
   if (value === 'sfx') return 'sfx'

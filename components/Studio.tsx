@@ -21,8 +21,8 @@ import SoundLibraryModal from './SoundLibraryModal'
 import CodeEditor from './CodeEditor'
 import ResizableSidebar from './ResizableSidebar'
 import { useOptionalPealStudioHudson } from '@/app/hudson/peal-studio/Provider'
+import { renderSfxPatch, varySfxPatch, type SfxPatch } from '@/lib/sfx/patch'
 import { PealStudioAIDesign } from '@/app/hudson/peal-studio/PealStudioAIDesign'
-import { soundFromProposal, type ProposeSoundInput } from '@/lib/ai/soundProposal'
 import {
   StudioModuleTabs,
   StudioPad,
@@ -145,6 +145,27 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
   const [moveMode, setMoveMode] = useState(false)
+
+  // Track removal is immediate with a short-lived undo instead of a browser confirm.
+  const [removedTrack, setRemovedTrack] = useState<{ track: Track; index: number } | null>(null)
+  useEffect(() => {
+    if (!removedTrack) return
+    const timer = setTimeout(() => setRemovedTrack(null), 6000)
+    return () => clearTimeout(timer)
+  }, [removedTrack])
+  const removeTrackWithUndo = (trackId: string) => {
+    const index = tracks.findIndex(t => t.id === trackId)
+    if (index === -1) return
+    setRemovedTrack({ track: tracks[index], index })
+    setTracks(tracks.filter(t => t.id !== trackId))
+    if (selectedTrackId === trackId) setSelectedTrackId(null)
+  }
+  const undoRemoveTrack = () => {
+    if (!removedTrack) return
+    const { track, index } = removedTrack
+    setTracks(prev => [...prev.slice(0, index), track, ...prev.slice(index)])
+    setRemovedTrack(null)
+  }
   const [movePreview, setMovePreview] = useState<{ position: number } | null>(null)
   
   // Vibe Designer state
@@ -501,7 +522,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
     ctx.setLineDash([])
     
     // Draw waveform
-    ctx.strokeStyle = isPreview ? '#10b981' : '#3b82f6'
+    ctx.strokeStyle = isPreview ? '#7cb8ff' : '#4a9eff'
     ctx.lineWidth = 2
     ctx.beginPath()
     
@@ -595,7 +616,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
     
     // Always show playback position (base layer)
     const playbackX = playbackPosition * drawWidth
-    ctx.strokeStyle = '#10b981'
+    ctx.strokeStyle = '#f0b429'
     ctx.lineWidth = 1
     ctx.beginPath()
     ctx.moveTo(playbackX, 0)
@@ -603,7 +624,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
     ctx.stroke()
     
     // Playback position handle
-    ctx.fillStyle = '#10b981'
+    ctx.fillStyle = '#f0b429'
     ctx.fillRect(playbackX - 1, height/2 - 4, 2, 8)
 
     // Overlay: Trim mode
@@ -1273,7 +1294,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
         muted: false,
         solo: false,
         volume: 1,
-        color: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'][tracks.length % 5],
+        color: ['#4a9eff', '#f0b429', '#7cb8ff', '#9ca3af', '#2f7fd8'][tracks.length % 5],
         startPosition: editStart,
         endPosition: editEnd
       }
@@ -1418,9 +1439,18 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
     }
     
     let soundToPlay = previewSound || currentSound
-    
+
+    // AI compositions with variation: render a fresh take per play (Main-only timeline).
+    const patch = currentSound?.parameters?.patch as SfxPatch | undefined
+    const variedTake = !previewSound && tracks.length <= 1 && patch?.variation
+      ? await renderSfxPatch(varySfxPatch(patch)).catch(() => null)
+      : null
+    if (variedTake && currentSound) {
+      soundToPlay = { ...currentSound, audioBuffer: variedTake, waveformData: generateWaveformData(variedTake) }
+    }
+
     // If we have tracks, always use the mixed output (regardless of panel visibility)
-    if (tracks.length > 0 && !previewSound) {
+    if (tracks.length > 0 && !previewSound && !variedTake) {
       console.log('Mixing tracks:', tracks.length, 'tracks')
       const mixedBuffer = await mixTracks()
       if (mixedBuffer) {
@@ -1866,7 +1896,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
     const params = new URLSearchParams(searchParams.toString())
     params.set('sound', sound.id)
     params.set('type', sound.type)
-    router.push(`/studio?${params.toString()}`)
+    router.push(`/studio/editor?${params.toString()}`)
   }
 
   const navigateToPrevious = () => {
@@ -2229,15 +2259,31 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
     }
   }
 
-  const handleProposeSoundFromAI = useCallback(async (input: ProposeSoundInput) => {
+  // AI turn: the whole composition is replaced in place (history lives in compositionStore).
+  const handleApplyComposition = useCallback(async (sound: Sound) => {
     try {
-      const sound = soundFromProposal(input)
       await (generator as any).renderSound(sound)
-      return sound
     } catch (error) {
-      console.error('Error rendering AI sound proposal:', error)
-      return null
+      console.error('Error rendering AI composition:', error)
+      return
     }
+    setCurrentSound(sound)
+    setEditedParams(sound.parameters)
+    setPreviewSound(null)
+    setHasUnappliedChanges(false)
+    setTrackSelection(null)
+    setMoveMode(false)
+    setSelectedTrackId(null)
+    setTracks([{
+      id: `track-main-${sound.id}`,
+      name: 'Main',
+      audioBuffer: sound.audioBuffer,
+      waveformData: sound.waveformData,
+      muted: false,
+      solo: false,
+      volume: 1,
+      color: '#6b7280',
+    }])
   }, [generator])
 
   const handleVibeLoadToStudio = (sound: Sound) => {
@@ -2264,7 +2310,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
       muted: false,
       solo: false,
       volume: 0.8,
-      color: ['#9333ea', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'][tracks.length % 5],
+      color: ['#4a9eff', '#f0b429', '#7cb8ff', '#9ca3af', '#2f7fd8'][tracks.length % 5],
       // Position at the end of current timeline by default
       startPosition: 0.5,
       endPosition: Math.min(1, 0.5 + (sound.parameters.duration / currentSound.duration))
@@ -2495,14 +2541,14 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
         {/* Center Panel - Main Canvas */}
         <div className={`flex-1 flex flex-col bg-[var(--peal-surface-0,#111113)] ${hudsonLayout ? 'peal-instruments' : ''}`}>
           {/* Canvas Header */}
-          <div className="flex items-center justify-between px-6 py-2.5 bg-[var(--peal-surface-1,#0d0d0f)] border-b border-[var(--peal-surface-4,#232327)]">
-            <div className="flex items-center gap-3">
-              <span className="peal-inst-led peal-inst-led--on" aria-hidden />
-              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-gray-400">
+          <div className="peal-pane-bar justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className={`peal-inst-led ${currentSound ? 'peal-inst-led--on' : ''}`} aria-hidden />
+              <div className="peal-pane-bar-title">
                 {currentSound ? `${currentSound.type} · ${currentSound.duration}ms` : 'Signal path idle'}
               </div>
             </div>
-            <div className="peal-inst-rack-readout flex items-center gap-2">
+            <div className="peal-pane-bar-meta flex items-center gap-2">
               <span>44.1 kHz</span>
               <span className="opacity-30">·</span>
               <span>16-bit</span>
@@ -2913,13 +2959,10 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                                       <button
                                         onClick={(e) => {
                                           e.stopPropagation()
-                                          if (confirm(`Delete "${track.name}"?`)) {
-                                            setTracks(tracks.filter(t => t.id !== track.id))
-                                            if (selectedTrackId === track.id) {
-                                              setSelectedTrackId(null)
-                                            }
-                                          }
+                                          removeTrackWithUndo(track.id)
                                         }}
+                                        title="Remove track"
+                                        aria-label={`Remove ${track.name}`}
                                         className="w-6 h-6 text-xs bg-[var(--peal-surface-3,#2c2c2e)]/50 text-gray-400 hover:bg-red-500 hover:text-white rounded transition-all"
                                       >
                                         ×
@@ -3176,11 +3219,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                 {showVibePanel ? (
                   hudsonLayout ? (
                     <PealStudioAIDesign
-                      currentSound={currentSound}
-                      onProposeSound={handleProposeSoundFromAI}
-                      onLoadSound={handleVibeLoadToStudio}
-                      onPlaySound={handleVibePlaySound}
-                      onAddAsTrack={handleVibeAddAsTrack}
+                      onApplyComposition={handleApplyComposition}
                       onOpenLibrary={() => setShowLibraryModal(true)}
                       initialPrompt={pendingHudsonPrompt}
                       onInitialPromptConsumed={handleHudsonPromptConsumed}
@@ -4024,6 +4063,18 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
         </div>
       )}
       
+      {removedTrack ? (
+        <div
+          role="status"
+          className="peal-undo-toast fixed bottom-10 left-1/2 z-50 -translate-x-1/2"
+        >
+          <span>Removed “{removedTrack.track.name}”</span>
+          <button type="button" onClick={undoRemoveTrack} className="peal-undo-toast-btn">
+            Undo
+          </button>
+        </div>
+      ) : null}
+
       {/* Modals */}
       <VibeDesignerModal
         isOpen={showVibeModal}

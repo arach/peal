@@ -1,6 +1,5 @@
 'use client'
 
-import { AiDesignIcon } from '@/components/icons/PealStudioIcon'
 import {
   getVoiceEditSuggestions,
   VOICE_CAPTURE_EXAMPLE_PROMPTS,
@@ -9,6 +8,12 @@ import { usePealVoice } from './PealVoiceProvider'
 import { usePealVoiceAIContext } from './PealVoiceAIProvider'
 import { PealVoiceAIChat, PealVoiceAIComposer } from './PealVoiceAIChat'
 import { PealVoiceAILastEdit } from './PealVoiceAILastEdit'
+import {
+  PealAIActivity,
+  PealAIChips,
+  PealAIHeader,
+  PealAIPanel,
+} from '../shared/PealAIPanel'
 
 export function PealVoiceAIDesign() {
   const voice = usePealVoice()
@@ -26,24 +31,17 @@ export function PealVoiceAIDesign() {
       : editSuggestions.slice(0, 3))
     : VOICE_CAPTURE_EXAMPLE_PROMPTS.slice(0, 3)
 
+  const latest = activity[activity.length - 1]
+  const working = latest && (chat.status === 'streaming' || chat.status === 'submitted')
+
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[var(--peal-surface-0)] text-[var(--peal-surface-text)]">
-      <div className="shrink-0 border-b border-[var(--peal-surface-3)] bg-[var(--peal-surface-1)] px-3 py-2.5 peal-instruments">
-        <div className="flex items-center gap-2">
-          <span className="peal-inst-led peal-inst-led--on" aria-hidden />
-          <AiDesignIcon size={13} className="text-[#4a9eff]" />
-          <div>
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#4a9eff]">
-              AI Edit
-            </p>
-            <p className="mt-0.5 font-mono text-[9px] leading-relaxed text-gray-500">
-              {hasClips
-                ? 'Tap last edit to see what changed. Strip and genre pills highlight on the mixer.'
-                : 'Create a clip first, then return here to shape it through the mixer.'}
-            </p>
-          </div>
-        </div>
-      </div>
+    <PealAIPanel>
+      <PealAIHeader
+        title="AI Edit"
+        hint={hasClips
+          ? 'Tap last edit to see what changed. Strip and genre pills highlight on the mixer.'
+          : 'Create a clip first, then shape it here through the mixer.'}
+      />
 
       <PealVoiceAIChat
         placeholder={
@@ -53,46 +51,20 @@ export function PealVoiceAIDesign() {
         }
       />
 
-      {activity.length > 0 && (chat.status === 'streaming' || chat.status === 'submitted') ? (
-        <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2">
-          <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.14em] text-gray-600">Working</p>
-          <p className="truncate font-mono text-[9px] text-gray-500">
-            <span className="text-[#4a9eff]/80">{activity[activity.length - 1]?.tool}</span>
-            {' · '}
-            {activity[activity.length - 1]?.summary}
-          </p>
-        </div>
-      ) : null}
+      {working ? <PealAIActivity label="Working" tool={latest.tool} summary={latest.summary} /> : null}
 
       <PealVoiceAILastEdit />
 
-      {clip ? (
-        <div className="shrink-0 border-t border-[var(--peal-surface-3)] bg-[var(--peal-surface-0)] px-3 py-2 peal-instruments">
-          <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-gray-600">Selected pad</p>
-          <p className="mt-0.5 truncate font-mono text-[11px] text-gray-300">{clip.label}</p>
-        </div>
-      ) : null}
+      {clip ? <PealAIActivity label="Selected pad" summary={clip.label} /> : null}
 
-      <div className="shrink-0 border-t border-[var(--peal-surface-3)] px-3 py-2 peal-instruments">
-        <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-gray-500">
-          {lastEdit ? 'Suggested next' : hasClips ? 'Try' : 'Once created'}
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {starterChips.map((example) => (
-            <button
-              key={example}
-              type="button"
-              onClick={() => sendPrompt(example)}
-              disabled={isBusy}
-              className="peal-inst-pad text-[9px] normal-case tracking-normal disabled:opacity-40"
-            >
-              {example}
-            </button>
-          ))}
-        </div>
-      </div>
+      <PealAIChips
+        label={lastEdit ? 'Suggested next' : hasClips ? 'Try' : 'Once created'}
+        chips={starterChips}
+        onPick={sendPrompt}
+        disabled={isBusy}
+      />
 
       <PealVoiceAIComposer placeholder={composerPlaceholder} />
-    </div>
+    </PealAIPanel>
   )
 }

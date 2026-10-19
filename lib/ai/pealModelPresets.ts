@@ -23,6 +23,9 @@ export const PEAL_AI_EFFORT_OPTIONS: { value: PealAIEffort; label: string }[] = 
 
 /** Curated presets — Codex for code/debug, current-gen OpenAI/Anthropic for everything else. */
 export const PEAL_AI_MODEL_PRESETS: PealAIModelPreset[] = [
+  // Scout routes through the local broker to a headless agent session — no API key. Model = harness.
+  { label: 'Scout · Codex', value: 'scout:codex', provider: 'scout', model: 'codex' },
+  { label: 'Scout · Claude', value: 'scout:claude', provider: 'scout', model: 'claude' },
   { label: 'Codex GPT-5.4', value: 'openai-codex:gpt-5.4', provider: 'openai-codex', model: 'gpt-5.4' },
   { label: 'Codex GPT-5.5', value: 'openai-codex:gpt-5.5', provider: 'openai-codex', model: 'gpt-5.5' },
   { label: 'Codex GPT-5.4 Mini', value: 'openai-codex:gpt-5.4-mini', provider: 'openai-codex', model: 'gpt-5.4-mini' },
