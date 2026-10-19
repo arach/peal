@@ -48,13 +48,28 @@ function Toggle({ on, onChange, children, title }: { on: boolean; onChange: (v: 
   )
 }
 
-function SoundCard({ sound, state, ready, status, pinned, onUpdate, onOpen }: {
+function Star({ on }: { on: boolean }) {
+  return (
+    <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden className="pss-star">
+      <path
+        d="M6 1.2l1.45 2.95 3.25.47-2.35 2.3.55 3.24L6 8.63 3.1 10.16l.55-3.24L1.3 4.62l3.25-.47z"
+        fill={on ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="1.1"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function SoundCard({ sound, state, ready, status, pinned, isOpen, onUpdate, onOpen }: {
   sound: SetSound
   state: CardState
   ready: boolean
   status?: string | null
   /** An earlier turn's take: show that version as it was, not the live one. */
   pinned?: number
+  isOpen?: boolean
   onUpdate: (patch: Partial<CardState>) => void
   onOpen: () => void
 }) {
@@ -62,15 +77,22 @@ function SoundCard({ sound, state, ready, status, pinned, onUpdate, onOpen }: {
   const isPinned = pinned !== undefined && pinned !== state.version
   const patch = !versions.length ? null : isPinned ? versions[pinned] : livePatch(sound, state)
   const hasPrev = versions.length > 1 && !isPinned
+  const latest = versions.length - 1
   const edited = !!state.mixes[state.version]
   return (
-    <div className={`pss-card ${ready ? '' : 'is-pending'}`}>
+    <div className={`pss-card ${ready ? '' : 'is-pending'} ${isOpen && !isPinned ? 'is-open' : ''}`}>
       <div className="pss-card-head">
         <div className="min-w-0">
           <p className="pss-card-name">{sound.name}</p>
           <p className="pss-card-sub">{sound.trigger}</p>
         </div>
-        {ready && patch ? <span className="pss-card-meta">{isPinned ? <span>v{pinned + 1} · </span> : null}{edited && !isPinned ? <span className="pss-edited">edited · </span> : null}{Math.round(patch.duration * 1000)}ms · {patch.layers.length} layers</span> : null}
+        {ready && patch ? (
+          <span className="pss-card-meta">
+            {isPinned ? <span>v{pinned + 1} · </span> : null}
+            {edited && !isPinned ? <span className="pss-edited">edited · </span> : null}
+            {patch.layers.length} layers
+          </span>
+        ) : null}
       </div>
       {ready && patch ? (
         <>
@@ -80,22 +102,25 @@ function SoundCard({ sound, state, ready, status, pinned, onUpdate, onOpen }: {
               <Toggle on={state.vary} onChange={(vary) => onUpdate({ vary })} title="Humanize each play">Vary</Toggle>
             ) : null}
             {hasPrev ? (
-              <Toggle
-                on={state.version === 0}
-                onChange={(prev) => onUpdate({ version: prev ? 0 : versions.length - 1 })}
-                title="A/B against the previous version"
-              >
-                {state.version === 0 ? 'A · v1' : `B · v${state.version + 1}`}
-              </Toggle>
+              <span className="pss-ab" role="group" aria-label="Compare with the first version">
+                <button type="button" className={state.version === 0 ? 'is-on' : ''} aria-pressed={state.version === 0} onClick={() => onUpdate({ version: 0 })} title="First version">v1</button>
+                <button type="button" className={state.version === latest ? 'is-on' : ''} aria-pressed={state.version === latest} onClick={() => onUpdate({ version: latest })} title="Latest version">v{latest + 1}</button>
+              </span>
             ) : null}
-            <Toggle on={state.kept} onChange={(kept) => onUpdate({ kept })} title="Keep this take">
-              {state.kept ? '★ Kept' : '☆ Keep'}
+            <Toggle on={state.kept} onChange={(kept) => onUpdate({ kept })} title="Mark this sound as a keeper">
+              <Star on={state.kept} /> {state.kept ? 'Kept' : 'Keep'}
             </Toggle>
             <button type="button" className="pss-link" onClick={onOpen}>Open ↗</button>
           </div>
         </>
       ) : (
-        <div className="pss-card-pending"><span className="pss-dot-pulse" /> {status ?? 'Composing…'}</div>
+        <>
+          <div className="pss-inline-player pss-skeleton" aria-hidden>
+            <span className="pss-skeleton-orb" />
+            <span className="pss-skeleton-well" />
+          </div>
+          <div className="pss-card-pending"><span className="pss-dot-pulse" /> {status ?? 'Composing…'}</div>
+        </>
       )}
     </div>
   )
@@ -181,7 +206,10 @@ function ExportCard({ keys }: { keys: string[] }) {
           ))}
         </div>
       </div>
-      <pre className="pss-code">peal add {slugify(ebook.project)}</pre>
+      <div className="pss-code">
+        <code>peal add {slugify(ebook.project)}</code>
+        <button type="button" className="pss-copy" onClick={() => void navigator.clipboard?.writeText(`peal add ${slugify(ebook.project)}`)} aria-label="Copy command">Copy</button>
+      </div>
       <div className="pss-panel-actions">
         <button
           type="button"
@@ -214,31 +242,42 @@ function ExportCard({ keys }: { keys: string[] }) {
 
 // ── Right pane: pages spun up from cards ───────────────────────────────────
 
-function SoundPage({ sound }: { sound: SetSound }) {
+function SoundPage({ sound, scaleSeconds }: { sound: SetSound; scaleSeconds?: number }) {
   const state = useSets((s) => s.cards[sound.key])
   const updateCard = useSets((s) => s.updateCard)
   const versions = versionsOf(sound, state)
   const patch = livePatch(sound, state)
   const onUpdate = (p: Partial<CardState>) => updateCard(sound.key, p)
+  const keptAt = useSets((s) => s.keptAt[sound.key])
+  const pageRef = useRef<HTMLDivElement>(null)
+  const [flash, setFlash] = useState(false)
+  // Keep as vN: bring the head (and the new version number) into view.
+  useEffect(() => {
+    if (!keptAt) return
+    pageRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+    setFlash(true)
+    const t = window.setTimeout(() => setFlash(false), 700)
+    return () => window.clearTimeout(t)
+  }, [keptAt])
   return (
-    <div className="pss-page">
+    <div className="pss-page" ref={pageRef}>
       <div className="pss-page-head">
         <div>
           <p className="pss-page-title">{sound.name}</p>
           <p className="pss-card-sub">{versions[state.version].summary}</p>
         </div>
-        <div className="pss-stepper">
+        <div className={`pss-stepper ${flash ? 'is-flash' : ''}`}>
           <button type="button" disabled={state.version === 0} onClick={() => onUpdate({ version: state.version - 1 })} aria-label="Previous version">‹</button>
           <span>v{state.version + 1} of {versions.length}</span>
           <button type="button" disabled={state.version >= versions.length - 1} onClick={() => onUpdate({ version: state.version + 1 })} aria-label="Next version">›</button>
         </div>
       </div>
-      <FullPlayer id={sound.key} patch={patch} vary={state.vary} />
-      <div className="pss-card-tools">
-        {patch.variation ? <Toggle on={state.vary} onChange={(vary) => onUpdate({ vary })}>Vary {Math.round(patch.variation * 100)}%</Toggle> : null}
-        {patch.room ? <span className="pss-chip">Room {patch.room.size.toFixed(2)} · mix {patch.room.mix.toFixed(2)}</span> : <span className="pss-chip">Dry</span>}
-        <span className="pss-chip">{Math.round(patch.duration * 1000)}ms</span>
-      </div>
+      <FullPlayer id={sound.key} patch={patch} vary={state.vary} scaleSeconds={scaleSeconds} />
+      {patch.variation ? (
+        <div className="pss-card-tools">
+          <Toggle on={state.vary} onChange={(vary) => onUpdate({ vary })} title="Humanize each play">Vary {Math.round(patch.variation * 100)}%</Toggle>
+        </div>
+      ) : null}
       <MixRack soundKey={sound.key} />
       {patch.notes ? <p className="pss-hint mt-3">{patch.notes}</p> : null}
     </div>
@@ -258,35 +297,38 @@ export function SetsSidebar({ brand = false }: { brand?: boolean }) {
   const cards = useSets((s) => s.cards)
   const activeTab = useSets((s) => s.activeTab)
   const sounds = useSets((s) => s.sounds)
+  const title = useSets((s) => s.title)
   const { reset, openTab } = useSets.getState()
+  const soundList = ready.size > 0 ? (
+    <div className="pss-side-sounds">
+      {sounds.filter((s) => ready.has(s.key)).map((s) => (
+        <button key={s.key} type="button" className={`pss-side-sound ${activeTab === s.key ? 'is-active' : ''}`} onClick={() => openTab(s.key)}>
+          <span className={`pss-dot ${cards[s.key].kept ? 'is-kept' : ''}`} />
+          {s.name}
+        </button>
+      ))}
+    </div>
+  ) : null
   return (
     <aside className="pss-sidebar">
       {brand ? <div className="pss-brand"><span className="pss-brand-mark">◉</span> peal</div> : null}
       <button type="button" className="pss-new" onClick={reset}>＋ New set</button>
-      <p className="pss-side-label">Projects</p>
       <nav className="pss-projects">
         {PROJECTS.map((p, pi) => (
           <div key={p.name} className="pss-project">
             <p className={`pss-project-name ${pi === 0 ? 'is-active' : ''}`}>{p.name}</p>
-            {p.conversations.map((c, ci) => (
-              <p key={c} className={`pss-convo ${pi === 0 && ci === 0 ? 'is-active' : ''}`}>{c}</p>
-            ))}
-            {pi === 0 && ready.size > 0 ? (
-              <div className="pss-side-sounds">
-                {sounds.filter((s) => ready.has(s.key)).map((s) => (
-                  <button key={s.key} type="button" className={`pss-side-sound ${activeTab === s.key ? 'is-active' : ''}`} onClick={() => openTab(s.key)}>
-                    <span className={`pss-dot ${cards[s.key].kept ? 'is-kept' : ''}`} />
-                    {s.name}
-                  </button>
-                ))}
-              </div>
-            ) : null}
+            {p.conversations.map((c, ci) => {
+              const active = pi === 0 && ci === 0
+              return (
+                <div key={c}>
+                  <p className={`pss-convo ${active ? 'is-active' : ''}`}>{active ? title : c}</p>
+                  {active ? soundList : null}
+                </div>
+              )
+            })}
           </div>
         ))}
       </nav>
-      <div className="pss-side-foot">
-        <span className="pss-status-dot" /> Codex via Scout · ready
-      </div>
     </aside>
   )
 }
@@ -305,6 +347,8 @@ export function SetsThread() {
   // A new sound's card carries the live status itself.
   const pendingCard = !!focusKey && !ready.has(focusKey)
   const focusSound = focusKey ? sounds.find((x) => x.key === focusKey) : undefined
+  const tabs = useSets((s) => s.tabs)
+  const hasPlan = messages.some((m) => m.role === 'agent' && m.card === 'plan')
   const { send, compose, toggleSelected, openTab, setDraft, updateCard } = useSets.getState()
   const threadRef = useRef<HTMLDivElement>(null)
 
@@ -330,13 +374,12 @@ export function SetsThread() {
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={onKey}
         rows={empty ? 3 : 1}
-        placeholder={empty ? 'Describe one sound, or the app and the moments that need sound…' : focusSound ? `Refine ${focusSound.name.toLowerCase()} — softer, brighter, longer…` : stage === 'plan' ? 'Change the plan, or press Compose…' : 'Ask for changes — name a sound, or the whole set…'}
+        placeholder={empty ? 'Describe one sound, or the app and the moments that need sound…' : focusSound ? `Refine ${focusSound.name.toLowerCase()} — softer, brighter, longer…` : stage === 'plan' && hasPlan ? 'Change the plan, or press Compose…' : 'Ask for changes — name a sound, or the whole set…'}
       />
       <div className="pss-composer-bar">
         <div className="pss-composer-chips">
-          <button type="button" className="pss-chip pss-chip--btn" title="Attach a brand guide, screenshot or reference sound">+ Reference</button>
-          <span className="pss-chip">Set size · auto</span>
-          <span className="pss-chip"><span className="pss-status-dot" /> Codex via Scout</span>
+          <span className="pss-meta-chip" title="Sounds are composed by a Codex session through Scout"><span className="pss-status-dot" /> Codex via Scout</span>
+          <span className="pss-meta-chip pss-kbd-hint">↵ send · ⇧↵ newline · Space play</span>
         </div>
         <button type="submit" className="pss-send" disabled={!draft.trim() || thinking} aria-label="Send">↑</button>
       </div>
@@ -366,7 +409,7 @@ export function SetsThread() {
         <>
           <div className="pss-thread" ref={threadRef}>
             <div className="pss-thread-inner">
-              {messages.map((m) => m.role === 'user' ? (
+              {messages.map((m, mi) => m.role === 'user' ? (
                 <div key={m.id} className="pss-msg pss-msg--user"><div className="pss-bubble">{m.text}</div></div>
               ) : (
                 <div key={m.id} className="pss-msg pss-msg--agent">
@@ -382,6 +425,7 @@ export function SetsThread() {
                           sound={s}
                           state={cards[s.key]}
                           ready={ready.has(s.key)}
+                          isOpen={tabs.includes(s.key)}
                           onUpdate={(p) => updateCard(s.key, p)}
                           onOpen={() => openTab(s.key)}
                         />
@@ -398,6 +442,7 @@ export function SetsThread() {
                           ready={ready.has(s.key)}
                           status={status}
                           pinned={m.version}
+                          isOpen={tabs.includes(s.key)}
                           onUpdate={(p) => updateCard(s.key, p)}
                           onOpen={() => openTab(s.key)}
                         />
@@ -405,7 +450,8 @@ export function SetsThread() {
                     )
                   })() : null}
                   {m.card === 'export' ? <ExportCard keys={composedKeys} /> : null}
-                  {m.chips ? (
+                  {/* Suggestions only while they're the latest turn. */}
+                  {m.chips && mi === messages.length - 1 && !thinking ? (
                     <div className="pss-starters pss-starters--inline">
                       {m.chips.map((c) => <button key={c} type="button" className="pss-starter" onClick={() => send(c)}>{c}</button>)}
                     </div>
@@ -429,6 +475,19 @@ export function SetsPages({ empty }: { empty?: ReactNode }) {
   const sounds = useSets((s) => s.sounds)
   const { setActiveTab, closeTab, setSplit } = useSets.getState()
   const shownTabs = split ? tabs.slice(-2) : tabs.filter((k) => k === activeTab)
+  const comparing = split && shownTabs.length > 1
+  const cards = useSets((s) => s.cards)
+  const [scale, setScale] = useState<number | undefined>()
+
+  // Compare: both sounds on one time scale (the longer one's).
+  const shownKey = shownTabs.join('|')
+  useEffect(() => {
+    if (!comparing) { setScale(undefined); return }
+    let live = true
+    Promise.all(shownKey.split('|').map((k) => renderCached(livePatch(sounds.find((x) => x.key === k)!, cards[k]))))
+      .then((buffers) => { if (live) setScale(Math.max(...buffers.map((b) => b.duration))) })
+    return () => { live = false }
+  }, [comparing, shownKey, sounds, cards])
 
   if (tabs.length === 0) return empty ? <>{empty}</> : null
 
@@ -439,7 +498,10 @@ export function SetsPages({ empty }: { empty?: ReactNode }) {
           const s = sounds.find((x) => x.key === key)!
           return (
             <div key={key} className={`pss-tab ${shownTabs.includes(key) ? 'is-active' : ''}`}>
-              <button type="button" onClick={() => setActiveTab(key)}>{s.name}</button>
+              <button type="button" onClick={() => setActiveTab(key)}>
+                {split && shownTabs.length > 1 && shownTabs.includes(key) ? <span className="pss-tab-ab">{shownTabs.indexOf(key) === 0 ? 'A' : 'B'}</span> : null}
+                {s.name}
+              </button>
               <button type="button" className="pss-tab-x" aria-label={`Close ${s.name}`} onClick={() => closeTab(key)}>×</button>
             </div>
           )
@@ -451,7 +513,7 @@ export function SetsPages({ empty }: { empty?: ReactNode }) {
         ) : null}
       </div>
       <div className={`pss-pages ${split && shownTabs.length > 1 ? 'is-split' : ''}`}>
-        {shownTabs.map((key) => <SoundPage key={key} sound={sounds.find((x) => x.key === key)!} />)}
+        {shownTabs.map((key) => <SoundPage key={key} sound={sounds.find((x) => x.key === key)!} scaleSeconds={scale} />)}
       </div>
     </section>
   )

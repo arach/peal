@@ -1,16 +1,18 @@
-/* Sound Sets prototype — Codex-style chat-first layout. Scoped to .pss-root. */
+/* SFX conversation (Sound Sets) — chat-first layout. Scoped to .pss-root.
+   Colors ride the studio shell's surface tokens so light/dark both work;
+   chat prose is sans, all chrome is mono like the rest of the studio. */
 
 .pss-root {
-  --pss-bg: #0e0e10;
-  --pss-side: #121214;
-  --pss-surface: #18181b;
-  --pss-surface-2: #1f1f23;
-  --pss-line: rgba(255, 255, 255, 0.07);
-  --pss-line-strong: rgba(255, 255, 255, 0.12);
-  --pss-text: #e7e7ea;
-  --pss-strong: #fafafa;
-  --pss-muted: #8d8d95;
-  --pss-faint: #5f5f66;
+  --pss-bg: var(--peal-surface-0);
+  --pss-side: var(--peal-surface-1);
+  --pss-surface: var(--peal-surface-2);
+  --pss-surface-2: var(--peal-surface-3);
+  --pss-line: var(--peal-surface-border);
+  --pss-line-strong: color-mix(in srgb, var(--peal-surface-text) 16%, transparent);
+  --pss-text: var(--peal-surface-text);
+  --pss-strong: var(--peal-surface-text-strong);
+  --pss-muted: color-mix(in srgb, var(--peal-surface-text) 72%, transparent);
+  --pss-faint: var(--peal-surface-text-muted);
   --pss-accent: #4a9eff;
   --pss-accent-soft: rgba(74, 158, 255, 0.12);
   --pss-accent-line: rgba(74, 158, 255, 0.35);
@@ -281,7 +283,7 @@
   width: 32px; height: 32px;
   border-radius: 50% !important;
   background: var(--pss-strong) !important;
-  color: #111 !important;
+  color: var(--peal-surface-0) !important;
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -455,7 +457,7 @@
 .pss-split.is-on { color: var(--pss-accent) !important; border-color: var(--pss-accent-line) !important; }
 
 .pss-pages { flex: 1; min-height: 0; overflow-y: auto; }
-.pss-pages.is-split { display: grid; grid-template-rows: 1fr 1fr; }
+.pss-pages.is-split { display: block; }
 .pss-pages.is-split .pss-page + .pss-page { border-top: 1px solid var(--pss-line); }
 
 .pss-page { padding: 18px 20px; overflow-y: auto; min-height: 0; }
@@ -484,9 +486,8 @@
   .pss-sidebar, .pss-pane { display: none; }
 }
 
-/* Studio instrument tokens (dark) so racks, scope wells and the transport
-   deck render exactly as in the studio. */
-.pss-root {
+/* Standalone only: the studio shell already provides these tokens (both themes). */
+.pss-app {
   --peal-surface-0: #111113;
   --peal-surface-1: #0d0d0f;
   --peal-surface-2: #1c1c1e;
@@ -529,21 +530,8 @@
 .pss-scrub-canvas { cursor: pointer; touch-action: none; }
 .pss-mini-transport { width: 2.25rem !important; height: 2.25rem !important; flex-shrink: 0; border-width: 1px !important; }
 .pss-mini-transport .peal-inst-transport-ring { inset: -3px; }
-.pss-time { flex-shrink: 0; min-width: 84px; text-align: right; font: 11px var(--pss-mono, ui-monospace, monospace); color: var(--pss-text, #e5e7eb); font-variant-numeric: tabular-nums; }
-.pss-time span { color: var(--pss-faint, #6b7280); }
 .pss-full-player { display: flex; flex-direction: column; gap: 12px; }
 .pss-full-player .peal-inst-deck { padding: 0.9rem 1rem; }
-
-/* Compare: two stacked pages — tighten so each keeps its transport in view. */
-.pss-pages.is-split .pss-page { padding: 12px 16px; }
-.pss-pages.is-split .pss-page-head { margin-bottom: 8px; }
-.pss-pages.is-split .pss-full-player { gap: 8px; }
-.pss-pages.is-split .pss-full-player canvas.h-40 { height: 6.5rem; }
-.pss-pages.is-split .pss-full-player canvas.h-16 { height: 3rem; }
-.pss-pages.is-split .pss-full-player .peal-inst-deck { padding: 0.5rem; gap: 0.75rem; }
-.pss-pages.is-split .peal-inst-transport--main { width: 3rem; height: 3rem; }
-.pss-pages.is-split .peal-inst-transport--aux { width: 2.25rem; height: 2.25rem; }
-.pss-pages.is-split .peal-inst-transport svg { transform: scale(0.75); }
 
 /* ── Mixer ───────────────────────────────────────────── */
 .pss-edited { color: var(--pss-amber); }
@@ -590,3 +578,120 @@
 .pss-fader span.is-tweaked { color: var(--pss-amber); }
 .pss-macros { display: flex; justify-content: space-around; gap: 8px; padding: 10px 8px 6px; }
 .pss-mix + .pss-hint, .pss-mix > .pss-hint { margin-top: 6px; }
+
+/* ── Polish pass ─────────────────────────────────────── */
+
+/* Two voices: sans for conversation prose, mono for every piece of chrome. */
+.pss-crumb, .pss-crumb-sep, .pss-crumb-strong,
+.pss-chip, .pss-meta-chip, .pss-toggle, .pss-ab button, .pss-starter, .pss-eyebrow,
+.pss-card-name, .pss-card-meta, .pss-link, .pss-hint, .pss-primary, .pss-secondary,
+.pss-seg button, .pss-page-title, .pss-tab, .pss-new, .pss-project-name, .pss-convo,
+.pss-side-sound, .pss-slot-name, .pss-level-db, .pss-export-row, .pss-card-pending {
+  font-family: var(--pss-mono);
+  letter-spacing: 0.02em;
+}
+.pss-chip, .pss-meta-chip, .pss-toggle, .pss-ab button, .pss-starter, .pss-link, .pss-hint, .pss-card-pending { font-size: 11px; }
+.pss-card-name { font-size: 12.5px; letter-spacing: 0; }
+.pss-page-title { font-size: 15px; letter-spacing: -0.01em; }
+
+/* Content header lines up with the shell's panel bars (53px, dashed). */
+.pss-main-head {
+  box-sizing: border-box;
+  height: 53px;
+  border-bottom: 1px dashed var(--hud-line, var(--pss-line));
+}
+.pss-crumb, .pss-crumb-sep, .pss-crumb-strong { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; }
+.pss-crumb-strong { font-weight: 600; }
+
+/* Visible keyboard focus everywhere. */
+.pss-root :focus-visible { outline: 2px solid var(--pss-accent-line); outline-offset: 2px; border-radius: 4px; }
+
+/* Composer meta: plain text, not buttons. */
+.pss-meta-chip { display: inline-flex; align-items: center; gap: 6px; color: var(--pss-faint); }
+.pss-kbd-hint { opacity: 0.8; }
+@media (max-width: 1280px) { .pss-kbd-hint { display: none; } }
+
+/* Cards */
+.pss-cards { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.pss-cards--single { grid-template-columns: minmax(0, 520px); }
+.pss-card { transition: border-color 0.15s; }
+.pss-card.is-open { border-color: var(--pss-accent-line); }
+.pss-card-head { align-items: baseline; }
+.pss-star { display: inline-block; vertical-align: -1px; }
+.pss-ab { display: inline-flex; border: 1px solid var(--pss-line-strong); border-radius: 999px; overflow: hidden; }
+.pss-ab button { padding: 3px 9px; color: var(--pss-muted); }
+.pss-ab button + button { border-left: 1px solid var(--pss-line-strong) !important; }
+.pss-ab button.is-on { background: var(--pss-accent-soft); color: var(--pss-accent); }
+
+/* Inline player: the scope takes the row; time sits in the well. */
+.pss-inline-player { gap: 10px; }
+.pss-inline-scope canvas { height: 52px; }
+.pss-time {
+  position: absolute; top: 4px; right: 6px; pointer-events: none;
+  font: 10px var(--pss-mono); color: var(--pss-text); font-variant-numeric: tabular-nums;
+  padding: 0 4px; border-radius: 3px; background: color-mix(in srgb, var(--inst-well) 70%, transparent);
+}
+.pss-time span { color: var(--pss-faint); }
+
+/* Mini transport: neutral pad at rest; accent only on hover or while playing. */
+.pss-mini-transport {
+  background: var(--inst-pad-bg) !important;
+  color: var(--pss-accent) !important;
+  border: 1px solid var(--inst-line-lo) !important;
+  box-shadow: 0 0 0 1px var(--inst-line-hi) inset, 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+.pss-mini-transport:hover:not(:disabled), .pss-mini-transport.peal-inst-transport--pause {
+  background: linear-gradient(145deg, var(--inst-accent-hi) 0%, var(--inst-accent) 55%, #2d6eb8 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15) inset, 0 0 14px var(--inst-accent-glow) !important;
+}
+
+/* Pending cards hold the same height as ready ones. */
+.pss-skeleton { pointer-events: none; }
+.pss-skeleton-orb { width: 2.25rem; height: 2.25rem; border-radius: 50%; flex-shrink: 0; background: var(--pss-surface-2); }
+.pss-skeleton-well {
+  flex: 1; height: 54px; border-radius: 4px;
+  background: linear-gradient(90deg, var(--inst-well) 0%, var(--pss-surface-2) 50%, var(--inst-well) 100%);
+  background-size: 200% 100%;
+  animation: pss-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes pss-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.pss-card-pending { height: 26px; margin-top: 6px; }
+
+/* Pages */
+.pss-scope-canvas { height: 9rem; }
+.pss-timeline-canvas { height: 3.5rem; }
+.pss-full-player { gap: 10px; }
+.pss-full-player .peal-inst-deck { padding: 8px; gap: 12px; }
+.pss-full-player .peal-inst-transport--main { width: 2.75rem; height: 2.75rem; }
+.pss-full-player .peal-inst-transport--aux { width: 2rem; height: 2rem; }
+.pss-full-player .peal-inst-transport svg { transform: scale(0.62); }
+.pss-pages.is-split .pss-scope-canvas { height: 6rem; }
+.pss-pages.is-split .pss-page { overflow: visible; }
+.pss-stepper button, .pss-tab-x { width: 28px !important; height: 28px !important; }
+.pss-stepper span { transition: color 0.2s, text-shadow 0.2s; }
+.pss-stepper.is-flash span { color: var(--pss-accent); text-shadow: 0 0 10px var(--inst-accent-glow); }
+.pss-tab-x { display: inline-grid; place-items: center; color: var(--pss-muted) !important; border-radius: 6px; }
+.pss-tab-x:hover { color: var(--pss-strong) !important; background: var(--pss-surface-2); }
+.pss-tab-ab {
+  display: inline-grid; place-items: center; width: 16px; height: 16px; margin-right: 6px; border-radius: 4px;
+  font: 600 9px var(--pss-mono); background: var(--pss-accent-soft); color: var(--pss-accent);
+}
+
+/* Mixer sizing and detents */
+.pss-strip { grid-template-columns: auto 132px minmax(0, 1fr) 92px 84px; }
+.pss-ms { width: 24px !important; height: 22px !important; }
+.pss-fader span { color: var(--inst-readout); }
+.pss-fader input { background-repeat: no-repeat; }
+/* 0 dB sits at 24/36 of the −24…+12 range; pan detent at centre. */
+.pss-fader--level { background: linear-gradient(var(--inst-readout), var(--inst-readout)) no-repeat calc(66.7% - 0.5px) 2px / 1px 6px; }
+.pss-fader--pan { background: linear-gradient(var(--inst-readout), var(--inst-readout)) no-repeat calc(50% - 0.5px) 2px / 1px 6px; }
+.pss-fader--pan span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Export: copyable CLI line */
+.pss-code { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pss-copy { font: 11px var(--pss-mono); color: var(--pss-muted) !important; padding: 2px 8px; border: 1px solid var(--pss-line-strong) !important; border-radius: 6px; }
+.pss-copy:hover { color: var(--pss-strong) !important; }
+
+/* Sidebar sounds nest under their conversation. */
+.pss-side-sounds { margin: 2px 0 6px 10px; padding-left: 8px; border-left: 1px solid var(--pss-line); }

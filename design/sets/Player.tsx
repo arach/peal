@@ -6,7 +6,7 @@
  * click/drag seeking. Inline cards get a compact scope; pages get the full
  * Scope / Timeline / Transport stack.
  */
-import { useEffect, useMemo, useReducer, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useMemo, useReducer, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import type { SfxPatch } from '@/lib/sfx/patch'
 import { drawScope, drawTimeline, waveformData } from '@/components/studio/studioScope'
 import { StudioRack, StudioScopeWell, StudioTransportDeck } from '@/components/studio/StudioInstruments'
@@ -119,33 +119,66 @@ function useTransport(id: string, livePatchValue: SfxPatch, vary: boolean) {
 
 type Transport = ReturnType<typeof useTransport>
 
-/** Hover ghost + click/drag seek on a canvas. Dragging parks; release resumes. */
-function useScrub(transport: Transport) {
+/**
+ * Hover ghost + click/drag seek on a canvas, plus keyboard (←/→ 10ms, ⇧ 100ms,
+ * Home/End). Dragging parks; release plays from the drop point. `extent` is
+ * the share of the width this sound occupies (compare views share a scale).
+ */
+function useScrub(transport: Transport, label: string, extent = 1) {
   const [hover, setHover] = useState<number | null>(null)
   const drag = useRef<{ resume: boolean } | null>(null)
   const at = (e: ReactPointerEvent<HTMLCanvasElement>) => {
     const r = e.currentTarget.getBoundingClientRect()
     return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width))
   }
+  const toSound = (p: number) => Math.min(1, p / extent)
+  const duration = transport.buffer?.duration ?? 0
   return {
     hover,
+    /** Hover as a fraction of the sound (null past its end). */
+    hoverSound: hover === null || hover > extent ? null : toSound(hover),
     handlers: {
+      tabIndex: 0,
+      role: 'slider',
+      'aria-label': label,
+      'aria-valuemin': 0,
+      'aria-valuemax': Math.round(duration * 1000),
+      'aria-valuenow': Math.round(transport.position * duration * 1000),
+      'aria-valuetext': `${Math.round(transport.position * duration * 1000)} of ${Math.round(duration * 1000)} milliseconds`,
       onPointerDown: (e: ReactPointerEvent<HTMLCanvasElement>) => {
         e.currentTarget.setPointerCapture(e.pointerId)
         drag.current = { resume: transport.playing }
-        void transport.seek(at(e), false)
+        void transport.seek(toSound(at(e)), false)
       },
       onPointerMove: (e: ReactPointerEvent<HTMLCanvasElement>) => {
         const p = at(e)
         setHover(p)
-        if (drag.current) void transport.seek(p, false)
+        if (drag.current) void transport.seek(toSound(p), false)
       },
       onPointerUp: (e: ReactPointerEvent<HTMLCanvasElement>) => {
         // A click (or drag) plays from the drop point — that's the seek-ahead.
         drag.current = null
-        void transport.seek(at(e), true)
+        void transport.seek(toSound(at(e)), true)
       },
       onPointerLeave: () => { if (!drag.current) setHover(null) },
+      onKeyDown: (e: ReactKeyboardEvent<HTMLCanvasElement>) => {
+        if (!duration) return
+        const step = (e.shiftKey ? 0.1 : 0.01) / duration
+        const next = e.key === 'ArrowRight' ? transport.position + step
+          : e.key === 'ArrowLeft' ? transport.position - step
+            : e.key === 'Home' ? 0
+              : e.key === 'End' ? 1
+                : null
+        if (next === null) {
+          if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault()
+            void (transport.playing ? transport.pause() : transport.play())
+          }
+          return
+        }
+        e.preventDefault()
+        void transport.seek(Math.min(1, Math.max(0, next)), transport.playing)
+      },
     },
   }
 }
@@ -192,73 +225,91 @@ function MiniTransport({ transport }: { transport: Transport }) {
   )
 }
 
-/** Inline in chat cards: compact transport + seekable scope + time readout. */
+/** Inline in chat cards: compact transport + seekable scope with an in-well readout. */
 export function InlinePlayer({ id, patch, vary }: { id: string; patch: SfxPatch; vary: boolean }) {
   const transport = useTransport(id, patch, vary)
-  const scrub = useScrub(transport)
+  const duration = transport.buffer?.duration ?? patch.duration
+  const scrub = useScrub(transport, 'Seek')
   const data = useMemo(() => (transport.buffer ? waveformData(transport.buffer, 120) : null), [transport.buffer])
   const ref = useCanvasDraw(
-    (canvas) => data && drawScope(canvas, { lanes: [data], position: transport.position, hover: scrub.hover, grid: true }),
-    [data, transport.position, scrub.hover],
+    (canvas) => data && drawScope(canvas, {
+      lanes: [data],
+      position: transport.position,
+      hover: scrub.hover,
+      hoverLabel: scrub.hoverSound === null ? undefined : fmt(scrub.hoverSound * duration),
+      grid: true,
+      anchor: 'bottom',
+    }),
+    [data, transport.position, scrub.hover, duration],
   )
-  const duration = transport.buffer?.duration ?? patch.duration
   return (
     <div className="pss-inline-player">
       <MiniTransport transport={transport} />
       <StudioScopeWell className="pss-inline-scope">
         <canvas ref={ref} className="pss-scrub-canvas" {...scrub.handlers} />
         {data ? null : <span className="pss-wave-loading">rendering…</span>}
+        <span className="pss-time" aria-hidden>
+          {transport.position > 0 ? <>{fmt(transport.position * duration)}<span> / </span></> : null}
+          <span>{fmt(duration)}</span>
+        </span>
       </StudioScopeWell>
-      <span className="pss-time">
-        {fmt((scrub.hover ?? transport.position) * duration)}
-        <span> / {fmt(duration)}</span>
-      </span>
     </div>
   )
 }
 
-/** Right-pane page: the studio's Scope, Timeline and Transport deck. */
-export function FullPlayer({ id, patch, vary }: { id: string; patch: SfxPatch; vary: boolean }) {
+/**
+ * Right-pane page: the studio's Scope, Timeline and transport. `scaleSeconds`
+ * puts compared sounds on one time scale.
+ */
+export function FullPlayer({ id, patch, vary, scaleSeconds }: { id: string; patch: SfxPatch; vary: boolean; scaleSeconds?: number }) {
   const transport = useTransport(id, patch, vary)
-  const scopeScrub = useScrub(transport)
-  const timelineScrub = useScrub(transport)
   const buffer = transport.buffer
+  const duration = buffer?.duration ?? patch.duration
+  const scale = Math.max(duration, scaleSeconds ?? 0)
+  const extent = duration / scale
+  const scopeScrub = useScrub(transport, 'Seek in scope', extent)
+  const timelineScrub = useScrub(transport, 'Seek in timeline', extent)
   const lanes = useMemo(
     () => (buffer ? Array.from({ length: Math.min(2, buffer.numberOfChannels) }, (_, ch) => waveformData(buffer, 160, ch)) : null),
     [buffer],
   )
   const hover = timelineScrub.hover ?? scopeScrub.hover
-  const durationMs = (buffer?.duration ?? patch.duration) * 1000
   const scopeRef = useCanvasDraw(
-    (canvas) => lanes && drawScope(canvas, { lanes, position: transport.position, hover }),
-    [lanes, transport.position, hover],
+    (canvas) => lanes && drawScope(canvas, {
+      lanes,
+      position: transport.position,
+      hover,
+      extent,
+      hoverLabel: hover === null ? undefined : fmt(hover * scale),
+    }),
+    [lanes, transport.position, hover, extent, scale],
   )
   const timelineRef = useCanvasDraw(
-    (canvas) => lanes && drawTimeline(canvas, { data: lanes[0], durationMs, position: transport.position, hover }),
-    [lanes, transport.position, hover, durationMs],
+    (canvas) => lanes && drawTimeline(canvas, { data: lanes[0], durationMs: scale * 1000, extent, position: transport.position, hover }),
+    [lanes, transport.position, hover, extent, scale],
   )
 
   return (
     <div className="pss-full-player">
       <StudioRack
         label="Scope"
-        readout={`${Math.round(durationMs)}ms · ${patch.layers.length} layers${lanes && lanes.length > 1 ? ' · stereo' : ''}`}
+        readout={`${fmt(duration)} · ${patch.layers.length} layers${lanes && lanes.length > 1 ? ' · stereo' : ''}`}
         className="p-0 overflow-hidden"
       >
         <div className="px-3 py-3">
           <StudioScopeWell>
-            <canvas ref={scopeRef} className="pss-scrub-canvas h-40 w-full" {...scopeScrub.handlers} />
+            <canvas ref={scopeRef} className="pss-scrub-canvas pss-scope-canvas w-full" {...scopeScrub.handlers} />
           </StudioScopeWell>
         </div>
       </StudioRack>
       <StudioRack
         label="Timeline"
-        readout={`${Math.round((hover ?? transport.position) * durationMs)} / ${Math.round(durationMs)}ms`}
+        readout={`${Math.round(transport.position * duration * 1000)} / ${Math.round(duration * 1000)}ms`}
         className="overflow-hidden"
       >
         <div className="p-3">
           <StudioScopeWell>
-            <canvas ref={timelineRef} className="pss-scrub-canvas h-16 w-full" {...timelineScrub.handlers} />
+            <canvas ref={timelineRef} className="pss-scrub-canvas pss-timeline-canvas w-full" {...timelineScrub.handlers} />
           </StudioScopeWell>
         </div>
       </StudioRack>

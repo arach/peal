@@ -14,7 +14,8 @@ export const PEAL_STUDIO_SHELL_LAYOUT: PealStudioShellLayout = {
   rightWidth: 400,
   minPanelWidth: 280,
   maxPanelWidth: 640,
-  left: { min: 320, max: 640 },
+  // The SFX conversation narrows the left panel to a list of titles.
+  left: { min: 260, max: 640 },
   right: { min: 300, max: 560 },
 }
 

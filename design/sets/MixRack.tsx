@@ -16,6 +16,8 @@ import { basePatch, livePatch, mixOf, useSets, versionsOf } from './store'
 
 const LAYER_COLORS = ['#4a9eff', '#f0b429', '#7cb8ff', '#9ca3af', '#2f7fd8', '#e8a317', '#6bb0ff', '#c4c4cc']
 
+const panLabel = (v: number) => (Math.abs(v) < 0.03 ? 'C' : `${v < 0 ? 'L' : 'R'}${Math.round(Math.abs(v) * 100)}`)
+
 function sourceLabel(l: SfxLayer) {
   return l.source === 'noise' ? `${l.noiseColor ?? 'white'} noise` : `${l.waveform ?? 'sine'} ${Math.round(l.frequency ?? 0)}Hz`
 }
@@ -114,7 +116,7 @@ function LayerRow({ soundKey, index, layer, m, onChange, dimmed }: {
         </span>
       </div>
       <Lane soundKey={soundKey} index={index} color={color} shiftMs={m.shift * 1000} onShift={(s) => onChange({ shift: Math.round((m.shift + s) * 1000) / 1000 })} />
-      <label className="pss-fader" title="Level — accentuate or pull back this layer">
+      <label className="pss-fader pss-fader--level" title="Level — accentuate or pull back this layer (double-click for 0 dB)">
         <input
           type="range"
           min={-24}
@@ -126,7 +128,7 @@ function LayerRow({ soundKey, index, layer, m, onChange, dimmed }: {
         />
         <span className={m.db !== 0 ? 'is-tweaked' : ''}>{m.db > 0 ? '+' : ''}{m.db.toFixed(1)}dB</span>
       </label>
-      <label className="pss-fader pss-fader--pan" title={layer.panEnd !== undefined ? 'Pan — moves the whole sweep' : 'Pan'}>
+      <label className="pss-fader pss-fader--pan" title={layer.panEnd !== undefined ? 'Pan — moves the whole sweep (double-click to reset)' : 'Pan (double-click to center)'}>
         <input
           type="range"
           min={-1}
@@ -137,8 +139,8 @@ function LayerRow({ soundKey, index, layer, m, onChange, dimmed }: {
           onDoubleClick={() => onChange({ pan: 0 })}
         />
         <span className={m.pan !== 0 ? 'is-tweaked' : ''}>
-          {Math.abs(panValue) < 0.03 ? 'C' : `${panValue < 0 ? 'L' : 'R'}${Math.round(Math.abs(panValue) * 100)}`}
-          {layer.panEnd !== undefined ? '→' : ''}
+          {panLabel(panValue)}
+          {layer.panEnd !== undefined ? ` → ${panLabel(Math.max(-1, Math.min(1, layer.panEnd + m.pan)))}` : ''}
         </span>
       </label>
     </div>

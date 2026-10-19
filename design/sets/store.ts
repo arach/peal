@@ -2,7 +2,7 @@
 
 import { create } from 'zustand'
 import type { SfxPatch } from '@/lib/sfx/patch'
-import { bake, derive, neutralMix, type PatchMix } from './mix'
+import { bake, derive, describeMix, neutralMix, type PatchMix } from './mix'
 import { composeSound, isSingleSoundPrompt } from './composeClient'
 import ebook from './ebookReader.json'
 
@@ -122,6 +122,10 @@ interface SetsState {
   focusKey: string | null
   /** Live agent status line while a real compose runs. */
   status: string | null
+  /** The active conversation's title (named on the first message). */
+  title: string
+  /** Last "Keep as vN" per sound — pages react with a flash. */
+  keptAt: Record<string, number>
 
   boot: (stage: SetsStage) => void
   reset: () => void
@@ -161,6 +165,8 @@ function stageState(stage: SetsStage) {
     sounds: SOUNDS,
     focusKey: null as string | null,
     status: null as string | null,
+    title: stage === 'start' ? 'New conversation' : `${ebook.project} sounds`,
+    keptAt: {} as Record<string, number>,
   }
 }
 
@@ -262,7 +268,12 @@ export const useSets = create<SetsState>()((set, get) => {
       const t = text.trim()
       const { thinking, stage } = get()
       if (!t || thinking) return
-      set((s) => ({ draft: '', messages: [...s.messages, { id: uid(), role: 'user', text: t }] }))
+      set((s) => ({
+        draft: '',
+        messages: [...s.messages, { id: uid(), role: 'user', text: t }],
+        // The first message names the conversation.
+        title: s.messages.length === 0 ? (isSingleSoundPrompt(t) ? nameFromPrompt(t) : `${ebook.project} sounds`) : s.title,
+      }))
       // One thing in, one sound out — composed live, then refined in place.
       if (get().focusKey || (stage === 'start' && isSingleSoundPrompt(t))) {
         void composeLive(t)
@@ -278,11 +289,17 @@ export const useSets = create<SetsState>()((set, get) => {
         agentSays({ text: EXPORT_REPLY, card: 'export' })
         return
       }
-      const mentioned = get().sounds.filter((s) => t.toLowerCase().includes(s.name.toLowerCase().split(' ')[0]) || t.includes(`@${s.key}`))
+      // Whole names first ("bookmark" ≠ "book open"); first words only as a fallback.
+      const lower = t.toLowerCase()
+      const pool = get().sounds.filter((s) => get().ready.has(s.key))
+      const byName = pool.filter((s) => new RegExp(`\\b${s.name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(lower) || t.includes(`@${s.key}`))
+      const mentioned = byName.length
+        ? byName
+        : pool.filter((s) => new RegExp(`\\b${s.name.toLowerCase().split(' ')[0]}\\b`).test(lower))
       agentSays({
         text: mentioned.length
-          ? `Prototype note: in the live build I'd recompose ${mentioned.map((s) => s.name).join(', ')} in place as a new version on ${mentioned.length === 1 ? 'its card' : 'their cards'}.`
-          : 'Prototype note: in the live build this turn recomposes the sounds it names (or the whole set) as new versions on their cards.',
+          ? `I'll recompose ${mentioned.map((s) => s.name).join(', ')} as a new version${mentioned.length === 1 ? '' : 's'}, keeping the rest of the set as it is.`
+          : 'I\'ll rework the set as new versions on each card. Name a sound to change just that one.',
       })
     },
 
@@ -331,11 +348,17 @@ export const useSets = create<SetsState>()((set, get) => {
       const card = s.cards[key]
       const mix = card.mixes[card.version]
       if (!mix) return {}
-      const kept = { ...bake(basePatch(sound, card), mix), summary: `${basePatch(sound, card).summary} (mixed)` }
+      const kept = { ...bake(basePatch(sound, card), mix), summary: `${basePatch(sound, card).summary} — your mix` }
       const mixes = { ...card.mixes }
       delete mixes[card.version]
       const extra = [...card.extra, kept]
-      return { cards: { ...s.cards, [key]: { ...card, extra, mixes, bypass: false, version: sound.versions.length + extra.length - 1 } } }
+      const n = sound.versions.length + extra.length
+      const changes = describeMix(basePatch(sound, card), mix)
+      return {
+        cards: { ...s.cards, [key]: { ...card, extra, mixes, bypass: false, version: n - 1 } },
+        keptAt: { ...s.keptAt, [key]: Date.now() },
+        messages: [...s.messages, { id: uid(), role: 'agent', text: `Saved ${sound.name} v${n}${changes ? ` — ${changes}` : ''}.` }],
+      }
     }),
   }
 })
@@ -350,9 +373,10 @@ export function stageFromLocation(): SetsStage {
 export async function toggleSetsPlayback() {
   const { getActive, pauseTake, startTake, takeFor } = await import('./audio')
   const { activeTab, ready, cards, sounds } = useSets.getState()
-  const key = activeTab ?? sounds.find((s) => ready.has(s.key))?.key
-  if (!key) return
   const active = getActive()
+  // The last thing played wins (cards included), then the open page.
+  const key = active?.id ?? activeTab ?? sounds.find((s) => ready.has(s.key))?.key
+  if (!key) return
   if (active?.id === key && active.playing) {
     pauseTake()
     return
@@ -361,6 +385,11 @@ export async function toggleSetsPlayback() {
     await startTake(key, active.buffer, active.offset)
     return
   }
-  const sound = sounds.find((s) => s.key === key)!
-  await startTake(key, await takeFor(livePatch(sound, cards[key]), cards[key].vary), 0)
+  // Pinned card takes are "<key>@<version>".
+  const [soundKey, pinned] = key.split('@')
+  const sound = sounds.find((s) => s.key === soundKey)
+  if (!sound) return
+  const card = cards[soundKey]
+  const patch = pinned !== undefined ? versionsOf(sound, card)[Number(pinned)] : livePatch(sound, card)
+  await startTake(key, await takeFor(patch, card.vary), 0)
 }

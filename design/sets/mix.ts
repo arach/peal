@@ -110,3 +110,22 @@ export function bake(base: SfxPatch, mix: PatchMix): SfxPatch {
 export function soloLayer(patch: SfxPatch, index: number): SfxPatch {
   return { ...patch, variation: 0, layers: patch.layers.map((l, i) => (i === index ? l : { ...l, gain: 0 })) }
 }
+
+/** One line for the thread: "paper flick +6 dB, sheet swish +100 ms, room 12%". */
+export function describeMix(base: SfxPatch, mix: PatchMix): string {
+  const parts: string[] = []
+  mix.layers.forEach((m, i) => {
+    const name = base.layers[i]?.name ?? `layer ${i + 1}`
+    if (m.mute) { parts.push(`${name} muted`); return }
+    const bits: string[] = []
+    if (m.db) bits.push(`${m.db > 0 ? '+' : ''}${m.db} dB`)
+    if (m.shift) bits.push(`${m.shift > 0 ? '+' : ''}${Math.round(m.shift * 1000)} ms`)
+    if (m.pan) bits.push(`pan ${m.pan > 0 ? '+' : ''}${m.pan.toFixed(2)}`)
+    if (bits.length) parts.push(`${name} ${bits.join(' ')}`)
+  })
+  if (mix.room !== (base.room?.mix ?? 0)) parts.push(`room ${Math.round(mix.room * 100)}%`)
+  if (mix.tone) parts.push(`${mix.tone > 0 ? 'brighter' : 'darker'} ${Math.abs(mix.tone).toFixed(2)} oct`)
+  if (mix.pitch) parts.push(`pitch ${mix.pitch > 0 ? '+' : ''}${mix.pitch} st`)
+  if (mix.length !== 1) parts.push(`length ${mix.length.toFixed(2)}×`)
+  return parts.join(', ')
+}

@@ -58,28 +58,36 @@ export interface ScopeOptions {
   preview?: boolean
   /** Draw the grid (off for tiny inline scopes). */
   grid?: boolean
+  /** 'bottom' sits the trace on a low baseline so peaks use the full height (small scopes). */
+  anchor?: 'center' | 'bottom'
+  /** 0..1 of the width this sound occupies — compare views share one time scale. */
+  extent?: number
+  /** Label for the hover ghost line, e.g. "212ms". */
+  hoverLabel?: string
 }
 
-export function drawScope(canvas: HTMLCanvasElement | null, { lanes, position = 0, hover = null, preview = false, grid = true }: ScopeOptions) {
+export function drawScope(canvas: HTMLCanvasElement | null, { lanes, position = 0, hover = null, preview = false, grid = true, anchor = 'center', extent = 1, hoverLabel }: ScopeOptions) {
   if (!canvas || lanes.length === 0) return
   const surface = prepare(canvas)
   if (!surface) return
-  const { ctx, width, height } = surface
+  const { ctx, height } = surface
+  const fullWidth = surface.width
+  const width = fullWidth * extent
   const laneH = height / lanes.length
 
   lanes.forEach((data, li) => {
     const top = laneH * li
-    const mid = top + laneH / 2
+    const mid = anchor === 'bottom' ? top + laneH * 0.86 : top + laneH / 2
     if (grid) {
       ctx.strokeStyle = 'rgba(75, 85, 99, 0.3)'
       ctx.lineWidth = 1
       ctx.setLineDash([2, 4])
       ctx.beginPath()
       ctx.moveTo(0, mid)
-      ctx.lineTo(width, mid)
+      ctx.lineTo(fullWidth, mid)
       ctx.stroke()
       for (let i = 0; i <= 10; i++) {
-        const x = (i / 10) * width
+        const x = (i / 10) * fullWidth
         ctx.beginPath()
         ctx.moveTo(x, top)
         ctx.lineTo(x, top + laneH)
@@ -90,7 +98,7 @@ export function drawScope(canvas: HTMLCanvasElement | null, { lanes, position = 
 
     // Played portion brighter, the rest the studio blue.
     const step = width / data.length
-    const amp = laneH / 2
+    const amp = anchor === 'bottom' ? laneH * 0.92 : laneH / 2
     const trace = (color: string, from: number, to: number) => {
       ctx.strokeStyle = color
       ctx.lineWidth = 2
@@ -120,31 +128,50 @@ export function drawScope(canvas: HTMLCanvasElement | null, { lanes, position = 
   })
 
   if (hover !== null) {
+    const hx = hover * fullWidth
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)'
     ctx.lineWidth = 1
     ctx.beginPath()
-    ctx.moveTo(hover * width, 0)
-    ctx.lineTo(hover * width, height)
+    ctx.moveTo(hx, 0)
+    ctx.lineTo(hx, height)
     ctx.stroke()
+    if (hoverLabel) hoverTag(ctx, hoverLabel, hx, fullWidth)
   }
   if (position > 0 && position <= 1) playhead(ctx, position * width, height, false)
 }
 
+function hoverTag(ctx: CanvasRenderingContext2D, label: string, x: number, width: number) {
+  ctx.font = 'bold 10px ui-monospace, SFMono-Regular, Menlo, monospace'
+  const w = ctx.measureText(label).width + 8
+  const lx = Math.min(Math.max(x - w / 2, 0), width - w)
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.75)'
+  ctx.fillRect(lx, 2, w, 14)
+  ctx.fillStyle = '#ffffff'
+  ctx.textAlign = 'left'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(label, lx + 4, 9)
+}
+
 export interface TimelineOptions {
   data: number[]
+  /** Length of the ruler (the shared scale in compare views). */
   durationMs: number
+  /** 0..1 of the ruler this sound occupies. */
+  extent?: number
   position?: number
   hover?: number | null
 }
 
-export function drawTimeline(canvas: HTMLCanvasElement | null, { data, durationMs, position = 0, hover = null }: TimelineOptions) {
+export function drawTimeline(canvas: HTMLCanvasElement | null, { data, durationMs, extent = 1, position = 0, hover = null }: TimelineOptions) {
   if (!canvas || data.length === 0) return
   const surface = prepare(canvas)
   if (!surface) return
-  const { ctx, width, height } = surface
+  const { ctx, height } = surface
+  const fullWidth = surface.width
+  const width = fullWidth * extent
 
   ctx.fillStyle = 'rgba(75, 85, 99, 0.1)'
-  ctx.fillRect(0, 0, width, height)
+  ctx.fillRect(0, 0, fullWidth, height)
 
   // Played region tint
   if (position > 0) {
@@ -183,7 +210,7 @@ export function drawTimeline(canvas: HTMLCanvasElement | null, { data, durationM
   ctx.textBaseline = 'bottom'
   const markers = 5
   for (let i = 0; i <= markers; i++) {
-    const x = (i / markers) * width
+    const x = (i / markers) * fullWidth
     const label = `${Math.round((i / markers) * durationMs)}ms`
     ctx.textAlign = i === 0 ? 'left' : i === markers ? 'right' : 'center'
     ctx.fillText(label, i === 0 ? x + 4 : i === markers ? x - 4 : x, height - 4)
@@ -191,7 +218,7 @@ export function drawTimeline(canvas: HTMLCanvasElement | null, { data, durationM
   ctx.restore()
 
   if (hover !== null) {
-    const hx = hover * width
+    const hx = hover * fullWidth
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)'
     ctx.lineWidth = 1
     ctx.setLineDash([3, 3])
@@ -200,16 +227,7 @@ export function drawTimeline(canvas: HTMLCanvasElement | null, { data, durationM
     ctx.lineTo(hx, height)
     ctx.stroke()
     ctx.setLineDash([])
-    const label = `${Math.round(hover * durationMs)}ms`
-    ctx.font = 'bold 10px Inter, system-ui, sans-serif'
-    const w = ctx.measureText(label).width + 8
-    const lx = Math.min(Math.max(hx - w / 2, 0), width - w)
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)'
-    ctx.fillRect(lx, 2, w, 14)
-    ctx.fillStyle = '#ffffff'
-    ctx.textAlign = 'left'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(label, lx + 4, 9)
+    hoverTag(ctx, `${Math.round(hover * durationMs)}ms`, hx, fullWidth)
   }
 
   if (position > 0 && position <= 1) playhead(ctx, px, height, true)
