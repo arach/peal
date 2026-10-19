@@ -1,5 +1,5 @@
 /**
- * Grounded music curriculum for the Peal Music AI agent.
+ * Grounded music curriculum for the SFX Music AI agent.
  *
  * Distilled from open, reputable sources — not LLM pretraining. Teach the agent
  * composition heuristics, theory basics, and Strudel pedagogy explicitly.
@@ -37,11 +37,11 @@ export const MUSIC_CURRICULUM_SOURCES = [
   },
 ] as const
 
-/** Peal Music default output: instrumental beds — no vocals unless asked. */
+/** SFX Music default output: instrumental beds — no vocals unless asked. */
 export const INSTRUMENTAL_BEAT_FOCUS = `
 ## Instrumental beats (default output)
 
-Peal Music targets **lyricless, varied beats** — drums, bass, chords, arps, textures. No vocals, chants,
+SFX Music targets **lyricless, varied beats** — drums, bass, chords, arps, textures. No vocals, chants,
 speech, or lyrical hooks unless the user explicitly asks.
 
 **Interest without lyrics** comes from:

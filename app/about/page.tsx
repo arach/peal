@@ -48,7 +48,7 @@ const reasons = [
   {
     icon: PackageCheck,
     title: 'No dependencies',
-    body: 'Add only the sounds you need — Peal stays out of your way.',
+    body: 'Add only the sounds you need — SFX stays out of your way.',
   },
 ]
 
@@ -71,7 +71,7 @@ const categories = [
   {
     icon: Sparkles,
     title: 'Custom',
-    body: 'Design sounds tailored to your brand in the Peal Studio.',
+    body: 'Design sounds tailored to your brand in the SFX Studio.',
   },
   {
     icon: Music,
@@ -83,7 +83,7 @@ const categories = [
 const installSnippet = `// Install Howler.js
 npm install howler
 
-// Use Peal sounds
+// Use SFX sounds
 import { Howl } from 'howler'
 
 const sound = new Howl({
@@ -110,12 +110,12 @@ export default function AboutPage() {
       <Header />
       <main className="about-shell peal-content-gutter">
         <header className="about-hero">
-          <div className="about-kicker">Why Peal</div>
+          <div className="about-kicker">Why SFX</div>
           <h1>
             Sound belongs in the <span className="accent">interface.</span>
           </h1>
           <p>
-            Most apps treat audio as an afterthought — a stock click here, a generic ding there. Peal
+            Most apps treat audio as an afterthought — a stock click here, a generic ding there. SFX
             exists because UI feedback should feel considered: lightweight to ship, easy to customize,
             and designed to match the product it lives in.
           </p>
@@ -163,7 +163,7 @@ export default function AboutPage() {
           <section className="about-section">
             <div className="about-section-head">
               <h2>How to use</h2>
-              <p>Peal sounds are plain audio files — drop them into any Howler.js setup.</p>
+              <p>SFX sounds are plain audio files — drop them into any Howler.js setup.</p>
             </div>
             <div className="about-code">
               <div className="about-code-head">
@@ -181,7 +181,7 @@ export default function AboutPage() {
               <pre>
                 <span className="hl-cmt">{'// Install Howler.js'}</span>
                 {'\nnpm install howler\n\n'}
-                <span className="hl-cmt">{'// Use Peal sounds'}</span>
+                <span className="hl-cmt">{'// Use SFX sounds'}</span>
                 {'\n'}
                 <span className="hl-kw">import</span>
                 {' { Howl } '}
@@ -230,7 +230,7 @@ export default function AboutPage() {
         )}
 
         <footer className="about-footnote">
-          <span>Peal — audio feedback toolkit for the web.</span>
+          <span>SFX — audio feedback toolkit for the web, part of Hudson Kit.</span>
           <span>
             <Link href="/docs">Docs</Link>
             {'  ·  '}

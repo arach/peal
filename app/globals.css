@@ -329,3 +329,5 @@ input[type="range"]::-moz-range-thumb:hover {
     }
   }
 }
+/* Hudson Kit prefix on the SFX wordmark (app chrome) */
+.peal-wordmark-kit { font-size: 0.78em; font-weight: 400; opacity: 0.5; margin-right: 0.18em; }

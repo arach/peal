@@ -12,7 +12,7 @@ export default function StyleGuidePage() {
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Peal Style Guide</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">SFX Style Guide</h1>
           <p className="text-gray-600 dark:text-gray-400">Consistent design system for the entire application</p>
         </div>
 

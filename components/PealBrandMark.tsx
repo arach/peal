@@ -1,4 +1,4 @@
-/** Peal brand mark — compact tile with a centered waveform. */
+/** SFX brand mark — compact tile with a centered waveform. */
 
 const VIEW = 32
 const WAVE = [0.28, 0.48, 0.72, 1, 0.72, 0.48, 0.28]
@@ -87,5 +87,5 @@ export function PealBrandMark({ size = 28 }: { size?: number }) {
 }
 
 export function PealWordmark() {
-  return <span className="peal-wordmark">peal</span>
+  return <span className="peal-wordmark"><span className="peal-wordmark-kit">hudson kit</span> sfx</span>
 }

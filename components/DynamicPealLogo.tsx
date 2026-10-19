@@ -110,7 +110,7 @@ export default function DynamicPealLogo({
         filter={`url(#textBgBlur-${preset})`}
       />
       
-      {/* Add "peal" text */}
+      {/* Wordmark text */}
       <text
         x={width / 2}
         y={height / 2}
@@ -122,7 +122,7 @@ export default function DynamicPealLogo({
         fontFamily="system-ui, -apple-system, sans-serif"
         letterSpacing={0.5}
       >
-        peal
+        sfx
       </text>
     </svg>
   )

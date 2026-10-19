@@ -25,16 +25,16 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  // Origin only: emitted asset paths already include the /peal basePath.
-  metadataBase: new URL('https://arach.github.io'),
+  // Origin only: emitted asset paths already include the basePath (/sfx on hudsonkit.com).
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_ORIGIN || 'https://hudsonkit.com'),
   title: {
-    default: 'Peal — UI sounds for the things you build',
-    template: '%s · Peal',
+    default: 'SFX — UI sounds for the things you build · Hudson Kit',
+    template: '%s · SFX · Hudson Kit',
   },
   description:
     'Find a sound you like, make it your own, and add it to your app. Curated UI sound effects, a sound design studio, and a CLI that drops sounds into any project.',
   openGraph: {
-    siteName: 'Peal',
+    siteName: 'Hudson Kit SFX',
     type: 'website',
   },
   twitter: { card: 'summary_large_image' },

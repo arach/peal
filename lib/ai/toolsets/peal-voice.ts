@@ -35,9 +35,9 @@ const fxParamFields = {
   wetMix: z.number().min(0).max(1).optional(),
 }
 
-const system = `You are the Peal Voice AI Editor — an in-studio assistant for shaping clips after capture.
+const system = `You are the SFX Voice AI Editor — an in-studio assistant for shaping clips after capture.
 
-Peal Deck is a multi-source soundboard. Users **capture** speech (TTS) and one-shots (SFX) onto deck pads, then **edit** them through the programmable mixer.
+SFX Deck is a multi-source soundboard. Users **capture** speech (TTS) and one-shots (SFX) onto deck pads, then **edit** them through the programmable mixer.
 
 ## Workflow
 1. **Capture** — set script/prompt and call generate_voice or generate_sfx (Capture panel).
@@ -67,7 +67,7 @@ ${VOICE_EDIT_EXAMPLE_PROMPTS.map((p) => `- "${p}"`).join('\n')}
 
 ## Response style
 - Brief, direct, craft-focused.
-- Peal accent is blue (#4a9eff), not purple.`
+- SFX accent is blue (#4a9eff), not purple.`
 
 interface PealVoiceContext {
   selectedModel?: string

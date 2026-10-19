@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { getPath } from '@/utils/navigation'
 import { isPealStaticRuntime } from '@/lib/ai/runtime'
 
-const STATIC_ENGINE_MESSAGE = 'Managed Strudel needs the hosted Peal app — the static build has no engine backend.'
+const STATIC_ENGINE_MESSAGE = 'Managed Strudel needs the hosted SFX app — the static build has no engine backend.'
 
 const STATIC_STATUS: StrudelManageStatusResponse = {
   phase: 'unavailable',
