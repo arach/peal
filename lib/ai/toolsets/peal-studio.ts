@@ -1,8 +1,8 @@
 import { tool } from 'ai'
 import { z } from 'zod'
 import type { ToolsetDefinition } from '@hudsonkit/ai/toolsets'
-import { sfxPatchSchema } from '@/lib/sfx/patch'
-import { formatSfxDesignGuideForPrompt } from '@/lib/ai/sfxDesignGuide'
+import { sfxPatchSchema } from '@hudsonkit/sfx/engine'
+import { formatSfxDesignGuideForPrompt } from '@hudsonkit/sfx/engine'
 
 const DESIGN_GUIDE = formatSfxDesignGuideForPrompt()
 

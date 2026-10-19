@@ -6,7 +6,7 @@ import { usePealChat } from '@/lib/ai/usePealChat'
 import { useByok, useByokChatTarget } from '@/lib/useByok'
 import type { Sound } from '@/store/soundStore'
 import { soundFromPatch } from '@/lib/ai/soundProposal'
-import { sfxPatchSchema, type SfxPatch } from '@/lib/sfx/patch'
+import { sfxPatchSchema, type SfxPatch } from '@hudsonkit/sfx/engine'
 import { useCompositionStore } from '@/store/compositionStore'
 import type { PealSfxSummary } from './Provider'
 

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { SfxPatch } from '@/lib/sfx/patch'
+import type { SfxPatch } from '@hudsonkit/sfx/engine'
 
 /**
  * AI composition history for the SFX studio. Every AI turn that composes a

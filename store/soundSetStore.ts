@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { SfxPatch } from '@/lib/sfx/patch'
+import type { SfxPatch } from '@hudsonkit/sfx/engine'
 
 /**
  * Named sound sets — a group of AI compositions saved together (e.g. "Ebook

@@ -20,7 +20,7 @@ import { usePealStudioHudson, type PealStudioTool } from './Provider'
 import { useOptionalPealMusicEngine } from './music/PealMusicEngineProvider'
 import { useOptionalPealMusic } from './music/PealMusicProvider'
 import { useOptionalPealVoice } from './voice/PealVoiceProvider'
-import { SET_PROJECT, toggleSetsPlayback, useSets } from '@/design/sets/store'
+import { toggleSfxPlayback, useSfx } from '@hudsonkit/sfx'
 
 const TOOL_LABELS: Record<PealStudioTool, string> = {
   sfx: 'SFX',
@@ -156,9 +156,9 @@ export function usePealStudioStatus(): { label: string; color: StatusColor } {
 
 function PealNavCenter() {
   const { currentTool, sfxSummary } = usePealStudioHudson()
-  const setsReady = useSets((s) => s.ready.size)
-  const setsStage = useSets((s) => s.stage)
-  const setsDetail = setsReady ? `${SET_PROJECT} · ${setsReady} sounds · ${setsStage}` : TOOL_DESCRIPTIONS.sfx
+  const sfxReady = useSfx((s) => s.ready.size)
+  const sfxTitle = useSfx((s) => s.title)
+  const setsDetail = sfxReady ? `${sfxTitle} · ${sfxReady} sound${sfxReady === 1 ? '' : 's'}` : TOOL_DESCRIPTIONS.sfx
   const voice = useOptionalPealVoice()
   const music = useOptionalPealMusic()
   const detail = currentTool === 'editor'
@@ -218,7 +218,7 @@ function PealNavActions() {
           return
         }
         if (currentTool === 'sfx') {
-          void toggleSetsPlayback()
+          void toggleSfxPlayback()
           return
         }
         if (currentTool === 'voice' && voice && voicePlayTarget) {

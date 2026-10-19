@@ -3,11 +3,14 @@ import { intentsToolset } from './intents'
 import { pealStudioToolset } from './peal-studio'
 import { pealVoiceToolset } from './peal-voice'
 import { pealMusicToolset } from './peal-music'
+import { sfxToolset } from '@hudsonkit/sfx/toolset'
 
 defaultRegistry.register('intents', intentsToolset)
 defaultRegistry.register('peal-studio', pealStudioToolset)
 defaultRegistry.register('peal-voice', pealVoiceToolset)
 defaultRegistry.register('peal-music', pealMusicToolset)
+// The SFX conversation (@hudsonkit/sfx) composes through its own toolset.
+defaultRegistry.register('sfx', sfxToolset)
 
 export function loadToolset(id: string, context: Record<string, unknown>) {
   const entry = defaultRegistry.resolve(id)

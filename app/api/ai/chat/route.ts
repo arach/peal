@@ -13,7 +13,7 @@ import { sanitizeByok } from '@/lib/byok'
 export const runtime = 'nodejs'
 export const dynamic = 'force-static'
 
-const PEAL_LOCAL_TOOLSETS = new Set(['peal-studio', 'peal-voice', 'peal-music', 'intents'])
+const PEAL_LOCAL_TOOLSETS = new Set(['peal-studio', 'peal-voice', 'peal-music', 'intents', 'sfx'])
 
 function log(msg: string) {
   const ts = new Date().toISOString().slice(11, 23)

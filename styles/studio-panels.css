@@ -402,3 +402,8 @@ html.dark .peal-studio-shell .peal-code-editor .cm-selectionBackground,
 html.dark .peal-studio-shell .peal-code-editor .cm-focused .cm-selectionBackground {
   background-color: rgba(74, 158, 255, 0.22);
 }
+
+/* @hudsonkit/sfx: conversation prose in Peal's sans (the shell's sans token is mono). */
+.peal-studio-shell .sfx-root {
+  --sfx-sans: var(--font-figtree, ui-sans-serif), system-ui, -apple-system, 'Segoe UI', sans-serif;
+}

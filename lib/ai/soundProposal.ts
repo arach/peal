@@ -1,5 +1,5 @@
 import type { Sound } from '@/store/soundStore'
-import type { SfxPatch } from '@/lib/sfx/patch'
+import type { SfxPatch } from '@hudsonkit/sfx/engine'
 
 export interface ProposeSoundInput {
   summary: string

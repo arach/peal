@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { renderSfxPatch } from '@/lib/sfx/patch'
-import { downloadBlob, encodeWav, slugify } from '@/lib/sfx/wav'
+import { renderSfxPatch } from '@hudsonkit/sfx/engine'
+import { downloadBlob, encodeWav, slugify } from '@hudsonkit/sfx/engine'
 import { soundSetToJson, useSoundSetStore } from '@/store/soundSetStore'
 import { PealAISection } from './shared/PealAIPanel'
 

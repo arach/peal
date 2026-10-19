@@ -21,7 +21,7 @@ import SoundLibraryModal from './SoundLibraryModal'
 import CodeEditor from './CodeEditor'
 import ResizableSidebar from './ResizableSidebar'
 import { useOptionalPealStudioHudson } from '@/app/hudson/peal-studio/Provider'
-import { renderSfxPatch, varySfxPatch, type SfxPatch } from '@/lib/sfx/patch'
+import { renderSfxPatch, varySfxPatch, type SfxPatch } from '@hudsonkit/sfx/engine'
 import { PealStudioAIDesign } from '@/app/hudson/peal-studio/PealStudioAIDesign'
 import {
   StudioModuleTabs,

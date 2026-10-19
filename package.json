@@ -5,7 +5,7 @@
   "bin": {
     "peal": "./cli/index.js"
   },
-  "description": "Curated UI sounds for web apps — copy WAVs into your project with a zero-dependency generated player. Web app: https://arach.github.io/peal/",
+  "description": "Curated UI sounds for web apps \u2014 copy WAVs into your project with a zero-dependency generated player. Web app: https://arach.github.io/peal/",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -109,6 +109,7 @@
     "@codemirror/view": "^6.43.4",
     "@earendil-works/pi-ai": "^0.74.0",
     "@hudsonkit/ai": "^0.2.2",
+    "@hudsonkit/sfx": "file:../sfx/hudsonkit-sfx-0.1.0.tgz",
     "@lezer/highlight": "^1.2.3",
     "@openscout/agent-sessions": "0.2.78",
     "@phosphor-icons/react": "^2.1.10",

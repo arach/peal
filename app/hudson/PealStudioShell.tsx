@@ -13,6 +13,7 @@ import { pealStudioApp } from './peal-studio'
 import { parsePealStudioToolFromPathname } from './peal-studio/routing'
 import '@/styles/studio-instruments.css'
 import '@/styles/studio-panels.css'
+import '@hudsonkit/sfx/styles.css'
 
 const PEAL_HOST_ROUTES: WorkspaceHostRoutes = {
   aiChat: '/api/ai/chat',

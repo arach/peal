@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { renderSfxPatch, varySfxPatch, type SfxPatch } from '@/lib/sfx/patch'
+import { renderSfxPatch, varySfxPatch, type SfxPatch } from '@hudsonkit/sfx/engine'
 import { useSoundStore, Sound } from '@/store/soundStore'
 import { playPresetSound } from '@/lib/presets/playPresetSound'
 import { ensureSoundAudioBuffer, isPresetSoundId } from '@/lib/presets/presetSound'
