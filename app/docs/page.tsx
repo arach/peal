@@ -24,7 +24,7 @@ import {
 
 const quickStartContent = isStaticBuild ? `# Quick Start
 
-Peal will be available soon! We're putting the finishing touches on our sound library.
+SFX will be available soon! We're putting the finishing touches on our sound library.
 
 ## What's Coming
 
@@ -34,7 +34,7 @@ Peal will be available soon! We're putting the finishing touches on our sound li
 
 Stay tuned for the official launch!` : `# Quick Start
 
-Get Peal sounds working in your app in under 2 minutes.
+Get SFX sounds working in your app in under 2 minutes.
 
 ## 1. Add Sounds (30 seconds)
 
@@ -361,7 +361,7 @@ Codex sessions need OAuth — \`~/.codex/auth.json\` from the Codex CLI, or \`OP
 
 Use \`note()\` for synth pitch — not \`n()\` (breaks oscillators). Samples: \`s("bd sd")\`.
 
-Peal manages Strudel as a **separate AGPL process** (not vendored in the MIT app).
+SFX manages Strudel as a **separate AGPL process** (not vendored in the MIT app).
     `
   },
   {
@@ -627,7 +627,7 @@ const sectionKickers: Record<string, string> = {
 }
 
 const sectionLeads: Record<string, string> = {
-  'quick-start': 'Get Peal sounds working in your app in under 2 minutes.',
+  'quick-start': 'Get SFX sounds working in your app in under 2 minutes.',
   api: 'Play, stop, and control volume on the CLI-generated helper module.',
   cli: 'Add, remove, and preview sounds from the terminal.',
   examples: 'Drop-in patterns for React, Vue, and vanilla JavaScript.',

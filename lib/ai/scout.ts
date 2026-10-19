@@ -125,7 +125,7 @@ async function runSessionTurn(
               blockId: event.blockId,
               version: event.approval.version,
               decision: 'deny',
-              reason: 'Peal design turns answer from the prompt only.',
+              reason: 'SFX design turns answer from the prompt only.',
             }))
             break
           case 'turn:end':
@@ -199,7 +199,7 @@ function buildPrompt(input: {
     .join('\n\n')
 
   return [
-    'You are answering on behalf of the Peal web app (a UI sound design studio). This is a one-shot request routed through Scout.',
+    'You are answering on behalf of the SFX web app (a UI sound design studio). This is a one-shot request routed through Scout.',
     'Do NOT read, edit or create files and do NOT run commands. Answer only from the instructions below.',
     '',
     '# Assistant instructions',

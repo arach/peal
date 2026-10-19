@@ -96,7 +96,7 @@ export function buildImprovUserMessage(input: {
   isPlaying: boolean
 }): string {
   const { directive, phase } = pickImprovPrompt(input)
-  const playing = input.isPlaying ? 'Strudel is playing the current pattern.' : 'Route when done — Peal auto-plays after your edit.'
+  const playing = input.isPlaying ? 'Strudel is playing the current pattern.' : 'Route when done — SFX auto-plays after your edit.'
   const phaseLabel = phase ? ` Phase: ${phase}.` : ''
   return `[Improv loop #${input.tick} · ${input.style}${phaseLabel}] ${directive} ${playing} Instrumental beat — no vocals. Vary one dimension. Use tools only.`
 }

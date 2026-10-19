@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Peal is a lightweight sound effect library for web and desktop apps.',
+  description: 'SFX is a lightweight sound effect library for web and desktop apps.',
 }
 
 export default function Layout({ children }: { children: ReactNode }) {

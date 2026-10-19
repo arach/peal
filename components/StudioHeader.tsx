@@ -83,7 +83,7 @@ export default function StudioHeader({
               className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded-lg transition-all group"
             >
               <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
-              <span className="text-sm font-medium">Back to Peal</span>
+              <span className="text-sm font-medium">Back to SFX</span>
             </button>
             
             <div className="w-px h-6 bg-gray-300 dark:bg-gray-700/50"></div>

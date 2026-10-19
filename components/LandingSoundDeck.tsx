@@ -106,7 +106,7 @@ export default function LandingSoundDeck() {
       const url = URL.createObjectURL(new Blob([audioBufferToWav(rendered)], { type: 'audio/wav' }))
       const link = document.createElement('a')
       link.href = url
-      link.download = `peal-${sound.id}.wav`
+      link.download = `sfx-${sound.id}.wav`
       link.click()
       setTimeout(() => URL.revokeObjectURL(url), 1000)
       setError('')
@@ -130,7 +130,7 @@ export default function LandingSoundDeck() {
     <div className="sound-deck-wrap">
       <section className="sound-deck" aria-label="Interactive sound preview">
         <header className="sound-deck-head">
-          <span className="sound-deck-brand"><span aria-hidden="true">(((•)))</span> peal</span>
+          <span className="sound-deck-brand"><span aria-hidden="true">(((•)))</span> sfx</span>
           <span className="sound-deck-caption">Your sound studio</span>
           <button className="sound-deck-save" onClick={save} disabled={!buffer || saving}><Download size={13} />{saving ? 'Saving…' : 'Save .wav'}</button>
         </header>

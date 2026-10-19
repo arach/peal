@@ -63,7 +63,7 @@ export async function generateSpeech(input: GenerateSpeechInput): Promise<Genera
   if (isPealStaticRuntime()) {
     if (ttsProviderForModel(input.model ?? 'tts-1') !== 'openai') {
       throw new Error(
-        'PlayAI voices need the hosted Peal app — pick an OpenAI voice on the static build.',
+        'PlayAI voices need the hosted SFX app — pick an OpenAI voice on the static build.',
       )
     }
     const apiKey = byok.openai

@@ -10,7 +10,7 @@ export interface PealAIModelPreset {
 }
 
 export const PEAL_AI_HARNESS_OPTIONS: { value: PealAIHarness; label: string; hint: string }[] = [
-  { value: 'pi-api', label: 'API', hint: 'pi-ai in-process (Peal /api/ai/chat)' },
+  { value: 'pi-api', label: 'API', hint: 'pi-ai in-process (SFX /api/ai/chat)' },
   { value: 'pi-cli', label: 'CLI', hint: 'Coming soon — Hudson CLI harness' },
 ]
 

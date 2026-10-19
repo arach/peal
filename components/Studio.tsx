@@ -3065,7 +3065,7 @@ export default function Studio({ hudsonLayout = false }: StudioProps) {
                       What should this sound like?
                     </h2>
                     <p className="peal-studio-welcome-copy">
-                      Describe the moment, motion, or feeling. Peal will turn it into an editable sound patch.
+                      Describe the moment, motion, or feeling. SFX will turn it into an editable sound patch.
                     </p>
                   </div>
 

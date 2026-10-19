@@ -30,7 +30,7 @@ export function PealDeck({ compact = false }: { compact?: boolean }) {
       )}
 
       <StudioRack
-        label="Peal Deck"
+        label="SFX Deck"
         readout={voice.isGenerating ? 'capturing…' : `clip rack · bank ${BANK_LABELS[voice.activeBank]} · ${filledCount}/8`}
         className="flex min-h-0 flex-1 flex-col"
       >

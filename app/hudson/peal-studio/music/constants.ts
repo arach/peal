@@ -1,4 +1,4 @@
-export const DEFAULT_STRUDEL_PATTERN = `// Peal Music — live-coded patterns (Strudel / Tidal)
+export const DEFAULT_STRUDEL_PATTERN = `// SFX Music — live-coded patterns (Strudel / Tidal)
 setcps(1)
 
 stack(

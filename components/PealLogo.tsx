@@ -7,7 +7,7 @@ export default function PealLogo({ size = 200, compact = false }: { size?: numbe
       <div className="relative" style={{ width: size, height: size }}>
         <Image
           src="/images/peal-logo.png"
-          alt="Peal Logo"
+          alt="SFX logo"
           width={size}
           height={size}
           className="object-contain"
@@ -22,7 +22,7 @@ export default function PealLogo({ size = 200, compact = false }: { size?: numbe
     <div className="relative mx-auto" style={{ width: size, height: size }}>
       <Image
         src="/images/peal-logo.png"
-        alt="Peal Logo"
+        alt="SFX logo"
         width={size}
         height={size}
         className="object-contain drop-shadow-xl"

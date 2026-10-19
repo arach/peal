@@ -154,7 +154,7 @@ export default function LandingHero() {
           <div className="landing-kicker">For developers</div>
           <h2 className="landing-integrate-title">Make it part of your app.</h2>
           <p className="landing-integrate-lead">
-            The Peal CLI copies WAV files and generates a ready-to-use module for your project.
+            The SFX CLI copies WAV files and generates a ready-to-use module for your project.
           </p>
           <div className="landing-install-tabs" aria-label="Package manager">
             {(['bun', 'npm', 'pnpm'] as PkgManager[]).map(p => <button key={p} type="button" className={`landing-install-tab ${pm === p ? 'active' : ''}`} aria-pressed={pm === p} onClick={() => setPm(p)}>{p}</button>)}
@@ -312,10 +312,10 @@ export default function LandingHero() {
 
       <footer className="landing-band landing-band--footer">
         <div className="landing-band-inner landing-footer">
-          <span>Peal — tech sound designer by <a href="https://github.com/arach">@arach</a></span>
+          <span>SFX — part of <a href="https://hudsonkit.com">Hudson Kit</a>, by <a href="https://github.com/arach">@arach</a></span>
           <nav className="landing-footer-links" aria-label="Footer">
             <a href={docsHref}>Docs</a>
-            <a href="/about">About</a>
+            <a href={getPublicUrl("/about")}>About</a>
             <a href="https://github.com/arach/peal" target="_blank" rel="noopener noreferrer">GitHub</a>
           </nav>
         </div>

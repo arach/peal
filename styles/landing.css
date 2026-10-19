@@ -2175,3 +2175,6 @@
 @media (prefers-reduced-motion: reduce) { .landing .sound-deck-playhead { animation: none; display: none; } }
 .landing .landing-copy-status { font-size: 11px; color: var(--landing-text-dim); margin: 6px 0 0; }
 .landing .landing-copy-status:empty { display: none; }
+
+/* Hudson Kit prefix on the SFX wordmark */
+.peal-wordmark-kit { font-size: 0.78em; font-weight: 400; opacity: 0.5; margin-right: 0.18em; }

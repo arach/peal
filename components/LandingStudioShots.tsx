@@ -93,7 +93,7 @@ export default function LandingStudioShots({ views }: LandingStudioShotsProps) {
             <div className="landing-studio-shot-frame">
               <img
                 src={view.image}
-                alt={`Peal ${view.label} studio`}
+                alt={`SFX ${view.label} studio`}
                 loading="lazy"
                 decoding="async"
               />
@@ -177,7 +177,7 @@ export default function LandingStudioShots({ views }: LandingStudioShotsProps) {
                 >
                   <img
                     src={activeView.image}
-                    alt={`Peal ${activeView.label} studio`}
+                    alt={`SFX ${activeView.label} studio`}
                     draggable={false}
                   />
                 </button>
