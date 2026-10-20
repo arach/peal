@@ -3,12 +3,12 @@
  * routes). Loaded lazily — pi-ai's model registry is heavy, so this module is
  * only ever dynamic-imported when the static runtime is detected.
  *
- * Runs the same piBackend.streamUI pipeline as /api/ai/chat and returns the
+ * Loads Hudson's browser runtime and runs the same streamUI pipeline as /api/ai/chat and returns the
  * same UIMessageStream Response, so the chat transport sees identical wire
  * data either way. Credentials are the visitor's BYOK keys (localStorage) —
  * no server env exists on static.
  */
-import { createPiAiBackend } from '@hudsonkit/ai/pi-ai'
+import { HUDSON_AI_BROWSER_URL } from './hostEndpoints'
 import {
   BYOK_MODELS,
   BYOK_PROVIDERS,
@@ -19,7 +19,20 @@ import {
 } from '@/lib/byok'
 import { loadToolset } from '@/lib/ai/toolsets'
 
-const browserBackend = createPiAiBackend()
+interface HostBrowserRuntime {
+  streamUI(request: Record<string, unknown>): Response
+}
+let runtimePromise: Promise<HostBrowserRuntime> | undefined
+
+function loadHostRuntime(): Promise<HostBrowserRuntime> {
+  runtimePromise ??= import(/* webpackIgnore: true */ HUDSON_AI_BROWSER_URL)
+    .then((runtime) => {
+      if (typeof runtime.streamUI !== 'function') throw new Error('Hudson AI browser runtime is incompatible')
+      return runtime as HostBrowserRuntime
+    })
+    .catch((error) => { runtimePromise = undefined; throw error })
+  return runtimePromise
+}
 
 /** First-choice model per BYOK provider that actually has a browser key. */
 function browserDefaultModels(byok: ByokKeys): Record<string, string> {
@@ -31,7 +44,7 @@ function browserDefaultModels(byok: ByokKeys): Record<string, string> {
 }
 
 /** Run one chat request fully in-browser; mirrors the /api/ai/chat route. */
-export function streamBrowserChat(init?: RequestInit): Response {
+export async function streamBrowserChat(init?: RequestInit): Promise<Response> {
   let body: Record<string, unknown> = {}
   try {
     body = JSON.parse(typeof init?.body === 'string' ? init.body : '{}') as Record<string, unknown>
@@ -47,6 +60,7 @@ export function streamBrowserChat(init?: RequestInit): Response {
   delete context.byok
 
   try {
+    const browserBackend = await loadHostRuntime()
     return browserBackend.streamUI({
       messages: (Array.isArray(body.messages) ? body.messages : []) as never,
       toolset: typeof body.toolset === 'string' ? body.toolset : '',
@@ -60,7 +74,7 @@ export function streamBrowserChat(init?: RequestInit): Response {
       loadToolset: loadToolset as never,
       loadCredentials: () => ({ ...byok }),
       defaultModels: browserDefaultModels(byok),
-    } as Parameters<typeof browserBackend.streamUI>[0])
+    })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     return new Response(message || 'Unknown error', {

@@ -1,6 +1,6 @@
 import { tool } from 'ai'
 import { z } from 'zod'
-import type { ToolsetDefinition } from '@hudsonkit/ai/toolsets'
+import type { ToolsetDefinition } from './types'
 import { analyzeCompositionStart } from '@/lib/ai/musicAiFollowUps'
 import { formatMusicCurriculumForPrompt } from '@/lib/ai/musicCurriculum'
 import { formatMusicExamplesForPrompt } from '@/lib/ai/musicPatternExamples'
