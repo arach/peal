@@ -1,6 +1,6 @@
 import { tool } from 'ai'
 import { z } from 'zod'
-import type { ToolsetDefinition } from '@hudsonkit/ai/toolsets'
+import type { ToolsetDefinition } from './types'
 import { sfxPatchSchema } from '@hudsonkit/sfx/engine'
 import { formatSfxDesignGuideForPrompt } from '@hudsonkit/sfx/engine'
 

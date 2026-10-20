@@ -1,7 +1,8 @@
 /** Canonical Hudson intents toolset — mirrors hudson/app/api/ai/toolsets/intents.ts */
 import { tool } from 'ai'
 import { z } from 'zod'
-import { INTENTS_SYSTEM_PROMPT, type ToolsetDefinition } from '@hudsonkit/ai/toolsets'
+import type { ToolsetDefinition } from './types'
+import { INTENTS_SYSTEM_PROMPT } from './intentsPrompt'
 
 interface IntentDescriptor {
   commandId: string

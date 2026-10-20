@@ -1,9 +1,7 @@
-import type { PiAiUIMessage } from '@hudsonkit/ai'
-import { defaultRegistry } from '@hudsonkit/ai/toolsets'
+import type { UIMessage as PiAiUIMessage } from 'ai'
+import { z } from 'zod'
 import {
-  buildDefaultModels,
   loadCredentials,
-  piBackend,
   proxyChatToHudson,
 } from '@/lib/ai/host'
 import { pealAIBackend, scoutHarnessFor, streamScoutChat } from '@/lib/ai/scout'
@@ -44,7 +42,7 @@ export async function POST(req: Request) {
     ? body.effort
     : undefined
 
-  if (toolset && !PEAL_LOCAL_TOOLSETS.has(toolset) && !defaultRegistry.resolve(toolset)) {
+  if (toolset && !PEAL_LOCAL_TOOLSETS.has(toolset)) {
     log(`proxy → Hudson | toolset=${toolset}`)
     return proxyChatToHudson(req, rawBody)
   }
@@ -68,17 +66,21 @@ export async function POST(req: Request) {
   }
 
   try {
-    return piBackend.streamUI({
-      messages,
-      toolset,
-      context,
-      provider,
-      model,
-      ...(effort ? { effort } : {}),
-      loadToolset: loadToolset as never,
-      loadCredentials: () => credentials,
-      defaultModels: buildDefaultModels(credentials),
-    } as Parameters<typeof piBackend.streamUI>[0])
+    // Only serializable app declarations cross the host boundary. The host
+    // echoes tool results; UI actions remain owned by the SFX client.
+    const definition = loadToolset(toolset, context)
+    const tools = Object.fromEntries(Object.entries(definition.tools).map(([name, value]) => {
+      const tool = value as { description?: string; inputSchema?: unknown }
+      const schema = tool.inputSchema instanceof z.ZodType
+        ? z.toJSONSchema(tool.inputSchema)
+        : tool.inputSchema
+      return [name, { description: tool.description, inputSchema: schema }]
+    }))
+    return proxyChatToHudson(req, JSON.stringify({
+      messages, toolset, context, provider, model, effort, mode: 'api',
+      credentials,
+      appToolset: { system: definition.system, tools },
+    }))
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     log(`ERROR: ${message}`)

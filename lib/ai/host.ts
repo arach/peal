@@ -2,35 +2,12 @@
  * Hudson AI host adapter for Peal.
  *
  * Peal does not call provider APIs (OpenAI, OpenRouter, etc.) directly.
- * All inference goes through @hudsonkit/ai/pi-ai → createPiAiBackend → pi-ai.
+ * Inference goes through the Hudson host; provider adapters stay internal there.
  * Credentials resolve via pi-ai's getEnvApiKey (OPENAI_API_KEY, etc.).
  */
-import { getEnvApiKey } from '@earendil-works/pi-ai'
-import { createPiAiBackend, listAvailableModels } from '@hudsonkit/ai/pi-ai'
+import { HUDSON_AI_CHAT_PATH, HUDSON_AI_SERVER_ORIGIN } from './hostEndpoints'
 import { resolveOpenAICodexAccessToken } from '@/lib/ai/codexCredentials'
 import { ensurePealCredentialsLoaded, resolvePealCredential } from '@/lib/credentials'
-
-export const piBackend = createPiAiBackend()
-
-/**
- * First registered model per provider — sourced from pi-ai, not a Peal catalog.
- * `credentials` carries the merged env+BYOK map so providers keyed only in the
- * browser still resolve a default model.
- */
-export function buildDefaultModels(
-  credentials?: Record<string, string | undefined>,
-): Record<string, string> {
-  ensurePealCredentialsLoaded()
-  const out: Record<string, string> = {}
-  for (const entry of listAvailableModels({
-    hasCredential: credentials
-      ? (p) => Boolean(credentials[p]) || Boolean(getEnvApiKey(p))
-      : undefined,
-  })) {
-    if (!out[entry.provider]) out[entry.provider] = entry.model
-  }
-  return out
-}
 
 /**
  * Credentials for pi-ai streamUI — env files + process.env + pi-ai fallbacks.
@@ -54,21 +31,21 @@ export function loadCredentials(
   }
 }
 
-const HUDSON_AI_ORIGIN = process.env.HUDSON_AI_ORIGIN ?? 'http://localhost:3500'
 
 /** Forward unknown toolsets to the Hudson dev app (optional shared backend). */
 export async function proxyChatToHudson(req: Request, body: string): Promise<Response> {
-  const target = `${HUDSON_AI_ORIGIN}/api/ai/chat`
+  const target = new URL(HUDSON_AI_CHAT_PATH, HUDSON_AI_SERVER_ORIGIN)
   try {
     return await fetch(target, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body,
+      signal: req.signal,
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     return new Response(
-      `Peal could not reach Hudson AI at ${HUDSON_AI_ORIGIN}. Start Hudson (\`bun dev\` in ../hudson) or set HUDSON_AI_ORIGIN. (${message})`,
+      `Peal could not reach Hudson AI at ${HUDSON_AI_SERVER_ORIGIN}. Start Hudson (\`bun dev\` in ../hudson) or set HUDSON_AI_ORIGIN. (${message})`,
       { status: 502, headers: { 'Content-Type': 'text/plain' } },
     )
   }

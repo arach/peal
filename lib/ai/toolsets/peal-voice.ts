@@ -1,7 +1,7 @@
 import { tool } from 'ai'
 import { z } from 'zod'
 import { VOICE_FX_PRESETS } from '@voxd/client/fx'
-import type { ToolsetDefinition } from '@hudsonkit/ai/toolsets'
+import type { ToolsetDefinition } from './types'
 import {
   formatVoiceFxPresetsForPrompt,
   VOICE_CAPTURE_EXAMPLE_PROMPTS,
